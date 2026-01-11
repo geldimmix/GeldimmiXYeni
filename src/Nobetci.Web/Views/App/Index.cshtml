@@ -167,7 +167,72 @@
                     @foreach (var employee in Model.Employees)
                     {
                         var employeeShifts = Model.GetShiftsForEmployee(employee.Id);
-                        var totalWorkedHours = employeeShifts.Where(s => !s.IsDayOff).Sum(s => s.TotalHours);
+                        
+                        // Calculate worked hours considering OvernightHoursMode
+                        var totalWorkedHours = 0m;
+                        var lastDayOfMonth = new DateOnly(Model.SelectedYear, Model.SelectedMonth, Model.DaysInMonth);
+                        
+                        foreach (var shift in employeeShifts.Where(s => !s.IsDayOff))
+                        {
+                            if (shift.SpansNextDay && shift.Date == lastDayOfMonth)
+                            {
+                                // This is an overnight shift on the last day of month
+                                if (shift.OvernightHoursMode == 1)
+                                {
+                                    // All hours go to NEXT month - don't count here
+                                    totalWorkedHours += 0;
+                                }
+                                else if (shift.OvernightHoursMode == 2)
+                                {
+                                    // Split at midnight - only count hours until midnight (StartTime to 00:00)
+                                    var hoursUntilMidnight = (24 - shift.StartTime.Hour) - (shift.StartTime.Minute / 60.0m);
+                                    // Subtract break proportionally if shift has break
+                                    if (shift.BreakMinutes > 0 && shift.TotalHours > 0)
+                                    {
+                                        var totalShiftHours = shift.TotalHours + (shift.BreakMinutes / 60.0m);
+                                        var breakRatio = shift.BreakMinutes / 60.0m / totalShiftHours;
+                                        hoursUntilMidnight = hoursUntilMidnight * (1 - breakRatio);
+                                    }
+                                    totalWorkedHours += Math.Max(0, hoursUntilMidnight);
+                                }
+                                else
+                                {
+                                    // OvernightHoursMode = 0: All hours go to current month
+                                    totalWorkedHours += shift.TotalHours;
+                                }
+                            }
+                            else
+                            {
+                                // Normal shift or not on last day
+                                totalWorkedHours += shift.TotalHours;
+                            }
+                        }
+                        
+                        // Add hours from previous month's overnight shifts that carry over
+                        var prevMonthShift = Model.GetPreviousMonthOvernightShift(employee.Id);
+                        if (prevMonthShift != null && !prevMonthShift.IsDayOff)
+                        {
+                            if (prevMonthShift.OvernightHoursMode == 1)
+                            {
+                                // All hours go to this month (next month from shift's perspective)
+                                totalWorkedHours += prevMonthShift.TotalHours;
+                            }
+                            else if (prevMonthShift.OvernightHoursMode == 2)
+                            {
+                                // Split at midnight - add hours from 00:00 to EndTime
+                                var hoursAfterMidnight = prevMonthShift.EndTime.Hour + (prevMonthShift.EndTime.Minute / 60.0m);
+                                // Subtract break proportionally if shift has break
+                                if (prevMonthShift.BreakMinutes > 0 && prevMonthShift.TotalHours > 0)
+                                {
+                                    var totalShiftHours = prevMonthShift.TotalHours + (prevMonthShift.BreakMinutes / 60.0m);
+                                    var breakRatio = prevMonthShift.BreakMinutes / 60.0m / totalShiftHours;
+                                    hoursAfterMidnight = hoursAfterMidnight * (1 - breakRatio);
+                                }
+                                totalWorkedHours += Math.Max(0, hoursAfterMidnight);
+                            }
+                            // OvernightHoursMode = 0: All hours stay in the shift's month, nothing to add here
+                        }
+                        
                         var dayOffCount = employeeShifts.Count(s => s.IsDayOff);
                         
                         // Calculate required hours (excluding holidays, weekends based on settings, and day offs)
