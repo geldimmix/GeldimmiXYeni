@@ -6,128 +6,79 @@
 }
 
 <div class="app-wrapper">
-    <!-- Left Sidebar -->
+    <!-- Left Sidebar - Compact -->
     <aside class="app-sidebar">
-        <!-- Employees Section -->
-        <div class="sidebar-section">
-            <div class="section-header">
-                <h6>👥 @(isTurkish ? "Personeller" : "Employees")</h6>
-                <span class="badge-count">@Model.EmployeeCount / @Model.EmployeeLimit</span>
-            </div>
-            
-            <button class="btn btn-add-employee" data-bs-toggle="modal" data-bs-target="#addEmployeeModal" @(Model.CanAddEmployee ? "" : "disabled")>
-                <span class="icon">+</span>
-                <span>@(isTurkish ? "Personel Ekle" : "Add Employee")</span>
+        <!-- Quick Actions -->
+        <div class="sidebar-actions">
+            <button class="action-btn employees-btn" data-bs-toggle="modal" data-bs-target="#employeesModal">
+                <span class="action-icon">👥</span>
+                <span class="action-label">@(isTurkish ? "Personeller" : "Employees")</span>
+                <span class="action-badge">@Model.EmployeeCount</span>
             </button>
             
-            @if (!Model.CanAddEmployee)
-            {
-                <div class="alert-limit">
-                    @(isTurkish ? "Personel limitine ulaşıldı" : "Employee limit reached")
-                </div>
-            }
-            
-            <div class="employee-list" id="employeeList">
-                @if (!Model.Employees.Any())
-                {
-                    <div class="empty-state">
-                        <span class="icon">👥</span>
-                        <p>@(isTurkish ? "Henüz personel eklenmedi" : "No employees added yet")</p>
-                    </div>
-                }
-                @foreach (var employee in Model.Employees)
-                {
-                    <div class="employee-item" data-employee-id="@employee.Id" data-daily-hours="@employee.DailyWorkHours" data-weekend-mode="@employee.WeekendWorkMode" data-saturday-hours="@(employee.SaturdayWorkHours ?? 0)">
-                        <div class="employee-color" style="background-color: @(employee.Color ?? "#3B82F6")"></div>
-                        <div class="employee-info">
-                            <span class="employee-name">@employee.FullName</span>
-                            @if (!string.IsNullOrEmpty(employee.Title))
-                            {
-                                <span class="employee-title">@employee.Title</span>
-                            }
-                            <span class="employee-hours">@employee.DailyWorkHours @(isTurkish ? "saat/gün" : "hrs/day")</span>
-                        </div>
-                        <button class="btn-delete" data-id="@employee.Id" title="@(isTurkish ? "Sil" : "Delete")">×</button>
-                    </div>
-                }
-            </div>
+            <button class="action-btn holidays-btn" data-bs-toggle="modal" data-bs-target="#addHolidayModal">
+                <span class="action-icon">🗓️</span>
+                <span class="action-label">@(isTurkish ? "Tatiller" : "Holidays")</span>
+                <span class="action-badge">@Model.Holidays.Count</span>
+            </button>
         </div>
         
-        <!-- Shift Templates Section -->
-        <div class="sidebar-section templates-section">
-            <div class="section-header">
-                <h6>⏰ @(isTurkish ? "Vardiya Şablonları" : "Shift Templates")</h6>
+        <!-- Shift Templates - Compact Grid -->
+        <div class="templates-compact">
+            <div class="templates-header">
+                <span>@(isTurkish ? "Vardiya Şablonları" : "Shift Templates")</span>
             </div>
             
-            <div class="template-info">
-                <small>@(isTurkish ? "Şablon seçip takvimde tıklayın" : "Select template, click on calendar")</small>
-            </div>
-            
-            <div class="template-list" id="templateList">
-                    <!-- Standard Templates -->
-                    <button class="template-btn" data-start="08:00" data-end="17:00" data-spans="false" data-break="60" data-color="#22C55E">
-                        <span class="template-color" style="background: #22C55E"></span>
-                        <span class="template-name">08:00-17:00</span>
-                        <span class="template-meta">60' @(isTurkish ? "mola" : "break")</span>
-                    </button>
-                    
-                    <button class="template-btn" data-start="08:00" data-end="16:30" data-spans="false" data-break="30" data-color="#3B82F6">
-                        <span class="template-color" style="background: #3B82F6"></span>
-                        <span class="template-name">08:00-16:30</span>
-                        <span class="template-meta">30' @(isTurkish ? "mola" : "break")</span>
-                    </button>
-                    
-                    <button class="template-btn" data-start="09:00" data-end="18:00" data-spans="false" data-break="60" data-color="#8B5CF6">
-                        <span class="template-color" style="background: #8B5CF6"></span>
-                        <span class="template-name">09:00-18:00</span>
-                        <span class="template-meta">60' @(isTurkish ? "mola" : "break")</span>
-                    </button>
-                    
-                    <!-- Overnight Templates -->
-                    <div class="template-divider">
-                        <span>@(isTurkish ? "Ertesi Güne Sarkan" : "Overnight")</span>
-                    </div>
-                    
-                    <button class="template-btn overnight" data-start="16:00" data-end="08:00" data-spans="true" data-break="0" data-color="#EF4444">
-                        <span class="template-color" style="background: #EF4444"></span>
-                        <span class="template-name">16:00-08:00</span>
-                        <span class="template-badge">+1</span>
-                        <span class="template-meta">16@(isTurkish ? "s" : "h")</span>
-                    </button>
-                    
-                    <button class="template-btn overnight" data-start="08:00" data-end="08:00" data-spans="true" data-break="0" data-color="#DC2626">
-                        <span class="template-color" style="background: #DC2626"></span>
-                        <span class="template-name">08:00-08:00</span>
-                        <span class="template-badge">+1</span>
-                        <span class="template-meta">24@(isTurkish ? "s" : "h")</span>
-                    </button>
-                    
-                    <!-- Custom Time -->
-                <button class="template-btn custom" id="customTimeBtn" data-color="#64748B">
-                    <span class="template-color" style="background: #64748B"></span>
-                    <span class="template-name">@(isTurkish ? "Özel Saat" : "Custom Time")</span>
-                    <span class="template-meta">⏱️</span>
+            <div class="template-grid" id="templateList">
+                <button class="tpl-btn" data-start="08:00" data-end="17:00" data-spans="false" data-break="60" data-color="#22C55E" title="08:00-17:00 (60dk mola)">
+                    <span class="tpl-color" style="background:#22C55E"></span>
+                    <span class="tpl-time">08-17</span>
                 </button>
-                
-                <!-- Day Off -->
-                <div class="template-divider">
-                    <span>@(isTurkish ? "Özel Durumlar" : "Special")</span>
-                </div>
-                
-                <button class="template-btn day-off" data-start="00:00" data-end="00:00" data-spans="false" data-break="0" data-color="#94a3b8" data-day-off="true">
-                    <span class="template-color" style="background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%)"></span>
-                    <span class="template-name">@(isTurkish ? "Boş Gün (İşe Başlamadı)" : "Day Off (Not Started)")</span>
-                    <span class="template-meta">🚫</span>
+                <button class="tpl-btn" data-start="08:00" data-end="16:30" data-spans="false" data-break="30" data-color="#3B82F6" title="08:00-16:30 (30dk mola)">
+                    <span class="tpl-color" style="background:#3B82F6"></span>
+                    <span class="tpl-time">08-16:30</span>
+                </button>
+                <button class="tpl-btn" data-start="09:00" data-end="18:00" data-spans="false" data-break="60" data-color="#8B5CF6" title="09:00-18:00 (60dk mola)">
+                    <span class="tpl-color" style="background:#8B5CF6"></span>
+                    <span class="tpl-time">09-18</span>
+                </button>
+                <button class="tpl-btn overnight" data-start="16:00" data-end="08:00" data-spans="true" data-break="0" data-color="#EF4444" title="16:00-08:00 (+1 gün)">
+                    <span class="tpl-color" style="background:#EF4444"></span>
+                    <span class="tpl-time">16-08</span>
+                    <span class="tpl-plus">+1</span>
+                </button>
+                <button class="tpl-btn overnight" data-start="08:00" data-end="08:00" data-spans="true" data-break="0" data-color="#DC2626" title="08:00-08:00 (24 saat)">
+                    <span class="tpl-color" style="background:#DC2626"></span>
+                    <span class="tpl-time">24h</span>
+                    <span class="tpl-plus">+1</span>
+                </button>
+                <button class="tpl-btn custom" id="customTimeBtn" data-color="#64748B" title="@(isTurkish ? "Özel saat belirle" : "Custom time")">
+                    <span class="tpl-color" style="background:#64748B"></span>
+                    <span class="tpl-time">⏱️</span>
                 </button>
             </div>
             
-            <!-- Multi-select Mode -->
-            <div class="multi-select-toggle">
-                <label class="toggle-switch">
-                    <input type="checkbox" id="multiSelectMode">
-                    <span class="toggle-slider"></span>
-                </label>
-                <span>@(isTurkish ? "Çoklu Seçim" : "Multi-Select")</span>
+            <button class="tpl-btn-full day-off" data-start="00:00" data-end="00:00" data-spans="false" data-break="0" data-color="#94a3b8" data-day-off="true">
+                <span class="tpl-color" style="background:#94a3b8"></span>
+                <span>🚫 @(isTurkish ? "Boş Gün" : "Day Off")</span>
+            </button>
+        </div>
+        
+        <!-- Multi-select Toggle -->
+        <div class="multi-toggle">
+            <label>
+                <input type="checkbox" id="multiSelectMode">
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                <span class="toggle-text">@(isTurkish ? "Çoklu Seçim" : "Multi-Select")</span>
+            </label>
+        </div>
+        
+        <!-- Selected Template Indicator -->
+        <div class="selected-indicator" id="selectedIndicator" style="display:none;">
+            <div class="indicator-color"></div>
+            <div class="indicator-text">
+                <span class="indicator-label">@(isTurkish ? "Seçili" : "Selected")</span>
+                <span class="indicator-time" id="selectedTime"></span>
             </div>
         </div>
     </aside>
@@ -136,46 +87,53 @@
     <main class="app-main">
         <!-- Toolbar -->
         <div class="app-toolbar">
-            <div class="toolbar-left">
+            <div class="toolbar-nav">
                 <a href="@Url.Action("Index", new { year = Model.SelectedMonth == 1 ? Model.SelectedYear - 1 : Model.SelectedYear, month = Model.SelectedMonth == 1 ? 12 : Model.SelectedMonth - 1 })" 
-                   class="btn-nav">‹</a>
+                   class="nav-arrow">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+                </a>
                 <h4 class="month-title">@Model.MonthName</h4>
                 <a href="@Url.Action("Index", new { year = Model.SelectedMonth == 12 ? Model.SelectedYear + 1 : Model.SelectedYear, month = Model.SelectedMonth == 12 ? 1 : Model.SelectedMonth + 1 })" 
-                   class="btn-nav">›</a>
+                   class="nav-arrow">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                </a>
             </div>
             
-            <div class="toolbar-right">
-                <button class="btn-toolbar" id="clearSelectionBtn" style="display:none;">
-                    @(isTurkish ? "Seçimi Temizle" : "Clear Selection")
+            <div class="toolbar-actions">
+                <button class="toolbar-btn ghost" id="clearSelectionBtn" style="display:none;">
+                    @(isTurkish ? "Temizle" : "Clear")
                 </button>
-                <button class="btn-toolbar primary" id="applyToSelectedBtn" style="display:none;">
-                    @(isTurkish ? "Seçilenlere Uygula" : "Apply to Selected")
+                <button class="toolbar-btn primary" id="applyToSelectedBtn" style="display:none;">
+                    ✓ @(isTurkish ? "Uygula" : "Apply")
                 </button>
-                <button class="btn-toolbar warning" data-bs-toggle="modal" data-bs-target="#addHolidayModal">
-                    🗓️ @(isTurkish ? "Tatil Ekle" : "Add Holiday")
-                </button>
+                
                 @if (Model.CanUseSmartScheduling)
                 {
-                    <button class="btn-toolbar success" id="generateScheduleBtn">
-                        🤖 @(isTurkish ? "Otomatik Oluştur" : "Auto Generate")
+                    <button class="toolbar-btn accent" id="generateScheduleBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                        @(isTurkish ? "Akıllı Oluştur" : "Smart Generate")
                     </button>
                 }
                 else
                 {
-                    <button class="btn-toolbar success premium-locked" id="generateScheduleBtn" data-premium="true">
-                        🔒 @(isTurkish ? "Otomatik Oluştur" : "Auto Generate")
+                    <button class="toolbar-btn accent locked" id="generateScheduleBtn" data-premium="true">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                        @(isTurkish ? "Akıllı Oluştur" : "Smart Generate")
                     </button>
                 }
+                
                 @if (Model.CanExportExcel)
                 {
-                    <button class="btn-toolbar" id="exportExcelBtn">
-                        📥 Excel
+                    <button class="toolbar-btn" id="exportExcelBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M12 18v-6M9 15l3 3 3-3"/></svg>
+                        Excel
                     </button>
                 }
                 else
                 {
-                    <button class="btn-toolbar premium-locked" id="exportExcelBtn" data-premium="true">
-                        🔒 Excel
+                    <button class="toolbar-btn locked" id="exportExcelBtn" data-premium="true">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                        Excel
                     </button>
                 }
             </div>
@@ -370,11 +328,69 @@
     </main>
 </div>
 
+<!-- Employees Modal -->
+<div class="modal fade" id="employeesModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content custom-modal">
+            <div class="modal-header-custom">
+                <div class="modal-icon">👥</div>
+                <div class="modal-title-group">
+                    <h5 class="modal-title">@(isTurkish ? "Personel Yönetimi" : "Employee Management")</h5>
+                    <p class="modal-subtitle">@Model.EmployeeCount / @Model.EmployeeLimit @(isTurkish ? "personel" : "employees")</p>
+                </div>
+                <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body-custom">
+                <!-- Employee List -->
+                <div class="employees-list-modal" id="employeeListModal">
+                    @if (!Model.Employees.Any())
+                    {
+                        <div class="empty-employees">
+                            <span>👥</span>
+                            <p>@(isTurkish ? "Henüz personel eklenmedi" : "No employees added yet")</p>
+                        </div>
+                    }
+                    @foreach (var employee in Model.Employees)
+                    {
+                        <div class="emp-row" data-employee-id="@employee.Id" data-daily-hours="@employee.DailyWorkHours" data-weekend-mode="@employee.WeekendWorkMode" data-saturday-hours="@(employee.SaturdayWorkHours ?? 0)">
+                            <div class="emp-color" style="background: @(employee.Color ?? "#3B82F6")"></div>
+                            <div class="emp-info">
+                                <span class="emp-name">@employee.FullName</span>
+                                @if (!string.IsNullOrEmpty(employee.Title))
+                                {
+                                    <span class="emp-title">@employee.Title</span>
+                                }
+                            </div>
+                            <div class="emp-hours">@employee.DailyWorkHours @(isTurkish ? "s/g" : "h/d")</div>
+                            <button class="emp-delete" data-id="@employee.Id" title="@(isTurkish ? "Sil" : "Delete")">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                            </button>
+                        </div>
+                    }
+                </div>
+                
+                @if (!Model.CanAddEmployee)
+                {
+                    <div class="limit-alert">
+                        ⚠️ @(isTurkish ? "Personel limitine ulaşıldı. Daha fazla personel için kayıt olun." : "Employee limit reached. Register for more.")
+                    </div>
+                }
+            </div>
+            <div class="modal-footer-custom">
+                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">@(isTurkish ? "Kapat" : "Close")</button>
+                <button type="button" class="btn-modal-save" data-bs-toggle="modal" data-bs-target="#addEmployeeModal" @(Model.CanAddEmployee ? "" : "disabled")>
+                    <span class="btn-icon">+</span> @(isTurkish ? "Personel Ekle" : "Add Employee")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Add Employee Modal -->
 <div class="modal fade" id="addEmployeeModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content custom-modal">
-            <div class="modal-header-custom employee-header">
+            <div class="modal-header-custom">
                 <div class="modal-icon">👤</div>
                 <div class="modal-title-group">
                     <h5 class="modal-title">@(isTurkish ? "Yeni Personel Ekle" : "Add New Employee")</h5>
@@ -744,38 +760,252 @@
         background: #f1f5f9;
     }
     
-    /* Sidebar */
+    /* Sidebar - Compact */
     .app-sidebar {
-        width: 280px;
-        min-width: 280px;
+        width: 200px;
+        min-width: 200px;
         max-height: calc(100vh - 60px);
-        background: white;
+        background: #f8fafc;
         border-right: 1px solid #e2e8f0;
         display: flex;
         flex-direction: column;
-        overflow-y: auto;
-        overflow-x: hidden;
+        padding: 12px;
+        gap: 12px;
     }
     
-    /* Enhanced Scrollbar for Sidebar */
-    .app-sidebar::-webkit-scrollbar {
+    /* Sidebar Actions */
+    .sidebar-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s;
+        width: 100%;
+        text-align: left;
+    }
+    
+    .action-btn:hover {
+        border-color: #cbd5e1;
+        background: #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .action-icon {
+        font-size: 1.1rem;
+    }
+    
+    .action-label {
+        flex: 1;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #374151;
+    }
+    
+    .action-badge {
+        background: #e5e7eb;
+        color: #4b5563;
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 10px;
+    }
+    
+    .employees-btn:hover .action-badge { background: #dbeafe; color: #1d4ed8; }
+    .holidays-btn:hover .action-badge { background: #fef3c7; color: #d97706; }
+    
+    /* Templates Compact */
+    .templates-compact {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        padding: 10px;
+    }
+    
+    .templates-header {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 10px;
+    }
+    
+    .template-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+    
+    .tpl-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        padding: 8px 4px;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.15s;
+        position: relative;
+    }
+    
+    .tpl-btn:hover {
+        border-color: #9ca3af;
+        background: #fff;
+    }
+    
+    .tpl-btn.active {
+        border-color: #2563eb;
+        background: #eff6ff;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    }
+    
+    .tpl-color {
+        width: 20px;
+        height: 4px;
+        border-radius: 2px;
+    }
+    
+    .tpl-time {
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: #374151;
+    }
+    
+    .tpl-plus {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        font-size: 0.5rem;
+        background: #ef4444;
+        color: white;
+        padding: 1px 3px;
+        border-radius: 3px;
+        font-weight: 700;
+    }
+    
+    .tpl-btn-full {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.15s;
+        width: 100%;
+        font-size: 0.75rem;
+        color: #6b7280;
+    }
+    
+    .tpl-btn-full:hover {
+        border-color: #9ca3af;
+        background: #fff;
+    }
+    
+    .tpl-btn-full.active {
+        border-color: #2563eb;
+        background: #eff6ff;
+    }
+    
+    .tpl-btn-full .tpl-color {
         width: 12px;
+        height: 12px;
+        border-radius: 3px;
     }
     
-    .app-sidebar::-webkit-scrollbar-track {
-        background: linear-gradient(180deg, #e2e8f0 0%, #f1f5f9 100%);
+    /* Multi Toggle */
+    .multi-toggle {
+        padding: 8px 0;
+    }
+    
+    .multi-toggle label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+    }
+    
+    .multi-toggle .toggle-track {
+        width: 36px;
+        height: 20px;
+        background: #d1d5db;
+        border-radius: 10px;
+        position: relative;
+        transition: all 0.2s;
+    }
+    
+    .multi-toggle .toggle-thumb {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        background: white;
+        border-radius: 50%;
+        top: 2px;
+        left: 2px;
+        transition: all 0.2s;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    
+    .multi-toggle input:checked + .toggle-track {
+        background: #2563eb;
+    }
+    
+    .multi-toggle input:checked + .toggle-track .toggle-thumb {
+        left: 18px;
+    }
+    
+    .multi-toggle input {
+        display: none;
+    }
+    
+    .multi-toggle .toggle-text {
+        font-size: 0.8rem;
+        color: #6b7280;
+    }
+    
+    /* Selected Indicator */
+    .selected-indicator {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 8px;
+    }
+    
+    .indicator-color {
+        width: 24px;
+        height: 24px;
         border-radius: 6px;
+        background: #3b82f6;
     }
     
-    .app-sidebar::-webkit-scrollbar-thumb {
-        background: linear-gradient(180deg, #6366f1 0%, #8b5cf6 100%);
-        border-radius: 6px;
-        border: 3px solid #f8fafc;
-        min-height: 60px;
+    .indicator-label {
+        font-size: 0.65rem;
+        color: #6b7280;
+        text-transform: uppercase;
     }
     
-    .app-sidebar::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(180deg, #4f46e5 0%, #7c3aed 100%);
+    .indicator-time {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #1d4ed8;
+    }
     }
     
     .sidebar-section {
@@ -1189,48 +1419,112 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 16px;
-        flex-wrap: wrap;
-        gap: 12px;
+        margin-bottom: 12px;
+        padding: 8px 12px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     
-    .toolbar-left {
+    .toolbar-nav {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 8px;
     }
     
-    .btn-nav {
+    .nav-arrow {
         width: 32px;
         height: 32px;
-        border: 1px solid #e2e8f0;
+        border: none;
         border-radius: 8px;
-        background: white;
-        color: #64748b;
+        background: #f3f4f6;
+        color: #6b7280;
         display: flex;
         align-items: center;
         justify-content: center;
         text-decoration: none;
-        font-size: 1.2rem;
+        transition: all 0.15s;
     }
     
-    .btn-nav:hover {
-        border-color: #6366f1;
-        color: #6366f1;
+    .nav-arrow:hover {
+        background: #e5e7eb;
+        color: #374151;
     }
     
     .month-title {
-        font-size: 1.25rem;
+        font-size: 1.1rem;
         font-weight: 600;
-        color: #1e293b;
+        color: #111827;
         margin: 0;
+        min-width: 140px;
+        text-align: center;
     }
     
-    .toolbar-right {
+    .toolbar-actions {
         display: flex;
-        gap: 8px;
+        gap: 6px;
     }
     
+    .toolbar-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border: none;
+        border-radius: 8px;
+        background: #f3f4f6;
+        color: #374151;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+    
+    .toolbar-btn:hover {
+        background: #e5e7eb;
+    }
+    
+    .toolbar-btn svg {
+        flex-shrink: 0;
+    }
+    
+    .toolbar-btn.primary {
+        background: #2563eb;
+        color: white;
+    }
+    
+    .toolbar-btn.primary:hover {
+        background: #1d4ed8;
+    }
+    
+    .toolbar-btn.accent {
+        background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+        color: white;
+    }
+    
+    .toolbar-btn.accent:hover {
+        background: linear-gradient(135deg, #1d4ed8 0%, #6d28d9 100%);
+    }
+    
+    .toolbar-btn.ghost {
+        background: transparent;
+        color: #6b7280;
+    }
+    
+    .toolbar-btn.ghost:hover {
+        background: #f3f4f6;
+    }
+    
+    .toolbar-btn.locked {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+    
+    .toolbar-btn.locked:hover {
+        background: #f3f4f6;
+    }
+    
+    /* Old btn-toolbar styles for backwards compatibility */
     .btn-toolbar {
         padding: 8px 16px;
         border: 1px solid #e2e8f0;
@@ -2262,6 +2556,106 @@
         pointer-events: none;
     }
     
+    /* Employees Modal List */
+    .employees-list-modal {
+        max-height: 400px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    
+    .emp-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        background: #f9fafb;
+        border-radius: 8px;
+        transition: all 0.15s;
+    }
+    
+    .emp-row:hover {
+        background: #f3f4f6;
+    }
+    
+    .emp-color {
+        width: 8px;
+        height: 32px;
+        border-radius: 4px;
+        flex-shrink: 0;
+    }
+    
+    .emp-info {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .emp-name {
+        display: block;
+        font-weight: 500;
+        color: #111827;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .emp-title {
+        display: block;
+        font-size: 0.75rem;
+        color: #6b7280;
+    }
+    
+    .emp-hours {
+        font-size: 0.75rem;
+        color: #6b7280;
+        background: #e5e7eb;
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+    
+    .emp-delete {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: transparent;
+        color: #9ca3af;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+    }
+    
+    .emp-delete:hover {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+    
+    .empty-employees {
+        text-align: center;
+        padding: 40px 20px;
+        color: #9ca3af;
+    }
+    
+    .empty-employees span {
+        font-size: 2.5rem;
+        display: block;
+        margin-bottom: 10px;
+    }
+    
+    .limit-alert {
+        margin-top: 12px;
+        padding: 10px 12px;
+        background: #fef3c7;
+        border: 1px solid #fcd34d;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        color: #92400e;
+    }
+    
     /* Premium Modal */
     .premium-modal-overlay {
         position: fixed;
@@ -2478,13 +2872,38 @@
         .app-sidebar {
             width: 100%;
             min-width: 100%;
-            max-height: 300px;
+            max-height: none;
+            flex-direction: row;
+            flex-wrap: wrap;
+            padding: 8px;
+            gap: 8px;
         }
         
-        .toolbar-left,
-        .toolbar-right {
+        .sidebar-actions {
+            flex-direction: row;
+            width: 100%;
+        }
+        
+        .action-btn {
+            flex: 1;
+        }
+        
+        .templates-compact {
+            width: 100%;
+        }
+        
+        .multi-toggle, .selected-indicator {
+            display: none;
+        }
+        
+        .toolbar-nav,
+        .toolbar-actions {
             width: 100%;
             justify-content: center;
+        }
+        
+        .app-toolbar {
+            flex-wrap: wrap;
         }
         
         .toast-notification {
@@ -2508,7 +2927,8 @@
         nameRequired: isTurkish ? 'Ad soyad gerekli' : 'Full name is required',
         dateNameRequired: isTurkish ? 'Tarih ve ad gerekli' : 'Date and name are required',
         shiftAdded: isTurkish ? 'Nöbet eklendi' : 'Shift added',
-        shiftDeleted: isTurkish ? 'Nöbet silindi' : 'Shift deleted'
+        shiftDeleted: isTurkish ? 'Nöbet silindi' : 'Shift deleted',
+        employeeDeleted: isTurkish ? 'Personel silindi' : 'Employee deleted'
     };
     
     // Premium Modal Functions
@@ -2565,7 +2985,7 @@
                 state.selectedTemplate = template;
                 
                 // Find and highlight the matching template button
-                const buttons = document.querySelectorAll('.template-btn:not(.custom)');
+                const buttons = document.querySelectorAll('.tpl-btn:not(.custom), .tpl-btn-full');
                 buttons.forEach(btn => {
                     if (btn.dataset.start === template.start && 
                         btn.dataset.end === template.end && 
@@ -2578,9 +2998,30 @@
                 if (template.isCustom) {
                     document.getElementById('customTimeBtn').classList.add('active');
                 }
+                
+                // Update selected indicator
+                updateSelectedIndicator(template);
             } catch (e) {
                 localStorage.removeItem(TEMPLATE_STORAGE_KEY);
             }
+        }
+    }
+    
+    // Update selected template indicator
+    function updateSelectedIndicator(template) {
+        const indicator = document.getElementById('selectedIndicator');
+        if (template && !template.isDayOff) {
+            indicator.style.display = 'flex';
+            indicator.querySelector('.indicator-color').style.background = template.color || '#3b82f6';
+            document.getElementById('selectedTime').textContent = template.isCustom 
+                ? `${template.start}-${template.end}` 
+                : `${template.start}-${template.end}`;
+        } else if (template && template.isDayOff) {
+            indicator.style.display = 'flex';
+            indicator.querySelector('.indicator-color').style.background = '#94a3b8';
+            document.getElementById('selectedTime').textContent = isTurkish ? 'Boş Gün' : 'Day Off';
+        } else {
+            indicator.style.display = 'none';
         }
     }
     
@@ -2593,9 +3034,9 @@
     
     // Template Selection
     function initTemplates() {
-        document.querySelectorAll('.template-btn:not(.custom)').forEach(btn => {
+        document.querySelectorAll('.tpl-btn:not(.custom), .tpl-btn-full').forEach(btn => {
             btn.addEventListener('click', function() {
-                document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tpl-btn, .tpl-btn-full').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 
                 state.selectedTemplate = {
@@ -2609,6 +3050,7 @@
                 };
                 
                 saveSelectedTemplate();
+                updateSelectedIndicator(state.selectedTemplate);
             });
         });
         
@@ -2626,10 +3068,11 @@
                 isCustom: true
             };
             
-            document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tpl-btn, .tpl-btn-full').forEach(b => b.classList.remove('active'));
             document.getElementById('customTimeBtn').classList.add('active');
             
             saveSelectedTemplate();
+            updateSelectedIndicator(state.selectedTemplate);
             bootstrap.Modal.getInstance(document.getElementById('customTimeModal')).hide();
         });
         
@@ -3176,7 +3619,7 @@
     
     // Delete Handlers
     function initDeleteHandlers() {
-        // Delete employee
+        // Delete employee from sidebar (legacy)
         document.querySelectorAll('.btn-delete[data-id]').forEach(btn => {
             btn.addEventListener('click', async function(e) {
                 e.stopPropagation();
@@ -3188,6 +3631,37 @@
                 
                 if (response.ok) {
                     location.reload();
+                }
+            });
+        });
+        
+        // Delete employee from modal
+        document.querySelectorAll('.emp-delete[data-id]').forEach(btn => {
+            btn.addEventListener('click', async function(e) {
+                e.stopPropagation();
+                if (!confirm(texts.confirmDelete)) return;
+                
+                const id = this.dataset.id;
+                const response = await fetch(`/api/employees/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    // Remove the row from modal
+                    const row = this.closest('.emp-row');
+                    if (row) row.remove();
+                    
+                    // Update badge count
+                    const badge = document.querySelector('.employees-btn .action-badge');
+                    if (badge) {
+                        const count = parseInt(badge.textContent) - 1;
+                        badge.textContent = count;
+                    }
+                    
+                    showToast(texts.employeeDeleted || 'Silindi', 'success');
+                    
+                    // Reload to update table
+                    setTimeout(() => location.reload(), 500);
                 }
             });
         });
