@@ -35,7 +35,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
     
     @await RenderSectionAsync("Styles", required: false)
 </head>
@@ -43,20 +43,9 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg sticky-top navbar-custom">
         <div class="container">
-            <a class="navbar-brand" href="~/">
-                <span class="brand-logo">
-                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="32" height="32" rx="8" fill="url(#brand-gradient)"/>
-                        <path d="M8 16L14 22L24 10" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                        <defs>
-                            <linearGradient id="brand-gradient" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                                <stop stop-color="#6366f1"/>
-                                <stop offset="1" stop-color="#8b5cf6"/>
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                    <span class="brand-name">Geldimmi</span>
-                </span>
+            <a class="navbar-brand brand-link-main" href="~/">
+                <div class="brand-icon-main">G</div>
+                <span class="brand-name-main">Geldimmi</span>
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -211,18 +200,48 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
         
-        .brand-logo {
+        .brand-link-main {
             display: flex;
             align-items: center;
             gap: 10px;
+            text-decoration: none;
         }
         
-        .brand-name {
-            font-size: 1.35rem;
+        .brand-icon-main {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #dc2626 0%, #ea580c 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+            font-weight: 800;
+            font-family: 'Space Grotesk', sans-serif;
+            box-shadow: 0 3px 10px rgba(220, 38, 38, 0.3);
+            transition: all 0.2s;
+        }
+        
+        .brand-name-main {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #dc2626 0%, #ea580c 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .brand-link-main:hover .brand-icon-main {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
+        }
+        
+        .brand-link-main:hover .brand-name-main {
+            background: linear-gradient(135deg, #b91c1c 0%, #c2410c 100%);
+            -webkit-background-clip: text;
             background-clip: text;
         }
         
@@ -360,8 +379,9 @@
                     <!-- Brand -->
                     <div class="col-lg-4 col-md-6">
                         <div class="footer-brand">
-                            <a href="~/" class="d-inline-flex align-items-center text-decoration-none mb-3">
-                                <span class="brand-text">Geldimmi</span>
+                            <a href="~/" class="d-inline-flex align-items-center text-decoration-none mb-3 gap-2">
+                                <div class="footer-brand-icon">G</div>
+                                <span class="footer-brand-text">Geldimmi</span>
                             </a>
                             <p class="footer-desc">
                                 @(isTurkish 
@@ -433,10 +453,29 @@
             padding: 60px 0 40px;
         }
         
-        .footer-brand .brand-text {
-            font-size: 1.5rem;
+        .footer-brand-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #dc2626 0%, #ea580c 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+            font-weight: 800;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        
+        .footer-brand-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.4rem;
             font-weight: 700;
-            color: #6366f1;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #dc2626 0%, #ea580c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .footer-desc {
