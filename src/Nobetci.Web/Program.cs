@@ -108,8 +108,8 @@ app.UseRequestLocalization();
 // Session
 app.UseSession();
 
-// Visitor tracking - temporarily disabled until migration is fixed
-// app.UseVisitorTracking();
+// Visitor tracking
+app.UseVisitorTracking();
 
 app.UseAuthentication();
 app.UseAuthorization();
