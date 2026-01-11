@@ -9,6 +9,7 @@ public class AppViewModel
     public List<ShiftTemplate> ShiftTemplates { get; set; } = new();
     public List<Holiday> Holidays { get; set; } = new();
     public List<Shift> Shifts { get; set; } = new();
+    public List<Shift> PreviousMonthOvernightShifts { get; set; } = new();
     
     public int SelectedYear { get; set; }
     public int SelectedMonth { get; set; }
@@ -39,6 +40,12 @@ public class AppViewModel
     public Shift? GetShiftForEmployeeOnDate(int employeeId, DateOnly date)
     {
         return Shifts.FirstOrDefault(s => s.EmployeeId == employeeId && s.Date == date);
+    }
+    
+    // Get overnight shift from previous month that continues into the first day
+    public Shift? GetPreviousMonthOvernightShift(int employeeId)
+    {
+        return PreviousMonthOvernightShifts.FirstOrDefault(s => s.EmployeeId == employeeId);
     }
     
     public bool IsHoliday(DateOnly date)

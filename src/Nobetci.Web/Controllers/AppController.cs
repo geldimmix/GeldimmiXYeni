@@ -58,12 +58,22 @@ public class AppController : Controller
             .Where(h => h.OrganizationId == organization.Id)
             .Where(h => h.Date.Year == selectedYear && h.Date.Month == selectedMonth)
             .ToListAsync();
-            
+        
+        // Get shifts for current month
         var shifts = await _context.Shifts
             .Include(s => s.Employee)
             .Include(s => s.ShiftTemplate)
             .Where(s => s.Employee.OrganizationId == organization.Id)
             .Where(s => s.Date.Year == selectedYear && s.Date.Month == selectedMonth)
+            .ToListAsync();
+        
+        // Get overnight shifts from previous month's last day that span into current month
+        var previousMonthLastDay = new DateOnly(selectedYear, selectedMonth, 1).AddDays(-1);
+        var previousMonthShifts = await _context.Shifts
+            .Include(s => s.Employee)
+            .Include(s => s.ShiftTemplate)
+            .Where(s => s.Employee.OrganizationId == organization.Id)
+            .Where(s => s.Date == previousMonthLastDay && s.SpansNextDay)
             .ToListAsync();
 
         var viewModel = new AppViewModel
@@ -73,6 +83,7 @@ public class AppController : Controller
             ShiftTemplates = shiftTemplates,
             Holidays = holidays,
             Shifts = shifts,
+            PreviousMonthOvernightShifts = previousMonthShifts,
             SelectedYear = selectedYear,
             SelectedMonth = selectedMonth,
             EmployeeLimit = GetEmployeeLimit(),
@@ -206,6 +217,8 @@ public class AppController : Controller
     public async Task<IActionResult> GetShifts(int year, int month)
     {
         var organization = await GetOrCreateOrganizationAsync();
+        
+        // Get shifts for current month
         var shifts = await _context.Shifts
             .Include(s => s.ShiftTemplate)
             .Where(s => s.Employee.OrganizationId == organization.Id)
@@ -223,11 +236,38 @@ public class AppController : Controller
                 s.IsHoliday,
                 templateId = s.ShiftTemplateId,
                 templateName = s.ShiftTemplate != null ? s.ShiftTemplate.Name : null,
-                templateColor = s.ShiftTemplate != null ? s.ShiftTemplate.Color : "#3B82F6"
+                templateColor = s.ShiftTemplate != null ? s.ShiftTemplate.Color : "#3B82F6",
+                isPreviousMonth = false
             })
             .ToListAsync();
+        
+        // Get overnight shifts from previous month's last day
+        var previousMonthLastDay = new DateOnly(year, month, 1).AddDays(-1);
+        var previousMonthShifts = await _context.Shifts
+            .Include(s => s.ShiftTemplate)
+            .Where(s => s.Employee.OrganizationId == organization.Id)
+            .Where(s => s.Date == previousMonthLastDay && s.SpansNextDay)
+            .Select(s => new {
+                s.Id,
+                s.EmployeeId,
+                date = s.Date.ToString("yyyy-MM-dd"),
+                startTime = s.StartTime.ToString("HH:mm"),
+                endTime = s.EndTime.ToString("HH:mm"),
+                s.SpansNextDay,
+                s.TotalHours,
+                s.NightHours,
+                s.IsWeekend,
+                s.IsHoliday,
+                templateId = s.ShiftTemplateId,
+                templateName = s.ShiftTemplate != null ? s.ShiftTemplate.Name : null,
+                templateColor = s.ShiftTemplate != null ? s.ShiftTemplate.Color : "#3B82F6",
+                isPreviousMonth = true
+            })
+            .ToListAsync();
+        
+        var allShifts = shifts.Concat(previousMonthShifts).ToList();
             
-        return Json(shifts);
+        return Json(allShifts);
     }
 
     [HttpPost]

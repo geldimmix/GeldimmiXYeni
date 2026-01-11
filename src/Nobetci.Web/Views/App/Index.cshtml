@@ -272,7 +272,10 @@
                                 var shift = Model.GetShiftForEmployeeOnDate(employee.Id, date);
                                 var isWeekend = Model.IsWeekend(date);
                                 var isHoliday = Model.IsHoliday(date);
-                                var prevDayShift = day > 1 ? Model.GetShiftForEmployeeOnDate(employee.Id, date.AddDays(-1)) : null;
+                                // For day 1, check previous month's overnight shifts; for other days, check previous day
+                                var prevDayShift = day == 1 
+                                    ? Model.GetPreviousMonthOvernightShift(employee.Id) 
+                                    : Model.GetShiftForEmployeeOnDate(employee.Id, date.AddDays(-1));
                                 var showContinuation = prevDayShift?.SpansNextDay == true;
                                 
                                 <td class="shift-cell @(isWeekend ? "weekend" : "") @(isHoliday ? "holiday" : "")"
