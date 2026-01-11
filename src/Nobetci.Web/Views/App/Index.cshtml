@@ -3061,7 +3061,8 @@
                 
                 // If custom template
                 if (template.isCustom) {
-                    document.getElementById('customTimeBtn').classList.add('active');
+                    const customBtn = document.getElementById('customTimeBtn');
+                    if (customBtn) customBtn.classList.add('active');
                 }
                 
                 // Update selected indicator
@@ -3119,27 +3120,34 @@
             });
         });
         
-        document.getElementById('customTimeBtn').addEventListener('click', function() {
-            new bootstrap.Modal(document.getElementById('customTimeModal')).show();
-        });
+        const customTimeBtn = document.getElementById('customTimeBtn');
+        if (customTimeBtn) {
+            customTimeBtn.addEventListener('click', function() {
+                new bootstrap.Modal(document.getElementById('customTimeModal')).show();
+            });
+        }
         
-        document.getElementById('applyCustomTimeBtn').addEventListener('click', function() {
-            state.selectedTemplate = {
-                start: document.getElementById('customStartTime').value,
-                end: document.getElementById('customEndTime').value,
-                spans: document.getElementById('customSpansNextDay').checked,
-                breakMinutes: parseInt(document.getElementById('customBreak').value) || 0,
-                color: '#64748B',
-                isCustom: true
-            };
-            
-            document.querySelectorAll('.tpl-btn, .tpl-btn-full').forEach(b => b.classList.remove('active'));
-            document.getElementById('customTimeBtn').classList.add('active');
-            
-            saveSelectedTemplate();
-            updateSelectedIndicator(state.selectedTemplate);
-            bootstrap.Modal.getInstance(document.getElementById('customTimeModal')).hide();
-        });
+        const applyCustomTimeBtn = document.getElementById('applyCustomTimeBtn');
+        if (applyCustomTimeBtn) {
+            applyCustomTimeBtn.addEventListener('click', function() {
+                state.selectedTemplate = {
+                    start: document.getElementById('customStartTime').value,
+                    end: document.getElementById('customEndTime').value,
+                    spans: document.getElementById('customSpansNextDay').checked,
+                    breakMinutes: parseInt(document.getElementById('customBreak').value) || 0,
+                    color: '#64748B',
+                    isCustom: true
+                };
+                
+                document.querySelectorAll('.tpl-btn, .tpl-btn-full').forEach(b => b.classList.remove('active'));
+                const customBtn = document.getElementById('customTimeBtn');
+                if (customBtn) customBtn.classList.add('active');
+                
+                saveSelectedTemplate();
+                updateSelectedIndicator(state.selectedTemplate);
+                bootstrap.Modal.getInstance(document.getElementById('customTimeModal')).hide();
+            });
+        }
         
         // Break button click handlers
         document.querySelectorAll('.break-btn[data-break]').forEach(btn => {
