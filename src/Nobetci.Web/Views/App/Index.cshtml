@@ -3951,28 +3951,41 @@
                     const isHoliday = cell.classList.contains('holiday');
                     if (isHoliday) continue; // Skip holidays
                     
-                    // Check if already has shift
-                    const hasShift = cell.querySelector('.shift-badge');
-                    if (hasShift && !overwrite) continue; // Skip if has shift and overwrite is off
-                    
-                    // Apply mode filter
+                    // Apply mode filter first
                     if (mode === 'weekdays' && (dayOfWeek === 0 || dayOfWeek === 6)) {
-                        continue; // Skip weekends
+                        continue; // Skip weekends (Sunday=0, Saturday=6)
                     } else if (mode === 'no-sunday' && dayOfWeek === 0) {
                         continue; // Skip Sunday
                     }
                     // mode === 'all' includes everything
                     
-                    datesToAssign.push({ date: dateStr, cell });
+                    // Check if already has shift
+                    const hasShift = cell.querySelector('.shift-badge');
+                    if (hasShift && !overwrite) continue; // Skip if has shift and overwrite is off
+                    
+                    datesToAssign.push({ date: dateStr, cell, hasExisting: !!hasShift });
                 }
                 
-                // Assign shifts
-                const promises = [];
+                // Step 1: Delete existing shifts if overwrite is enabled
+                if (overwrite) {
+                    const deletePromises = [];
+                    for (const item of datesToAssign) {
+                        if (item.hasExisting) {
+                            deletePromises.push(deleteShift(employeeId, item.date, item.cell));
+                        }
+                    }
+                    if (deletePromises.length > 0) {
+                        await Promise.all(deletePromises);
+                    }
+                }
+                
+                // Step 2: Create new shifts
+                const createPromises = [];
                 for (const item of datesToAssign) {
-                    promises.push(createShift(employeeId, item.date, item.cell, true));
+                    createPromises.push(createShift(employeeId, item.date, item.cell, true));
                 }
                 
-                await Promise.all(promises);
+                await Promise.all(createPromises);
                 showToast(isTurkish ? `${datesToAssign.length} nöbet eklendi!` : `${datesToAssign.length} shifts added!`, 'success');
             });
         });
