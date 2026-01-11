@@ -77,8 +77,6 @@ jobs:
           User=www-data
           Environment=ASPNETCORE_ENVIRONMENT=Production
           Environment=ASPNETCORE_URLS=http://localhost:5000
-          Environment=Authentication__Google__ClientId=${{ secrets.GOOGLE_CLIENT_ID }}
-          Environment=Authentication__Google__ClientSecret=${{ secrets.GOOGLE_CLIENT_SECRET }}
           
           [Install]
           WantedBy=multi-user.target

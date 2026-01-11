@@ -1,5 +1,3 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -32,8 +30,6 @@ public class AccountController : Controller
         _localizer = localizer;
         _logger = logger;
     }
-
-    #region External Login (Google)
 
     [HttpGet]
     public IActionResult Login(string? returnUrl = null)
@@ -75,11 +71,13 @@ public class AccountController : Controller
 
         if (result.IsLockedOut)
         {
-            ModelState.AddModelError(string.Empty, "Account locked. Please try again later.");
+            var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+            ModelState.AddModelError(string.Empty, isTurkish ? "Hesap kilitlendi. Lütfen daha sonra tekrar deneyin." : "Account locked. Please try again later.");
             return View(model);
         }
 
-        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+        var isTr = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+        ModelState.AddModelError(string.Empty, isTr ? "Geçersiz giriş denemesi." : "Invalid login attempt.");
         return View(model);
     }
 
@@ -146,131 +144,6 @@ public class AccountController : Controller
         return View();
     }
 
-    #endregion
-
-    #region External Login Methods
-
-    /// <summary>
-    /// Initiates external login (Google)
-    /// </summary>
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult ExternalLogin(string provider, string? returnUrl = null)
-    {
-        var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl });
-        var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-        return new ChallengeResult(provider, properties);
-    }
-
-    /// <summary>
-    /// Handles callback from external login provider
-    /// </summary>
-    [HttpGet]
-    public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = null, string? remoteError = null)
-    {
-        returnUrl ??= Url.Content("~/app");
-
-        if (remoteError != null)
-        {
-            ModelState.AddModelError(string.Empty, $"External login error: {remoteError}");
-            return RedirectToAction(nameof(Login));
-        }
-
-        var info = await _signInManager.GetExternalLoginInfoAsync();
-        if (info == null)
-        {
-            return RedirectToAction(nameof(Login));
-        }
-
-        // Try to sign in with external login
-        var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: true, bypassTwoFactor: true);
-        
-        if (result.Succeeded)
-        {
-            _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity?.Name, info.LoginProvider);
-            
-            // Get user and transfer guest data
-            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-            if (!string.IsNullOrEmpty(email))
-            {
-                var user = await _userManager.FindByEmailAsync(email);
-                if (user != null)
-                {
-                    user.LastLoginAt = DateTime.UtcNow;
-                    await _userManager.UpdateAsync(user);
-                    await TransferGuestDataToUser(user);
-                }
-            }
-            
-            return LocalRedirect(returnUrl);
-        }
-
-        if (result.IsLockedOut)
-        {
-            return RedirectToAction(nameof(AccessDenied));
-        }
-        
-        // If user doesn't exist, create one
-        var userEmail = info.Principal.FindFirstValue(ClaimTypes.Email);
-        var userName = info.Principal.FindFirstValue(ClaimTypes.Name);
-        
-        if (string.IsNullOrEmpty(userEmail))
-        {
-            ModelState.AddModelError(string.Empty, "Email not received from external provider.");
-            return RedirectToAction(nameof(Login));
-        }
-
-        // Check if user with this email already exists
-        var existingUser = await _userManager.FindByEmailAsync(userEmail);
-        if (existingUser != null)
-        {
-            // Link external login to existing user
-            var addLoginResult = await _userManager.AddLoginAsync(existingUser, info);
-            if (addLoginResult.Succeeded)
-            {
-                await _signInManager.SignInAsync(existingUser, isPersistent: true);
-                existingUser.LastLoginAt = DateTime.UtcNow;
-                await _userManager.UpdateAsync(existingUser);
-                await TransferGuestDataToUser(existingUser);
-                return LocalRedirect(returnUrl);
-            }
-        }
-
-        // Create new user
-        var newUser = new ApplicationUser
-        {
-            UserName = userEmail,
-            Email = userEmail,
-            FullName = userName ?? userEmail.Split('@')[0],
-            EmailConfirmed = true, // Email from Google is verified
-            Plan = UserPlan.Freemium,
-            Language = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName
-        };
-
-        var createResult = await _userManager.CreateAsync(newUser);
-        if (createResult.Succeeded)
-        {
-            createResult = await _userManager.AddLoginAsync(newUser, info);
-            if (createResult.Succeeded)
-            {
-                _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
-
-                await _signInManager.SignInAsync(newUser, isPersistent: true);
-                await TransferGuestDataToUser(newUser);
-                return LocalRedirect(returnUrl);
-            }
-        }
-
-        foreach (var error in createResult.Errors)
-        {
-            ModelState.AddModelError(string.Empty, error.Description);
-        }
-
-        return RedirectToAction(nameof(Login));
-    }
-
-    #endregion
-
     /// <summary>
     /// Transfer guest session data to registered user
     /// </summary>
@@ -310,11 +183,6 @@ public class AccountController : Controller
                 emp.OrganizationId = userOrg.Id;
             }
 
-            // Move shifts
-            var guestShifts = await _context.Shifts
-                .Where(s => s.Employee.OrganizationId == guestOrg.Id)
-                .ToListAsync();
-
             // Move holidays
             var guestHolidays = await _context.Holidays
                 .Where(h => h.OrganizationId == guestOrg.Id)
@@ -335,5 +203,3 @@ public class AccountController : Controller
         HttpContext.Session.Remove("GuestSessionId");
     }
 }
-
-
