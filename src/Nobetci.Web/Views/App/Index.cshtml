@@ -2998,11 +2998,13 @@
     
     // Premium Modal Functions
     function showPremiumModal() {
-        document.getElementById('premiumModal').classList.add('show');
+        const modal = document.getElementById('premiumModal');
+        if (modal) modal.classList.add('show');
     }
     
     function closePremiumModal() {
-        document.getElementById('premiumModal').classList.remove('show');
+        const modal = document.getElementById('premiumModal');
+        if (modal) modal.classList.remove('show');
     }
     
     // Close on overlay click
@@ -3076,16 +3078,23 @@
     // Update selected template indicator
     function updateSelectedIndicator(template) {
         const indicator = document.getElementById('selectedIndicator');
+        const selectedTimeEl = document.getElementById('selectedTime');
+        if (!indicator) return;
+        
         if (template && !template.isDayOff) {
             indicator.style.display = 'flex';
-            indicator.querySelector('.indicator-color').style.background = template.color || '#3b82f6';
-            document.getElementById('selectedTime').textContent = template.isCustom 
-                ? `${template.start}-${template.end}` 
-                : `${template.start}-${template.end}`;
+            const colorEl = indicator.querySelector('.indicator-color');
+            if (colorEl) colorEl.style.background = template.color || '#3b82f6';
+            if (selectedTimeEl) {
+                selectedTimeEl.textContent = template.isCustom 
+                    ? `${template.start}-${template.end}` 
+                    : `${template.start}-${template.end}`;
+            }
         } else if (template && template.isDayOff) {
             indicator.style.display = 'flex';
-            indicator.querySelector('.indicator-color').style.background = '#94a3b8';
-            document.getElementById('selectedTime').textContent = isTurkish ? 'Boş Gün' : 'Day Off';
+            const colorEl = indicator.querySelector('.indicator-color');
+            if (colorEl) colorEl.style.background = '#94a3b8';
+            if (selectedTimeEl) selectedTimeEl.textContent = isTurkish ? 'Boş Gün' : 'Day Off';
         } else {
             indicator.style.display = 'none';
         }
@@ -3290,8 +3299,10 @@
     
     function updateToolbarButtons() {
         const hasSelection = state.selectedCells.size > 0;
-        document.getElementById('clearSelectionBtn').style.display = hasSelection ? 'block' : 'none';
-        document.getElementById('applyToSelectedBtn').style.display = hasSelection ? 'block' : 'none';
+        const clearBtn = document.getElementById('clearSelectionBtn');
+        const applyBtn = document.getElementById('applyToSelectedBtn');
+        if (clearBtn) clearBtn.style.display = hasSelection ? 'block' : 'none';
+        if (applyBtn) applyBtn.style.display = hasSelection ? 'block' : 'none';
     }
     
     // Check if date is last day of month
@@ -3623,80 +3634,92 @@
     // Modals
     function initModals() {
         // Save Employee
-        document.getElementById('saveEmployeeBtn').addEventListener('click', async function() {
-            const fullName = document.getElementById('employeeFullName').value.trim();
-            if (!fullName) {
-                alert(texts.nameRequired);
-                return;
-            }
-            
-            const data = {
-                fullName: fullName,
-                title: document.getElementById('employeeTitle').value.trim(),
-                identityNo: document.getElementById('employeeIdentityNo').value.trim(),
-                dailyWorkHours: parseFloat(document.getElementById('employeeDailyHours').value) || 8,
-                weekendWorkMode: parseInt(document.getElementById('employeeWeekendMode').value) || 0,
-                saturdayWorkHours: parseFloat(document.getElementById('employeeSaturdayHours').value) || null
-            };
-            
-            const response = await fetch('/api/employees', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+        const saveEmployeeBtn = document.getElementById('saveEmployeeBtn');
+        if (saveEmployeeBtn) {
+            saveEmployeeBtn.addEventListener('click', async function() {
+                const fullName = document.getElementById('employeeFullName')?.value?.trim();
+                if (!fullName) {
+                    alert(texts.nameRequired);
+                    return;
+                }
+                
+                const data = {
+                    fullName: fullName,
+                    title: document.getElementById('employeeTitle')?.value?.trim() || '',
+                    identityNo: document.getElementById('employeeIdentityNo')?.value?.trim() || '',
+                    dailyWorkHours: parseFloat(document.getElementById('employeeDailyHours')?.value) || 8,
+                    weekendWorkMode: parseInt(document.getElementById('employeeWeekendMode')?.value) || 0,
+                    saturdayWorkHours: parseFloat(document.getElementById('employeeSaturdayHours')?.value) || null
+                };
+                
+                const response = await fetch('/api/employees', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    location.reload(); // Reload for new employee to appear in list
+                } else {
+                    const error = await response.json();
+                    alert(error.error || texts.errorOccurred);
+                }
             });
-            
-            if (response.ok) {
-                location.reload(); // Reload for new employee to appear in list
-            } else {
-                const error = await response.json();
-                alert(error.error || texts.errorOccurred);
-            }
-        });
+        }
         
         // Save Holiday
-        document.getElementById('saveHolidayBtn').addEventListener('click', async function() {
-            const date = document.getElementById('holidayDate').value;
-            const name = document.getElementById('holidayName').value.trim();
-            
-            if (!date || !name) {
-                alert(texts.dateNameRequired);
-                return;
-            }
-            
-            const data = {
-                date: date,
-                name: name,
-                type: parseInt(document.getElementById('holidayType').value)
-            };
-            
-            const response = await fetch('/api/holidays', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+        const saveHolidayBtn = document.getElementById('saveHolidayBtn');
+        if (saveHolidayBtn) {
+            saveHolidayBtn.addEventListener('click', async function() {
+                const date = document.getElementById('holidayDate')?.value;
+                const name = document.getElementById('holidayName')?.value?.trim();
+                
+                if (!date || !name) {
+                    alert(texts.dateNameRequired);
+                    return;
+                }
+                
+                const data = {
+                    date: date,
+                    name: name,
+                    type: parseInt(document.getElementById('holidayType')?.value) || 0
+                };
+                
+                const response = await fetch('/api/holidays', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    location.reload(); // Reload for holiday to appear
+                }
             });
-            
-            if (response.ok) {
-                location.reload(); // Reload for holiday to appear
-            }
-        });
+        }
         
         // Export Excel
-        document.getElementById('exportExcelBtn').addEventListener('click', function() {
-            if (this.dataset.premium === 'true') {
-                showPremiumModal();
-                return;
-            }
-            window.location.href = `/api/export/excel?year=${state.year}&month=${state.month}`;
-        });
+        const exportExcelBtn = document.getElementById('exportExcelBtn');
+        if (exportExcelBtn) {
+            exportExcelBtn.addEventListener('click', function() {
+                if (this.dataset.premium === 'true') {
+                    showPremiumModal();
+                    return;
+                }
+                window.location.href = `/api/export/excel?year=${state.year}&month=${state.month}`;
+            });
+        }
         
         // Generate Schedule
-        document.getElementById('generateScheduleBtn').addEventListener('click', function() {
-            if (this.dataset.premium === 'true') {
-                showPremiumModal();
-                return;
-            }
-            alert(isTurkish ? 'Akıllı planlama özelliği yakında!' : 'Smart scheduling coming soon!');
-        });
+        const generateScheduleBtn = document.getElementById('generateScheduleBtn');
+        if (generateScheduleBtn) {
+            generateScheduleBtn.addEventListener('click', function() {
+                if (this.dataset.premium === 'true') {
+                    showPremiumModal();
+                    return;
+                }
+                alert(isTurkish ? 'Akıllı planlama özelliği yakında!' : 'Smart scheduling coming soon!');
+            });
+        }
     }
     
     // Delete Handlers
