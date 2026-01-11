@@ -3136,20 +3136,30 @@
         });
         
         const customTimeBtn = document.getElementById('customTimeBtn');
-        if (customTimeBtn) {
-            customTimeBtn.addEventListener('click', function() {
-                // Reset modal to default values
-                document.getElementById('customStartTime').value = '08:00';
-                document.getElementById('customEndTime').value = '17:00';
-                document.getElementById('customBreak').value = '0';
-                document.getElementById('customSpansNextDay').checked = false;
+        const customTimeModal = document.getElementById('customTimeModal');
+        
+        if (customTimeBtn && customTimeModal) {
+            // Reset modal when it opens
+            customTimeModal.addEventListener('show.bs.modal', function() {
+                // Reset all values to defaults
+                const startInput = document.getElementById('customStartTime');
+                const endInput = document.getElementById('customEndTime');
+                const breakInput = document.getElementById('customBreak');
+                const spansCheckbox = document.getElementById('customSpansNextDay');
+                
+                if (startInput) startInput.value = '08:00';
+                if (endInput) endInput.value = '17:00';
+                if (breakInput) breakInput.value = '0';
+                if (spansCheckbox) spansCheckbox.checked = false;
                 
                 // Reset break buttons - set 0 dk as active
                 document.querySelectorAll('.break-btn[data-break]').forEach(b => b.classList.remove('active'));
                 const zeroBreakBtn = document.querySelector('.break-btn[data-break="0"]');
                 if (zeroBreakBtn) zeroBreakBtn.classList.add('active');
-                
-                new bootstrap.Modal(document.getElementById('customTimeModal')).show();
+            });
+            
+            customTimeBtn.addEventListener('click', function() {
+                new bootstrap.Modal(customTimeModal).show();
             });
         }
         
