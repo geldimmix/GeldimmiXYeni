@@ -90,7 +90,10 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    // Temporarily show detailed errors in production for debugging
+    // TODO: Remove this after fixing the issue
+    app.UseDeveloperExceptionPage();
+    // app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
