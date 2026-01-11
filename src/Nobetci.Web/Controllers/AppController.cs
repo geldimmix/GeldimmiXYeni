@@ -234,6 +234,7 @@ public class AppController : Controller
                 s.NightHours,
                 s.IsWeekend,
                 s.IsHoliday,
+                s.OvernightHoursMode,
                 templateId = s.ShiftTemplateId,
                 templateName = s.ShiftTemplate != null ? s.ShiftTemplate.Name : null,
                 templateColor = s.ShiftTemplate != null ? s.ShiftTemplate.Color : "#3B82F6",
@@ -258,6 +259,7 @@ public class AppController : Controller
                 s.NightHours,
                 s.IsWeekend,
                 s.IsHoliday,
+                s.OvernightHoursMode,
                 templateId = s.ShiftTemplateId,
                 templateName = s.ShiftTemplate != null ? s.ShiftTemplate.Name : null,
                 templateColor = s.ShiftTemplate != null ? s.ShiftTemplate.Color : "#3B82F6",
@@ -326,7 +328,8 @@ public class AppController : Controller
             SpansNextDay = dto.SpansNextDay,
             ShiftTemplateId = dto.ShiftTemplateId,
             BreakMinutes = organization.BreakMinutes,
-            IsDayOff = dto.IsDayOff
+            IsDayOff = dto.IsDayOff,
+            OvernightHoursMode = dto.OvernightHoursMode
         };
         
         // Day off doesn't have hours
@@ -703,6 +706,10 @@ public class ShiftDto
     public bool SpansNextDay { get; set; }
     public int? ShiftTemplateId { get; set; }
     public bool IsDayOff { get; set; }
+    /// <summary>
+    /// 0 = Split at midnight, 1 = All current month, 2 = All next month
+    /// </summary>
+    public int OvernightHoursMode { get; set; } = 0;
 }
 
 public class HolidayDto

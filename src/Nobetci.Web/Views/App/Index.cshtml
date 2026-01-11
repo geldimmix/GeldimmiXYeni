@@ -579,6 +579,70 @@
     </div>
 </div>
 
+<!-- Overnight Hours Mode Modal -->
+<div class="modal fade" id="overnightHoursModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content custom-modal">
+            <div class="modal-header-custom">
+                <div class="modal-icon">🌙</div>
+                <div class="modal-title-group">
+                    <h5 class="modal-title">@(isTurkish ? "Ay Sonu Nöbeti" : "Month-End Shift")</h5>
+                    <p class="modal-subtitle">@(isTurkish ? "Sarkan saatler hangi aya yazılsın?" : "Which month should overnight hours count?")</p>
+                </div>
+                <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body-custom">
+                <p class="overnight-info">
+                    @(isTurkish 
+                        ? "Bu nöbet ayın son gününde başlayıp ertesi aya sarkıyor. Puantaj hesaplaması için sarkan saatlerin hangi aya dahil edileceğini seçin." 
+                        : "This shift starts on the last day of the month and continues into the next month. Choose which month the overnight hours should count for the timesheet.")
+                </p>
+                
+                <div class="overnight-options">
+                    <label class="overnight-option">
+                        <input type="radio" name="overnightMode" value="1" />
+                        <div class="overnight-card">
+                            <div class="overnight-icon">📅</div>
+                            <div class="overnight-text">
+                                <strong>@(isTurkish ? "Mevcut Ay" : "Current Month")</strong>
+                                <span>@(isTurkish ? "Tüm saatler bu aya yazılsın" : "All hours count in this month")</span>
+                            </div>
+                        </div>
+                    </label>
+                    
+                    <label class="overnight-option">
+                        <input type="radio" name="overnightMode" value="2" />
+                        <div class="overnight-card">
+                            <div class="overnight-icon">📆</div>
+                            <div class="overnight-text">
+                                <strong>@(isTurkish ? "Ertesi Ay" : "Next Month")</strong>
+                                <span>@(isTurkish ? "Tüm saatler ertesi aya yazılsın" : "All hours count in next month")</span>
+                            </div>
+                        </div>
+                    </label>
+                    
+                    <label class="overnight-option">
+                        <input type="radio" name="overnightMode" value="0" checked />
+                        <div class="overnight-card">
+                            <div class="overnight-icon">✂️</div>
+                            <div class="overnight-text">
+                                <strong>@(isTurkish ? "Böl (Gece Yarısı)" : "Split (Midnight)")</strong>
+                                <span>@(isTurkish ? "00:00'a kadar bu ay, sonrası ertesi ay" : "Until 00:00 this month, after to next")</span>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer-custom">
+                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">@(isTurkish ? "İptal" : "Cancel")</button>
+                <button type="button" class="btn-modal-save" id="confirmOvernightBtn">
+                    <span class="btn-icon">✓</span> @(isTurkish ? "Nöbet Ekle" : "Add Shift")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Custom Time Modal -->
 <div class="modal fade" id="customTimeModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-sm">
@@ -2330,6 +2394,80 @@
         background: #e5e7eb;
     }
     
+    /* Overnight Hours Modal */
+    .overnight-info {
+        font-size: 0.85rem;
+        color: #6b7280;
+        line-height: 1.5;
+        margin-bottom: 16px;
+        padding: 12px;
+        background: #f0f9ff;
+        border-radius: 6px;
+        border-left: 3px solid #0ea5e9;
+    }
+    
+    .overnight-options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .overnight-option input {
+        display: none;
+    }
+    
+    .overnight-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s;
+        background: #fff;
+    }
+    
+    .overnight-option input:checked + .overnight-card {
+        border-color: #2563eb;
+        background: #eff6ff;
+    }
+    
+    .overnight-card:hover {
+        border-color: #9ca3af;
+    }
+    
+    .overnight-icon {
+        font-size: 1.4rem;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f3f4f6;
+        border-radius: 8px;
+    }
+    
+    .overnight-option input:checked + .overnight-card .overnight-icon {
+        background: #dbeafe;
+    }
+    
+    .overnight-text {
+        flex: 1;
+    }
+    
+    .overnight-text strong {
+        display: block;
+        font-size: 0.9rem;
+        color: #111827;
+        margin-bottom: 2px;
+    }
+    
+    .overnight-text span {
+        font-size: 0.75rem;
+        color: #6b7280;
+    }
+    
     /* Responsive */
     @@media (max-width: 768px) {
         .app-wrapper {
@@ -2493,6 +2631,26 @@
             saveSelectedTemplate();
             bootstrap.Modal.getInstance(document.getElementById('customTimeModal')).hide();
         });
+        
+        // Overnight Hours Modal - confirm button
+        document.getElementById('confirmOvernightBtn').addEventListener('click', function() {
+            if (pendingOvernightShift) {
+                const selectedMode = document.querySelector('input[name="overnightMode"]:checked').value;
+                const { employeeId, date, cell, skipToast } = pendingOvernightShift;
+                
+                bootstrap.Modal.getInstance(document.getElementById('overnightHoursModal')).hide();
+                
+                // Call createShift with selected overnight mode
+                createShift(employeeId, date, cell, skipToast, parseInt(selectedMode));
+            }
+        });
+        
+        // Cancel overnight modal - clear pending
+        document.getElementById('overnightHoursModal').addEventListener('hidden.bs.modal', function() {
+            if (pendingOvernightShift) {
+                pendingOvernightShift = null;
+            }
+        });
     }
     
     // Cell Click
@@ -2584,15 +2742,35 @@
         document.getElementById('applyToSelectedBtn').style.display = hasSelection ? 'block' : 'none';
     }
     
+    // Check if date is last day of month
+    function isLastDayOfMonth(dateStr) {
+        const date = new Date(dateStr);
+        const nextDay = new Date(date);
+        nextDay.setDate(nextDay.getDate() + 1);
+        return nextDay.getMonth() !== date.getMonth();
+    }
+    
+    // Pending overnight shift data
+    let pendingOvernightShift = null;
+    
     // API Calls - NO PAGE RELOAD!
-    async function createShift(employeeId, date, cell, skipToast = false) {
+    async function createShift(employeeId, date, cell, skipToast = false, overnightHoursMode = 0) {
+        // Check if it's last day of month AND shift spans to next day
+        if (state.selectedTemplate.spans && isLastDayOfMonth(date) && overnightHoursMode === 0 && !pendingOvernightShift) {
+            // Store pending data and show modal
+            pendingOvernightShift = { employeeId, date, cell, skipToast };
+            new bootstrap.Modal(document.getElementById('overnightHoursModal')).show();
+            return;
+        }
+        
         const data = {
             employeeId: parseInt(employeeId),
             date: date,
             startTime: state.selectedTemplate.start,
             endTime: state.selectedTemplate.end,
             spansNextDay: state.selectedTemplate.spans,
-            isDayOff: state.selectedTemplate.isDayOff || false
+            isDayOff: state.selectedTemplate.isDayOff || false,
+            overnightHoursMode: overnightHoursMode
         };
         
         try {
@@ -2619,6 +2797,9 @@
             console.error('Error creating shift:', error);
             showToast(texts.errorOccurred, 'error');
         }
+        
+        // Clear pending data
+        pendingOvernightShift = null;
     }
     
     async function deleteShift(employeeId, date, cell) {
