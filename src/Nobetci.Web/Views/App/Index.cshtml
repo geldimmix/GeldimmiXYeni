@@ -251,8 +251,6 @@
                             // OvernightHoursMode = 0: All hours stay in the shift's month, nothing to add here
                         }
                         
-                        var dayOffCount = employeeShifts.Count(s => s.IsDayOff);
-                        
                         // Calculate required hours (excluding holidays, weekends based on settings, and day offs)
                         var workDays = 0;
                         var saturdayHours = 0m;
@@ -262,8 +260,9 @@
                             var dayOfWeek = checkDate.DayOfWeek;
                             var isWeekendDay = dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.Sunday;
                             var isHolidayDay = Model.IsHoliday(checkDate);
+                            var isDayOffDay = employeeShifts.Any(s => s.Date == checkDate && s.IsDayOff);
                             
-                            if (isHolidayDay) continue; // Skip holidays
+                            if (isHolidayDay || isDayOffDay) continue; // Skip holidays and day-offs
                             
                             if (isWeekendDay)
                             {
@@ -272,7 +271,7 @@
                                 {
                                     workDays++;
                                 }
-                                else if (employee.WeekendWorkMode == 2 && dayOfWeek == DayOfWeek.Saturday) // Only Saturday
+                                else if (employee.WeekendWorkMode == 2 && dayOfWeek == DayOfWeek.Saturday) // Only Saturday (full day)
                                 {
                                     workDays++;
                                 }
@@ -288,8 +287,6 @@
                             }
                         }
                         
-                        // Subtract day off days from work days (each day off reduces required by daily hours)
-                        workDays = Math.Max(0, workDays - dayOffCount);
                         var requiredHours = (workDays * employee.DailyWorkHours) + saturdayHours;
                         var isOvertime = totalWorkedHours > requiredHours;
                         var isUndertime = totalWorkedHours < requiredHours;
