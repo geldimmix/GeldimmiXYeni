@@ -146,6 +146,9 @@ using (var scope = app.Services.CreateScope())
                     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Shifts' AND column_name='IsDayOff') THEN
                         ALTER TABLE ""Shifts"" ADD COLUMN ""IsDayOff"" BOOLEAN DEFAULT FALSE NOT NULL;
                     END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Shifts' AND column_name='OvernightHoursMode') THEN
+                        ALTER TABLE ""Shifts"" ADD COLUMN ""OvernightHoursMode"" INTEGER DEFAULT 0 NOT NULL;
+                    END IF;
                 END $$;
             ");
         }
