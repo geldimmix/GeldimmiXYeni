@@ -29,39 +29,57 @@
                 <span>@(isTurkish ? "Vardiya Şablonları" : "Shift Templates")</span>
             </div>
             
-            <div class="template-grid" id="templateList">
-                <button class="tpl-btn" data-start="08:00" data-end="17:00" data-spans="false" data-break="60" data-color="#22C55E" title="08:00-17:00 (60dk mola)">
+            <div class="template-list" id="templateList">
+                <button class="tpl-btn-row" data-start="08:00" data-end="17:00" data-spans="false" data-break="60" data-color="#22C55E">
                     <span class="tpl-color" style="background:#22C55E"></span>
-                    <span class="tpl-time">08-17</span>
+                    <span class="tpl-info">
+                        <span class="tpl-time">08:00 - 17:00</span>
+                        <span class="tpl-meta">60dk mola</span>
+                    </span>
                 </button>
-                <button class="tpl-btn" data-start="08:00" data-end="16:30" data-spans="false" data-break="30" data-color="#3B82F6" title="08:00-16:30 (30dk mola)">
+                <button class="tpl-btn-row" data-start="08:00" data-end="16:30" data-spans="false" data-break="30" data-color="#3B82F6">
                     <span class="tpl-color" style="background:#3B82F6"></span>
-                    <span class="tpl-time">08-16:30</span>
+                    <span class="tpl-info">
+                        <span class="tpl-time">08:00 - 16:30</span>
+                        <span class="tpl-meta">30dk mola</span>
+                    </span>
                 </button>
-                <button class="tpl-btn" data-start="09:00" data-end="18:00" data-spans="false" data-break="60" data-color="#8B5CF6" title="09:00-18:00 (60dk mola)">
+                <button class="tpl-btn-row" data-start="09:00" data-end="18:00" data-spans="false" data-break="60" data-color="#8B5CF6">
                     <span class="tpl-color" style="background:#8B5CF6"></span>
-                    <span class="tpl-time">09-18</span>
+                    <span class="tpl-info">
+                        <span class="tpl-time">09:00 - 18:00</span>
+                        <span class="tpl-meta">60dk mola</span>
+                    </span>
                 </button>
-                <button class="tpl-btn overnight" data-start="16:00" data-end="08:00" data-spans="true" data-break="0" data-color="#EF4444" title="16:00-08:00 (+1 gün)">
+                <button class="tpl-btn-row overnight" data-start="16:00" data-end="08:00" data-spans="true" data-break="0" data-color="#EF4444">
                     <span class="tpl-color" style="background:#EF4444"></span>
-                    <span class="tpl-time">16-08</span>
-                    <span class="tpl-plus">+1</span>
+                    <span class="tpl-info">
+                        <span class="tpl-time">16:00 - 08:00</span>
+                        <span class="tpl-meta">@(isTurkish ? "Gece nöbeti" : "Night shift")</span>
+                    </span>
+                    <span class="tpl-badge-new">+1</span>
                 </button>
-                <button class="tpl-btn overnight" data-start="08:00" data-end="08:00" data-spans="true" data-break="0" data-color="#DC2626" title="08:00-08:00 (24 saat)">
+                <button class="tpl-btn-row overnight" data-start="08:00" data-end="08:00" data-spans="true" data-break="0" data-color="#DC2626">
                     <span class="tpl-color" style="background:#DC2626"></span>
-                    <span class="tpl-time">24h</span>
-                    <span class="tpl-plus">+1</span>
+                    <span class="tpl-info">
+                        <span class="tpl-time">08:00 - 08:00</span>
+                        <span class="tpl-meta">24 saat</span>
+                    </span>
+                    <span class="tpl-badge-new">+1</span>
                 </button>
-                <button class="tpl-btn custom" id="customTimeBtn" data-color="#64748B" title="@(isTurkish ? "Özel saat belirle" : "Custom time")">
+                <button class="tpl-btn-row day-off" data-start="00:00" data-end="00:00" data-spans="false" data-break="0" data-color="#94a3b8" data-day-off="true">
+                    <span class="tpl-color" style="background:#94a3b8"></span>
+                    <span class="tpl-info">
+                        <span class="tpl-time">🚫 @(isTurkish ? "Boş Gün" : "Day Off")</span>
+                    </span>
+                </button>
+                <button class="tpl-btn-row custom" id="customTimeBtn" data-color="#64748B">
                     <span class="tpl-color" style="background:#64748B"></span>
-                    <span class="tpl-time">⏱️</span>
+                    <span class="tpl-info">
+                        <span class="tpl-time">⏱️ @(isTurkish ? "Özel Saat" : "Custom Time")</span>
+                    </span>
                 </button>
             </div>
-            
-            <button class="tpl-btn-full day-off" data-start="00:00" data-end="00:00" data-spans="false" data-break="0" data-color="#94a3b8" data-day-off="true">
-                <span class="tpl-color" style="background:#94a3b8"></span>
-                <span>🚫 @(isTurkish ? "Boş Gün" : "Day Off")</span>
-            </button>
         </div>
         
         <!-- Multi-select Toggle -->
@@ -905,91 +923,80 @@
         margin-bottom: 10px;
     }
     
-    .template-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 6px;
-        margin-bottom: 8px;
-    }
-    
-    .tpl-btn {
+    .template-list {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        gap: 3px;
-        padding: 8px 4px;
-        background: #f9fafb;
-        border: 1px solid #e5e7eb;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: all 0.15s;
-        position: relative;
+        gap: 6px;
     }
     
-    .tpl-btn:hover {
-        border-color: #9ca3af;
-        background: #fff;
-    }
-    
-    .tpl-btn.active {
-        border-color: #2563eb;
-        background: #eff6ff;
-        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-    }
-    
-    .tpl-color {
-        width: 20px;
-        height: 4px;
-        border-radius: 2px;
-    }
-    
-    .tpl-time {
-        font-size: 0.65rem;
-        font-weight: 600;
-        color: #374151;
-    }
-    
-    .tpl-plus {
-        position: absolute;
-        top: 2px;
-        right: 2px;
-        font-size: 0.5rem;
-        background: #ef4444;
-        color: white;
-        padding: 1px 3px;
-        border-radius: 3px;
-        font-weight: 700;
-    }
-    
-    .tpl-btn-full {
+    .tpl-btn-row {
         display: flex;
         align-items: center;
-        gap: 8px;
-        padding: 8px 10px;
+        gap: 10px;
+        padding: 10px 12px;
         background: #f9fafb;
         border: 1px solid #e5e7eb;
         border-radius: 6px;
         cursor: pointer;
         transition: all 0.15s;
         width: 100%;
-        font-size: 0.75rem;
-        color: #6b7280;
+        text-align: left;
+        position: relative;
     }
     
-    .tpl-btn-full:hover {
+    .tpl-btn-row:hover {
         border-color: #9ca3af;
         background: #fff;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     
-    .tpl-btn-full.active {
+    .tpl-btn-row.active {
         border-color: #2563eb;
         background: #eff6ff;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
     }
     
-    .tpl-btn-full .tpl-color {
+    .tpl-btn-row.overnight {
+        border-style: dashed;
+    }
+    
+    .tpl-btn-row.day-off {
+        border-style: dashed;
+        background: #fafafa;
+    }
+    
+    .tpl-color {
         width: 12px;
         height: 12px;
         border-radius: 3px;
+        flex-shrink: 0;
+    }
+    
+    .tpl-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .tpl-time {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #374151;
+    }
+    
+    .tpl-meta {
+        font-size: 0.65rem;
+        color: #9ca3af;
+    }
+    
+    .tpl-badge-new {
+        font-size: 0.6rem;
+        padding: 2px 6px;
+        background: #ef4444;
+        color: white;
+        border-radius: 4px;
+        font-weight: 700;
     }
     
     /* Multi Toggle */
@@ -3051,7 +3058,7 @@
                 state.selectedTemplate = template;
                 
                 // Find and highlight the matching template button
-                const buttons = document.querySelectorAll('.tpl-btn:not(.custom), .tpl-btn-full');
+                const buttons = document.querySelectorAll('.tpl-btn-row:not(.custom)');
                 buttons.forEach(btn => {
                     if (btn.dataset.start === template.start && 
                         btn.dataset.end === template.end && 
@@ -3108,9 +3115,9 @@
     
     // Template Selection
     function initTemplates() {
-        document.querySelectorAll('.tpl-btn:not(.custom), .tpl-btn-full').forEach(btn => {
+        document.querySelectorAll('.tpl-btn-row:not(.custom)').forEach(btn => {
             btn.addEventListener('click', function() {
-                document.querySelectorAll('.tpl-btn, .tpl-btn-full').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tpl-btn-row').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 
                 state.selectedTemplate = {
@@ -3147,7 +3154,7 @@
                     isCustom: true
                 };
                 
-                document.querySelectorAll('.tpl-btn, .tpl-btn-full').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tpl-btn-row').forEach(b => b.classList.remove('active'));
                 const customBtn = document.getElementById('customTimeBtn');
                 if (customBtn) customBtn.classList.add('active');
                 
