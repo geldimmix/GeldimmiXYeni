@@ -3940,8 +3940,9 @@
                 const datesToAssign = [];
                 
                 for (let day = 1; day <= daysInMonth; day++) {
+                    // Create date string in local format (YYYY-MM-DD)
+                    const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                     const date = new Date(year, month - 1, day);
-                    const dateStr = date.toISOString().split('T')[0];
                     const dayOfWeek = date.getDay(); // 0=Sunday, 1=Monday, ..., 6=Saturday
                     
                     // Check if holiday
