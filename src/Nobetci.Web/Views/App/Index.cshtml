@@ -856,6 +856,13 @@
                         <span class="checkbox-text">@(isTurkish ? "Mevcut nöbetlerin üzerine yaz" : "Overwrite existing shifts")</span>
                     </label>
                 </div>
+                
+                <!-- Loading Indicator -->
+                <div class="bulk-loading" id="bulkLoading" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <span class="loading-text">@(isTurkish ? "İşleniyor..." : "Processing...")</span>
+                    <span class="loading-progress" id="bulkProgress"></span>
+                </div>
             </div>
             <div class="modal-footer-custom" style="justify-content: space-between;">
                 <button type="button" class="btn-modal-delete" id="bulkDeleteAllBtn">
@@ -2616,6 +2623,16 @@
         color: white;
     }
     
+    .btn-modal-delete:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .btn-modal-delete:disabled:hover {
+        background: #fff;
+        color: #dc2626;
+    }
+    
     .btn-modal-save {
         display: flex;
         align-items: center;
@@ -3074,6 +3091,16 @@
         color: #6b7280;
     }
     
+    .bulk-option-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .bulk-option-btn:disabled:hover {
+        border-color: #d1d5db;
+        background: #fff;
+    }
+    
     .overwrite-checkbox {
         display: flex;
         align-items: center;
@@ -3090,6 +3117,43 @@
     .overwrite-checkbox .checkbox-text {
         font-size: 0.85rem;
         color: #374151;
+    }
+    
+    /* Bulk Loading */
+    .bulk-loading {
+        text-align: center;
+        padding: 20px;
+        background: #f0f9ff;
+        border-radius: 8px;
+        margin-top: 16px;
+    }
+    
+    .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #e5e7eb;
+        border-top-color: #2563eb;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 12px;
+    }
+    
+    @@keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #2563eb;
+        margin-bottom: 6px;
+    }
+    
+    .loading-progress {
+        display: block;
+        font-size: 0.75rem;
+        color: #6b7280;
     }
     
     /* Responsive */
@@ -3861,32 +3925,50 @@
         const saveEmployeeBtn = document.getElementById('saveEmployeeBtn');
         if (saveEmployeeBtn) {
             saveEmployeeBtn.addEventListener('click', async function() {
+                // Prevent double-click
+                if (this.disabled) return;
+                
                 const fullName = document.getElementById('employeeFullName')?.value?.trim();
                 if (!fullName) {
                     alert(texts.nameRequired);
                     return;
                 }
                 
-                const data = {
-                    fullName: fullName,
-                    title: document.getElementById('employeeTitle')?.value?.trim() || '',
-                    identityNo: document.getElementById('employeeIdentityNo')?.value?.trim() || '',
-                    dailyWorkHours: parseFloat(document.getElementById('employeeDailyHours')?.value) || 8,
-                    weekendWorkMode: parseInt(document.getElementById('employeeWeekendMode')?.value) || 0,
-                    saturdayWorkHours: parseFloat(document.getElementById('employeeSaturdayHours')?.value) || null
-                };
+                // Disable button and show loading
+                this.disabled = true;
+                const originalText = this.innerHTML;
+                this.innerHTML = '<span class="btn-icon">⏳</span> ' + (isTurkish ? 'Ekleniyor...' : 'Adding...');
                 
-                const response = await fetch('/api/employees', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                
-                if (response.ok) {
-                    location.reload(); // Reload for new employee to appear in list
-                } else {
-                    const error = await response.json();
-                    alert(error.error || texts.errorOccurred);
+                try {
+                    const data = {
+                        fullName: fullName,
+                        title: document.getElementById('employeeTitle')?.value?.trim() || '',
+                        identityNo: document.getElementById('employeeIdentityNo')?.value?.trim() || '',
+                        dailyWorkHours: parseFloat(document.getElementById('employeeDailyHours')?.value) || 8,
+                        weekendWorkMode: parseInt(document.getElementById('employeeWeekendMode')?.value) || 0,
+                        saturdayWorkHours: parseFloat(document.getElementById('employeeSaturdayHours')?.value) || null
+                    };
+                    
+                    const response = await fetch('/api/employees', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    if (response.ok) {
+                        location.reload(); // Reload for new employee to appear in list
+                    } else {
+                        const error = await response.json();
+                        alert(error.error || texts.errorOccurred);
+                        // Re-enable button on error
+                        this.disabled = false;
+                        this.innerHTML = originalText;
+                    }
+                } catch (err) {
+                    alert(texts.errorOccurred);
+                    // Re-enable button on error
+                    this.disabled = false;
+                    this.innerHTML = originalText;
                 }
             });
         }
@@ -3895,6 +3977,9 @@
         const saveHolidayBtn = document.getElementById('saveHolidayBtn');
         if (saveHolidayBtn) {
             saveHolidayBtn.addEventListener('click', async function() {
+                // Prevent double-click
+                if (this.disabled) return;
+                
                 const date = document.getElementById('holidayDate')?.value;
                 const name = document.getElementById('holidayName')?.value?.trim();
                 
@@ -3903,20 +3988,35 @@
                     return;
                 }
                 
-                const data = {
-                    date: date,
-                    name: name,
-                    type: parseInt(document.getElementById('holidayType')?.value) || 0
-                };
+                // Disable button
+                this.disabled = true;
+                const originalText = this.innerHTML;
+                this.innerHTML = '<span class="btn-icon">⏳</span> ' + (isTurkish ? 'Ekleniyor...' : 'Adding...');
                 
-                const response = await fetch('/api/holidays', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                
-                if (response.ok) {
-                    location.reload(); // Reload for holiday to appear
+                try {
+                    const data = {
+                        date: date,
+                        name: name,
+                        type: parseInt(document.getElementById('holidayType')?.value) || 0
+                    };
+                    
+                    const response = await fetch('/api/holidays', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    if (response.ok) {
+                        location.reload(); // Reload for holiday to appear
+                    } else {
+                        // Re-enable button on error
+                        this.disabled = false;
+                        this.innerHTML = originalText;
+                    }
+                } catch (err) {
+                    // Re-enable button on error
+                    this.disabled = false;
+                    this.innerHTML = originalText;
                 }
             });
         }
@@ -3948,14 +4048,27 @@
         // Bulk Assign Options
         document.querySelectorAll('.bulk-option-btn').forEach(btn => {
             btn.addEventListener('click', async function() {
+                // Prevent double-click
+                if (this.disabled) return;
+                
                 const mode = this.dataset.mode;
                 const employeeId = state.bulkAssignEmployeeId;
                 const overwrite = document.getElementById('bulkOverwrite')?.checked || false;
                 
                 if (!employeeId || !state.selectedTemplate) return;
                 
-                // Close modal
-                bootstrap.Modal.getInstance(document.getElementById('bulkAssignModal')).hide();
+                // Show loading, hide buttons
+                const bulkLoading = document.getElementById('bulkLoading');
+                const bulkProgress = document.getElementById('bulkProgress');
+                const bulkOptions = document.querySelector('.bulk-options');
+                const overwriteSection = document.querySelector('#bulkAssignModal .form-section');
+                const modalFooter = document.querySelector('#bulkAssignModal .modal-footer-custom');
+                
+                if (bulkOptions) bulkOptions.style.display = 'none';
+                if (overwriteSection) overwriteSection.style.display = 'none';
+                if (modalFooter) modalFooter.style.display = 'none';
+                if (bulkLoading) bulkLoading.style.display = 'block';
+                if (bulkProgress) bulkProgress.textContent = '';
                 
                 // Get all dates for current month
                 const year = state.year;
@@ -3991,27 +4104,51 @@
                     datesToAssign.push({ date: dateStr, cell, hasExisting: !!hasShift });
                 }
                 
-                // Step 1: Delete existing shifts if overwrite is enabled
-                if (overwrite) {
-                    const deletePromises = [];
-                    for (const item of datesToAssign) {
-                        if (item.hasExisting) {
-                            deletePromises.push(deleteShift(employeeId, item.date, item.cell));
+                try {
+                    // Update progress
+                    if (bulkProgress) bulkProgress.textContent = `0 / ${datesToAssign.length}`;
+                    
+                    // Step 1: Delete existing shifts if overwrite is enabled (silent, no UI updates)
+                    if (overwrite) {
+                        const deletePromises = [];
+                        for (const item of datesToAssign) {
+                            if (item.hasExisting) {
+                                deletePromises.push(fetch(`/api/shifts/employee/${employeeId}/date/${item.date}`, { method: 'DELETE' }));
+                            }
+                        }
+                        if (deletePromises.length > 0) {
+                            await Promise.all(deletePromises);
                         }
                     }
-                    if (deletePromises.length > 0) {
-                        await Promise.all(deletePromises);
+                    
+                    // Step 2: Create new shifts in batches with progress
+                    const batchSize = 5;
+                    for (let i = 0; i < datesToAssign.length; i += batchSize) {
+                        const batch = datesToAssign.slice(i, i + batchSize);
+                        const batchPromises = batch.map(item => createShift(employeeId, item.date, item.cell, true));
+                        await Promise.all(batchPromises);
+                        
+                        // Update progress
+                        const completed = Math.min(i + batchSize, datesToAssign.length);
+                        if (bulkProgress) bulkProgress.textContent = `${completed} / ${datesToAssign.length}`;
                     }
+                    
+                    // Close modal
+                    setTimeout(() => {
+                        bootstrap.Modal.getInstance(document.getElementById('bulkAssignModal')).hide();
+                        showToast(isTurkish ? `${datesToAssign.length} nöbet eklendi!` : `${datesToAssign.length} shifts added!`, 'success');
+                    }, 300);
+                    
+                } catch (error) {
+                    console.error('Bulk assign error:', error);
+                    showToast(texts.errorOccurred, 'error');
+                    
+                    // Hide loading, show buttons back
+                    if (bulkLoading) bulkLoading.style.display = 'none';
+                    if (bulkOptions) bulkOptions.style.display = 'flex';
+                    if (overwriteSection) overwriteSection.style.display = 'block';
+                    if (modalFooter) modalFooter.style.display = 'flex';
                 }
-                
-                // Step 2: Create new shifts
-                const createPromises = [];
-                for (const item of datesToAssign) {
-                    createPromises.push(createShift(employeeId, item.date, item.cell, true));
-                }
-                
-                await Promise.all(createPromises);
-                showToast(isTurkish ? `${datesToAssign.length} nöbet eklendi!` : `${datesToAssign.length} shifts added!`, 'success');
             });
         });
         
@@ -4019,6 +4156,9 @@
         const bulkDeleteAllBtn = document.getElementById('bulkDeleteAllBtn');
         if (bulkDeleteAllBtn) {
             bulkDeleteAllBtn.addEventListener('click', async function() {
+                // Prevent double-click
+                if (this.disabled) return;
+                
                 const employeeId = state.bulkAssignEmployeeId;
                 if (!employeeId) return;
                 
@@ -4027,6 +4167,9 @@
                     : 'Are you sure you want to delete ALL shifts for this employee this month?';
                 
                 if (!confirm(confirmMsg)) return;
+                
+                // Disable button
+                this.disabled = true;
                 
                 // Close modal
                 bootstrap.Modal.getInstance(document.getElementById('bulkAssignModal')).hide();
@@ -4056,6 +4199,31 @@
                 
                 await Promise.all(deletePromises);
                 showToast(isTurkish ? `${shiftsToDelete.length} nöbet silindi!` : `${shiftsToDelete.length} shifts deleted!`, 'info');
+                
+                // Re-enable button
+                this.disabled = false;
+            });
+        }
+        
+        // Reset bulk modal when it opens
+        const bulkAssignModal = document.getElementById('bulkAssignModal');
+        if (bulkAssignModal) {
+            bulkAssignModal.addEventListener('show.bs.modal', function() {
+                // Show all elements, hide loading
+                const bulkLoading = document.getElementById('bulkLoading');
+                const bulkOptions = document.querySelector('.bulk-options');
+                const overwriteSection = document.querySelector('#bulkAssignModal .form-section');
+                const modalFooter = document.querySelector('#bulkAssignModal .modal-footer-custom');
+                
+                if (bulkLoading) bulkLoading.style.display = 'none';
+                if (bulkOptions) bulkOptions.style.display = 'flex';
+                if (overwriteSection) overwriteSection.style.display = 'block';
+                if (modalFooter) modalFooter.style.display = 'flex';
+                
+                // Re-enable buttons
+                document.querySelectorAll('.bulk-option-btn').forEach(b => b.disabled = false);
+                const deleteBtn = document.getElementById('bulkDeleteAllBtn');
+                if (deleteBtn) deleteBtn.disabled = false;
             });
         }
     }
