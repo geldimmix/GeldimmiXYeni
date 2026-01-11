@@ -857,7 +857,11 @@
                     </label>
                 </div>
             </div>
-            <div class="modal-footer-custom">
+            <div class="modal-footer-custom" style="justify-content: space-between;">
+                <button type="button" class="btn-modal-delete" id="bulkDeleteAllBtn">
+                    <span class="btn-icon">🗑️</span>
+                    @(isTurkish ? "Tüm Nöbetleri Sil" : "Delete All Shifts")
+                </button>
                 <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">@(isTurkish ? "İptal" : "Cancel")</button>
             </div>
         </div>
@@ -2592,6 +2596,26 @@
         background: #f3f4f6;
     }
     
+    .btn-modal-delete {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border: 1px solid #dc2626;
+        border-radius: 6px;
+        background: #fff;
+        color: #dc2626;
+        font-weight: 500;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+    
+    .btn-modal-delete:hover {
+        background: #dc2626;
+        color: white;
+    }
+    
     .btn-modal-save {
         display: flex;
         align-items: center;
@@ -3990,6 +4014,50 @@
                 showToast(isTurkish ? `${datesToAssign.length} nöbet eklendi!` : `${datesToAssign.length} shifts added!`, 'success');
             });
         });
+        
+        // Bulk Delete All Shifts
+        const bulkDeleteAllBtn = document.getElementById('bulkDeleteAllBtn');
+        if (bulkDeleteAllBtn) {
+            bulkDeleteAllBtn.addEventListener('click', async function() {
+                const employeeId = state.bulkAssignEmployeeId;
+                if (!employeeId) return;
+                
+                const confirmMsg = isTurkish 
+                    ? 'Bu personelin bu aydaki TÜM nöbetlerini silmek istediğinize emin misiniz?' 
+                    : 'Are you sure you want to delete ALL shifts for this employee this month?';
+                
+                if (!confirm(confirmMsg)) return;
+                
+                // Close modal
+                bootstrap.Modal.getInstance(document.getElementById('bulkAssignModal')).hide();
+                
+                // Get all cells with shifts for this employee
+                const allCells = document.querySelectorAll(`.shift-cell[data-employee-id="${employeeId}"]`);
+                const shiftsToDelete = [];
+                
+                allCells.forEach(cell => {
+                    const hasShift = cell.querySelector('.shift-badge');
+                    if (hasShift && !cell.querySelector('.shift-continuation')) {
+                        // Has a shift badge and it's not just a continuation
+                        shiftsToDelete.push({ date: cell.dataset.date, cell });
+                    }
+                });
+                
+                if (shiftsToDelete.length === 0) {
+                    showToast(isTurkish ? 'Silinecek nöbet bulunamadı' : 'No shifts to delete', 'info');
+                    return;
+                }
+                
+                // Delete all shifts
+                const deletePromises = [];
+                for (const item of shiftsToDelete) {
+                    deletePromises.push(deleteShift(employeeId, item.date, item.cell));
+                }
+                
+                await Promise.all(deletePromises);
+                showToast(isTurkish ? `${shiftsToDelete.length} nöbet silindi!` : `${shiftsToDelete.length} shifts deleted!`, 'info');
+            });
+        }
     }
     
     // Delete Handlers
