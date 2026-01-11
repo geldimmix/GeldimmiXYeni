@@ -3162,38 +3162,47 @@
         });
         
         // Custom break input - update button active states
-        document.getElementById('customBreak').addEventListener('input', function() {
-            const value = this.value;
-            const predefinedValues = ['0', '30', '60', '90'];
-            
-            document.querySelectorAll('.break-btn[data-break]').forEach(btn => {
-                if (btn.dataset.break === value) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
+        const customBreakInput = document.getElementById('customBreak');
+        if (customBreakInput) {
+            customBreakInput.addEventListener('input', function() {
+                const value = this.value;
+                const predefinedValues = ['0', '30', '60', '90'];
+                
+                document.querySelectorAll('.break-btn[data-break]').forEach(btn => {
+                    if (btn.dataset.break === value) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
             });
-        });
+        }
         
         // Overnight Hours Modal - confirm button
-        document.getElementById('confirmOvernightBtn').addEventListener('click', function() {
-            if (pendingOvernightShift) {
-                const selectedMode = document.querySelector('input[name="overnightMode"]:checked').value;
-                const { employeeId, date, cell, skipToast } = pendingOvernightShift;
-                
-                bootstrap.Modal.getInstance(document.getElementById('overnightHoursModal')).hide();
-                
-                // Call createShift with selected overnight mode
-                createShift(employeeId, date, cell, skipToast, parseInt(selectedMode));
-            }
-        });
+        const confirmOvernightBtn = document.getElementById('confirmOvernightBtn');
+        if (confirmOvernightBtn) {
+            confirmOvernightBtn.addEventListener('click', function() {
+                if (pendingOvernightShift) {
+                    const selectedMode = document.querySelector('input[name="overnightMode"]:checked').value;
+                    const { employeeId, date, cell, skipToast } = pendingOvernightShift;
+                    
+                    bootstrap.Modal.getInstance(document.getElementById('overnightHoursModal')).hide();
+                    
+                    // Call createShift with selected overnight mode
+                    createShift(employeeId, date, cell, skipToast, parseInt(selectedMode));
+                }
+            });
+        }
         
         // Cancel overnight modal - clear pending
-        document.getElementById('overnightHoursModal').addEventListener('hidden.bs.modal', function() {
-            if (pendingOvernightShift) {
-                pendingOvernightShift = null;
-            }
-        });
+        const overnightHoursModal = document.getElementById('overnightHoursModal');
+        if (overnightHoursModal) {
+            overnightHoursModal.addEventListener('hidden.bs.modal', function() {
+                if (pendingOvernightShift) {
+                    pendingOvernightShift = null;
+                }
+            });
+        }
     }
     
     // Cell Click
