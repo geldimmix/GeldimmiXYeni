@@ -1,0 +1,89 @@
+@{
+    var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+}
+<!DOCTYPE html>
+<html lang="@System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Geldimmi</title>
+    
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            overflow: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+    
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <!-- Compact Navbar -->
+    <nav class="navbar navbar-light bg-white border-bottom py-2">
+        <div class="container-fluid px-3">
+            <a class="navbar-brand fw-bold" href="~/">
+                <span class="text-primary">Geldimmi</span>
+            </a>
+            
+            <div class="d-flex align-items-center gap-3">
+                <!-- Language -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                        @if (isTurkish)
+                        {
+                            <span>🇹🇷</span>
+                        }
+                        else
+                        {
+                            <span>🇬🇧</span>
+                        }
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <form asp-controller="Home" asp-action="SetLanguage" method="post">
+                                <input type="hidden" name="culture" value="tr" />
+                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                <button type="submit" class="dropdown-item">🇹🇷 Türkçe</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form asp-controller="Home" asp-action="SetLanguage" method="post">
+                                <input type="hidden" name="culture" value="en" />
+                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                <button type="submit" class="dropdown-item">🇬🇧 English</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+                
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <span class="text-muted small">@User.Identity.Name</span>
+                    <a href="/Account/Logout" class="btn btn-outline-secondary btn-sm">@(isTurkish ? "Çıkış" : "Logout")</a>
+                }
+                else
+                {
+                    <a href="/Account/Login" class="btn btn-outline-secondary btn-sm">@(isTurkish ? "Giriş" : "Login")</a>
+                    <a href="/Account/Register" class="btn btn-primary btn-sm">@(isTurkish ? "Kayıt Ol" : "Register")</a>
+                }
+            </div>
+        </div>
+    </nav>
+
+    @RenderBody()
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

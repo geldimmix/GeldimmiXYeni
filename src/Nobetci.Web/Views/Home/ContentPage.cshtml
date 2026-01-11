@@ -1,0 +1,86 @@
+@using Nobetci.Web.Data.Entities
+@model ContentPage
+@{
+    ViewData["Title"] = Model.Title;
+    ViewData["MetaDescription"] = Model.MetaDescription;
+    ViewData["MetaKeywords"] = Model.MetaKeywords;
+}
+
+<!-- Hero Section -->
+<section class="page-hero py-5 bg-gradient-primary">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <h1 class="display-5 fw-bold mb-3">@Model.Title</h1>
+                @if (!string.IsNullOrEmpty(Model.Subtitle))
+                {
+                    <p class="lead text-muted">@Model.Subtitle</p>
+                }
+                @if (!string.IsNullOrEmpty(Model.CtaText) && !string.IsNullOrEmpty(Model.CtaUrl))
+                {
+                    <a href="@Model.CtaUrl" class="btn btn-primary btn-lg mt-3">@Model.CtaText</a>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Content Section -->
+<section class="page-content py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                @Html.Raw(Model.Content)
+            </div>
+            <div class="col-lg-4">
+                <!-- Sidebar CTA -->
+                <div class="card border-0 shadow-sm sticky-top" style="top: 100px;">
+                    <div class="card-body p-4">
+                        <h5 class="card-title fw-bold">
+                            @(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr" 
+                                ? "Hemen Deneyin" 
+                                : "Try It Now")
+                        </h5>
+                        <p class="card-text text-muted small">
+                            @(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr" 
+                                ? "Kayıt olmadan ücretsiz kullanmaya başlayın" 
+                                : "Start using for free without registration")
+                        </p>
+                        <a href="/app" class="btn btn-primary w-100">
+                            @(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr" 
+                                ? "Ücretsiz Başla" 
+                                : "Start Free")
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Styles {
+<style>
+    .page-hero {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    }
+    
+    .feature-content h2 {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .feature-content h3 {
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .feature-content ul, .feature-content ol {
+        margin-bottom: 1.5rem;
+    }
+    
+    .feature-content li {
+        margin-bottom: 0.5rem;
+    }
+</style>
+}
+

@@ -1,0 +1,3005 @@
+@model AppViewModel
+@{
+    var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+    ViewData["Title"] = isTurkish ? "Nöbet Planlama" : "Shift Planning";
+    Layout = "_AppLayout";
+}
+
+<div class="app-wrapper">
+    <!-- Left Sidebar -->
+    <aside class="app-sidebar">
+        <!-- Employees Section -->
+        <div class="sidebar-section">
+            <div class="section-header">
+                <h6>👥 @(isTurkish ? "Personeller" : "Employees")</h6>
+                <span class="badge-count">@Model.EmployeeCount / @Model.EmployeeLimit</span>
+            </div>
+            
+            <button class="btn btn-add-employee" data-bs-toggle="modal" data-bs-target="#addEmployeeModal" @(Model.CanAddEmployee ? "" : "disabled")>
+                <span class="icon">+</span>
+                <span>@(isTurkish ? "Personel Ekle" : "Add Employee")</span>
+            </button>
+            
+            @if (!Model.CanAddEmployee)
+            {
+                <div class="alert-limit">
+                    @(isTurkish ? "Personel limitine ulaşıldı" : "Employee limit reached")
+                </div>
+            }
+            
+            <div class="employee-list" id="employeeList">
+                @if (!Model.Employees.Any())
+                {
+                    <div class="empty-state">
+                        <span class="icon">👥</span>
+                        <p>@(isTurkish ? "Henüz personel eklenmedi" : "No employees added yet")</p>
+                    </div>
+                }
+                @foreach (var employee in Model.Employees)
+                {
+                    <div class="employee-item" data-employee-id="@employee.Id" data-daily-hours="@employee.DailyWorkHours" data-weekend-mode="@employee.WeekendWorkMode" data-saturday-hours="@(employee.SaturdayWorkHours ?? 0)">
+                        <div class="employee-color" style="background-color: @(employee.Color ?? "#3B82F6")"></div>
+                        <div class="employee-info">
+                            <span class="employee-name">@employee.FullName</span>
+                            @if (!string.IsNullOrEmpty(employee.Title))
+                            {
+                                <span class="employee-title">@employee.Title</span>
+                            }
+                            <span class="employee-hours">@employee.DailyWorkHours @(isTurkish ? "saat/gün" : "hrs/day")</span>
+                        </div>
+                        <button class="btn-delete" data-id="@employee.Id" title="@(isTurkish ? "Sil" : "Delete")">×</button>
+                    </div>
+                }
+            </div>
+        </div>
+        
+        <!-- Shift Templates Section -->
+        <div class="sidebar-section templates-section">
+            <div class="section-header">
+                <h6>⏰ @(isTurkish ? "Vardiya Şablonları" : "Shift Templates")</h6>
+            </div>
+            
+            <div class="template-info">
+                <small>@(isTurkish ? "Şablon seçip takvimde tıklayın" : "Select template, click on calendar")</small>
+            </div>
+            
+            <div class="template-list" id="templateList">
+                    <!-- Standard Templates -->
+                    <button class="template-btn" data-start="08:00" data-end="17:00" data-spans="false" data-break="60" data-color="#22C55E">
+                        <span class="template-color" style="background: #22C55E"></span>
+                        <span class="template-name">08:00-17:00</span>
+                        <span class="template-meta">60' @(isTurkish ? "mola" : "break")</span>
+                    </button>
+                    
+                    <button class="template-btn" data-start="08:00" data-end="16:30" data-spans="false" data-break="30" data-color="#3B82F6">
+                        <span class="template-color" style="background: #3B82F6"></span>
+                        <span class="template-name">08:00-16:30</span>
+                        <span class="template-meta">30' @(isTurkish ? "mola" : "break")</span>
+                    </button>
+                    
+                    <button class="template-btn" data-start="09:00" data-end="18:00" data-spans="false" data-break="60" data-color="#8B5CF6">
+                        <span class="template-color" style="background: #8B5CF6"></span>
+                        <span class="template-name">09:00-18:00</span>
+                        <span class="template-meta">60' @(isTurkish ? "mola" : "break")</span>
+                    </button>
+                    
+                    <!-- Overnight Templates -->
+                    <div class="template-divider">
+                        <span>@(isTurkish ? "Ertesi Güne Sarkan" : "Overnight")</span>
+                    </div>
+                    
+                    <button class="template-btn overnight" data-start="16:00" data-end="08:00" data-spans="true" data-break="0" data-color="#EF4444">
+                        <span class="template-color" style="background: #EF4444"></span>
+                        <span class="template-name">16:00-08:00</span>
+                        <span class="template-badge">+1</span>
+                        <span class="template-meta">16@(isTurkish ? "s" : "h")</span>
+                    </button>
+                    
+                    <button class="template-btn overnight" data-start="08:00" data-end="08:00" data-spans="true" data-break="0" data-color="#DC2626">
+                        <span class="template-color" style="background: #DC2626"></span>
+                        <span class="template-name">08:00-08:00</span>
+                        <span class="template-badge">+1</span>
+                        <span class="template-meta">24@(isTurkish ? "s" : "h")</span>
+                    </button>
+                    
+                    <!-- Custom Time -->
+                <button class="template-btn custom" id="customTimeBtn" data-color="#64748B">
+                    <span class="template-color" style="background: #64748B"></span>
+                    <span class="template-name">@(isTurkish ? "Özel Saat" : "Custom Time")</span>
+                    <span class="template-meta">⏱️</span>
+                </button>
+                
+                <!-- Day Off -->
+                <div class="template-divider">
+                    <span>@(isTurkish ? "Özel Durumlar" : "Special")</span>
+                </div>
+                
+                <button class="template-btn day-off" data-start="00:00" data-end="00:00" data-spans="false" data-break="0" data-color="#94a3b8" data-day-off="true">
+                    <span class="template-color" style="background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%)"></span>
+                    <span class="template-name">@(isTurkish ? "Boş Gün (İşe Başlamadı)" : "Day Off (Not Started)")</span>
+                    <span class="template-meta">🚫</span>
+                </button>
+            </div>
+            
+            <!-- Multi-select Mode -->
+            <div class="multi-select-toggle">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="multiSelectMode">
+                    <span class="toggle-slider"></span>
+                </label>
+                <span>@(isTurkish ? "Çoklu Seçim" : "Multi-Select")</span>
+            </div>
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="app-main">
+        <!-- Toolbar -->
+        <div class="app-toolbar">
+            <div class="toolbar-left">
+                <a href="@Url.Action("Index", new { year = Model.SelectedMonth == 1 ? Model.SelectedYear - 1 : Model.SelectedYear, month = Model.SelectedMonth == 1 ? 12 : Model.SelectedMonth - 1 })" 
+                   class="btn-nav">‹</a>
+                <h4 class="month-title">@Model.MonthName</h4>
+                <a href="@Url.Action("Index", new { year = Model.SelectedMonth == 12 ? Model.SelectedYear + 1 : Model.SelectedYear, month = Model.SelectedMonth == 12 ? 1 : Model.SelectedMonth + 1 })" 
+                   class="btn-nav">›</a>
+            </div>
+            
+            <div class="toolbar-right">
+                <button class="btn-toolbar" id="clearSelectionBtn" style="display:none;">
+                    @(isTurkish ? "Seçimi Temizle" : "Clear Selection")
+                </button>
+                <button class="btn-toolbar primary" id="applyToSelectedBtn" style="display:none;">
+                    @(isTurkish ? "Seçilenlere Uygula" : "Apply to Selected")
+                </button>
+                <button class="btn-toolbar warning" data-bs-toggle="modal" data-bs-target="#addHolidayModal">
+                    🗓️ @(isTurkish ? "Tatil Ekle" : "Add Holiday")
+                </button>
+                @if (Model.CanUseSmartScheduling)
+                {
+                    <button class="btn-toolbar success" id="generateScheduleBtn">
+                        🤖 @(isTurkish ? "Otomatik Oluştur" : "Auto Generate")
+                    </button>
+                }
+                else
+                {
+                    <button class="btn-toolbar success premium-locked" id="generateScheduleBtn" data-premium="true">
+                        🔒 @(isTurkish ? "Otomatik Oluştur" : "Auto Generate")
+                    </button>
+                }
+                @if (Model.CanExportExcel)
+                {
+                    <button class="btn-toolbar" id="exportExcelBtn">
+                        📥 Excel
+                    </button>
+                }
+                else
+                {
+                    <button class="btn-toolbar premium-locked" id="exportExcelBtn" data-premium="true">
+                        🔒 Excel
+                    </button>
+                }
+            </div>
+        </div>
+        
+        <!-- Schedule Grid -->
+        <div class="schedule-container">
+            <table class="schedule-table" id="scheduleTable">
+                <thead>
+                    <tr>
+                        <th class="col-employee sticky-col">@(isTurkish ? "Personel" : "Employee")</th>
+                        @for (int day = 1; day <= Model.DaysInMonth; day++)
+                        {
+                            var date = new DateOnly(Model.SelectedYear, Model.SelectedMonth, day);
+                            var isWeekend = Model.IsWeekend(date);
+                            var isHoliday = Model.IsHoliday(date);
+                            var dayNames = isTurkish 
+                                ? new[] { "Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt" }
+                                : new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+                            var dayName = dayNames[(int)date.DayOfWeek];
+                            
+                            <th class="col-day @(isWeekend ? "weekend" : "") @(isHoliday ? "holiday" : "")">
+                                <span class="day-name">@dayName</span>
+                                <span class="day-num">@day</span>
+                            </th>
+                        }
+                        <th class="col-total sticky-col-right">@(isTurkish ? "Toplam" : "Total")</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var employee in Model.Employees)
+                    {
+                        var employeeShifts = Model.GetShiftsForEmployee(employee.Id);
+                        var totalWorkedHours = employeeShifts.Where(s => !s.IsDayOff).Sum(s => s.TotalHours);
+                        var dayOffCount = employeeShifts.Count(s => s.IsDayOff);
+                        
+                        // Calculate required hours (excluding holidays, weekends based on settings, and day offs)
+                        var workDays = 0;
+                        var saturdayHours = 0m;
+                        for (int d = 1; d <= Model.DaysInMonth; d++)
+                        {
+                            var checkDate = new DateOnly(Model.SelectedYear, Model.SelectedMonth, d);
+                            var dayOfWeek = checkDate.DayOfWeek;
+                            var isWeekendDay = dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.Sunday;
+                            var isHolidayDay = Model.IsHoliday(checkDate);
+                            
+                            if (isHolidayDay) continue; // Skip holidays
+                            
+                            if (isWeekendDay)
+                            {
+                                // Check weekend work mode
+                                if (employee.WeekendWorkMode == 1) // Works both days
+                                {
+                                    workDays++;
+                                }
+                                else if (employee.WeekendWorkMode == 2 && dayOfWeek == DayOfWeek.Saturday) // Only Saturday
+                                {
+                                    workDays++;
+                                }
+                                else if (employee.WeekendWorkMode == 3 && dayOfWeek == DayOfWeek.Saturday) // Saturday specific hours
+                                {
+                                    saturdayHours += employee.SaturdayWorkHours ?? 0;
+                                }
+                                // Mode 0 = Does not work weekends
+                            }
+                            else
+                            {
+                                workDays++; // Weekday
+                            }
+                        }
+                        
+                        // Subtract day off days from work days (each day off reduces required by daily hours)
+                        workDays = Math.Max(0, workDays - dayOffCount);
+                        var requiredHours = (workDays * employee.DailyWorkHours) + saturdayHours;
+                        var isOvertime = totalWorkedHours > requiredHours;
+                        var isUndertime = totalWorkedHours < requiredHours;
+                        
+                        <tr data-employee-id="@employee.Id">
+                            <td class="col-employee sticky-col">
+                                <div class="employee-cell">
+                                    <span class="emp-color" style="background: @(employee.Color ?? "#3B82F6")"></span>
+                                    <div class="emp-info">
+                                        <span class="emp-name">@employee.FullName</span>
+                                        @if (!string.IsNullOrEmpty(employee.Title))
+                                        {
+                                            <span class="emp-title">@employee.Title</span>
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+                            @for (int day = 1; day <= Model.DaysInMonth; day++)
+                            {
+                                var date = new DateOnly(Model.SelectedYear, Model.SelectedMonth, day);
+                                var shift = Model.GetShiftForEmployeeOnDate(employee.Id, date);
+                                var isWeekend = Model.IsWeekend(date);
+                                var isHoliday = Model.IsHoliday(date);
+                                var prevDayShift = day > 1 ? Model.GetShiftForEmployeeOnDate(employee.Id, date.AddDays(-1)) : null;
+                                var showContinuation = prevDayShift?.SpansNextDay == true;
+                                
+                                <td class="shift-cell @(isWeekend ? "weekend" : "") @(isHoliday ? "holiday" : "")"
+                                    data-date="@date.ToString("yyyy-MM-dd")"
+                                    data-employee-id="@employee.Id">
+                                    
+                                    @if (showContinuation)
+                                    {
+                                        <div class="shift-continuation" style="background: @(prevDayShift?.ShiftTemplate?.Color ?? "#EF4444")20; border-color: @(prevDayShift?.ShiftTemplate?.Color ?? "#EF4444")">
+                                            <span class="cont-icon">↓</span>
+                                            <span class="cont-time">@prevDayShift?.EndTime.ToString("HH:mm")</span>
+                                        </div>
+                                    }
+                                    
+                                    @if (shift != null)
+                                    {
+                                        @if (shift.IsDayOff)
+                                        {
+                                            <div class="shift-badge day-off" data-shift-id="@shift.Id">
+                                                <span class="day-off-icon">🚫</span>
+                                                <span class="day-off-text">@(isTurkish ? "Boş" : "Off")</span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            var color = shift.ShiftTemplate?.Color ?? "#3B82F6";
+                                            <div class="shift-badge @(shift.SpansNextDay ? "overnight" : "")" 
+                                                 style="background: @(color)20; border-color: @color; color: @color"
+                                                 data-shift-id="@shift.Id">
+                                                <span class="shift-start">@shift.StartTime.ToString("HH:mm")</span>
+                                                <span class="shift-end">@shift.EndTime.ToString("HH:mm")</span>
+                                                @if (shift.SpansNextDay)
+                                                {
+                                                    <span class="overnight-badge">+1</span>
+                                                }
+                                            </div>
+                                        }
+                                    }
+                                </td>
+                            }
+                            @{
+                                var diff = totalWorkedHours - requiredHours;
+                                var diffText = diff > 0 ? $"+{diff:0.#}" : diff < 0 ? $"{diff:0.#}" : "0";
+                            }
+                            <td class="col-total sticky-col-right">
+                                <div class="total-cell @(isOvertime ? "overtime" : "") @(isUndertime ? "undertime" : "")">
+                                    <div class="total-main">
+                                        <span class="worked-hours">@totalWorkedHours.ToString("0.#")</span>
+                                        <span class="separator">/</span>
+                                        <span class="required-hours">@requiredHours.ToString("0.#")</span>
+                                    </div>
+                                    <span class="diff-hours @(diff > 0 ? "positive" : diff < 0 ? "negative" : "")">@diffText</span>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    
+                    @if (!Model.Employees.Any())
+                    {
+                        <tr>
+                            <td colspan="@(Model.DaysInMonth + 2)" class="empty-table">
+                                <div class="empty-state">
+                                    <span class="icon">📅</span>
+                                    <p>@(isTurkish ? "Personel ekleyerek başlayın" : "Start by adding employees")</p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Legend -->
+        <div class="schedule-legend">
+            <div class="legend-item">
+                <span class="legend-color weekend"></span>
+                <span>@(isTurkish ? "Hafta Sonu" : "Weekend")</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-color holiday"></span>
+                <span>@(isTurkish ? "Tatil" : "Holiday")</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-badge overnight">+1</span>
+                <span>@(isTurkish ? "Ertesi Güne Sarkan" : "Overnight")</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-icon">↓</span>
+                <span>@(isTurkish ? "Önceki Günden Devam" : "Continues from Previous")</span>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Add Employee Modal -->
+<div class="modal fade" id="addEmployeeModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content custom-modal">
+            <div class="modal-header-custom employee-header">
+                <div class="modal-icon">👤</div>
+                <div class="modal-title-group">
+                    <h5 class="modal-title">@(isTurkish ? "Yeni Personel Ekle" : "Add New Employee")</h5>
+                    <p class="modal-subtitle">@(isTurkish ? "Personel bilgilerini girin" : "Enter employee information")</p>
+                </div>
+                <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body-custom">
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-icon">📋</span>
+                        @(isTurkish ? "Temel Bilgiler" : "Basic Information")
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating-custom">
+                                <input type="text" class="form-input" id="employeeFullName" placeholder=" " required>
+                                <label>@(isTurkish ? "Ad Soyad" : "Full Name") *</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating-custom">
+                                <input type="text" class="form-input" id="employeeTitle" placeholder=" ">
+                                <label>@(isTurkish ? "Unvan" : "Title")</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating-custom">
+                                <input type="text" class="form-input" id="employeeIdentityNo" placeholder=" ">
+                                <label>@(isTurkish ? "Sicil No" : "ID Number")</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating-custom">
+                                <input type="number" class="form-input" id="employeeDailyHours" value="8" min="1" max="24" step="0.5" placeholder=" ">
+                                <label>@(isTurkish ? "Günlük Çalışma (saat)" : "Daily Hours") *</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-icon">📅</span>
+                        @(isTurkish ? "Hafta Sonu Ayarları" : "Weekend Settings")
+                    </div>
+                    <div class="weekend-options">
+                        <label class="weekend-option">
+                            <input type="radio" name="weekendMode" value="0" checked onchange="document.getElementById('employeeWeekendMode').value='0'; document.getElementById('saturdayHoursGroup').style.display='none';">
+                            <span class="option-card">
+                                <span class="option-icon">🚫</span>
+                                <span class="option-text">@(isTurkish ? "Hafta sonu çalışmaz" : "No weekends")</span>
+                            </span>
+                        </label>
+                        <label class="weekend-option">
+                            <input type="radio" name="weekendMode" value="1" onchange="document.getElementById('employeeWeekendMode').value='1'; document.getElementById('saturdayHoursGroup').style.display='none';">
+                            <span class="option-card">
+                                <span class="option-icon">✅</span>
+                                <span class="option-text">@(isTurkish ? "Cmt + Paz çalışır" : "Sat + Sun")</span>
+                            </span>
+                        </label>
+                        <label class="weekend-option">
+                            <input type="radio" name="weekendMode" value="2" onchange="document.getElementById('employeeWeekendMode').value='2'; document.getElementById('saturdayHoursGroup').style.display='none';">
+                            <span class="option-card">
+                                <span class="option-icon">📆</span>
+                                <span class="option-text">@(isTurkish ? "Sadece Cumartesi" : "Saturday only")</span>
+                            </span>
+                        </label>
+                        <label class="weekend-option">
+                            <input type="radio" name="weekendMode" value="3" onchange="document.getElementById('employeeWeekendMode').value='3'; document.getElementById('saturdayHoursGroup').style.display='block';">
+                            <span class="option-card">
+                                <span class="option-icon">⏱️</span>
+                                <span class="option-text">@(isTurkish ? "Özel saat" : "Custom hours")</span>
+                            </span>
+                        </label>
+                    </div>
+                    <select class="d-none" id="employeeWeekendMode">
+                        <option value="0" selected>0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                    </select>
+                    <div class="saturday-hours-input" id="saturdayHoursGroup" style="display: none;">
+                        <div class="form-floating-custom">
+                            <input type="number" class="form-input" id="employeeSaturdayHours" value="4" min="1" max="24" step="0.5" placeholder=" ">
+                            <label>@(isTurkish ? "Cumartesi Saat" : "Saturday Hours")</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <span class="info-icon">💡</span>
+                    <div class="info-content">
+                        <strong>@(isTurkish ? "Otomatik Hesaplama" : "Auto Calculation")</strong>
+                        <p>@(isTurkish ? "Resmi tatiller ve izinler otomatik olarak çalışma süresinden düşülür." : "Holidays and leaves are automatically deducted from work hours.")</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer-custom">
+                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
+                    @(isTurkish ? "İptal" : "Cancel")
+                </button>
+                <button type="button" class="btn-modal-save" id="saveEmployeeBtn">
+                    <span class="btn-icon">✓</span>
+                    @(isTurkish ? "Personel Ekle" : "Add Employee")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Holiday Modal -->
+<div class="modal fade" id="addHolidayModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal">
+            <div class="modal-header-custom holiday-header">
+                <div class="modal-icon">🗓️</div>
+                <div class="modal-title-group">
+                    <h5 class="modal-title">@(isTurkish ? "Tatil Ekle" : "Add Holiday")</h5>
+                    <p class="modal-subtitle">@(isTurkish ? "Resmi veya idari tatil tanımlayın" : "Define official or administrative holiday")</p>
+                </div>
+                <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body-custom">
+                <div class="form-section">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="form-floating-custom">
+                                <input type="date" class="form-input" id="holidayDate" required placeholder=" ">
+                                <label>@(isTurkish ? "Tarih" : "Date") *</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating-custom">
+                                <input type="text" class="form-input" id="holidayName" placeholder=" " required>
+                                <label>@(isTurkish ? "Tatil Adı" : "Holiday Name") *</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="holiday-type-options">
+                                <label class="type-option">
+                                    <input type="radio" name="holidayTypeRadio" value="0" checked onchange="document.getElementById('holidayType').value='0';">
+                                    <span class="type-card official">
+                                        <span class="type-icon">🏛️</span>
+                                        <span class="type-label">@(isTurkish ? "Resmi Tatil" : "Public Holiday")</span>
+                                    </span>
+                                </label>
+                                <label class="type-option">
+                                    <input type="radio" name="holidayTypeRadio" value="1" onchange="document.getElementById('holidayType').value='1';">
+                                    <span class="type-card administrative">
+                                        <span class="type-icon">📋</span>
+                                        <span class="type-label">@(isTurkish ? "İdari Tatil" : "Administrative")</span>
+                                    </span>
+                                </label>
+                            </div>
+                            <select class="d-none" id="holidayType">
+                                <option value="0" selected>0</option>
+                                <option value="1">1</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer-custom">
+                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
+                    @(isTurkish ? "İptal" : "Cancel")
+                </button>
+                <button type="button" class="btn-modal-save holiday" id="saveHolidayBtn">
+                    <span class="btn-icon">✓</span>
+                    @(isTurkish ? "Tatil Ekle" : "Add Holiday")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Premium Feature Modal -->
+<div class="premium-modal-overlay" id="premiumModal">
+    <div class="premium-modal">
+        <div class="premium-modal-header">
+            <div class="icon">🔒</div>
+            <h3>@(isTurkish ? "Premium Özellik" : "Premium Feature")</h3>
+            <p>@(isTurkish ? "Bu özellik kayıtlı kullanıcılar için" : "This feature is for registered users")</p>
+        </div>
+        <div class="premium-modal-body">
+            <ul class="premium-features">
+                <li>@(isTurkish ? "20 personele kadar yönetim (şu an 7)" : "Manage up to 20 employees (currently 7)")</li>
+                <li>@(isTurkish ? "Akıllı nöbet planlaması" : "Smart shift scheduling")</li>
+                <li>@(isTurkish ? "Puantaj ve mesai hesaplama" : "Timesheet and overtime calculation")</li>
+                <li>@(isTurkish ? "Excel export" : "Excel export")</li>
+                <li>@(isTurkish ? "Verileriniz güvende kalır" : "Your data stays safe")</li>
+            </ul>
+        </div>
+        <div class="premium-modal-footer">
+            <button class="btn-premium-close" onclick="closePremiumModal()">
+                @(isTurkish ? "Kapat" : "Close")
+            </button>
+            <a href="/Account/Register?returnUrl=/app" class="btn-premium-register">
+                @(isTurkish ? "Ücretsiz Kayıt Ol" : "Sign Up Free")
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Time Modal -->
+<div class="modal fade" id="customTimeModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content custom-modal">
+            <div class="modal-header-custom time-header">
+                <div class="modal-icon">⏰</div>
+                <div class="modal-title-group">
+                    <h5 class="modal-title">@(isTurkish ? "Özel Vardiya" : "Custom Shift")</h5>
+                    <p class="modal-subtitle">@(isTurkish ? "Saat ve mola ayarlayın" : "Set time and break")</p>
+                </div>
+                <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body-custom">
+                <div class="time-inputs">
+                    <div class="time-input-group">
+                        <label class="time-label">@(isTurkish ? "Başlangıç" : "Start")</label>
+                        <input type="time" class="time-input" id="customStartTime" value="08:00">
+                    </div>
+                    <div class="time-arrow">→</div>
+                    <div class="time-input-group">
+                        <label class="time-label">@(isTurkish ? "Bitiş" : "End")</label>
+                        <input type="time" class="time-input" id="customEndTime" value="17:00">
+                    </div>
+                </div>
+                
+                <div class="break-input">
+                    <label class="break-label">☕ @(isTurkish ? "Mola Süresi" : "Break Time")</label>
+                    <div class="break-buttons">
+                        <button type="button" class="break-btn" onclick="document.getElementById('customBreak').value='0'">0</button>
+                        <button type="button" class="break-btn" onclick="document.getElementById('customBreak').value='30'">30</button>
+                        <button type="button" class="break-btn active" onclick="document.getElementById('customBreak').value='60'">60</button>
+                        <button type="button" class="break-btn" onclick="document.getElementById('customBreak').value='90'">90</button>
+                        <input type="number" class="break-custom" id="customBreak" value="60" min="0" max="240"> <span class="break-unit">dk</span>
+                    </div>
+                </div>
+                
+                <label class="overnight-toggle">
+                    <input type="checkbox" id="customSpansNextDay">
+                    <span class="toggle-track">
+                        <span class="toggle-thumb"></span>
+                    </span>
+                    <span class="toggle-label">
+                        <span class="toggle-icon">🌙</span>
+                        @(isTurkish ? "Ertesi güne sarkar" : "Overnight shift")
+                    </span>
+                </label>
+            </div>
+            <div class="modal-footer-custom">
+                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
+                    @(isTurkish ? "İptal" : "Cancel")
+                </button>
+                <button type="button" class="btn-modal-save time" id="applyCustomTimeBtn">
+                    <span class="btn-icon">✓</span>
+                    @(isTurkish ? "Uygula" : "Apply")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+<style>
+    /* Custom Scrollbar Styles */
+    ::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 6px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        border-radius: 6px;
+        border: 2px solid #f1f5f9;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    }
+    
+    ::-webkit-scrollbar-corner {
+        background: #f1f5f9;
+    }
+    
+    /* Firefox Scrollbar */
+    * {
+        scrollbar-width: auto;
+        scrollbar-color: #6366f1 #f1f5f9;
+    }
+    
+    /* App Layout */
+    .app-wrapper {
+        display: flex;
+        min-height: calc(100vh - 60px);
+        background: #f1f5f9;
+    }
+    
+    /* Sidebar */
+    .app-sidebar {
+        width: 280px;
+        min-width: 280px;
+        max-height: calc(100vh - 60px);
+        background: white;
+        border-right: 1px solid #e2e8f0;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    
+    /* Enhanced Scrollbar for Sidebar */
+    .app-sidebar::-webkit-scrollbar {
+        width: 12px;
+    }
+    
+    .app-sidebar::-webkit-scrollbar-track {
+        background: linear-gradient(180deg, #e2e8f0 0%, #f1f5f9 100%);
+        border-radius: 6px;
+    }
+    
+    .app-sidebar::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #6366f1 0%, #8b5cf6 100%);
+        border-radius: 6px;
+        border: 3px solid #f8fafc;
+        min-height: 60px;
+    }
+    
+    .app-sidebar::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, #4f46e5 0%, #7c3aed 100%);
+    }
+    
+    .sidebar-section {
+        padding: 16px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+    
+    .section-header h6 {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #64748b;
+        margin: 0;
+    }
+    
+    .badge-count {
+        font-size: 0.7rem;
+        padding: 2px 8px;
+        background: #f1f5f9;
+        border-radius: 10px;
+        color: #64748b;
+    }
+    
+    .btn-add-employee {
+        width: 100%;
+        padding: 10px;
+        border: 2px dashed #cbd5e1;
+        border-radius: 8px;
+        background: transparent;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-bottom: 12px;
+    }
+    
+    .btn-add-employee:hover:not(:disabled) {
+        border-color: #6366f1;
+        color: #6366f1;
+        background: #f5f3ff;
+    }
+    
+    .btn-add-employee:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .btn-add-employee .icon {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+    
+    .alert-limit {
+        font-size: 0.75rem;
+        color: #ef4444;
+        text-align: center;
+        margin-bottom: 12px;
+    }
+    
+    /* Employee List */
+    .employee-list {
+        /* No max-height - sidebar handles scroll */
+    }
+    
+    .employee-item {
+        display: flex;
+        align-items: center;
+        padding: 8px 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.2s;
+        margin-bottom: 4px;
+    }
+    
+    .employee-item:hover {
+        background: #f1f5f9;
+    }
+    
+    .employee-item.selected {
+        background: #eff6ff;
+        border: 1px solid #3b82f6;
+    }
+    
+    .employee-color {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 10px;
+        flex-shrink: 0;
+    }
+    
+    .employee-info {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .employee-name {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #1e293b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .employee-title {
+        display: block;
+        font-size: 0.7rem;
+        color: #94a3b8;
+    }
+    
+    .btn-delete {
+        width: 20px;
+        height: 20px;
+        border: none;
+        background: transparent;
+        color: #94a3b8;
+        cursor: pointer;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: all 0.2s;
+    }
+    
+    .employee-item:hover .btn-delete {
+        opacity: 1;
+    }
+    
+    .btn-delete:hover {
+        background: #fee2e2;
+        color: #ef4444;
+    }
+    
+    /* Template List */
+    .template-info {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        margin-bottom: 10px;
+    }
+    
+    .templates-section {
+        flex: 0 0 auto;
+    }
+    
+    .template-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+    
+    /* Employee Hours Display */
+    .employee-hours {
+        display: block;
+        font-size: 0.65rem;
+        color: #6366f1;
+        font-weight: 500;
+    }
+    
+    .template-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: left;
+    }
+    
+    .template-btn:hover {
+        border-color: #6366f1;
+        background: #faf5ff;
+    }
+    
+    .template-btn.active {
+        border-color: #6366f1;
+        background: #eff6ff;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    
+    .template-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+        flex-shrink: 0;
+    }
+    
+    .template-name {
+        flex: 1;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #1e293b;
+    }
+    
+    .template-meta {
+        font-size: 0.7rem;
+        color: #94a3b8;
+    }
+    
+    .template-badge {
+        font-size: 0.65rem;
+        padding: 1px 4px;
+        background: #ef4444;
+        color: white;
+        border-radius: 3px;
+        font-weight: 600;
+    }
+    
+    .template-divider {
+        display: flex;
+        align-items: center;
+        margin: 8px 0;
+        font-size: 0.7rem;
+        color: #94a3b8;
+    }
+    
+    .template-divider::before,
+    .template-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #e2e8f0;
+    }
+    
+    .template-divider span {
+        padding: 0 8px;
+    }
+    
+    /* Multi-select Toggle */
+    .multi-select-toggle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #e2e8f0;
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+    
+    .toggle-switch {
+        position: relative;
+        width: 36px;
+        height: 20px;
+    }
+    
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #cbd5e1;
+        border-radius: 20px;
+        transition: 0.3s;
+    }
+    
+    .toggle-slider::before {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        left: 2px;
+        bottom: 2px;
+        background: white;
+        border-radius: 50%;
+        transition: 0.3s;
+    }
+    
+    .toggle-switch input:checked + .toggle-slider {
+        background: #6366f1;
+    }
+    
+    .toggle-switch input:checked + .toggle-slider::before {
+        transform: translateX(16px);
+    }
+    
+    /* Holiday List */
+    .btn-add-small {
+        width: 24px;
+        height: 24px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        background: white;
+        cursor: pointer;
+        font-size: 1rem;
+        color: #64748b;
+    }
+    
+    .btn-add-small:hover {
+        border-color: #6366f1;
+        color: #6366f1;
+    }
+    
+    .holiday-list {
+        max-height: 120px;
+        overflow-y: auto;
+        padding-right: 4px;
+    }
+    
+    /* Enhanced Scrollbar for Holiday List */
+    .holiday-list::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .holiday-list::-webkit-scrollbar-track {
+        background: #fef3c7;
+        border-radius: 4px;
+    }
+    
+    .holiday-list::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #f59e0b 0%, #f97316 100%);
+        border-radius: 4px;
+        border: 2px solid #fef3c7;
+    }
+    
+    .holiday-list::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, #d97706 0%, #ea580c 100%);
+    }
+    
+    .holiday-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 0;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.8rem;
+    }
+    
+    .holiday-date {
+        font-weight: 500;
+        color: #f59e0b;
+        min-width: 50px;
+    }
+    
+    .holiday-name {
+        flex: 1;
+        color: #64748b;
+    }
+    
+    .btn-delete-small {
+        width: 18px;
+        height: 18px;
+        border: none;
+        background: transparent;
+        color: #cbd5e1;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+    
+    .btn-delete-small:hover {
+        color: #ef4444;
+    }
+    
+    /* Empty States */
+    .empty-state {
+        text-align: center;
+        padding: 20px;
+        color: #94a3b8;
+    }
+    
+    .empty-state .icon {
+        font-size: 2rem;
+        display: block;
+        margin-bottom: 8px;
+    }
+    
+    .empty-state.small {
+        padding: 10px;
+    }
+    
+    .empty-state.small .icon {
+        font-size: 1.5rem;
+    }
+    
+    /* Main Content */
+    .app-main {
+        flex: 1;
+        padding: 16px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Toolbar */
+    .app-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    
+    .toolbar-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .btn-nav {
+        width: 32px;
+        height: 32px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: white;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-size: 1.2rem;
+    }
+    
+    .btn-nav:hover {
+        border-color: #6366f1;
+        color: #6366f1;
+    }
+    
+    .month-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin: 0;
+    }
+    
+    .toolbar-right {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .btn-toolbar {
+        padding: 8px 16px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: white;
+        color: #64748b;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-toolbar:hover {
+        border-color: #6366f1;
+        color: #6366f1;
+    }
+    
+    .btn-toolbar.primary {
+        background: #6366f1;
+        border-color: #6366f1;
+        color: white;
+    }
+    
+    .btn-toolbar.primary:hover {
+        background: #4f46e5;
+    }
+    
+    .btn-toolbar.success {
+        background: #22c55e;
+        border-color: #22c55e;
+        color: white;
+    }
+    
+    .btn-toolbar.success:hover {
+        background: #16a34a;
+    }
+    
+    .btn-toolbar.warning {
+        background: #f59e0b;
+        border-color: #f59e0b;
+        color: white;
+    }
+    
+    .btn-toolbar.warning:hover {
+        background: #d97706;
+    }
+    
+    /* Schedule Table */
+    .schedule-container {
+        flex: 1;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        overflow-x: auto;
+        overflow-y: auto;
+        max-height: calc(100vh - 200px);
+    }
+    
+    /* Enhanced Scrollbar for Schedule Container */
+    .schedule-container::-webkit-scrollbar {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .schedule-container::-webkit-scrollbar-track {
+        background: linear-gradient(90deg, #e2e8f0 0%, #f1f5f9 100%);
+        border-radius: 8px;
+        margin: 4px;
+    }
+    
+    .schedule-container::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        border-radius: 8px;
+        border: 3px solid #f1f5f9;
+        min-height: 50px;
+        min-width: 50px;
+    }
+    
+    .schedule-container::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+    }
+    
+    .schedule-container::-webkit-scrollbar-thumb:active {
+        background: linear-gradient(135deg, #4338ca 0%, #7e22ce 100%);
+    }
+    
+    .schedule-container::-webkit-scrollbar-corner {
+        background: #e2e8f0;
+        border-radius: 8px;
+    }
+    
+    .schedule-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.8rem;
+    }
+    
+    .schedule-table th,
+    .schedule-table td {
+        border: 1px solid #e2e8f0;
+        padding: 0;
+    }
+    
+    .schedule-table thead {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: white;
+    }
+    
+    .col-employee {
+        width: 160px;
+        min-width: 160px;
+        padding: 10px !important;
+        background: #f8fafc;
+        text-align: left;
+        font-weight: 600;
+        color: #64748b;
+    }
+    
+    /* Sticky first column */
+    .sticky-col {
+        position: sticky;
+        left: 0;
+        z-index: 5;
+        background: #f8fafc !important;
+        box-shadow: 2px 0 4px rgba(0,0,0,0.05);
+    }
+    
+    thead .sticky-col {
+        z-index: 15;
+    }
+    
+    /* Sticky last column (Total) */
+    .sticky-col-right {
+        position: sticky;
+        right: 0;
+        z-index: 5;
+        background: #f8fafc !important;
+        box-shadow: -2px 0 4px rgba(0,0,0,0.05);
+    }
+    
+    thead .sticky-col-right {
+        z-index: 15;
+    }
+    
+    .col-day {
+        width: 50px;
+        min-width: 50px;
+        padding: 6px 4px !important;
+        text-align: center;
+        background: #f8fafc;
+    }
+    
+    .col-day.weekend {
+        background: #fef2f2;
+    }
+    
+    .col-day.holiday {
+        background: #fef3c7;
+    }
+    
+    .day-name {
+        display: block;
+        font-size: 0.65rem;
+        color: #94a3b8;
+        font-weight: 500;
+    }
+    
+    .day-num {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #1e293b;
+    }
+    
+    .col-total {
+        width: 100px;
+        min-width: 100px;
+        padding: 6px !important;
+        background: #f8fafc;
+        text-align: center;
+        font-weight: 600;
+    }
+    
+    /* Total Cell - Worked/Required Hours */
+    .total-cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        padding: 4px;
+    }
+    
+    .total-main {
+        display: flex;
+        align-items: baseline;
+        gap: 2px;
+        font-size: 0.75rem;
+    }
+    
+    .total-cell .worked-hours {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #1e293b;
+    }
+    
+    .total-cell .separator {
+        color: #94a3b8;
+        font-size: 0.7rem;
+        margin: 0 1px;
+    }
+    
+    .total-cell .required-hours {
+        color: #64748b;
+        font-size: 0.75rem;
+    }
+    
+    .diff-hours {
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 10px;
+        background: #f1f5f9;
+        color: #64748b;
+    }
+    
+    .diff-hours.positive {
+        background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+        color: #15803d;
+    }
+    
+    .diff-hours.negative {
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        color: #dc2626;
+    }
+    
+    .total-cell.overtime .worked-hours {
+        color: #16a34a;
+    }
+    
+    .total-cell.undertime .worked-hours {
+        color: #dc2626;
+    }
+    
+    /* Employee Cell */
+    .employee-cell {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .emp-color {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+    
+    .emp-info {
+        min-width: 0;
+    }
+    
+    .emp-name {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #1e293b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .emp-title {
+        display: block;
+        font-size: 0.65rem;
+        color: #94a3b8;
+    }
+    
+    /* Shift Cell */
+    .shift-cell {
+        height: 50px;
+        vertical-align: top;
+        padding: 2px !important;
+        cursor: pointer;
+        position: relative;
+        transition: background 0.2s;
+    }
+    
+    .shift-cell:hover {
+        background: #f1f5f9;
+    }
+    
+    .shift-cell.weekend {
+        background: #fef2f2;
+    }
+    
+    .shift-cell.weekend:hover {
+        background: #fee2e2;
+    }
+    
+    .shift-cell.holiday {
+        background: #fef3c7;
+    }
+    
+    .shift-cell.selected {
+        background: #ddd6fe !important;
+        box-shadow: inset 0 0 0 2px #8b5cf6;
+    }
+    
+    /* Shift Badge */
+    .shift-badge {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        border-radius: 4px;
+        border: 1px solid;
+        font-size: 0.7rem;
+        font-weight: 500;
+        position: relative;
+    }
+    
+    .shift-badge.overnight {
+        border-style: dashed;
+    }
+    
+    .shift-badge.day-off {
+        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+        border: 1px dashed #94a3b8 !important;
+        color: #64748b !important;
+        flex-direction: row;
+        gap: 4px;
+    }
+    
+    .day-off-icon {
+        font-size: 0.9rem;
+    }
+    
+    .day-off-text {
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+    
+    .template-btn.day-off {
+        border-style: dashed;
+        background: #f8fafc;
+    }
+    
+    .shift-start {
+        font-weight: 600;
+    }
+    
+    .shift-end {
+        opacity: 0.8;
+    }
+    
+    .overnight-badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        font-size: 0.55rem;
+        padding: 1px 3px;
+        background: #ef4444;
+        color: white;
+        border-radius: 3px;
+        font-weight: 700;
+    }
+    
+    /* Shift Continuation */
+    .shift-continuation {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        font-size: 0.6rem;
+        border-bottom: 1px dashed;
+        background: rgba(239, 68, 68, 0.1);
+    }
+    
+    .cont-icon {
+        font-weight: bold;
+    }
+    
+    .cont-time {
+        font-weight: 500;
+    }
+    
+    /* Total Hours */
+    .total-hours {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #1e293b;
+    }
+    
+    /* Empty Table */
+    .empty-table {
+        height: 200px;
+    }
+    
+    /* Legend */
+    .schedule-legend {
+        display: flex;
+        gap: 20px;
+        margin-top: 12px;
+        padding: 10px 16px;
+        background: white;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        color: #64748b;
+    }
+    
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .legend-color {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+    }
+    
+    .legend-color.weekend {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+    }
+    
+    .legend-color.holiday {
+        background: #fef3c7;
+        border: 1px solid #fde68a;
+    }
+    
+    .legend-badge {
+        font-size: 0.6rem;
+        padding: 1px 4px;
+        border-radius: 3px;
+    }
+    
+    .legend-badge.overnight {
+        background: #ef4444;
+        color: white;
+    }
+    
+    .legend-icon {
+        font-weight: bold;
+        color: #ef4444;
+    }
+    
+    /* ===== MODAL STYLES ===== */
+    .custom-modal {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+    
+    .modal-header-custom {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 24px 28px;
+        border: none;
+        position: relative;
+    }
+    
+    .modal-header-custom.employee-header {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    }
+    
+    .modal-header-custom.holiday-header {
+        background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+    }
+    
+    .modal-header-custom.time-header {
+        background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+    }
+    
+    .modal-icon {
+        width: 50px;
+        height: 50px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+    
+    .modal-title-group {
+        flex: 1;
+    }
+    
+    .modal-title-group .modal-title {
+        color: white;
+        font-weight: 700;
+        font-size: 1.25rem;
+        margin: 0;
+    }
+    
+    .modal-title-group .modal-subtitle {
+        color: rgba(255,255,255,0.8);
+        font-size: 0.85rem;
+        margin: 4px 0 0 0;
+    }
+    
+    .btn-close-custom {
+        width: 36px;
+        height: 36px;
+        border: none;
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border-radius: 10px;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+    }
+    
+    .btn-close-custom:hover {
+        background: rgba(255,255,255,0.3);
+        transform: scale(1.05);
+    }
+    
+    .modal-body-custom {
+        padding: 28px;
+        background: #f8fafc;
+    }
+    
+    .form-section {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .section-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #64748b;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .section-icon {
+        font-size: 1rem;
+    }
+    
+    .form-floating-custom {
+        position: relative;
+        margin-bottom: 0;
+    }
+    
+    .form-input {
+        width: 100%;
+        padding: 20px 16px 8px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        background: #f8fafc;
+        transition: all 0.2s;
+    }
+    
+    .form-input:focus {
+        outline: none;
+        border-color: #6366f1;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+    
+    .form-floating-custom label {
+        position: absolute;
+        top: 50%;
+        left: 16px;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+        pointer-events: none;
+        background: transparent;
+        padding: 0 4px;
+    }
+    
+    .form-input:focus + label,
+    .form-input:not(:placeholder-shown) + label {
+        top: 8px;
+        transform: translateY(0);
+        font-size: 0.7rem;
+        color: #6366f1;
+        background: linear-gradient(to bottom, white 50%, #f8fafc 50%);
+    }
+    
+    .form-input:focus + label {
+        background: linear-gradient(to bottom, white 50%, white 50%);
+    }
+    
+    /* Weekend Options */
+    .weekend-options {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .weekend-option input {
+        display: none;
+    }
+    
+    .option-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 14px 10px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: #f8fafc;
+    }
+    
+    .weekend-option input:checked + .option-card {
+        border-color: #6366f1;
+        background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+    
+    .option-card:hover {
+        border-color: #cbd5e1;
+    }
+    
+    .option-icon {
+        font-size: 1.3rem;
+    }
+    
+    .option-text {
+        font-size: 0.75rem;
+        color: #64748b;
+        text-align: center;
+        font-weight: 500;
+    }
+    
+    .saturday-hours-input {
+        margin-top: 12px;
+    }
+    
+    /* Holiday Type Options */
+    .holiday-type-options {
+        display: flex;
+        gap: 12px;
+    }
+    
+    .type-option {
+        flex: 1;
+    }
+    
+    .type-option input {
+        display: none;
+    }
+    
+    .type-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 20px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .type-card.official {
+        background: #fffbeb;
+    }
+    
+    .type-card.administrative {
+        background: #f0fdf4;
+    }
+    
+    .type-option input:checked + .type-card.official {
+        border-color: #f59e0b;
+        box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1);
+    }
+    
+    .type-option input:checked + .type-card.administrative {
+        border-color: #22c55e;
+        box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+    }
+    
+    .type-icon {
+        font-size: 2rem;
+    }
+    
+    .type-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #374151;
+    }
+    
+    /* Time Inputs */
+    .time-inputs {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
+    }
+    
+    .time-input-group {
+        flex: 1;
+        text-align: center;
+    }
+    
+    .time-label {
+        display: block;
+        font-size: 0.75rem;
+        color: #94a3b8;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .time-input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        text-align: center;
+        background: #f8fafc;
+        transition: all 0.2s;
+    }
+    
+    .time-input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+    
+    .time-arrow {
+        font-size: 1.5rem;
+        color: #cbd5e1;
+    }
+    
+    /* Break Input */
+    .break-input {
+        background: white;
+        border-radius: 16px;
+        padding: 16px 20px;
+        margin-bottom: 16px;
+    }
+    
+    .break-label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #64748b;
+        margin-bottom: 12px;
+    }
+    
+    .break-buttons {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .break-btn {
+        width: 44px;
+        height: 36px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        background: #f8fafc;
+        color: #64748b;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .break-btn:hover {
+        border-color: #3b82f6;
+        color: #3b82f6;
+    }
+    
+    .break-btn.active {
+        border-color: #3b82f6;
+        background: #3b82f6;
+        color: white;
+    }
+    
+    .break-custom {
+        width: 60px;
+        padding: 6px 8px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: 600;
+        margin-left: auto;
+    }
+    
+    .break-custom:focus {
+        outline: none;
+        border-color: #3b82f6;
+    }
+    
+    .break-unit {
+        color: #94a3b8;
+        font-size: 0.85rem;
+    }
+    
+    /* Overnight Toggle */
+    .overnight-toggle {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: white;
+        border-radius: 12px;
+        padding: 14px 20px;
+        cursor: pointer;
+    }
+    
+    .overnight-toggle input {
+        display: none;
+    }
+    
+    .toggle-track {
+        width: 48px;
+        height: 26px;
+        background: #e2e8f0;
+        border-radius: 13px;
+        position: relative;
+        transition: all 0.3s;
+    }
+    
+    .toggle-thumb {
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        background: white;
+        border-radius: 50%;
+        top: 2px;
+        left: 2px;
+        transition: all 0.3s;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .overnight-toggle input:checked + .toggle-track {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    }
+    
+    .overnight-toggle input:checked + .toggle-track .toggle-thumb {
+        left: 24px;
+    }
+    
+    .toggle-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #374151;
+    }
+    
+    .toggle-icon {
+        font-size: 1.1rem;
+    }
+    
+    /* Info Box */
+    .info-box {
+        display: flex;
+        gap: 12px;
+        background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+        border: 1px solid #bfdbfe;
+        border-radius: 12px;
+        padding: 16px;
+    }
+    
+    .info-icon {
+        font-size: 1.2rem;
+    }
+    
+    .info-content {
+        flex: 1;
+    }
+    
+    .info-content strong {
+        display: block;
+        font-size: 0.85rem;
+        color: #1e40af;
+        margin-bottom: 4px;
+    }
+    
+    .info-content p {
+        font-size: 0.8rem;
+        color: #3b82f6;
+        margin: 0;
+    }
+    
+    /* Modal Footer */
+    .modal-footer-custom {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 20px 28px;
+        background: white;
+        border-top: 1px solid #e2e8f0;
+    }
+    
+    .btn-modal-cancel {
+        padding: 12px 24px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        background: white;
+        color: #64748b;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-modal-cancel:hover {
+        border-color: #cbd5e1;
+        background: #f8fafc;
+    }
+    
+    .btn-modal-save {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+    
+    .btn-modal-save:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+    }
+    
+    .btn-modal-save.holiday {
+        background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+    
+    .btn-modal-save.holiday:hover {
+        box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+    }
+    
+    .btn-modal-save.time {
+        background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    
+    .btn-modal-save.time:hover {
+        box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+    }
+    
+    .btn-icon {
+        font-size: 1rem;
+    }
+    
+    /* Toast Notification */
+    .toast-notification {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 12px 24px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        font-size: 0.9rem;
+        z-index: 9999;
+        transform: translateY(100px);
+        opacity: 0;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    
+    .toast-notification.show {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    
+    .toast-success {
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    }
+    
+    .toast-error {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+    
+    .toast-info {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+    
+    /* Premium Locked */
+    .premium-locked {
+        position: relative;
+        opacity: 0.85;
+    }
+    
+    .premium-locked::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 5px,
+            rgba(255,255,255,0.1) 5px,
+            rgba(255,255,255,0.1) 10px
+        );
+        pointer-events: none;
+    }
+    
+    /* Premium Modal */
+    .premium-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s;
+    }
+    
+    .premium-modal-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .premium-modal {
+        background: white;
+        border-radius: 20px;
+        max-width: 420px;
+        width: 90%;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        transform: translateY(20px) scale(0.95);
+        transition: all 0.3s;
+    }
+    
+    .premium-modal-overlay.show .premium-modal {
+        transform: translateY(0) scale(1);
+    }
+    
+    .premium-modal-header {
+        background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+        color: white;
+        padding: 28px;
+        text-align: center;
+    }
+    
+    .premium-modal-header .icon {
+        font-size: 3rem;
+        margin-bottom: 12px;
+    }
+    
+    .premium-modal-header h3 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+    }
+    
+    .premium-modal-header p {
+        opacity: 0.9;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+    
+    .premium-modal-body {
+        padding: 24px 28px;
+    }
+    
+    .premium-features {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 20px 0;
+    }
+    
+    .premium-features li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.9rem;
+        color: #374151;
+    }
+    
+    .premium-features li:last-child {
+        border-bottom: none;
+    }
+    
+    .premium-features li::before {
+        content: '✓';
+        font-weight: bold;
+        color: #22c55e;
+        font-size: 1.1rem;
+    }
+    
+    .premium-modal-footer {
+        padding: 0 28px 28px;
+        display: flex;
+        gap: 12px;
+    }
+    
+    .btn-premium-register {
+        flex: 1;
+        padding: 14px 20px;
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-premium-register:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+    }
+    
+    .btn-premium-close {
+        padding: 14px 20px;
+        background: #f1f5f9;
+        color: #64748b;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-premium-close:hover {
+        background: #e2e8f0;
+    }
+    
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .app-wrapper {
+            flex-direction: column;
+        }
+        
+        .app-sidebar {
+            width: 100%;
+            min-width: 100%;
+            max-height: 300px;
+        }
+        
+        .toolbar-left,
+        .toolbar-right {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .toast-notification {
+            left: 20px;
+            right: 20px;
+            text-align: center;
+        }
+    }
+</style>
+}
+
+@section Scripts {
+<script>
+    const isTurkish = @(isTurkish ? "true" : "false");
+    const isRegistered = @(Model.IsRegistered ? "true" : "false");
+    const texts = {
+        confirmDelete: isTurkish ? 'Silmek istediğinize emin misiniz?' : 'Are you sure you want to delete?',
+        confirmDeleteShift: isTurkish ? 'Bu nöbeti silmek istiyor musunuz?' : 'Do you want to delete this shift?',
+        selectTemplate: isTurkish ? 'Lütfen önce bir vardiya şablonu seçin' : 'Please select a shift template first',
+        errorOccurred: isTurkish ? 'Hata oluştu' : 'An error occurred',
+        nameRequired: isTurkish ? 'Ad soyad gerekli' : 'Full name is required',
+        dateNameRequired: isTurkish ? 'Tarih ve ad gerekli' : 'Date and name are required',
+        shiftAdded: isTurkish ? 'Nöbet eklendi' : 'Shift added',
+        shiftDeleted: isTurkish ? 'Nöbet silindi' : 'Shift deleted'
+    };
+    
+    // Premium Modal Functions
+    function showPremiumModal() {
+        document.getElementById('premiumModal').classList.add('show');
+    }
+    
+    function closePremiumModal() {
+        document.getElementById('premiumModal').classList.remove('show');
+    }
+    
+    // Close on overlay click
+    document.getElementById('premiumModal')?.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closePremiumModal();
+        }
+    });
+    
+    // ESC key closes modal
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closePremiumModal();
+        }
+    });
+    
+    // LocalStorage key for template
+    const TEMPLATE_STORAGE_KEY = 'geldimmi_selected_template';
+    
+    // App State
+    const state = {
+        selectedTemplate: null,
+        selectedCells: new Set(),
+        multiSelectMode: false,
+        year: @Model.SelectedYear,
+        month: @Model.SelectedMonth
+    };
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        initTemplates();
+        initCells();
+        initMultiSelect();
+        initModals();
+        initDeleteHandlers();
+        initWeekendModeToggle();
+        restoreSelectedTemplate();
+    });
+    
+    // Restore template from localStorage
+    function restoreSelectedTemplate() {
+        const saved = localStorage.getItem(TEMPLATE_STORAGE_KEY);
+        if (saved) {
+            try {
+                const template = JSON.parse(saved);
+                state.selectedTemplate = template;
+                
+                // Find and highlight the matching template button
+                const buttons = document.querySelectorAll('.template-btn:not(.custom)');
+                buttons.forEach(btn => {
+                    if (btn.dataset.start === template.start && 
+                        btn.dataset.end === template.end && 
+                        (btn.dataset.spans === 'true') === template.spans) {
+                        btn.classList.add('active');
+                    }
+                });
+                
+                // If custom template
+                if (template.isCustom) {
+                    document.getElementById('customTimeBtn').classList.add('active');
+                }
+            } catch (e) {
+                localStorage.removeItem(TEMPLATE_STORAGE_KEY);
+            }
+        }
+    }
+    
+    // Save template to localStorage
+    function saveSelectedTemplate() {
+        if (state.selectedTemplate) {
+            localStorage.setItem(TEMPLATE_STORAGE_KEY, JSON.stringify(state.selectedTemplate));
+        }
+    }
+    
+    // Template Selection
+    function initTemplates() {
+        document.querySelectorAll('.template-btn:not(.custom)').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                state.selectedTemplate = {
+                    start: this.dataset.start,
+                    end: this.dataset.end,
+                    spans: this.dataset.spans === 'true',
+                    breakMinutes: parseInt(this.dataset.break) || 0,
+                    color: this.dataset.color || '#3B82F6',
+                    isCustom: false,
+                    isDayOff: this.dataset.dayOff === 'true'
+                };
+                
+                saveSelectedTemplate();
+            });
+        });
+        
+        document.getElementById('customTimeBtn').addEventListener('click', function() {
+            new bootstrap.Modal(document.getElementById('customTimeModal')).show();
+        });
+        
+        document.getElementById('applyCustomTimeBtn').addEventListener('click', function() {
+            state.selectedTemplate = {
+                start: document.getElementById('customStartTime').value,
+                end: document.getElementById('customEndTime').value,
+                spans: document.getElementById('customSpansNextDay').checked,
+                breakMinutes: parseInt(document.getElementById('customBreak').value) || 0,
+                color: '#64748B',
+                isCustom: true
+            };
+            
+            document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('customTimeBtn').classList.add('active');
+            
+            saveSelectedTemplate();
+            bootstrap.Modal.getInstance(document.getElementById('customTimeModal')).hide();
+        });
+    }
+    
+    // Cell Click
+    function initCells() {
+        document.querySelectorAll('.shift-cell').forEach(cell => {
+            cell.addEventListener('click', async function(e) {
+                const badge = e.target.closest('.shift-badge');
+                
+                // Delete shift if clicking on badge
+                if (badge) {
+                    if (confirm(texts.confirmDeleteShift)) {
+                        const employeeId = this.dataset.employeeId;
+                        const date = this.dataset.date;
+                        await deleteShift(employeeId, date, this);
+                    }
+                    return;
+                }
+                
+                // Multi-select mode
+                if (state.multiSelectMode) {
+                    this.classList.toggle('selected');
+                    const key = `${this.dataset.employeeId}-${this.dataset.date}`;
+                    if (this.classList.contains('selected')) {
+                        state.selectedCells.add(key);
+                    } else {
+                        state.selectedCells.delete(key);
+                    }
+                    updateToolbarButtons();
+                    return;
+                }
+                
+                // Single click - create shift
+                if (!state.selectedTemplate) {
+                    alert(texts.selectTemplate);
+                    return;
+                }
+                
+                await createShift(this.dataset.employeeId, this.dataset.date, this);
+            });
+        });
+    }
+    
+    // Multi-select Mode
+    function initMultiSelect() {
+        const toggle = document.getElementById('multiSelectMode');
+        const clearBtn = document.getElementById('clearSelectionBtn');
+        const applyBtn = document.getElementById('applyToSelectedBtn');
+        
+        toggle.addEventListener('change', function() {
+            state.multiSelectMode = this.checked;
+            if (!this.checked) {
+                clearSelection();
+            }
+            updateToolbarButtons();
+        });
+        
+        clearBtn.addEventListener('click', clearSelection);
+        
+        applyBtn.addEventListener('click', async function() {
+            if (!state.selectedTemplate) {
+                alert(texts.selectTemplate);
+                return;
+            }
+            
+            const promises = [];
+            for (const key of state.selectedCells) {
+                const [employeeId, date] = key.split('-');
+                const cell = document.querySelector(`.shift-cell[data-employee-id="${employeeId}"][data-date="${date}"]`);
+                promises.push(createShift(employeeId, date, cell, true));
+            }
+            
+            await Promise.all(promises);
+            clearSelection();
+            showToast(isTurkish ? 'Nöbetler eklendi!' : 'Shifts added!', 'success');
+        });
+    }
+    
+    function clearSelection() {
+        document.querySelectorAll('.shift-cell.selected').forEach(cell => {
+            cell.classList.remove('selected');
+        });
+        state.selectedCells.clear();
+        updateToolbarButtons();
+    }
+    
+    function updateToolbarButtons() {
+        const hasSelection = state.selectedCells.size > 0;
+        document.getElementById('clearSelectionBtn').style.display = hasSelection ? 'block' : 'none';
+        document.getElementById('applyToSelectedBtn').style.display = hasSelection ? 'block' : 'none';
+    }
+    
+    // API Calls - NO PAGE RELOAD!
+    async function createShift(employeeId, date, cell, skipToast = false) {
+        const data = {
+            employeeId: parseInt(employeeId),
+            date: date,
+            startTime: state.selectedTemplate.start,
+            endTime: state.selectedTemplate.end,
+            spansNextDay: state.selectedTemplate.spans,
+            isDayOff: state.selectedTemplate.isDayOff || false
+        };
+        
+        try {
+            const response = await fetch('/api/shifts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                // Update UI without page reload - use server calculated hours
+                const templateWithServerHours = {
+                    ...state.selectedTemplate,
+                    serverTotalHours: result.totalHours,
+                    isDayOff: result.isDayOff
+                };
+                updateCellWithShift(cell, templateWithServerHours);
+                if (!skipToast) {
+                    showToast(texts.shiftAdded, 'success');
+                }
+            }
+        } catch (error) {
+            console.error('Error creating shift:', error);
+            showToast(texts.errorOccurred, 'error');
+        }
+    }
+    
+    async function deleteShift(employeeId, date, cell) {
+        try {
+            const response = await fetch(`/api/shifts/employee/${employeeId}/date/${date}`, {
+                method: 'DELETE'
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                // Update UI without page reload - use server's totalHours
+                clearCellShift(cell, employeeId, date, result.totalHours, result.isDayOff, result.spansNextDay);
+                showToast(texts.shiftDeleted, 'info');
+            }
+        } catch (error) {
+            console.error('Error deleting shift:', error);
+            showToast(texts.errorOccurred, 'error');
+        }
+    }
+    
+    // Calculate shift hours
+    function calculateShiftHours(startTime, endTime, spansNextDay, breakMinutes = 0) {
+        const [startH, startM] = startTime.split(':').map(Number);
+        const [endH, endM] = endTime.split(':').map(Number);
+        
+        let startMinutes = startH * 60 + startM;
+        let endMinutes = endH * 60 + endM;
+        
+        if (spansNextDay || endMinutes <= startMinutes) {
+            endMinutes += 24 * 60; // Add 24 hours
+        }
+        
+        const totalMinutes = endMinutes - startMinutes - breakMinutes;
+        return Math.max(0, totalMinutes / 60);
+    }
+    
+    // Update cell UI after shift creation - matching server-rendered style
+    function updateCellWithShift(cell, template) {
+        const color = template.color || '#3B82F6';
+        const employeeId = cell.dataset.employeeId;
+        const date = cell.dataset.date;
+        
+        // Clear existing content (but keep continuation if any)
+        const existingContinuation = cell.querySelector('.shift-continuation');
+        cell.innerHTML = '';
+        if (existingContinuation) {
+            cell.appendChild(existingContinuation);
+        }
+        
+        // Create badge
+        const badge = document.createElement('div');
+        
+        if (template.isDayOff) {
+            // Day Off special styling
+            badge.className = 'shift-badge day-off';
+            badge.style.background = 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)';
+            badge.style.borderColor = '#94a3b8';
+            badge.style.color = '#64748b';
+            
+            const iconSpan = document.createElement('span');
+            iconSpan.className = 'day-off-icon';
+            iconSpan.textContent = '🚫';
+            badge.appendChild(iconSpan);
+            
+            const textSpan = document.createElement('span');
+            textSpan.className = 'day-off-text';
+            textSpan.textContent = isTurkish ? 'Boş' : 'Off';
+            badge.appendChild(textSpan);
+        } else {
+            // Normal shift styling
+            badge.className = 'shift-badge' + (template.spans ? ' overnight' : '');
+            badge.style.background = `${color}20`;
+            badge.style.borderColor = color;
+            badge.style.color = color;
+            
+            const startSpan = document.createElement('span');
+            startSpan.className = 'shift-start';
+            startSpan.textContent = template.start;
+            badge.appendChild(startSpan);
+            
+            const endSpan = document.createElement('span');
+            endSpan.className = 'shift-end';
+            endSpan.textContent = template.end;
+            badge.appendChild(endSpan);
+            
+            if (template.spans) {
+                const overnightBadge = document.createElement('span');
+                overnightBadge.className = 'overnight-badge';
+                overnightBadge.textContent = '+1';
+                badge.appendChild(overnightBadge);
+                
+                // Add continuation to next day cell
+                addNextDayContinuation(employeeId, date, template);
+            }
+        }
+        
+        cell.appendChild(badge);
+        
+        // Update total hours for this employee
+        updateEmployeeTotalHours(employeeId, template, true);
+    }
+    
+    // Add continuation indicator to next day
+    function addNextDayContinuation(employeeId, date, template) {
+        const currentDate = new Date(date);
+        currentDate.setDate(currentDate.getDate() + 1);
+        const nextDateStr = currentDate.toISOString().split('T')[0];
+        
+        // Find next day cell for same employee using employeeId directly
+        const nextCell = document.querySelector(`.shift-cell[data-employee-id="${employeeId}"][data-date="${nextDateStr}"]`);
+        
+        if (nextCell) {
+            // Remove existing continuation if any
+            const existingCont = nextCell.querySelector('.shift-continuation');
+            if (existingCont) existingCont.remove();
+            
+            const color = template.color || '#EF4444';
+            const continuation = document.createElement('div');
+            continuation.className = 'shift-continuation';
+            continuation.style.background = `${color}20`;
+            continuation.style.borderColor = color;
+            
+            const iconSpan = document.createElement('span');
+            iconSpan.className = 'cont-icon';
+            iconSpan.textContent = '↓';
+            continuation.appendChild(iconSpan);
+            
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'cont-time';
+            timeSpan.textContent = template.end;
+            continuation.appendChild(timeSpan);
+            
+            nextCell.insertBefore(continuation, nextCell.firstChild);
+        }
+    }
+    
+    // Clear cell shift
+    // clearCellShift now receives data from backend
+    function clearCellShift(cell, employeeId, date, serverTotalHours, wasDayOff, wasOvernight) {
+        // Remove next day continuation if it was an overnight shift
+        if (wasOvernight) {
+            const currentDate = new Date(date);
+            currentDate.setDate(currentDate.getDate() + 1);
+            const nextDateStr = currentDate.toISOString().split('T')[0];
+            const nextCell = document.querySelector(`.shift-cell[data-employee-id="${employeeId}"][data-date="${nextDateStr}"]`);
+            if (nextCell) {
+                const cont = nextCell.querySelector('.shift-continuation');
+                if (cont) cont.remove();
+            }
+        }
+        
+        // Clear only shift badge, keep continuation if from previous day
+        const shiftBadge = cell.querySelector('.shift-badge');
+        if (shiftBadge) shiftBadge.remove();
+        
+        // Update total hours using server's calculated value (includes break deduction)
+        updateEmployeeTotalHours(employeeId, serverTotalHours, false, wasDayOff);
+    }
+    
+    // Update employee total hours display
+    // For adding: templateOrHours is a template object
+    // For removing: templateOrHours is the hours to subtract (number)
+    function updateEmployeeTotalHours(employeeId, templateOrHours, isAdding, wasDayOff = false) {
+        const row = document.querySelector(`tr[data-employee-id="${employeeId}"]`);
+        if (!row) return;
+        
+        const totalCell = row.querySelector('.col-total .total-cell');
+        if (!totalCell) return;
+        
+        const workedSpan = totalCell.querySelector('.worked-hours');
+        const requiredSpan = totalCell.querySelector('.required-hours');
+        const diffSpan = totalCell.querySelector('.diff-hours');
+        
+        if (!workedSpan || !requiredSpan) return;
+        
+        let worked = parseFloat(workedSpan.textContent) || 0;
+        let required = parseFloat(requiredSpan.textContent) || 0;
+        
+        // Get employee daily hours from data attribute
+        const employeeItem = document.querySelector(`.employee-item[data-employee-id="${employeeId}"]`);
+        const dailyHours = employeeItem ? parseFloat(employeeItem.dataset.dailyHours) || 8 : 8;
+        
+        if (isAdding) {
+            if (templateOrHours && typeof templateOrHours === 'object') {
+                // Adding a shift
+                if (templateOrHours.isDayOff) {
+                    // Day off - reduce required hours by daily work hours
+                    required -= dailyHours;
+                } else {
+                    // Normal shift - use server calculated hours if available, otherwise calculate
+                    const hours = templateOrHours.serverTotalHours !== undefined 
+                        ? templateOrHours.serverTotalHours 
+                        : calculateShiftHours(templateOrHours.start, templateOrHours.end, templateOrHours.spans, templateOrHours.breakMinutes);
+                    worked += hours;
+                }
+            }
+        } else {
+            // Removing a shift
+            if (wasDayOff) {
+                // Removing day off - add back required hours
+                required += dailyHours;
+            } else if (typeof templateOrHours === 'number' && templateOrHours > 0) {
+                // Removing normal shift - subtract worked hours
+                worked -= templateOrHours;
+                worked = Math.max(0, worked); // Don't go negative
+            }
+        }
+        
+        // Update worked hours
+        workedSpan.textContent = worked.toFixed(1).replace('.0', '');
+        
+        // Update required hours
+        requiredSpan.textContent = required.toFixed(1).replace('.0', '');
+        
+        // Update diff
+        const diff = worked - required;
+        if (diffSpan) {
+            if (diff > 0) {
+                diffSpan.textContent = `+${diff.toFixed(1).replace('.0', '')}`;
+                diffSpan.className = 'diff-hours positive';
+            } else if (diff < 0) {
+                diffSpan.textContent = diff.toFixed(1).replace('.0', '');
+                diffSpan.className = 'diff-hours negative';
+            } else {
+                diffSpan.textContent = '0';
+                diffSpan.className = 'diff-hours';
+            }
+        }
+        
+        // Update total cell class
+        totalCell.classList.remove('overtime', 'undertime');
+        if (diff > 0) {
+            totalCell.classList.add('overtime');
+        } else if (diff < 0) {
+            totalCell.classList.add('undertime');
+        }
+    }
+    
+    // Toast notification
+    function showToast(message, type = 'info') {
+        // Remove existing toast
+        const existing = document.querySelector('.toast-notification');
+        if (existing) existing.remove();
+        
+        const toast = document.createElement('div');
+        toast.className = `toast-notification toast-${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => toast.classList.add('show'), 10);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
+    }
+    
+    // Weekend mode toggle
+    function initWeekendModeToggle() {
+        const weekendMode = document.getElementById('employeeWeekendMode');
+        const saturdayHoursGroup = document.getElementById('saturdayHoursGroup');
+        
+        if (weekendMode && saturdayHoursGroup) {
+            weekendMode.addEventListener('change', function() {
+                saturdayHoursGroup.style.display = this.value === '3' ? 'block' : 'none';
+            });
+        }
+    }
+    
+    // Modals
+    function initModals() {
+        // Save Employee
+        document.getElementById('saveEmployeeBtn').addEventListener('click', async function() {
+            const fullName = document.getElementById('employeeFullName').value.trim();
+            if (!fullName) {
+                alert(texts.nameRequired);
+                return;
+            }
+            
+            const data = {
+                fullName: fullName,
+                title: document.getElementById('employeeTitle').value.trim(),
+                identityNo: document.getElementById('employeeIdentityNo').value.trim(),
+                dailyWorkHours: parseFloat(document.getElementById('employeeDailyHours').value) || 8,
+                weekendWorkMode: parseInt(document.getElementById('employeeWeekendMode').value) || 0,
+                saturdayWorkHours: parseFloat(document.getElementById('employeeSaturdayHours').value) || null
+            };
+            
+            const response = await fetch('/api/employees', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                location.reload(); // Reload for new employee to appear in list
+            } else {
+                const error = await response.json();
+                alert(error.error || texts.errorOccurred);
+            }
+        });
+        
+        // Save Holiday
+        document.getElementById('saveHolidayBtn').addEventListener('click', async function() {
+            const date = document.getElementById('holidayDate').value;
+            const name = document.getElementById('holidayName').value.trim();
+            
+            if (!date || !name) {
+                alert(texts.dateNameRequired);
+                return;
+            }
+            
+            const data = {
+                date: date,
+                name: name,
+                type: parseInt(document.getElementById('holidayType').value)
+            };
+            
+            const response = await fetch('/api/holidays', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                location.reload(); // Reload for holiday to appear
+            }
+        });
+        
+        // Export Excel
+        document.getElementById('exportExcelBtn').addEventListener('click', function() {
+            if (this.dataset.premium === 'true') {
+                showPremiumModal();
+                return;
+            }
+            window.location.href = `/api/export/excel?year=${state.year}&month=${state.month}`;
+        });
+        
+        // Generate Schedule
+        document.getElementById('generateScheduleBtn').addEventListener('click', function() {
+            if (this.dataset.premium === 'true') {
+                showPremiumModal();
+                return;
+            }
+            alert(isTurkish ? 'Akıllı planlama özelliği yakında!' : 'Smart scheduling coming soon!');
+        });
+    }
+    
+    // Delete Handlers
+    function initDeleteHandlers() {
+        // Delete employee
+        document.querySelectorAll('.btn-delete[data-id]').forEach(btn => {
+            btn.addEventListener('click', async function(e) {
+                e.stopPropagation();
+                if (!confirm(texts.confirmDelete)) return;
+                
+                const response = await fetch(`/api/employees/${this.dataset.id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    location.reload();
+                }
+            });
+        });
+        
+        // Delete holiday
+        document.querySelectorAll('.btn-delete-small[data-id]').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                if (!confirm(texts.confirmDelete)) return;
+                
+                const response = await fetch(`/api/holidays/${this.dataset.id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    location.reload();
+                }
+            });
+        });
+    }
+</script>
+}

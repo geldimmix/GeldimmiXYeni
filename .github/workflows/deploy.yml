@@ -1,0 +1,98 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore src/Nobetci.Web/Nobetci.Web.csproj
+    
+    - name: Build
+      run: dotnet build src/Nobetci.Web/Nobetci.Web.csproj --configuration Release --no-restore
+    
+    - name: Publish
+      run: dotnet publish src/Nobetci.Web/Nobetci.Web.csproj --configuration Release --output ./publish --no-build
+    
+    - name: Deploy to Server via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        password: ${{ secrets.SERVER_PASSWORD }}
+        script: |
+          # Stop the service
+          systemctl stop geldimmi || true
+          
+          # Create app directory if not exists
+          mkdir -p /var/www/geldimmi
+          
+          # Clean old files
+          rm -rf /var/www/geldimmi/*
+    
+    - name: Copy files to Server
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        password: ${{ secrets.SERVER_PASSWORD }}
+        source: "./publish/*"
+        target: "/var/www/geldimmi"
+        strip_components: 1
+    
+    - name: Configure and Start Service
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        password: ${{ secrets.SERVER_PASSWORD }}
+        script: |
+          # Create systemd service if not exists
+          cat > /etc/systemd/system/geldimmi.service << 'EOF'
+          [Unit]
+          Description=Geldimmi Web Application
+          After=network.target
+          
+          [Service]
+          WorkingDirectory=/var/www/geldimmi
+          ExecStart=/usr/bin/dotnet /var/www/geldimmi/Nobetci.Web.dll
+          Restart=always
+          RestartSec=10
+          KillSignal=SIGINT
+          SyslogIdentifier=geldimmi
+          User=www-data
+          Environment=ASPNETCORE_ENVIRONMENT=Production
+          Environment=ASPNETCORE_URLS=http://localhost:5000
+          Environment=Authentication__Google__ClientId=${{ secrets.GOOGLE_CLIENT_ID }}
+          Environment=Authentication__Google__ClientSecret=${{ secrets.GOOGLE_CLIENT_SECRET }}
+          
+          [Install]
+          WantedBy=multi-user.target
+          EOF
+          
+          # Set permissions
+          chown -R www-data:www-data /var/www/geldimmi
+          chmod -R 755 /var/www/geldimmi
+          
+          # Reload systemd and start service
+          systemctl daemon-reload
+          systemctl enable geldimmi
+          systemctl start geldimmi
+          
+          # Check status
+          systemctl status geldimmi --no-pager || true
+

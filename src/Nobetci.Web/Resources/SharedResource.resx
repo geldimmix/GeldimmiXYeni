@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Common -->
+  <data name="AppName" xml:space="preserve">
+    <value>Nöbetçi</value>
+  </data>
+  <data name="AppTagline" xml:space="preserve">
+    <value>Akıllı Nöbet Listesi Oluşturucu</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Dil</value>
+  </data>
+  <data name="Turkish" xml:space="preserve">
+    <value>Türkçe</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>İngilizce</value>
+  </data>
+
+  <!-- Navigation -->
+  <data name="Home" xml:space="preserve">
+    <value>Ana Sayfa</value>
+  </data>
+  <data name="Features" xml:space="preserve">
+    <value>Özellikler</value>
+  </data>
+  <data name="Pricing" xml:space="preserve">
+    <value>Fiyatlandırma</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Giriş Yap</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Kayıt Ol</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Çıkış</value>
+  </data>
+  <data name="StartFree" xml:space="preserve">
+    <value>Ücretsiz Başla</value>
+  </data>
+
+  <!-- Hero Section -->
+  <data name="HeroTitle" xml:space="preserve">
+    <value>Online Nöbet Listesi Oluşturucu</value>
+  </data>
+  <data name="HeroSubtitle" xml:space="preserve">
+    <value>Hemşire nöbet programı, vardiya planı ve otomatik puantaj hesaplama. Adil dağıtım algoritması ile saniyeler içinde nöbet listesi oluşturun.</value>
+  </data>
+  <data name="HeroCta" xml:space="preserve">
+    <value>Hemen Başla - Ücretsiz</value>
+  </data>
+  <data name="NoRegistrationRequired" xml:space="preserve">
+    <value>Kayıt olmadan kullanabilirsiniz</value>
+  </data>
+
+  <!-- Features -->
+  <data name="Feature_QuickScheduling" xml:space="preserve">
+    <value>Hızlı Nöbet Oluşturma</value>
+  </data>
+  <data name="Feature_QuickScheduling_Desc" xml:space="preserve">
+    <value>Saniyeler içinde nöbet listesi oluşturun. Şablonlar ile tek tıkla atama yapın.</value>
+  </data>
+  <data name="Feature_FairDistribution" xml:space="preserve">
+    <value>Adil Dağıtım Algoritması</value>
+  </data>
+  <data name="Feature_FairDistribution_Desc" xml:space="preserve">
+    <value>Gece, hafta sonu ve tatil nöbetlerini herkese eşit şekilde dağıtın.</value>
+  </data>
+  <data name="Feature_AutoTimesheet" xml:space="preserve">
+    <value>Otomatik Puantaj</value>
+  </data>
+  <data name="Feature_AutoTimesheet_Desc" xml:space="preserve">
+    <value>Nöbet listesinden otomatik puantaj oluşturun. Gece, fazla mesai ayrı gösterilir.</value>
+  </data>
+  <data name="Feature_ExcelExport" xml:space="preserve">
+    <value>Excel'e Aktar</value>
+  </data>
+  <data name="Feature_ExcelExport_Desc" xml:space="preserve">
+    <value>Nöbet listesi ve puantajı tek tıkla Excel'e aktarın.</value>
+  </data>
+
+  <!-- Shift Templates -->
+  <data name="shift.morning" xml:space="preserve">
+    <value>Sabah Vardiyası</value>
+  </data>
+  <data name="shift.evening" xml:space="preserve">
+    <value>Akşam Vardiyası</value>
+  </data>
+  <data name="shift.night" xml:space="preserve">
+    <value>Gece Vardiyası</value>
+  </data>
+  <data name="shift.fullday" xml:space="preserve">
+    <value>Tam Gün</value>
+  </data>
+  <data name="shift.nurseduty" xml:space="preserve">
+    <value>Hemşire Nöbeti (16s)</value>
+  </data>
+  <data name="shift.24h" xml:space="preserve">
+    <value>24 Saat Nöbet</value>
+  </data>
+  <data name="shift.custom" xml:space="preserve">
+    <value>Özel Saat</value>
+  </data>
+
+  <!-- App -->
+  <data name="Employees" xml:space="preserve">
+    <value>Personel</value>
+  </data>
+  <data name="AddEmployee" xml:space="preserve">
+    <value>Personel Ekle</value>
+  </data>
+  <data name="FullName" xml:space="preserve">
+    <value>Ad Soyad</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Unvan</value>
+  </data>
+  <data name="IdentityNo" xml:space="preserve">
+    <value>Sicil/TC No</value>
+  </data>
+  <data name="ShiftTemplates" xml:space="preserve">
+    <value>Mesai Şablonları</value>
+  </data>
+  <data name="Holidays" xml:space="preserve">
+    <value>Resmi Tatiller</value>
+  </data>
+  <data name="AddHoliday" xml:space="preserve">
+    <value>Tatil Ekle</value>
+  </data>
+  <data name="GenerateSchedule" xml:space="preserve">
+    <value>Akıllı Nöbet Oluştur</value>
+  </data>
+  <data name="ExportExcel" xml:space="preserve">
+    <value>Excel'e Aktar</value>
+  </data>
+  <data name="Timesheet" xml:space="preserve">
+    <value>Puantaj</value>
+  </data>
+  <data name="ViewTimesheet" xml:space="preserve">
+    <value>Puantaj Görüntüle</value>
+  </data>
+
+  <!-- Calendar -->
+  <data name="Monday" xml:space="preserve">
+    <value>Pazartesi</value>
+  </data>
+  <data name="Tuesday" xml:space="preserve">
+    <value>Salı</value>
+  </data>
+  <data name="Wednesday" xml:space="preserve">
+    <value>Çarşamba</value>
+  </data>
+  <data name="Thursday" xml:space="preserve">
+    <value>Perşembe</value>
+  </data>
+  <data name="Friday" xml:space="preserve">
+    <value>Cuma</value>
+  </data>
+  <data name="Saturday" xml:space="preserve">
+    <value>Cumartesi</value>
+  </data>
+  <data name="Sunday" xml:space="preserve">
+    <value>Pazar</value>
+  </data>
+
+  <!-- Timesheet -->
+  <data name="TotalHours" xml:space="preserve">
+    <value>Toplam Saat</value>
+  </data>
+  <data name="NormalHours" xml:space="preserve">
+    <value>Normal Çalışma</value>
+  </data>
+  <data name="NightHours" xml:space="preserve">
+    <value>Gece Çalışması</value>
+  </data>
+  <data name="WeekendHours" xml:space="preserve">
+    <value>Hafta Sonu</value>
+  </data>
+  <data name="HolidayHours" xml:space="preserve">
+    <value>Tatil Çalışması</value>
+  </data>
+  <data name="Overtime" xml:space="preserve">
+    <value>Fazla Mesai</value>
+  </data>
+
+  <!-- Smart Scheduling -->
+  <data name="SmartScheduling" xml:space="preserve">
+    <value>Akıllı Nöbet Oluşturma</value>
+  </data>
+  <data name="Availability" xml:space="preserve">
+    <value>Müsaitlik</value>
+  </data>
+  <data name="SetAvailability" xml:space="preserve">
+    <value>Müsaitlik Belirle</value>
+  </data>
+  <data name="MinDailyStaff" xml:space="preserve">
+    <value>Günlük Minimum Nöbetçi</value>
+  </data>
+  <data name="WeekendStaffRequired" xml:space="preserve">
+    <value>Hafta Sonu Nöbetçi Gerekli</value>
+  </data>
+  <data name="WeekendMinStaff" xml:space="preserve">
+    <value>Hafta Sonu Minimum Nöbetçi</value>
+  </data>
+  <data name="HolidayStaffRequired" xml:space="preserve">
+    <value>Tatilde Nöbetçi Gerekli</value>
+  </data>
+  <data name="HolidayMinStaff" xml:space="preserve">
+    <value>Tatil Minimum Nöbetçi</value>
+  </data>
+  <data name="Generate" xml:space="preserve">
+    <value>Oluştur</value>
+  </data>
+
+  <!-- Messages -->
+  <data name="SaveSuccess" xml:space="preserve">
+    <value>Kaydedildi</value>
+  </data>
+  <data name="DeleteSuccess" xml:space="preserve">
+    <value>Silindi</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Hata oluştu</value>
+  </data>
+  <data name="EmployeeLimitReached" xml:space="preserve">
+    <value>Personel limitine ulaştınız. Daha fazla eklemek için kayıt olun.</value>
+  </data>
+  <data name="RegisterToAccessTimesheet" xml:space="preserve">
+    <value>Puantaj özelliğini kullanmak için kayıt olun.</value>
+  </data>
+
+  <!-- Footer -->
+  <data name="Copyright" xml:space="preserve">
+    <value>© 2026 Nöbetçi. Tüm hakları saklıdır.</value>
+  </data>
+</root>
+

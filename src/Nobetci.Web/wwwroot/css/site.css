@@ -1,0 +1,271 @@
+/* Nobetci - Site CSS */
+
+/* Font */
+body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Primary Colors */
+:root {
+    --primary: #3B82F6;
+    --primary-dark: #2563EB;
+    --secondary: #64748B;
+    --success: #22C55E;
+    --warning: #F59E0B;
+    --danger: #EF4444;
+    --purple: #8B5CF6;
+    --night: #6366F1;
+}
+
+/* Navbar */
+.navbar-brand {
+    font-size: 1.5rem;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+/* Cards */
+.card {
+    border-radius: 12px;
+}
+
+/* Feature Cards */
+.feature-card {
+    border-radius: 12px;
+}
+
+/* Calendar Styles */
+.calendar-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-header {
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.calendar-day {
+    padding: 0.5rem;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+    min-height: 80px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.calendar-day:hover {
+    background-color: #f8fafc;
+}
+
+.calendar-day.weekend {
+    background-color: #fef2f2;
+}
+
+.calendar-day.holiday {
+    background-color: #fef3c7;
+}
+
+/* Shift Badges */
+.shift-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin: 1px;
+}
+
+.shift-morning {
+    background-color: rgba(59, 130, 246, 0.2);
+    color: #1e40af;
+}
+
+.shift-evening {
+    background-color: rgba(249, 115, 22, 0.2);
+    color: #c2410c;
+}
+
+.shift-night {
+    background-color: rgba(139, 92, 246, 0.2);
+    color: #6d28d9;
+}
+
+.shift-fullday {
+    background-color: rgba(34, 197, 94, 0.2);
+    color: #15803d;
+}
+
+.shift-24h {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #b91c1c;
+}
+
+/* Sidebar */
+.sidebar {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Employee List */
+.employee-item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.employee-item:hover {
+    background-color: #f8fafc;
+}
+
+.employee-item.active {
+    background-color: #eff6ff;
+    border-left: 3px solid var(--primary);
+}
+
+/* Shift Template Buttons */
+.shift-template-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+.shift-template-btn:hover {
+    border-color: var(--primary);
+    background-color: #f8fafc;
+}
+
+.shift-template-btn .color-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+/* Tables */
+.table-schedule {
+    font-size: 0.875rem;
+}
+
+.table-schedule th {
+    background-color: #f8fafc;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.table-schedule td {
+    vertical-align: middle;
+    padding: 0.5rem;
+}
+
+/* Timesheet */
+.timesheet-summary {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.timesheet-stat {
+    text-align: center;
+    padding: 1rem;
+}
+
+.timesheet-stat .value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.timesheet-stat .label {
+    font-size: 0.75rem;
+    color: var(--secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Modal */
+.modal-header {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-footer {
+    border-top: 1px solid #e2e8f0;
+}
+
+/* Alerts */
+.alert {
+    border-radius: 8px;
+    border: none;
+}
+
+/* Forms */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    padding: 0.625rem 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Loading Spinner */
+.spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .calendar-day {
+        min-height: 60px;
+        padding: 0.25rem;
+    }
+    
+    .shift-badge {
+        font-size: 0.625rem;
+        padding: 1px 4px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .navbar, .sidebar, .btn, footer {
+        display: none !important;
+    }
+    
+    .calendar-container {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+}
