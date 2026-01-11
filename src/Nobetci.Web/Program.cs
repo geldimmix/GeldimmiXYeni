@@ -108,8 +108,8 @@ app.UseRequestLocalization();
 // Session
 app.UseSession();
 
-// Visitor tracking - DISABLED: VisitorLogs table doesn't exist yet
-// app.UseVisitorTracking();
+// Visitor tracking
+app.UseVisitorTracking();
 
 app.UseAuthentication();
 app.UseAuthorization();
