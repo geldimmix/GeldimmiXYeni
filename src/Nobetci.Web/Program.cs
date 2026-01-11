@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Nobetci.Web.Data;
 using Nobetci.Web.Data.Entities;
+using Nobetci.Web.Middleware;
 using Nobetci.Web.Services;
 using System.Globalization;
 
@@ -69,6 +70,8 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 // Custom services
 builder.Services.AddScoped<ITranslationService, TranslationService>();
 builder.Services.AddHttpClient<ITranslationService, TranslationService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IVisitorLogService, VisitorLogService>();
 
 // Session for guest users
 builder.Services.AddDistributedMemoryCache();
@@ -90,10 +93,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    // Temporarily show detailed errors in production for debugging
-    // TODO: Remove this after fixing the issue
-    app.UseDeveloperExceptionPage();
-    // app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
@@ -107,6 +107,9 @@ app.UseRequestLocalization();
 
 // Session
 app.UseSession();
+
+// Visitor tracking - logs all page visits
+app.UseVisitorTracking();
 
 app.UseAuthentication();
 app.UseAuthorization();

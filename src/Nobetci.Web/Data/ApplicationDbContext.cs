@@ -20,6 +20,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Leave> Leaves => Set<Leave>();
     public DbSet<EmployeeAvailability> EmployeeAvailabilities => Set<EmployeeAvailability>();
     public DbSet<ContentPage> ContentPages => Set<ContentPage>();
+    public DbSet<VisitorLog> VisitorLogs => Set<VisitorLog>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -138,6 +139,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         {
             entity.HasIndex(e => new { e.Slug, e.Language }).IsUnique();
             entity.HasIndex(e => e.PageType);
+        });
+
+        // VisitorLog configuration
+        builder.Entity<VisitorLog>(entity =>
+        {
+            entity.HasIndex(e => e.CreatedAt);
+            entity.HasIndex(e => e.IpAddress);
+            entity.HasIndex(e => e.SessionId);
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.PagePath);
         });
 
         // Seed global shift templates
