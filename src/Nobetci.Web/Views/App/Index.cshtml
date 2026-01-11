@@ -3260,17 +3260,22 @@
         const clearBtn = document.getElementById('clearSelectionBtn');
         const applyBtn = document.getElementById('applyToSelectedBtn');
         
-        toggle.addEventListener('change', function() {
-            state.multiSelectMode = this.checked;
-            if (!this.checked) {
-                clearSelection();
-            }
-            updateToolbarButtons();
-        });
+        if (toggle) {
+            toggle.addEventListener('change', function() {
+                state.multiSelectMode = this.checked;
+                if (!this.checked) {
+                    clearSelection();
+                }
+                updateToolbarButtons();
+            });
+        }
         
-        clearBtn.addEventListener('click', clearSelection);
+        if (clearBtn) {
+            clearBtn.addEventListener('click', clearSelection);
+        }
         
-        applyBtn.addEventListener('click', async function() {
+        if (applyBtn) {
+            applyBtn.addEventListener('click', async function() {
             if (!state.selectedTemplate) {
                 alert(texts.selectTemplate);
                 return;
@@ -3283,10 +3288,11 @@
                 promises.push(createShift(employeeId, date, cell, true));
             }
             
-            await Promise.all(promises);
-            clearSelection();
-            showToast(isTurkish ? 'Nöbetler eklendi!' : 'Shifts added!', 'success');
-        });
+                await Promise.all(promises);
+                clearSelection();
+                showToast(isTurkish ? 'Nöbetler eklendi!' : 'Shifts added!', 'success');
+            });
+        }
     }
     
     function clearSelection() {
