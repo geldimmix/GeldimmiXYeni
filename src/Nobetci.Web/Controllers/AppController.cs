@@ -289,6 +289,37 @@ public class AppController : Controller
         var startTime = TimeOnly.Parse(dto.StartTime);
         var endTime = TimeOnly.Parse(dto.EndTime);
         
+        // Check for overnight shift overlap - if this shift spans to next day, check if next day has a shift
+        if (dto.SpansNextDay && !dto.IsDayOff)
+        {
+            var nextDay = date.AddDays(1);
+            var nextDayShift = await _context.Shifts
+                .FirstOrDefaultAsync(s => s.EmployeeId == dto.EmployeeId && s.Date == nextDay);
+            
+            if (nextDayShift != null)
+            {
+                return BadRequest(new { 
+                    error = "overlap", 
+                    message = "Ertesi günde nöbet var, üst üste binme oluşur",
+                    nextDayDate = nextDay.ToString("yyyy-MM-dd")
+                });
+            }
+        }
+        
+        // Check if previous day has an overnight shift that overlaps with this day
+        var previousDay = date.AddDays(-1);
+        var previousDayShift = await _context.Shifts
+            .FirstOrDefaultAsync(s => s.EmployeeId == dto.EmployeeId && s.Date == previousDay && s.SpansNextDay);
+        
+        if (previousDayShift != null && !previousDayShift.IsDayOff)
+        {
+            return BadRequest(new { 
+                error = "overlap", 
+                message = "Önceki günün nöbeti bu güne sarkıyor, üst üste binme oluşur",
+                previousDayDate = previousDay.ToString("yyyy-MM-dd")
+            });
+        }
+        
         // Check if shift already exists for this day
         var existingShift = await _context.Shifts
             .FirstOrDefaultAsync(s => s.EmployeeId == dto.EmployeeId && s.Date == date);

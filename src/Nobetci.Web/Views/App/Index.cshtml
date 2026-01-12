@@ -699,7 +699,7 @@
                 
                 <div class="overnight-options">
                     <label class="overnight-option">
-                        <input type="radio" name="overnightMode" value="1" />
+                        <input type="radio" name="overnightMode" value="0" />
                         <div class="overnight-card">
                             <div class="overnight-icon">📅</div>
                             <div class="overnight-text">
@@ -710,12 +710,23 @@
                     </label>
                     
                     <label class="overnight-option">
-                        <input type="radio" name="overnightMode" value="2" />
+                        <input type="radio" name="overnightMode" value="1" />
                         <div class="overnight-card">
                             <div class="overnight-icon">📆</div>
                             <div class="overnight-text">
                                 <strong>@(isTurkish ? "Ertesi Ay" : "Next Month")</strong>
                                 <span>@(isTurkish ? "Tüm saatler ertesi aya yazılsın" : "All hours count in next month")</span>
+                            </div>
+                        </div>
+                    </label>
+                    
+                    <label class="overnight-option">
+                        <input type="radio" name="overnightMode" value="2" checked />
+                        <div class="overnight-card">
+                            <div class="overnight-icon">🌙</div>
+                            <div class="overnight-text">
+                                <strong>@(isTurkish ? "Gece Yarısında Böl" : "Split at Midnight")</strong>
+                                <span>@(isTurkish ? "00:00'a kadar bu ay, sonrası ertesi ay" : "Until 00:00 this month, after to next")</span>
                             </div>
                         </div>
                     </label>
@@ -3641,14 +3652,17 @@
     let pendingOvernightShift = null;
     
     // API Calls - NO PAGE RELOAD!
-    async function createShift(employeeId, date, cell, skipToast = false, overnightHoursMode = 0) {
-        // Check if it's last day of month AND shift spans to next day
-        if (state.selectedTemplate.spans && isLastDayOfMonth(date) && overnightHoursMode === 0 && !pendingOvernightShift) {
+    async function createShift(employeeId, date, cell, skipToast = false, overnightHoursMode = null) {
+        // Check if it's last day of month AND shift spans to next day - show modal to select mode
+        if (state.selectedTemplate.spans && isLastDayOfMonth(date) && overnightHoursMode === null && !pendingOvernightShift) {
             // Store pending data and show modal
             pendingOvernightShift = { employeeId, date, cell, skipToast };
             new bootstrap.Modal(document.getElementById('overnightHoursModal')).show();
             return;
         }
+        
+        // Default to 2 (split at midnight) if not specified
+        if (overnightHoursMode === null) overnightHoursMode = 2;
         
         const data = {
             employeeId: parseInt(employeeId),
@@ -3680,10 +3694,21 @@
                 if (!skipToast) {
                     showToast(texts.shiftAdded, 'success');
                 }
+                return { success: true };
+            } else if (response.status === 400) {
+                const errorResult = await response.json();
+                if (errorResult.error === 'overlap') {
+                    if (!skipToast) {
+                        showToast(isTurkish ? '⚠️ Nöbet çakışması: ' + errorResult.message : '⚠️ Shift overlap: ' + errorResult.message, 'error');
+                    }
+                    return { success: false, overlap: true, message: errorResult.message };
+                }
             }
+            return { success: false };
         } catch (error) {
             console.error('Error creating shift:', error);
             showToast(texts.errorOccurred, 'error');
+            return { success: false };
         }
         
         // Clear pending data
@@ -4113,6 +4138,20 @@
                 const daysInMonth = new Date(year, month, 0).getDate();
                 const datesToAssign = [];
                 
+                // First pass: collect all existing shifts for this employee (including next day check for overnight)
+                const existingShiftDates = new Set();
+                const overnightShiftDates = new Set(); // Dates that have overnight shifts
+                document.querySelectorAll(`.shift-cell[data-employee-id="${employeeId}"] .shift-badge`).forEach(badge => {
+                    const cellDate = badge.closest('.shift-cell').dataset.date;
+                    existingShiftDates.add(cellDate);
+                    // Check if it's an overnight shift (has +1 badge)
+                    if (badge.querySelector('.overnight-badge')) {
+                        overnightShiftDates.add(cellDate);
+                    }
+                });
+                
+                const isOvernightTemplate = state.selectedTemplate.spans;
+                
                 for (let day = 1; day <= daysInMonth; day++) {
                     // Create date string in local format (YYYY-MM-DD)
                     const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -4137,6 +4176,23 @@
                     // Check if already has shift
                     const hasShift = cell.querySelector('.shift-badge');
                     if (hasShift && !overwrite) continue; // Skip if has shift and overwrite is off
+                    
+                    // For overnight shifts: check if next day has a shift (overlap prevention)
+                    if (isOvernightTemplate && !overwrite) {
+                        const nextDate = new Date(year, month - 1, day + 1);
+                        const nextDateStr = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`;
+                        if (existingShiftDates.has(nextDateStr)) {
+                            continue; // Skip - would cause overlap with next day's shift
+                        }
+                    }
+                    
+                    // Check if previous day has overnight shift (would overlap with this day)
+                    if (!overwrite && day > 1) {
+                        const prevDateStr = `${year}-${String(month).padStart(2, '0')}-${String(day - 1).padStart(2, '0')}`;
+                        if (overnightShiftDates.has(prevDateStr)) {
+                            continue; // Skip - previous day's overnight shift overlaps
+                        }
+                    }
                     
                     datesToAssign.push({ date: dateStr, cell, hasExisting: !!hasShift });
                 }
