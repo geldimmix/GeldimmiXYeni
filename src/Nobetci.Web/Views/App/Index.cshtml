@@ -693,8 +693,8 @@
                         <div class="overnight-card">
                             <div class="overnight-icon">📅</div>
                             <div class="overnight-text">
-                                <strong>@(isTurkish ? "Mevcut Ay" : "Current Month")</strong>
-                                <span>@(isTurkish ? "Tüm saatler bu aya yazılsın" : "All hours count in this month")</span>
+                                <strong>@(isTurkish ? "Tamamı Bu Ay" : "All This Month")</strong>
+                                <span>@(isTurkish ? "Sarkan saatler dahil tümü bu aya yazılsın" : "Including overnight hours, all count in this month")</span>
                             </div>
                         </div>
                     </label>
@@ -702,21 +702,10 @@
                     <label class="overnight-option">
                         <input type="radio" name="overnightMode" value="2" checked />
                         <div class="overnight-card">
-                            <div class="overnight-icon">🌙</div>
-                            <div class="overnight-text">
-                                <strong>@(isTurkish ? "Gece Yarısında Böl" : "Split at Midnight")</strong>
-                                <span>@(isTurkish ? "00:00'a kadar bu ay, sonrası ertesi ay" : "Until 00:00 this month, after to next")</span>
-                            </div>
-                        </div>
-                    </label>
-                    
-                    <label class="overnight-option">
-                        <input type="radio" name="overnightMode" value="0" checked />
-                        <div class="overnight-card">
                             <div class="overnight-icon">✂️</div>
                             <div class="overnight-text">
-                                <strong>@(isTurkish ? "Böl (Gece Yarısı)" : "Split (Midnight)")</strong>
-                                <span>@(isTurkish ? "00:00'a kadar bu ay, sonrası ertesi ay" : "Until 00:00 this month, after to next")</span>
+                                <strong>@(isTurkish ? "Gece Yarısından Böl" : "Split at Midnight")</strong>
+                                <span>@(isTurkish ? "00:00'a kadar bu ay, 00:00 sonrası gelecek ay" : "Until 00:00 this month, after 00:00 next month")</span>
                             </div>
                         </div>
                     </label>
