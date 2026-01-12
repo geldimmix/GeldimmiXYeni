@@ -300,7 +300,7 @@ public class AppController : Controller
             existingShift.EndTime = endTime;
             existingShift.SpansNextDay = dto.SpansNextDay;
             existingShift.ShiftTemplateId = dto.ShiftTemplateId;
-            existingShift.BreakMinutes = organization.BreakMinutes;
+            existingShift.BreakMinutes = dto.BreakMinutes ?? organization.BreakMinutes;
             existingShift.IsDayOff = dto.IsDayOff;
             existingShift.UpdatedAt = DateTime.UtcNow;
             
@@ -327,7 +327,7 @@ public class AppController : Controller
             EndTime = endTime,
             SpansNextDay = dto.SpansNextDay,
             ShiftTemplateId = dto.ShiftTemplateId,
-            BreakMinutes = organization.BreakMinutes,
+            BreakMinutes = dto.BreakMinutes ?? organization.BreakMinutes,
             IsDayOff = dto.IsDayOff,
             OvernightHoursMode = dto.OvernightHoursMode
         };
@@ -705,6 +705,7 @@ public class ShiftDto
     public string EndTime { get; set; } = string.Empty;
     public bool SpansNextDay { get; set; }
     public int? ShiftTemplateId { get; set; }
+    public int? BreakMinutes { get; set; }
     public bool IsDayOff { get; set; }
     /// <summary>
     /// 0 = Split at midnight, 1 = All current month, 2 = All next month
