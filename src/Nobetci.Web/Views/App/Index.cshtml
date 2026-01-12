@@ -195,12 +195,7 @@
                             if (shift.SpansNextDay && shift.Date == lastDayOfMonth)
                             {
                                 // This is an overnight shift on the last day of month
-                                if (shift.OvernightHoursMode == 1)
-                                {
-                                    // All hours go to NEXT month - don't count here
-                                    totalWorkedHours += 0;
-                                }
-                                else if (shift.OvernightHoursMode == 2)
+                                if (shift.OvernightHoursMode == 2)
                                 {
                                     // Split at midnight - only count hours until midnight (StartTime to 00:00)
                                     var hoursUntilMidnight = (24 - shift.StartTime.Hour) - (shift.StartTime.Minute / 60.0m);
@@ -230,12 +225,7 @@
                         var prevMonthShift = Model.GetPreviousMonthOvernightShift(employee.Id);
                         if (prevMonthShift != null && !prevMonthShift.IsDayOff)
                         {
-                            if (prevMonthShift.OvernightHoursMode == 1)
-                            {
-                                // All hours go to this month (next month from shift's perspective)
-                                totalWorkedHours += prevMonthShift.TotalHours;
-                            }
-                            else if (prevMonthShift.OvernightHoursMode == 2)
+                            if (prevMonthShift.OvernightHoursMode == 2)
                             {
                                 // Split at midnight - add hours from 00:00 to EndTime
                                 var hoursAfterMidnight = prevMonthShift.EndTime.Hour + (prevMonthShift.EndTime.Minute / 60.0m);
@@ -705,17 +695,6 @@
                             <div class="overnight-text">
                                 <strong>@(isTurkish ? "Mevcut Ay" : "Current Month")</strong>
                                 <span>@(isTurkish ? "Tüm saatler bu aya yazılsın" : "All hours count in this month")</span>
-                            </div>
-                        </div>
-                    </label>
-                    
-                    <label class="overnight-option">
-                        <input type="radio" name="overnightMode" value="1" />
-                        <div class="overnight-card">
-                            <div class="overnight-icon">📆</div>
-                            <div class="overnight-text">
-                                <strong>@(isTurkish ? "Ertesi Ay" : "Next Month")</strong>
-                                <span>@(isTurkish ? "Tüm saatler ertesi aya yazılsın" : "All hours count in next month")</span>
                             </div>
                         </div>
                     </label>
