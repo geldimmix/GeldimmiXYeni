@@ -915,39 +915,36 @@
         background: #f1f5f9;
     }
     
-    /* Sidebar - Premium Light */
+    /* Sidebar - Clean & Minimal */
     .app-sidebar {
         width: 240px;
         min-width: 240px;
         max-height: calc(100vh - 60px);
-        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-        border-right: 1px solid #cbd5e1;
+        background: #ffffff;
+        border-right: 1px solid #e5e7eb;
         display: flex;
         flex-direction: column;
         padding: 16px;
-        gap: 16px;
-        box-shadow: 4px 0 16px rgba(0,0,0,0.08);
+        gap: 14px;
         overflow-y: auto;
         overflow-x: hidden;
     }
     
     .app-sidebar::-webkit-scrollbar {
-        width: 10px;
+        width: 6px;
     }
     
     .app-sidebar::-webkit-scrollbar-track {
-        background: #e2e8f0;
-        border-radius: 5px;
+        background: transparent;
     }
     
     .app-sidebar::-webkit-scrollbar-thumb {
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-        border-radius: 5px;
-        border: 2px solid #f1f5f9;
+        background: #d1d5db;
+        border-radius: 3px;
     }
     
     .app-sidebar::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        background: #9ca3af;
     }
     
     /* Sidebar Actions */
@@ -960,63 +957,57 @@
     .action-btn {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 12px 14px;
-        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
+        gap: 10px;
+        padding: 10px 12px;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.15s ease;
         width: 100%;
         text-align: left;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     }
     
     .action-btn:hover {
-        border-color: #3b82f6;
-        background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
-        box-shadow: 0 6px 20px rgba(59,130,246,0.25);
-        transform: translateY(-2px);
+        background: #f3f4f6;
+        border-color: #d1d5db;
     }
     
     .action-icon {
-        font-size: 1.4rem;
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        font-size: 1.2rem;
     }
     
     .action-label {
         flex: 1;
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: #1e293b;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #374151;
     }
     
     .action-badge {
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        background: #3b82f6;
         color: white;
-        font-size: 0.7rem;
-        font-weight: 700;
-        padding: 4px 10px;
-        border-radius: 14px;
-        box-shadow: 0 2px 8px rgba(59,130,246,0.4);
+        font-size: 0.65rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 10px;
     }
     
-    /* Templates - Premium Light */
+    /* Templates - Clean */
     .templates-compact {
-        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-        border-radius: 12px;
-        border: 2px solid #e2e8f0;
-        padding: 14px;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        background: #f9fafb;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        padding: 12px;
     }
     
     .templates-header {
-        font-size: 0.7rem;
-        font-weight: 700;
-        color: #475569;
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: #6b7280;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 12px;
+        letter-spacing: 0.5px;
+        margin-bottom: 10px;
         display: flex;
         align-items: center;
         gap: 6px;
@@ -1024,7 +1015,7 @@
     
     .templates-header::before {
         content: '⏰';
-        font-size: 0.9rem;
+        font-size: 0.8rem;
     }
     
     .template-list {
@@ -1036,124 +1027,114 @@
     .tpl-btn-row {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 12px;
-        background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
-        border: 2px solid #e2e8f0;
-        border-radius: 10px;
+        gap: 10px;
+        padding: 10px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all 0.15s ease;
         width: 100%;
         text-align: left;
         position: relative;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
     
     .tpl-btn-row:hover {
-        border-color: #3b82f6;
-        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-        box-shadow: 0 4px 16px rgba(59,130,246,0.2);
-        transform: translateX(2px);
+        background: #f9fafb;
+        border-color: #d1d5db;
     }
     
     .tpl-btn-row.active {
-        border-color: #2563eb;
-        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-        box-shadow: 0 0 0 3px rgba(59,130,246,0.2), 0 4px 16px rgba(59,130,246,0.3);
+        border-color: #3b82f6;
+        background: #eff6ff;
     }
     
     .tpl-btn-row.overnight {
         border-style: dashed;
-        border-width: 2px;
     }
     
     .tpl-btn-row.day-off {
         border-style: dashed;
-        background: linear-gradient(135deg, #f9fafb 0%, #f1f5f9 100%);
+        background: #fafafa;
     }
     
     .tpl-color {
-        width: 5px;
-        height: 32px;
-        border-radius: 4px;
+        width: 4px;
+        height: 28px;
+        border-radius: 2px;
         flex-shrink: 0;
-        box-shadow: 0 0 12px currentColor;
     }
     
     .tpl-info {
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 3px;
+        gap: 2px;
     }
     
     .tpl-time {
-        font-size: 0.875rem;
-        font-weight: 700;
-        color: #0f172a;
-        letter-spacing: -0.3px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #1f2937;
     }
     
     .tpl-meta {
-        font-size: 0.7rem;
-        color: #64748b;
-        font-weight: 500;
+        font-size: 0.65rem;
+        color: #6b7280;
+        font-weight: 400;
     }
     
     .tpl-badge-new {
-        font-size: 0.65rem;
-        padding: 3px 8px;
-        background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+        font-size: 0.6rem;
+        padding: 2px 6px;
+        background: #f59e0b;
         color: white;
-        border-radius: 8px;
-        font-weight: 700;
-        box-shadow: 0 2px 8px rgba(245,158,11,0.5);
+        border-radius: 4px;
+        font-weight: 600;
     }
     
-    /* Multi Toggle - Premium Light */
+    /* Multi Toggle - Clean */
     .multi-toggle {
-        padding: 12px;
-        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-        border: 2px solid #e2e8f0;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        padding: 10px 12px;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
     }
     
     .multi-toggle label {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
         cursor: pointer;
     }
     
     .multi-toggle .toggle-track {
-        width: 42px;
-        height: 24px;
-        background: linear-gradient(135deg, #cbd5e1 0%, #e2e8f0 100%);
-        border-radius: 12px;
+        width: 36px;
+        height: 20px;
+        background: #d1d5db;
+        border-radius: 10px;
         position: relative;
-        transition: all 0.3s;
-        box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        transition: all 0.2s;
     }
     
     .multi-toggle .toggle-thumb {
         position: absolute;
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
         background: white;
         border-radius: 50%;
-        top: 3px;
-        left: 3px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        top: 2px;
+        left: 2px;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
     
     .multi-toggle input:checked + .toggle-track {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        background: #10b981;
     }
     
     .multi-toggle input:checked + .toggle-track .toggle-thumb {
-        left: 21px;
+        left: 18px;
     }
     
     .multi-toggle input {
@@ -1161,29 +1142,27 @@
     }
     
     .multi-toggle .toggle-text {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #1e293b;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #374151;
     }
     
-    /* Selected Indicator - Premium Light */
+    /* Selected Indicator - Clean */
     .selected-indicator {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 12px 14px;
-        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-        border: 2px solid #60a5fa;
-        border-radius: 10px;
-        box-shadow: 0 4px 16px rgba(59,130,246,0.25);
+        gap: 10px;
+        padding: 10px 12px;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 6px;
     }
     
     .indicator-color {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
         background: #3b82f6;
-        box-shadow: 0 0 16px rgba(59,130,246,0.6);
         flex-shrink: 0;
     }
     
@@ -1191,22 +1170,21 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 1px;
     }
     
     .indicator-label {
-        font-size: 0.65rem;
-        color: #475569;
+        font-size: 0.6rem;
+        color: #6b7280;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        font-weight: 700;
+        font-weight: 500;
     }
     
     .indicator-time {
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: #1e3a8a;
-        letter-spacing: -0.3px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #1e40af;
     }
     
     .sidebar-section {
