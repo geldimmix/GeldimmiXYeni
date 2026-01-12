@@ -67,3 +67,4 @@ echo ""
 echo "Nginx status:"
 systemctl status nginx --no-pager
 
+

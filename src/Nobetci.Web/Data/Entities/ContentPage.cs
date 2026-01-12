@@ -92,3 +92,4 @@ public enum PageType
     Legal = 3       // Yasal sayfa (KVKK, Gizlilik vs)
 }
 
+

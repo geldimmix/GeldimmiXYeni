@@ -50,3 +50,4 @@ public enum HolidayType
     AdminHoliday = 1      // İdari Tatil
 }
 
+

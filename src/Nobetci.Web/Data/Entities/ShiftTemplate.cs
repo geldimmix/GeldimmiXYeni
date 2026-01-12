@@ -68,3 +68,4 @@ public class ShiftTemplate
     public virtual Organization? Organization { get; set; }
 }
 
+

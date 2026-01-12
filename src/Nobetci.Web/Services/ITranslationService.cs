@@ -13,3 +13,4 @@ public interface ITranslationService
     Task<string> TranslateToTurkishAsync(string englishText);
 }
 
+
