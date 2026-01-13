@@ -542,7 +542,8 @@ public class AppController : Controller
         var templates = await _context.ShiftTemplates
             .Where(t => t.IsGlobal || t.OrganizationId == organization.Id)
             .Where(t => t.IsActive)
-            .OrderBy(t => t.DisplayOrder)
+            .OrderBy(t => t.IsGlobal ? 0 : 1)
+            .ThenBy(t => t.DisplayOrder)
             .Select(t => new {
                 t.Id,
                 t.Name,
@@ -552,11 +553,120 @@ public class AppController : Controller
                 t.SpansNextDay,
                 t.BreakMinutes,
                 t.Color,
-                t.IsGlobal
+                t.IsGlobal,
+                canEdit = !t.IsGlobal && t.OrganizationId == organization.Id
             })
             .ToListAsync();
             
         return Json(templates);
+    }
+
+    [HttpPost]
+    [Route("api/shift-templates")]
+    public async Task<IActionResult> CreateShiftTemplate([FromBody] ShiftTemplateDto dto)
+    {
+        // Only registered users can create templates
+        if (User.Identity?.IsAuthenticated != true)
+        {
+            return Unauthorized(new { error = "Bu özellik için giriş yapmanız gerekiyor" });
+        }
+        
+        var organization = await GetOrCreateOrganizationAsync();
+        
+        var template = new ShiftTemplate
+        {
+            OrganizationId = organization.Id,
+            Name = dto.Name,
+            StartTime = TimeOnly.Parse(dto.StartTime),
+            EndTime = TimeOnly.Parse(dto.EndTime),
+            SpansNextDay = dto.SpansNextDay,
+            BreakMinutes = dto.BreakMinutes,
+            Color = dto.Color ?? "#3B82F6",
+            IsGlobal = false,
+            DisplayOrder = dto.DisplayOrder,
+            IsActive = true
+        };
+        
+        _context.ShiftTemplates.Add(template);
+        await _context.SaveChangesAsync();
+        
+        return Json(new {
+            id = template.Id,
+            name = template.Name,
+            startTime = template.StartTime.ToString("HH:mm"),
+            endTime = template.EndTime.ToString("HH:mm"),
+            spansNextDay = template.SpansNextDay,
+            breakMinutes = template.BreakMinutes,
+            color = template.Color,
+            isGlobal = false,
+            canEdit = true
+        });
+    }
+
+    [HttpPut]
+    [Route("api/shift-templates/{id}")]
+    public async Task<IActionResult> UpdateShiftTemplate(int id, [FromBody] ShiftTemplateDto dto)
+    {
+        if (User.Identity?.IsAuthenticated != true)
+        {
+            return Unauthorized(new { error = "Bu özellik için giriş yapmanız gerekiyor" });
+        }
+        
+        var organization = await GetOrCreateOrganizationAsync();
+        var template = await _context.ShiftTemplates
+            .FirstOrDefaultAsync(t => t.Id == id && t.OrganizationId == organization.Id && !t.IsGlobal);
+            
+        if (template == null)
+        {
+            return NotFound(new { error = "Şablon bulunamadı veya düzenleme izniniz yok" });
+        }
+        
+        template.Name = dto.Name;
+        template.StartTime = TimeOnly.Parse(dto.StartTime);
+        template.EndTime = TimeOnly.Parse(dto.EndTime);
+        template.SpansNextDay = dto.SpansNextDay;
+        template.BreakMinutes = dto.BreakMinutes;
+        template.Color = dto.Color ?? template.Color;
+        template.DisplayOrder = dto.DisplayOrder;
+        
+        await _context.SaveChangesAsync();
+        
+        return Json(new {
+            id = template.Id,
+            name = template.Name,
+            startTime = template.StartTime.ToString("HH:mm"),
+            endTime = template.EndTime.ToString("HH:mm"),
+            spansNextDay = template.SpansNextDay,
+            breakMinutes = template.BreakMinutes,
+            color = template.Color,
+            isGlobal = false,
+            canEdit = true
+        });
+    }
+
+    [HttpDelete]
+    [Route("api/shift-templates/{id}")]
+    public async Task<IActionResult> DeleteShiftTemplate(int id)
+    {
+        if (User.Identity?.IsAuthenticated != true)
+        {
+            return Unauthorized(new { error = "Bu özellik için giriş yapmanız gerekiyor" });
+        }
+        
+        var organization = await GetOrCreateOrganizationAsync();
+        var template = await _context.ShiftTemplates
+            .FirstOrDefaultAsync(t => t.Id == id && t.OrganizationId == organization.Id && !t.IsGlobal);
+            
+        if (template == null)
+        {
+            return NotFound(new { error = "Şablon bulunamadı veya silme izniniz yok" });
+        }
+        
+        // Soft delete
+        template.IsActive = false;
+        await _context.SaveChangesAsync();
+        
+        return Ok(new { success = true });
     }
 
     #endregion
@@ -750,5 +860,16 @@ public class HolidayDto
     public string Name { get; set; } = string.Empty;
     public HolidayType Type { get; set; }
     public bool IsHalfDay { get; set; }
+}
+
+public class ShiftTemplateDto
+{
+    public string Name { get; set; } = string.Empty;
+    public string StartTime { get; set; } = string.Empty;
+    public string EndTime { get; set; } = string.Empty;
+    public bool SpansNextDay { get; set; }
+    public int? BreakMinutes { get; set; }
+    public string? Color { get; set; }
+    public int DisplayOrder { get; set; }
 }
 

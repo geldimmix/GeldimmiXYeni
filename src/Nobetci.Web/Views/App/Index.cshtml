@@ -27,9 +27,16 @@
         <div class="templates-compact">
             <div class="templates-header">
                 <span>@(isTurkish ? "Vardiya Şablonları" : "Shift Templates")</span>
+                @if (Model.IsRegistered)
+                {
+                    <button class="tpl-manage-btn" data-bs-toggle="modal" data-bs-target="#manageTemplatesModal" title="@(isTurkish ? "Şablonları Yönet" : "Manage Templates")">
+                        ⚙️
+                    </button>
+                }
             </div>
             
             <div class="template-list" id="templateList">
+                <!-- Default templates (always shown) -->
                 <button class="tpl-btn-row" data-start="08:00" data-end="17:00" data-spans="false" data-break="60" data-color="#22C55E">
                     <span class="tpl-color" style="background:#22C55E"></span>
                     <span class="tpl-info">
@@ -67,6 +74,12 @@
                     </span>
                     <span class="tpl-badge-new">+1</span>
                 </button>
+                
+                <!-- User custom templates will be inserted here by JavaScript -->
+                <div id="userTemplatesContainer"></div>
+                
+                <!-- Separator and special buttons -->
+                <div class="tpl-divider"></div>
                 <button class="tpl-btn-row day-off" data-start="00:00" data-end="00:00" data-spans="false" data-break="0" data-color="#94a3b8" data-day-off="true">
                     <span class="tpl-color" style="background:#94a3b8"></span>
                     <span class="tpl-info">
@@ -575,6 +588,72 @@
     </div>
 </div>
 
+<!-- Manage Templates Modal -->
+@if (Model.IsRegistered)
+{
+<div class="modal fade" id="manageTemplatesModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content custom-modal">
+            <div class="modal-header-custom templates-modal-header">
+                <div class="modal-icon">⏰</div>
+                <div class="modal-title-group">
+                    <h5 class="modal-title">@(isTurkish ? "Vardiya Şablonları" : "Shift Templates")</h5>
+                    <p class="modal-subtitle">@(isTurkish ? "Kendi özel vardiya şablonlarınızı oluşturun ve yönetin" : "Create and manage your custom shift templates")</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body-custom">
+                <!-- Template List -->
+                <div class="template-manager-list" id="templateManagerList">
+                    <div class="template-loading">@(isTurkish ? "Yükleniyor..." : "Loading...")</div>
+                </div>
+                
+                <!-- Add New Template Form -->
+                <div class="template-add-form" id="templateAddForm">
+                    <h6 class="form-section-title">@(isTurkish ? "Yeni Şablon Ekle" : "Add New Template")</h6>
+                    <div class="template-form-grid">
+                        <div class="form-group">
+                            <label>@(isTurkish ? "Şablon Adı" : "Template Name")</label>
+                            <input type="text" id="newTemplateName" class="form-control" placeholder="@(isTurkish ? "örn: Sabah Vardiyası" : "e.g. Morning Shift")">
+                        </div>
+                        <div class="form-group">
+                            <label>@(isTurkish ? "Başlangıç" : "Start")</label>
+                            <input type="time" id="newTemplateStart" class="form-control" value="08:00">
+                        </div>
+                        <div class="form-group">
+                            <label>@(isTurkish ? "Bitiş" : "End")</label>
+                            <input type="time" id="newTemplateEnd" class="form-control" value="17:00">
+                        </div>
+                        <div class="form-group">
+                            <label>@(isTurkish ? "Mola (dk)" : "Break (min)")</label>
+                            <input type="number" id="newTemplateBreak" class="form-control" value="60" min="0" max="120">
+                        </div>
+                        <div class="form-group">
+                            <label>@(isTurkish ? "Renk" : "Color")</label>
+                            <input type="color" id="newTemplateColor" class="form-control form-control-color" value="#3B82F6">
+                        </div>
+                        <div class="form-group form-check-group">
+                            <label class="form-check">
+                                <input type="checkbox" id="newTemplateSpans" class="form-check-input">
+                                <span>@(isTurkish ? "Ertesi güne sarkar (+1)" : "Spans next day (+1)")</span>
+                            </label>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-add-template" id="addNewTemplateBtn">
+                        <span>➕</span> @(isTurkish ? "Şablon Ekle" : "Add Template")
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer-custom">
+                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
+                    @(isTurkish ? "Kapat" : "Close")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
 <!-- Add Holiday Modal -->
 <div class="modal fade" id="addHolidayModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -989,7 +1068,197 @@
         margin-bottom: 10px;
         display: flex;
         align-items: center;
+        justify-content: space-between;
         gap: 6px;
+    }
+    
+    .templates-header > span {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .tpl-manage-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+        opacity: 0.6;
+        transition: all 0.2s;
+    }
+    
+    .tpl-manage-btn:hover {
+        opacity: 1;
+        background: #e5e7eb;
+    }
+    
+    .tpl-divider {
+        height: 1px;
+        background: #e5e7eb;
+        margin: 8px 0;
+    }
+    
+    /* Template Manager Modal */
+    .templates-modal-header {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    }
+    
+    .template-manager-list {
+        max-height: 300px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+    }
+    
+    .template-manager-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        border-bottom: 1px solid #f3f4f6;
+        gap: 12px;
+    }
+    
+    .template-manager-item:last-child {
+        border-bottom: none;
+    }
+    
+    .template-manager-item.global {
+        background: #f9fafb;
+    }
+    
+    .tpl-item-color {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        flex-shrink: 0;
+    }
+    
+    .tpl-item-info {
+        flex: 1;
+    }
+    
+    .tpl-item-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #1f2937;
+    }
+    
+    .tpl-item-time {
+        font-size: 0.8rem;
+        color: #6b7280;
+    }
+    
+    .tpl-item-badge {
+        font-size: 0.65rem;
+        padding: 2px 6px;
+        background: #e0e7ff;
+        color: #4338ca;
+        border-radius: 4px;
+        font-weight: 500;
+    }
+    
+    .tpl-item-actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .tpl-item-actions button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        transition: background 0.2s;
+    }
+    
+    .tpl-item-actions .btn-edit:hover {
+        background: #dbeafe;
+    }
+    
+    .tpl-item-actions .btn-delete:hover {
+        background: #fee2e2;
+    }
+    
+    .template-add-form {
+        background: #f9fafb;
+        border-radius: 8px;
+        padding: 16px;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .form-section-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 12px;
+    }
+    
+    .template-form-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr 60px 1fr;
+        gap: 12px;
+        align-items: end;
+        margin-bottom: 12px;
+    }
+    
+    .form-check-group {
+        display: flex;
+        align-items: center;
+    }
+    
+    .form-check-group .form-check {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin: 0;
+        font-size: 0.8rem;
+        cursor: pointer;
+    }
+    
+    .form-control-color {
+        width: 100%;
+        height: 38px;
+        padding: 2px;
+        cursor: pointer;
+    }
+    
+    .btn-add-template {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .btn-add-template:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+    
+    .template-loading {
+        padding: 20px;
+        text-align: center;
+        color: #6b7280;
+    }
+    
+    .user-template-item {
+        border-left: 3px solid #8b5cf6;
+    }
+    
+    @@media (max-width: 768px) {
+        .template-form-grid {
+            grid-template-columns: 1fr 1fr;
+        }
     }
     
     .templates-header::before {
@@ -3285,6 +3554,8 @@
         initDeleteHandlers();
         initWeekendModeToggle();
         restoreSelectedTemplate();
+        initTemplateManager();
+        loadUserTemplates();
     });
     
     // Restore template from localStorage
@@ -3350,6 +3621,285 @@
             localStorage.setItem(TEMPLATE_STORAGE_KEY, JSON.stringify(state.selectedTemplate));
         }
     }
+    
+    // ========== Template Manager Functions ==========
+    
+    // Load user's custom templates from API
+    async function loadUserTemplates() {
+        const isRegistered = @(Model.IsRegistered ? "true" : "false");
+        if (!isRegistered) return;
+        
+        try {
+            const response = await fetch('/api/shift-templates');
+            if (response.ok) {
+                const templates = await response.json();
+                const userTemplates = templates.filter(t => !t.isGlobal && t.canEdit);
+                renderUserTemplatesInSidebar(userTemplates);
+            }
+        } catch (error) {
+            console.error('Error loading templates:', error);
+        }
+    }
+    
+    // Render user templates in sidebar
+    function renderUserTemplatesInSidebar(templates) {
+        const container = document.getElementById('userTemplatesContainer');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        templates.forEach(t => {
+            const btn = document.createElement('button');
+            btn.className = 'tpl-btn-row user-tpl' + (t.spansNextDay ? ' overnight' : '');
+            btn.dataset.id = t.id;
+            btn.dataset.start = t.startTime;
+            btn.dataset.end = t.endTime;
+            btn.dataset.spans = t.spansNextDay;
+            btn.dataset.break = t.breakMinutes || 0;
+            btn.dataset.color = t.color;
+            
+            btn.innerHTML = `
+                <span class="tpl-color" style="background:${t.color}"></span>
+                <span class="tpl-info">
+                    <span class="tpl-time">${t.startTime} - ${t.endTime}</span>
+                    <span class="tpl-meta">${t.name}</span>
+                </span>
+                ${t.spansNextDay ? '<span class="tpl-badge-new">+1</span>' : ''}
+            `;
+            
+            // Add click handler for selection
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tpl-btn-row').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                state.selectedTemplate = {
+                    id: parseInt(this.dataset.id),
+                    start: this.dataset.start,
+                    end: this.dataset.end,
+                    spans: this.dataset.spans === 'true',
+                    breakMinutes: parseInt(this.dataset.break) || 0,
+                    color: this.dataset.color || '#3B82F6',
+                    isCustom: false,
+                    isDayOff: false
+                };
+                
+                updateSelectedIndicator(state.selectedTemplate);
+                saveSelectedTemplate();
+            });
+            
+            container.appendChild(btn);
+        });
+    }
+    
+    // Initialize template manager modal
+    function initTemplateManager() {
+        const isRegistered = @(Model.IsRegistered ? "true" : "false");
+        if (!isRegistered) return;
+        
+        const modal = document.getElementById('manageTemplatesModal');
+        if (!modal) return;
+        
+        // Load templates when modal opens
+        modal.addEventListener('show.bs.modal', loadTemplatesForManager);
+        
+        // Add new template button
+        const addBtn = document.getElementById('addNewTemplateBtn');
+        if (addBtn) {
+            addBtn.addEventListener('click', addNewTemplate);
+        }
+    }
+    
+    // Load templates for manager modal
+    async function loadTemplatesForManager() {
+        const listEl = document.getElementById('templateManagerList');
+        if (!listEl) return;
+        
+        listEl.innerHTML = '<div class="template-loading">' + (isTurkish ? 'Yükleniyor...' : 'Loading...') + '</div>';
+        
+        try {
+            const response = await fetch('/api/shift-templates');
+            if (response.ok) {
+                const templates = await response.json();
+                renderTemplatesInManager(templates);
+            }
+        } catch (error) {
+            listEl.innerHTML = '<div class="template-loading">' + (isTurkish ? 'Hata oluştu' : 'Error occurred') + '</div>';
+        }
+    }
+    
+    // Render templates in manager modal
+    function renderTemplatesInManager(templates) {
+        const listEl = document.getElementById('templateManagerList');
+        if (!listEl) return;
+        
+        if (templates.length === 0) {
+            listEl.innerHTML = '<div class="template-loading">' + (isTurkish ? 'Henüz şablon yok' : 'No templates yet') + '</div>';
+            return;
+        }
+        
+        listEl.innerHTML = templates.map(t => `
+            <div class="template-manager-item ${t.isGlobal ? 'global' : 'user-template-item'}" data-id="${t.id}">
+                <span class="tpl-item-color" style="background:${t.color}"></span>
+                <div class="tpl-item-info">
+                    <div class="tpl-item-name">${t.name || (t.startTime + ' - ' + t.endTime)}</div>
+                    <div class="tpl-item-time">${t.startTime} - ${t.endTime} ${t.spansNextDay ? '(+1)' : ''} • ${t.breakMinutes || 0}${isTurkish ? 'dk mola' : 'min break'}</div>
+                </div>
+                ${t.isGlobal ? '<span class="tpl-item-badge">' + (isTurkish ? 'Varsayılan' : 'Default') + '</span>' : ''}
+                ${t.canEdit ? `
+                    <div class="tpl-item-actions">
+                        <button class="btn-edit" onclick="editTemplate(${t.id})" title="${isTurkish ? 'Düzenle' : 'Edit'}">✏️</button>
+                        <button class="btn-delete" onclick="deleteTemplate(${t.id})" title="${isTurkish ? 'Sil' : 'Delete'}">🗑️</button>
+                    </div>
+                ` : ''}
+            </div>
+        `).join('');
+    }
+    
+    // Add new template
+    async function addNewTemplate() {
+        const name = document.getElementById('newTemplateName').value.trim();
+        const startTime = document.getElementById('newTemplateStart').value;
+        const endTime = document.getElementById('newTemplateEnd').value;
+        const breakMinutes = parseInt(document.getElementById('newTemplateBreak').value) || 0;
+        const color = document.getElementById('newTemplateColor').value;
+        const spansNextDay = document.getElementById('newTemplateSpans').checked;
+        
+        if (!name) {
+            showToast(isTurkish ? 'Şablon adı gerekli' : 'Template name is required', 'error');
+            return;
+        }
+        
+        if (!startTime || !endTime) {
+            showToast(isTurkish ? 'Başlangıç ve bitiş saati gerekli' : 'Start and end time are required', 'error');
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/shift-templates', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name,
+                    startTime,
+                    endTime,
+                    breakMinutes,
+                    color,
+                    spansNextDay,
+                    displayOrder: 100
+                })
+            });
+            
+            if (response.ok) {
+                showToast(isTurkish ? 'Şablon eklendi' : 'Template added', 'success');
+                // Clear form
+                document.getElementById('newTemplateName').value = '';
+                document.getElementById('newTemplateStart').value = '08:00';
+                document.getElementById('newTemplateEnd').value = '17:00';
+                document.getElementById('newTemplateBreak').value = '60';
+                document.getElementById('newTemplateColor').value = '#3B82F6';
+                document.getElementById('newTemplateSpans').checked = false;
+                // Reload lists
+                loadTemplatesForManager();
+                loadUserTemplates();
+            } else {
+                const error = await response.json();
+                showToast(error.error || (isTurkish ? 'Hata oluştu' : 'Error occurred'), 'error');
+            }
+        } catch (error) {
+            showToast(isTurkish ? 'Hata oluştu' : 'Error occurred', 'error');
+        }
+    }
+    
+    // Delete template
+    async function deleteTemplate(id) {
+        if (!confirm(isTurkish ? 'Bu şablonu silmek istediğinize emin misiniz?' : 'Are you sure you want to delete this template?')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/api/shift-templates/${id}`, {
+                method: 'DELETE'
+            });
+            
+            if (response.ok) {
+                showToast(isTurkish ? 'Şablon silindi' : 'Template deleted', 'success');
+                loadTemplatesForManager();
+                loadUserTemplates();
+            } else {
+                const error = await response.json();
+                showToast(error.error || (isTurkish ? 'Hata oluştu' : 'Error occurred'), 'error');
+            }
+        } catch (error) {
+            showToast(isTurkish ? 'Hata oluştu' : 'Error occurred', 'error');
+        }
+    }
+    
+    // Edit template (simple prompt-based for now)
+    async function editTemplate(id) {
+        const item = document.querySelector(`.template-manager-item[data-id="${id}"]`);
+        if (!item) return;
+        
+        const nameEl = item.querySelector('.tpl-item-name');
+        const currentName = nameEl ? nameEl.textContent : '';
+        
+        const newName = prompt(isTurkish ? 'Yeni şablon adı:' : 'New template name:', currentName);
+        if (!newName || newName === currentName) return;
+        
+        // Get current template data from the item
+        const timeText = item.querySelector('.tpl-item-time').textContent;
+        const match = timeText.match(/(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/);
+        if (!match) return;
+        
+        const colorEl = item.querySelector('.tpl-item-color');
+        const color = colorEl ? rgbToHex(getComputedStyle(colorEl).backgroundColor) : '#3B82F6';
+        const spansNextDay = timeText.includes('(+1)');
+        const breakMatch = timeText.match(/(\d+)(dk|min)/);
+        const breakMinutes = breakMatch ? parseInt(breakMatch[1]) : 0;
+        
+        try {
+            const response = await fetch(`/api/shift-templates/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: newName,
+                    startTime: match[1],
+                    endTime: match[2],
+                    breakMinutes,
+                    color,
+                    spansNextDay,
+                    displayOrder: 100
+                })
+            });
+            
+            if (response.ok) {
+                showToast(isTurkish ? 'Şablon güncellendi' : 'Template updated', 'success');
+                loadTemplatesForManager();
+                loadUserTemplates();
+            } else {
+                const error = await response.json();
+                showToast(error.error || (isTurkish ? 'Hata oluştu' : 'Error occurred'), 'error');
+            }
+        } catch (error) {
+            showToast(isTurkish ? 'Hata oluştu' : 'Error occurred', 'error');
+        }
+    }
+    
+    // Helper: RGB to Hex
+    function rgbToHex(rgb) {
+        if (rgb.startsWith('#')) return rgb;
+        const match = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+        if (!match) return '#3B82F6';
+        return '#' + [match[1], match[2], match[3]].map(x => {
+            const hex = parseInt(x).toString(16);
+            return hex.length === 1 ? '0' + hex : hex;
+        }).join('');
+    }
+    
+    // Make functions globally available for onclick handlers
+    window.deleteTemplate = deleteTemplate;
+    window.editTemplate = editTemplate;
+    
+    // ========== End Template Manager Functions ==========
     
     // Template Selection
     function initTemplates() {
