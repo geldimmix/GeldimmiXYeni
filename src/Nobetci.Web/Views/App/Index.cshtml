@@ -4859,3 +4859,265 @@
     }
 </script>
 }
+
+@if (!Model.IsRegistered)
+{
+<!-- Registration Invitation Modal -->
+<div class="modal fade" id="registerInviteModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content register-invite-modal">
+            <button type="button" class="btn-close-invite" id="closeInviteModal" aria-label="Close">✕</button>
+            <div class="invite-content">
+                <div class="invite-icon">🚀</div>
+                <h2 class="invite-title">@(isTurkish ? "Ücretsiz Hesap Oluştur" : "Create Free Account")</h2>
+                <p class="invite-subtitle">@(isTurkish ? "Tüm özelliklerin kilidini aç" : "Unlock all features")</p>
+                
+                <div class="invite-features">
+                    <div class="invite-feature">
+                        <span class="feature-icon">💾</span>
+                        <span class="feature-text">@(isTurkish ? "Verileriniz kalıcı olarak saklanır" : "Your data is permanently saved")</span>
+                    </div>
+                    <div class="invite-feature">
+                        <span class="feature-icon">👥</span>
+                        <span class="feature-text">@(isTurkish ? "25 personele kadar ekleyin" : "Add up to 25 employees")</span>
+                    </div>
+                    <div class="invite-feature">
+                        <span class="feature-icon">📊</span>
+                        <span class="feature-text">@(isTurkish ? "Detaylı puantaj ve raporlar" : "Detailed timesheets & reports")</span>
+                    </div>
+                    <div class="invite-feature">
+                        <span class="feature-icon">📥</span>
+                        <span class="feature-text">@(isTurkish ? "Excel'e aktar" : "Export to Excel")</span>
+                    </div>
+                    <div class="invite-feature">
+                        <span class="feature-icon">⏰</span>
+                        <span class="feature-text">@(isTurkish ? "Özel vardiya şablonları" : "Custom shift templates")</span>
+                    </div>
+                </div>
+                
+                <div class="invite-actions">
+                    <a href="/Account/Register" class="btn-invite-primary">
+                        @(isTurkish ? "Ücretsiz Kayıt Ol" : "Sign Up Free")
+                    </a>
+                    <a href="/Account/Login" class="btn-invite-secondary">
+                        @(isTurkish ? "Zaten hesabım var" : "I already have an account")
+                    </a>
+                </div>
+                
+                <p class="invite-note">@(isTurkish ? "Kredi kartı gerekmez • 30 saniyede kayıt" : "No credit card required • Sign up in 30 seconds")</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .register-invite-modal {
+        border: none;
+        border-radius: 24px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 25px 80px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-close-invite {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 36px;
+        height: 36px;
+        border: none;
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border-radius: 50%;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.2s;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .btn-close-invite:hover {
+        background: rgba(255,255,255,0.3);
+        transform: scale(1.1);
+    }
+    
+    .invite-content {
+        padding: 48px 40px;
+        text-align: center;
+        color: white;
+    }
+    
+    .invite-icon {
+        font-size: 64px;
+        margin-bottom: 16px;
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    @@keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    .invite-title {
+        font-size: 28px;
+        font-weight: 800;
+        margin: 0 0 8px 0;
+        letter-spacing: -0.5px;
+    }
+    
+    .invite-subtitle {
+        font-size: 16px;
+        opacity: 0.9;
+        margin: 0 0 32px 0;
+    }
+    
+    .invite-features {
+        background: rgba(255,255,255,0.1);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 32px;
+        backdrop-filter: blur(10px);
+    }
+    
+    .invite-feature {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .invite-feature:last-child {
+        border-bottom: none;
+    }
+    
+    .feature-icon {
+        font-size: 20px;
+        width: 32px;
+        text-align: center;
+    }
+    
+    .feature-text {
+        font-size: 14px;
+        text-align: left;
+    }
+    
+    .invite-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    
+    .btn-invite-primary {
+        display: block;
+        padding: 16px 32px;
+        background: white;
+        color: #764ba2;
+        font-weight: 700;
+        font-size: 16px;
+        border-radius: 12px;
+        text-decoration: none;
+        transition: all 0.2s;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    
+    .btn-invite-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        color: #667eea;
+    }
+    
+    .btn-invite-secondary {
+        display: block;
+        padding: 14px 32px;
+        background: transparent;
+        color: white;
+        font-weight: 600;
+        font-size: 14px;
+        border: 2px solid rgba(255,255,255,0.4);
+        border-radius: 12px;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    
+    .btn-invite-secondary:hover {
+        background: rgba(255,255,255,0.1);
+        border-color: rgba(255,255,255,0.6);
+        color: white;
+    }
+    
+    .invite-note {
+        font-size: 12px;
+        opacity: 0.7;
+        margin: 0;
+    }
+    
+    @@media (max-width: 480px) {
+        .invite-content {
+            padding: 32px 24px;
+        }
+        
+        .invite-title {
+            font-size: 24px;
+        }
+        
+        .invite-icon {
+            font-size: 48px;
+        }
+    }
+</style>
+
+<script>
+(function() {
+    const STORAGE_KEY = 'registerInviteDismissed';
+    const DISMISS_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    
+    function shouldShowModal() {
+        const dismissed = localStorage.getItem(STORAGE_KEY);
+        if (!dismissed) return true;
+        
+        const dismissedTime = parseInt(dismissed, 10);
+        const now = Date.now();
+        
+        // If 24 hours have passed, show modal again
+        if (now - dismissedTime > DISMISS_DURATION) {
+            localStorage.removeItem(STORAGE_KEY);
+            return true;
+        }
+        
+        return false;
+    }
+    
+    function dismissModal() {
+        localStorage.setItem(STORAGE_KEY, Date.now().toString());
+        const modal = bootstrap.Modal.getInstance(document.getElementById('registerInviteModal'));
+        if (modal) modal.hide();
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        if (shouldShowModal()) {
+            // Show modal after a short delay for better UX
+            setTimeout(function() {
+                const modal = new bootstrap.Modal(document.getElementById('registerInviteModal'));
+                modal.show();
+            }, 1500);
+        }
+        
+        // Handle close button
+        document.getElementById('closeInviteModal').addEventListener('click', dismissModal);
+        
+        // Also dismiss when clicking backdrop (if enabled)
+        document.getElementById('registerInviteModal').addEventListener('hidden.bs.modal', function() {
+            // Only save dismiss time if not navigating to register/login
+            const dismissed = localStorage.getItem(STORAGE_KEY);
+            if (!dismissed) {
+                localStorage.setItem(STORAGE_KEY, Date.now().toString());
+            }
+        });
+    });
+})();
+</script>
+}
