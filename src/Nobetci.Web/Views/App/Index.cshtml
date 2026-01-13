@@ -27,56 +27,16 @@
         <div class="templates-compact">
             <div class="templates-header">
                 <span>@(isTurkish ? "Vardiya Şablonları" : "Shift Templates")</span>
-                @if (Model.IsRegistered)
-                {
-                    <button class="tpl-manage-btn" data-bs-toggle="modal" data-bs-target="#manageTemplatesModal" title="@(isTurkish ? "Şablonları Yönet" : "Manage Templates")">
-                        ⚙️
-                    </button>
-                }
+                <button class="tpl-manage-btn" data-bs-toggle="modal" data-bs-target="#manageTemplatesModal" title="@(isTurkish ? "Şablonları Yönet" : "Manage Templates")">
+                    ⚙️
+                </button>
             </div>
             
             <div class="template-list" id="templateList">
-                <!-- Default templates (always shown) -->
-                <button class="tpl-btn-row" data-start="08:00" data-end="17:00" data-spans="false" data-break="60" data-color="#22C55E">
-                    <span class="tpl-color" style="background:#22C55E"></span>
-                    <span class="tpl-info">
-                        <span class="tpl-time">08:00 - 17:00</span>
-                        <span class="tpl-meta">@(isTurkish ? "60dk mola" : "60min break")</span>
-                    </span>
-                </button>
-                <button class="tpl-btn-row" data-start="08:00" data-end="16:30" data-spans="false" data-break="30" data-color="#3B82F6">
-                    <span class="tpl-color" style="background:#3B82F6"></span>
-                    <span class="tpl-info">
-                        <span class="tpl-time">08:00 - 16:30</span>
-                        <span class="tpl-meta">@(isTurkish ? "30dk mola" : "30min break")</span>
-                    </span>
-                </button>
-                <button class="tpl-btn-row" data-start="09:00" data-end="18:00" data-spans="false" data-break="60" data-color="#8B5CF6">
-                    <span class="tpl-color" style="background:#8B5CF6"></span>
-                    <span class="tpl-info">
-                        <span class="tpl-time">09:00 - 18:00</span>
-                        <span class="tpl-meta">@(isTurkish ? "60dk mola" : "60min break")</span>
-                    </span>
-                </button>
-                <button class="tpl-btn-row overnight" data-start="16:00" data-end="08:00" data-spans="true" data-break="0" data-color="#EF4444">
-                    <span class="tpl-color" style="background:#EF4444"></span>
-                    <span class="tpl-info">
-                        <span class="tpl-time">16:00 - 08:00</span>
-                        <span class="tpl-meta">@(isTurkish ? "Gece nöbeti" : "Night shift")</span>
-                    </span>
-                    <span class="tpl-badge-new">+1</span>
-                </button>
-                <button class="tpl-btn-row overnight" data-start="08:00" data-end="08:00" data-spans="true" data-break="0" data-color="#DC2626">
-                    <span class="tpl-color" style="background:#DC2626"></span>
-                    <span class="tpl-info">
-                        <span class="tpl-time">08:00 - 08:00</span>
-                        <span class="tpl-meta">@(isTurkish ? "24 saat" : "24 hours")</span>
-                    </span>
-                    <span class="tpl-badge-new">+1</span>
-                </button>
-                
-                <!-- User custom templates will be inserted here by JavaScript -->
-                <div id="userTemplatesContainer"></div>
+                <!-- Templates loaded from API -->
+                <div id="templatesContainer">
+                    <div class="template-loading">@(isTurkish ? "Yükleniyor..." : "Loading...")</div>
+                </div>
                 
                 <!-- Separator and special buttons -->
                 <div class="tpl-divider"></div>
@@ -589,8 +549,6 @@
 </div>
 
 <!-- Manage Templates Modal -->
-@if (Model.IsRegistered)
-{
 <div class="modal fade" id="manageTemplatesModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content custom-modal">
@@ -652,7 +610,6 @@
         </div>
     </div>
 </div>
-}
 
 <!-- Add Holiday Modal -->
 <div class="modal fade" id="addHolidayModal" tabindex="-1">
@@ -3624,33 +3581,34 @@
     
     // ========== Template Manager Functions ==========
     
-    // Load user's custom templates from API
+    // Load all templates from API and render in sidebar
     async function loadUserTemplates() {
-        const isRegistered = @(Model.IsRegistered ? "true" : "false");
-        if (!isRegistered) return;
-        
         try {
             const response = await fetch('/api/shift-templates');
             if (response.ok) {
                 const templates = await response.json();
-                const userTemplates = templates.filter(t => !t.isGlobal && t.canEdit);
-                renderUserTemplatesInSidebar(userTemplates);
+                renderTemplatesInSidebar(templates);
             }
         } catch (error) {
             console.error('Error loading templates:', error);
         }
     }
     
-    // Render user templates in sidebar
-    function renderUserTemplatesInSidebar(templates) {
-        const container = document.getElementById('userTemplatesContainer');
+    // Render all templates in sidebar
+    function renderTemplatesInSidebar(templates) {
+        const container = document.getElementById('templatesContainer');
         if (!container) return;
+        
+        if (templates.length === 0) {
+            container.innerHTML = '<div class="template-loading">' + (isTurkish ? 'Şablon yok. ⚙️ ile ekleyin.' : 'No templates. Add with ⚙️') + '</div>';
+            return;
+        }
         
         container.innerHTML = '';
         
         templates.forEach(t => {
             const btn = document.createElement('button');
-            btn.className = 'tpl-btn-row user-tpl' + (t.spansNextDay ? ' overnight' : '');
+            btn.className = 'tpl-btn-row' + (t.spansNextDay ? ' overnight' : '');
             btn.dataset.id = t.id;
             btn.dataset.start = t.startTime;
             btn.dataset.end = t.endTime;
@@ -3658,11 +3616,13 @@
             btn.dataset.break = t.breakMinutes || 0;
             btn.dataset.color = t.color;
             
+            const breakText = t.breakMinutes ? (isTurkish ? `${t.breakMinutes}dk mola` : `${t.breakMinutes}min break`) : (t.spansNextDay ? (isTurkish ? 'Gece nöbeti' : 'Night shift') : '');
+            
             btn.innerHTML = `
                 <span class="tpl-color" style="background:${t.color}"></span>
                 <span class="tpl-info">
                     <span class="tpl-time">${t.startTime} - ${t.endTime}</span>
-                    <span class="tpl-meta">${t.name}</span>
+                    <span class="tpl-meta">${t.name}${breakText ? ' • ' + breakText : ''}</span>
                 </span>
                 ${t.spansNextDay ? '<span class="tpl-badge-new">+1</span>' : ''}
             `;
@@ -3693,9 +3653,6 @@
     
     // Initialize template manager modal
     function initTemplateManager() {
-        const isRegistered = @(Model.IsRegistered ? "true" : "false");
-        if (!isRegistered) return;
-        
         const modal = document.getElementById('manageTemplatesModal');
         if (!modal) return;
         
@@ -3733,24 +3690,21 @@
         if (!listEl) return;
         
         if (templates.length === 0) {
-            listEl.innerHTML = '<div class="template-loading">' + (isTurkish ? 'Henüz şablon yok' : 'No templates yet') + '</div>';
+            listEl.innerHTML = '<div class="template-loading">' + (isTurkish ? 'Henüz şablon yok. Aşağıdan ekleyin.' : 'No templates yet. Add below.') + '</div>';
             return;
         }
         
         listEl.innerHTML = templates.map(t => `
-            <div class="template-manager-item ${t.isGlobal ? 'global' : 'user-template-item'}" data-id="${t.id}">
+            <div class="template-manager-item" data-id="${t.id}">
                 <span class="tpl-item-color" style="background:${t.color}"></span>
                 <div class="tpl-item-info">
                     <div class="tpl-item-name">${t.name || (t.startTime + ' - ' + t.endTime)}</div>
                     <div class="tpl-item-time">${t.startTime} - ${t.endTime} ${t.spansNextDay ? '(+1)' : ''} • ${t.breakMinutes || 0}${isTurkish ? 'dk mola' : 'min break'}</div>
                 </div>
-                ${t.isGlobal ? '<span class="tpl-item-badge">' + (isTurkish ? 'Varsayılan' : 'Default') + '</span>' : ''}
-                ${t.canEdit ? `
-                    <div class="tpl-item-actions">
-                        <button class="btn-edit" onclick="editTemplate(${t.id})" title="${isTurkish ? 'Düzenle' : 'Edit'}">✏️</button>
-                        <button class="btn-delete" onclick="deleteTemplate(${t.id})" title="${isTurkish ? 'Sil' : 'Delete'}">🗑️</button>
-                    </div>
-                ` : ''}
+                <div class="tpl-item-actions">
+                    <button class="btn-edit" onclick="editTemplate(${t.id})" title="${isTurkish ? 'Düzenle' : 'Edit'}">✏️</button>
+                    <button class="btn-delete" onclick="deleteTemplate(${t.id})" title="${isTurkish ? 'Sil' : 'Delete'}">🗑️</button>
+                </div>
             </div>
         `).join('');
     }

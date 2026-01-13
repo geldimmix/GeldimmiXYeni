@@ -49,7 +49,7 @@ public class AppController : Controller
             .ToListAsync();
             
         var shiftTemplates = await _context.ShiftTemplates
-            .Where(t => t.IsGlobal || t.OrganizationId == organization.Id)
+            .Where(t => t.OrganizationId == organization.Id)
             .Where(t => t.IsActive)
             .OrderBy(t => t.DisplayOrder)
             .ToListAsync();
@@ -540,10 +540,9 @@ public class AppController : Controller
     {
         var organization = await GetOrCreateOrganizationAsync();
         var templates = await _context.ShiftTemplates
-            .Where(t => t.IsGlobal || t.OrganizationId == organization.Id)
+            .Where(t => t.OrganizationId == organization.Id)
             .Where(t => t.IsActive)
-            .OrderBy(t => t.IsGlobal ? 0 : 1)
-            .ThenBy(t => t.DisplayOrder)
+            .OrderBy(t => t.DisplayOrder)
             .Select(t => new {
                 t.Id,
                 t.Name,
@@ -554,7 +553,7 @@ public class AppController : Controller
                 t.BreakMinutes,
                 t.Color,
                 t.IsGlobal,
-                canEdit = !t.IsGlobal && t.OrganizationId == organization.Id
+                canEdit = true // User can always edit their own templates
             })
             .ToListAsync();
             
@@ -565,12 +564,6 @@ public class AppController : Controller
     [Route("api/shift-templates")]
     public async Task<IActionResult> CreateShiftTemplate([FromBody] ShiftTemplateDto dto)
     {
-        // Only registered users can create templates
-        if (User.Identity?.IsAuthenticated != true)
-        {
-            return Unauthorized(new { error = "Bu özellik için giriş yapmanız gerekiyor" });
-        }
-        
         var organization = await GetOrCreateOrganizationAsync();
         
         var template = new ShiftTemplate
@@ -607,18 +600,13 @@ public class AppController : Controller
     [Route("api/shift-templates/{id}")]
     public async Task<IActionResult> UpdateShiftTemplate(int id, [FromBody] ShiftTemplateDto dto)
     {
-        if (User.Identity?.IsAuthenticated != true)
-        {
-            return Unauthorized(new { error = "Bu özellik için giriş yapmanız gerekiyor" });
-        }
-        
         var organization = await GetOrCreateOrganizationAsync();
         var template = await _context.ShiftTemplates
-            .FirstOrDefaultAsync(t => t.Id == id && t.OrganizationId == organization.Id && !t.IsGlobal);
+            .FirstOrDefaultAsync(t => t.Id == id && t.OrganizationId == organization.Id);
             
         if (template == null)
         {
-            return NotFound(new { error = "Şablon bulunamadı veya düzenleme izniniz yok" });
+            return NotFound(new { error = "Şablon bulunamadı" });
         }
         
         template.Name = dto.Name;
@@ -648,18 +636,13 @@ public class AppController : Controller
     [Route("api/shift-templates/{id}")]
     public async Task<IActionResult> DeleteShiftTemplate(int id)
     {
-        if (User.Identity?.IsAuthenticated != true)
-        {
-            return Unauthorized(new { error = "Bu özellik için giriş yapmanız gerekiyor" });
-        }
-        
         var organization = await GetOrCreateOrganizationAsync();
         var template = await _context.ShiftTemplates
-            .FirstOrDefaultAsync(t => t.Id == id && t.OrganizationId == organization.Id && !t.IsGlobal);
+            .FirstOrDefaultAsync(t => t.Id == id && t.OrganizationId == organization.Id);
             
         if (template == null)
         {
-            return NotFound(new { error = "Şablon bulunamadı veya silme izniniz yok" });
+            return NotFound(new { error = "Şablon bulunamadı" });
         }
         
         // Soft delete
@@ -697,6 +680,9 @@ public class AppController : Controller
                     
                     _context.Organizations.Add(org);
                     await _context.SaveChangesAsync();
+                    
+                    // Copy default templates to user's organization
+                    await CopyDefaultTemplatesToOrganization(org.Id);
                 }
                 
                 return org;
@@ -727,9 +713,83 @@ public class AppController : Controller
             
             _context.Organizations.Add(guestOrg);
             await _context.SaveChangesAsync();
+            
+            // Copy default templates to guest organization
+            await CopyDefaultTemplatesToOrganization(guestOrg.Id);
         }
         
         return guestOrg;
+    }
+    
+    private async Task CopyDefaultTemplatesToOrganization(int organizationId)
+    {
+        // Check if organization already has templates
+        var hasTemplates = await _context.ShiftTemplates.AnyAsync(t => t.OrganizationId == organizationId);
+        if (hasTemplates) return;
+        
+        // Default templates to copy
+        var defaultTemplates = new List<ShiftTemplate>
+        {
+            new ShiftTemplate
+            {
+                OrganizationId = organizationId,
+                Name = "Sabah",
+                NameKey = "shift.morning",
+                StartTime = new TimeOnly(8, 0),
+                EndTime = new TimeOnly(17, 0),
+                SpansNextDay = false,
+                BreakMinutes = 60,
+                Color = "#22C55E",
+                IsGlobal = false,
+                DisplayOrder = 1,
+                IsActive = true
+            },
+            new ShiftTemplate
+            {
+                OrganizationId = organizationId,
+                Name = "Akşam",
+                NameKey = "shift.evening",
+                StartTime = new TimeOnly(17, 0),
+                EndTime = new TimeOnly(1, 0),
+                SpansNextDay = true,
+                BreakMinutes = 30,
+                Color = "#F59E0B",
+                IsGlobal = false,
+                DisplayOrder = 2,
+                IsActive = true
+            },
+            new ShiftTemplate
+            {
+                OrganizationId = organizationId,
+                Name = "Gece",
+                NameKey = "shift.night",
+                StartTime = new TimeOnly(0, 0),
+                EndTime = new TimeOnly(8, 0),
+                SpansNextDay = false,
+                BreakMinutes = 30,
+                Color = "#6366F1",
+                IsGlobal = false,
+                DisplayOrder = 3,
+                IsActive = true
+            },
+            new ShiftTemplate
+            {
+                OrganizationId = organizationId,
+                Name = "16 Saat",
+                NameKey = "shift.16hour",
+                StartTime = new TimeOnly(16, 0),
+                EndTime = new TimeOnly(8, 0),
+                SpansNextDay = true,
+                BreakMinutes = 0,
+                Color = "#EF4444",
+                IsGlobal = false,
+                DisplayOrder = 4,
+                IsActive = true
+            }
+        };
+        
+        _context.ShiftTemplates.AddRange(defaultTemplates);
+        await _context.SaveChangesAsync();
     }
 
     private int GetEmployeeLimit()
