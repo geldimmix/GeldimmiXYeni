@@ -564,6 +564,11 @@ public class AppController : Controller
     [Route("api/shift-templates")]
     public async Task<IActionResult> CreateShiftTemplate([FromBody] ShiftTemplateDto dto)
     {
+        if (User.Identity?.IsAuthenticated != true)
+        {
+            return Unauthorized(new { error = "Bu özellik için giriş yapmanız gerekiyor" });
+        }
+        
         var organization = await GetOrCreateOrganizationAsync();
         
         var template = new ShiftTemplate
@@ -600,6 +605,11 @@ public class AppController : Controller
     [Route("api/shift-templates/{id}")]
     public async Task<IActionResult> UpdateShiftTemplate(int id, [FromBody] ShiftTemplateDto dto)
     {
+        if (User.Identity?.IsAuthenticated != true)
+        {
+            return Unauthorized(new { error = "Bu özellik için giriş yapmanız gerekiyor" });
+        }
+        
         var organization = await GetOrCreateOrganizationAsync();
         var template = await _context.ShiftTemplates
             .FirstOrDefaultAsync(t => t.Id == id && t.OrganizationId == organization.Id);
@@ -636,6 +646,11 @@ public class AppController : Controller
     [Route("api/shift-templates/{id}")]
     public async Task<IActionResult> DeleteShiftTemplate(int id)
     {
+        if (User.Identity?.IsAuthenticated != true)
+        {
+            return Unauthorized(new { error = "Bu özellik için giriş yapmanız gerekiyor" });
+        }
+        
         var organization = await GetOrCreateOrganizationAsync();
         var template = await _context.ShiftTemplates
             .FirstOrDefaultAsync(t => t.Id == id && t.OrganizationId == organization.Id);

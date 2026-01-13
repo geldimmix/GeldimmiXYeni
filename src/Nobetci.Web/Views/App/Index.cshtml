@@ -27,9 +27,12 @@
         <div class="templates-compact">
             <div class="templates-header">
                 <span>@(isTurkish ? "Vardiya Şablonları" : "Shift Templates")</span>
-                <button class="tpl-manage-btn" data-bs-toggle="modal" data-bs-target="#manageTemplatesModal" title="@(isTurkish ? "Şablonları Yönet" : "Manage Templates")">
-                    ⚙️
-                </button>
+                @if (Model.IsRegistered)
+                {
+                    <button class="tpl-manage-btn" data-bs-toggle="modal" data-bs-target="#manageTemplatesModal" title="@(isTurkish ? "Şablonları Yönet" : "Manage Templates")">
+                        ⚙️
+                    </button>
+                }
             </div>
             
             <div class="template-list" id="templateList">
@@ -549,6 +552,8 @@
 </div>
 
 <!-- Manage Templates Modal -->
+@if (Model.IsRegistered)
+{
 <div class="modal fade" id="manageTemplatesModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content custom-modal">
@@ -610,6 +615,7 @@
         </div>
     </div>
 </div>
+}
 
 <!-- Add Holiday Modal -->
 <div class="modal fade" id="addHolidayModal" tabindex="-1">
@@ -3653,6 +3659,9 @@
     
     // Initialize template manager modal
     function initTemplateManager() {
+        const isRegistered = @(Model.IsRegistered ? "true" : "false");
+        if (!isRegistered) return;
+        
         const modal = document.getElementById('manageTemplatesModal');
         if (!modal) return;
         
