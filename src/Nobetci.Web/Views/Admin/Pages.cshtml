@@ -1,0 +1,102 @@
+@model List<Nobetci.Web.Data.Entities.ContentPage>
+@{
+    ViewData["Title"] = "Sayfalar";
+    Layout = "_AdminLayout";
+}
+
+<div class="admin-header">
+    <h2>📄 Sayfalar</h2>
+    <div class="header-actions">
+        <a href="/admin/pages/create" class="btn btn-primary">+ Yeni Sayfa</a>
+    </div>
+</div>
+
+<div class="card">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Başlık</th>
+                <th>Slug</th>
+                <th>Dil</th>
+                <th>Tür</th>
+                <th>Durum</th>
+                <th>Güncelleme</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="7" style="text-align: center; color: #94a3b8; padding: 40px;">
+                        Henüz sayfa eklenmemiş
+                    </td>
+                </tr>
+            }
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td>
+                        <strong>@p.Title</strong>
+                        @if (!string.IsNullOrEmpty(p.MetaDescription))
+                        {
+                            <div class="truncate" style="font-size: 0.75rem; color: #94a3b8;">
+                                @p.MetaDescription
+                            </div>
+                        }
+                    </td>
+                    <td>
+                        <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">
+                            /@(p.Language == "tr" ? "rehber" : "guide")/@p.Slug
+                        </code>
+                    </td>
+                    <td>
+                        <span class="badge @(p.Language == "tr" ? "badge-info" : "badge-warning")">
+                            @p.Language.ToUpper()
+                        </span>
+                    </td>
+                    <td>
+                        @switch (p.PageType)
+                        {
+                            case Nobetci.Web.Data.Entities.PageType.Landing:
+                                <span>🏠 Landing</span>
+                                break;
+                            case Nobetci.Web.Data.Entities.PageType.Feature:
+                                <span>⭐ Özellik</span>
+                                break;
+                            case Nobetci.Web.Data.Entities.PageType.Blog:
+                                <span>📝 Blog</span>
+                                break;
+                            case Nobetci.Web.Data.Entities.PageType.Legal:
+                                <span>📜 Yasal</span>
+                                break;
+                        }
+                    </td>
+                    <td>
+                        @if (p.IsPublished)
+                        {
+                            <span class="badge badge-success">Yayında</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-danger">Taslak</span>
+                        }
+                    </td>
+                    <td style="font-size: 0.8rem; color: #64748b;">
+                        @p.UpdatedAt.ToString("dd.MM.yyyy HH:mm")
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 6px;">
+                            <a href="/admin/pages/edit/@p.Id" class="btn btn-secondary btn-sm">Düzenle</a>
+                            <a href="/@(p.Language == "tr" ? "rehber" : "guide")/@p.Slug" target="_blank" class="btn btn-secondary btn-sm">👁</a>
+                            <form method="post" action="/admin/pages/delete/@p.Id" style="display: inline;" onsubmit="return confirm('Bu sayfayı silmek istediğinize emin misiniz?')">
+                                <button type="submit" class="btn btn-danger btn-sm">Sil</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+

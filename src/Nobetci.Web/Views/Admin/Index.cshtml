@@ -1,0 +1,68 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "_AdminLayout";
+}
+
+<div class="admin-header">
+    <h2>👋 Hoş Geldin, Admin</h2>
+</div>
+
+<div class="stats-grid">
+    <a href="/admin/pages" style="text-decoration: none;">
+        <div class="stat-card">
+            <span class="stat-icon">📄</span>
+            <div class="stat-label">Sayfalar</div>
+            <div class="stat-value">Yönet →</div>
+        </div>
+    </a>
+    
+    <a href="/admin/logs" style="text-decoration: none;">
+        <div class="stat-card">
+            <span class="stat-icon">📋</span>
+            <div class="stat-label">Ziyaretçi Logları</div>
+            <div class="stat-value">Görüntüle →</div>
+        </div>
+    </a>
+    
+    <a href="/admin/stats" style="text-decoration: none;">
+        <div class="stat-card">
+            <span class="stat-icon">📈</span>
+            <div class="stat-label">İstatistikler</div>
+            <div class="stat-value">Detaylar →</div>
+        </div>
+    </a>
+    
+    <a href="/" target="_blank" style="text-decoration: none;">
+        <div class="stat-card">
+            <span class="stat-icon">🌐</span>
+            <div class="stat-label">Siteyi Görüntüle</div>
+            <div class="stat-value">Aç →</div>
+        </div>
+    </a>
+</div>
+
+<div class="grid-2">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">⚡ Hızlı İşlemler</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <a href="/admin/pages/create" class="btn btn-primary">+ Yeni Sayfa Oluştur</a>
+            <a href="/admin/logs?dateFrom=@DateTime.UtcNow.ToString("yyyy-MM-dd")" class="btn btn-secondary">Bugünün Logları</a>
+            <a href="/app" target="_blank" class="btn btn-secondary">Nöbet Uygulaması</a>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">📌 Notlar</span>
+        </div>
+        <ul style="padding-left: 20px; color: #64748b; font-size: 0.9rem; line-height: 1.8;">
+            <li>Sayfalar bölümünden SEO içeriklerini düzenleyebilirsiniz</li>
+            <li>Loglar bölümünden ziyaretçi aktivitelerini izleyebilirsiniz</li>
+            <li>İstatistikler bölümünden site performansını görebilirsiniz</li>
+        </ul>
+    </div>
+</div>
+
+

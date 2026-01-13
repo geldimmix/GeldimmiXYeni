@@ -1,0 +1,201 @@
+@model LoginViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IStringLocalizer<SharedResource> Localizer
+@{
+    ViewData["Title"] = Localizer["Login"];
+    var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+}
+
+<style>
+    .auth-container {
+        min-height: calc(100vh - 120px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 40px 20px;
+    }
+    
+    .auth-card {
+        width: 100%;
+        max-width: 440px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        overflow: hidden;
+    }
+    
+    .auth-header {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        color: white;
+        padding: 32px;
+        text-align: center;
+    }
+    
+    .auth-header h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+    }
+    
+    .auth-header p {
+        opacity: 0.9;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+    
+    .auth-body {
+        padding: 32px;
+    }
+    
+    .form-input-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-input-group label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 8px;
+    }
+    
+    .form-input {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.2s;
+    }
+    
+    .form-input:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+    
+    .form-check-custom {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .form-check-custom input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: #6366f1;
+    }
+    
+    .form-check-custom label {
+        font-size: 0.9rem;
+        color: #64748b;
+    }
+    
+    .btn-login {
+        width: 100%;
+        padding: 14px 20px;
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-login:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    }
+    
+    .auth-footer {
+        text-align: center;
+        padding: 24px;
+        background: #f8fafc;
+        font-size: 0.9rem;
+        color: #64748b;
+    }
+    
+    .auth-footer a {
+        color: #6366f1;
+        font-weight: 600;
+        text-decoration: none;
+    }
+    
+    .auth-footer a:hover {
+        text-decoration: underline;
+    }
+    
+    .alert-custom {
+        padding: 12px 16px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+    }
+    
+    .alert-danger-custom {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #dc2626;
+    }
+</style>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h2>@(isTurkish ? "Hoş Geldiniz" : "Welcome Back")</h2>
+            <p>@(isTurkish ? "Hesabınıza giriş yapın" : "Sign in to your account")</p>
+        </div>
+        
+        <div class="auth-body">
+            <form asp-action="Login" method="post">
+                <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+                
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert-custom alert-danger-custom">
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <div>@error.ErrorMessage</div>
+                        }
+                    </div>
+                }
+                
+                <div class="form-input-group">
+                    <label for="Email">Email</label>
+                    <input asp-for="Email" type="email" class="form-input" placeholder="ornek@email.com" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+                
+                <div class="form-input-group">
+                    <label for="Password">@(isTurkish ? "Şifre" : "Password")</label>
+                    <input asp-for="Password" type="password" class="form-input" placeholder="••••••••" />
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+                
+                <div class="form-check-custom">
+                    <input asp-for="RememberMe" type="checkbox" id="RememberMe" />
+                    <label for="RememberMe">@(isTurkish ? "Beni hatırla" : "Remember me")</label>
+                </div>
+                
+                <button type="submit" class="btn-login">
+                    @(isTurkish ? "Giriş Yap" : "Sign In")
+                </button>
+            </form>
+        </div>
+        
+        <div class="auth-footer">
+            @(isTurkish ? "Hesabınız yok mu?" : "Don't have an account?")
+            <a asp-action="Register" asp-route-returnUrl="@ViewData["ReturnUrl"]">
+                @(isTurkish ? "Kayıt Olun" : "Sign Up")
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

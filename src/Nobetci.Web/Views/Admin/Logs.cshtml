@@ -1,0 +1,188 @@
+@model List<Nobetci.Web.Data.Entities.VisitorLog>
+@{
+    ViewData["Title"] = "Ziyaretçi Logları";
+    Layout = "_AdminLayout";
+}
+
+<div class="admin-header">
+    <h2>📋 Ziyaretçi Logları</h2>
+    <span style="color: #64748b;">Toplam: @ViewBag.TotalItems kayıt</span>
+</div>
+
+<div class="card">
+    <form method="get" class="filter-bar">
+        <div class="filter-group">
+            <label>Arama</label>
+            <input type="text" name="search" value="@ViewBag.Search" placeholder="IP, URL, Browser...">
+        </div>
+        
+        <div class="filter-group">
+            <label>Cihaz</label>
+            <select name="deviceType">
+                <option value="">Tümü</option>
+                <option value="Desktop" selected="@(ViewBag.DeviceType == "Desktop")">Desktop</option>
+                <option value="Mobile" selected="@(ViewBag.DeviceType == "Mobile")">Mobile</option>
+                <option value="Tablet" selected="@(ViewBag.DeviceType == "Tablet")">Tablet</option>
+                <option value="Bot" selected="@(ViewBag.DeviceType == "Bot")">Bot</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label>Başlangıç</label>
+            <input type="date" name="dateFrom" value="@ViewBag.DateFrom">
+        </div>
+        
+        <div class="filter-group">
+            <label>Bitiş</label>
+            <input type="date" name="dateTo" value="@ViewBag.DateTo">
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Filtrele</button>
+        <a href="/admin/logs" class="btn btn-secondary">Temizle</a>
+    </form>
+</div>
+
+<div class="card">
+    <div style="overflow-x: auto;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>IP</th>
+                    <th>Sayfa</th>
+                    <th>Browser</th>
+                    <th>Cihaz</th>
+                    <th>OS</th>
+                    <th>Süre</th>
+                    <th>Durum</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="8" style="text-align: center; color: #94a3b8; padding: 40px;">
+                            Log kaydı bulunamadı
+                        </td>
+                    </tr>
+                }
+                @foreach (var log in Model)
+                {
+                    <tr>
+                        <td style="white-space: nowrap; font-size: 0.8rem;">
+                            @log.CreatedAt.ToLocalTime().ToString("dd.MM HH:mm:ss")
+                        </td>
+                        <td>
+                            <code style="font-size: 0.75rem;">@log.IpAddress</code>
+                        </td>
+                        <td>
+                            <div class="truncate" style="max-width: 250px;" title="@log.PagePath">
+                                @log.PagePath
+                            </div>
+                            @if (!string.IsNullOrEmpty(log.Referrer))
+                            {
+                                <div class="truncate" style="max-width: 200px; font-size: 0.7rem; color: #94a3b8;" title="@log.Referrer">
+                                    ← @log.Referrer
+                                </div>
+                            }
+                        </td>
+                        <td style="font-size: 0.8rem;">
+                            @log.Browser @log.BrowserVersion
+                        </td>
+                        <td>
+                            @{
+                                var deviceIcon = log.DeviceType switch
+                                {
+                                    "Desktop" => "🖥️",
+                                    "Mobile" => "📱",
+                                    "Tablet" => "📲",
+                                    "Bot" => "🤖",
+                                    _ => "❓"
+                                };
+                            }
+                            <span title="@log.DeviceType">@deviceIcon</span>
+                        </td>
+                        <td style="font-size: 0.8rem;">
+                            @log.OperatingSystem
+                        </td>
+                        <td style="font-size: 0.8rem;">
+                            @if (log.ResponseTimeMs.HasValue)
+                            {
+                                <span class="badge @(log.ResponseTimeMs < 200 ? "badge-success" : log.ResponseTimeMs < 1000 ? "badge-warning" : "badge-danger")">
+                                    @log.ResponseTimeMs ms
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            @if (log.StatusCode.HasValue)
+                            {
+                                var statusClass = log.StatusCode switch
+                                {
+                                    >= 200 and < 300 => "badge-success",
+                                    >= 300 and < 400 => "badge-info",
+                                    >= 400 and < 500 => "badge-warning",
+                                    >= 500 => "badge-danger",
+                                    _ => ""
+                                };
+                                <span class="badge @statusClass">@log.StatusCode</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+    @if (ViewBag.TotalPages > 1)
+    {
+        <div class="pagination">
+            @if (ViewBag.CurrentPage > 1)
+            {
+                <a href="/admin/logs?page=@(ViewBag.CurrentPage - 1)&search=@ViewBag.Search&deviceType=@ViewBag.DeviceType&dateFrom=@ViewBag.DateFrom&dateTo=@ViewBag.DateTo" class="page-link">‹ Önceki</a>
+            }
+            else
+            {
+                <span class="page-link disabled">‹ Önceki</span>
+            }
+            
+            @{
+                var startPage = Math.Max(1, ViewBag.CurrentPage - 2);
+                var endPage = Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2);
+            }
+            
+            @if (startPage > 1)
+            {
+                <a href="/admin/logs?page=1&search=@ViewBag.Search&deviceType=@ViewBag.DeviceType&dateFrom=@ViewBag.DateFrom&dateTo=@ViewBag.DateTo" class="page-link">1</a>
+                @if (startPage > 2)
+                {
+                    <span class="page-link disabled">...</span>
+                }
+            }
+            
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                <a href="/admin/logs?page=@i&search=@ViewBag.Search&deviceType=@ViewBag.DeviceType&dateFrom=@ViewBag.DateFrom&dateTo=@ViewBag.DateTo" 
+                   class="page-link @(i == ViewBag.CurrentPage ? "active" : "")">@i</a>
+            }
+            
+            @if (endPage < ViewBag.TotalPages)
+            {
+                @if (endPage < ViewBag.TotalPages - 1)
+                {
+                    <span class="page-link disabled">...</span>
+                }
+                <a href="/admin/logs?page=@ViewBag.TotalPages&search=@ViewBag.Search&deviceType=@ViewBag.DeviceType&dateFrom=@ViewBag.DateFrom&dateTo=@ViewBag.DateTo" class="page-link">@ViewBag.TotalPages</a>
+            }
+            
+            @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+            {
+                <a href="/admin/logs?page=@(ViewBag.CurrentPage + 1)&search=@ViewBag.Search&deviceType=@ViewBag.DeviceType&dateFrom=@ViewBag.DateFrom&dateTo=@ViewBag.DateTo" class="page-link">Sonraki ›</a>
+            }
+            else
+            {
+                <span class="page-link disabled">Sonraki ›</span>
+            }
+        </div>
+    }
+</div>
+
