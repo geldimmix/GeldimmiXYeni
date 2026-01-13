@@ -748,8 +748,7 @@ public class AppController : Controller
             new ShiftTemplate
             {
                 OrganizationId = organizationId,
-                Name = "Sabah",
-                NameKey = "shift.morning",
+                Name = "08:00 - 17:00",
                 StartTime = new TimeOnly(8, 0),
                 EndTime = new TimeOnly(17, 0),
                 SpansNextDay = false,
@@ -762,13 +761,12 @@ public class AppController : Controller
             new ShiftTemplate
             {
                 OrganizationId = organizationId,
-                Name = "Akşam",
-                NameKey = "shift.evening",
-                StartTime = new TimeOnly(17, 0),
-                EndTime = new TimeOnly(1, 0),
-                SpansNextDay = true,
-                BreakMinutes = 30,
-                Color = "#F59E0B",
+                Name = "08:00 - 18:00",
+                StartTime = new TimeOnly(8, 0),
+                EndTime = new TimeOnly(18, 0),
+                SpansNextDay = false,
+                BreakMinutes = 60,
+                Color = "#3B82F6",
                 IsGlobal = false,
                 DisplayOrder = 2,
                 IsActive = true
@@ -776,13 +774,12 @@ public class AppController : Controller
             new ShiftTemplate
             {
                 OrganizationId = organizationId,
-                Name = "Gece",
-                NameKey = "shift.night",
-                StartTime = new TimeOnly(0, 0),
+                Name = "16:00 - 08:00",
+                StartTime = new TimeOnly(16, 0),
                 EndTime = new TimeOnly(8, 0),
-                SpansNextDay = false,
-                BreakMinutes = 30,
-                Color = "#6366F1",
+                SpansNextDay = true,
+                BreakMinutes = 0,
+                Color = "#EF4444",
                 IsGlobal = false,
                 DisplayOrder = 3,
                 IsActive = true
@@ -790,13 +787,12 @@ public class AppController : Controller
             new ShiftTemplate
             {
                 OrganizationId = organizationId,
-                Name = "16 Saat",
-                NameKey = "shift.16hour",
-                StartTime = new TimeOnly(16, 0),
+                Name = "08:00 - 08:00 (24s)",
+                StartTime = new TimeOnly(8, 0),
                 EndTime = new TimeOnly(8, 0),
                 SpansNextDay = true,
                 BreakMinutes = 0,
-                Color = "#EF4444",
+                Color = "#8B5CF6",
                 IsGlobal = false,
                 DisplayOrder = 4,
                 IsActive = true
