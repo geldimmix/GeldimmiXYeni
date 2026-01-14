@@ -6,103 +6,840 @@
         : "Nurse shift scheduling, duty roster planning, automatic timesheet and overtime calculation. Create fair shift schedules in seconds.";
 }
 
+@section Styles {
+<style>
+    :root {
+        --bg-dark: #0a0a0a;
+        --bg-light: #fafafa;
+        --text: #171717;
+        --text-muted: #737373;
+        --border: #e5e5e5;
+        --accent: #c94a4a;
+    }
+    
+    /* ═══════════════════════════════════════════════════════════
+       HERO SECTION
+       ═══════════════════════════════════════════════════════════ */
+    
+    .hero {
+        min-height: 90vh;
+        display: flex;
+        align-items: center;
+        background: var(--bg-dark);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -25%;
+        width: 80%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(201, 74, 74, 0.08) 0%, transparent 60%);
+        pointer-events: none;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        padding: 80px 0;
+    }
+    
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 8px 16px;
+        border-radius: 100px;
+        font-size: 0.85rem;
+        color: #a3a3a3;
+        margin-bottom: 32px;
+    }
+    
+    .hero-badge-dot {
+        width: 8px;
+        height: 8px;
+        background: #22c55e;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
+    
+    @@keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    
+    .hero-title {
+        font-family: 'Instrument Serif', Georgia, serif;
+        font-size: clamp(3rem, 8vw, 5.5rem);
+        font-weight: 400;
+        font-style: italic;
+        color: white;
+        line-height: 1.05;
+        letter-spacing: -0.03em;
+        margin-bottom: 32px;
+    }
+    
+    .hero-title span {
+        color: var(--accent);
+    }
+    
+    .hero-desc {
+        font-size: 1.2rem;
+        color: #a3a3a3;
+        line-height: 1.7;
+        max-width: 520px;
+        margin-bottom: 48px;
+    }
+    
+    .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 64px;
+    }
+    
+    .btn-hero-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 18px 32px;
+        background: white;
+        color: var(--bg-dark);
+        font-weight: 600;
+        font-size: 1rem;
+        border-radius: 12px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-hero-primary:hover {
+        background: var(--accent);
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .btn-hero-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 18px 32px;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        font-weight: 500;
+        font-size: 1rem;
+        border-radius: 12px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-hero-secondary:hover {
+        border-color: rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+    }
+    
+    .hero-features {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 32px;
+    }
+    
+    .hero-feature {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #737373;
+        font-size: 0.9rem;
+    }
+    
+    .hero-feature-icon {
+        width: 20px;
+        height: 20px;
+        background: rgba(34, 197, 94, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        color: #22c55e;
+    }
+    
+    /* Hero Visual */
+    .hero-visual {
+        position: relative;
+    }
+    
+    .hero-mockup {
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+    }
+    
+    .mockup-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 18px;
+        background: #141414;
+        border-bottom: 1px solid #2a2a2a;
+    }
+    
+    .mockup-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+    
+    .mockup-dot.red { background: #ff5f57; }
+    .mockup-dot.yellow { background: #febc2e; }
+    .mockup-dot.green { background: #28c840; }
+    
+    .mockup-title {
+        margin-left: 12px;
+        color: #737373;
+        font-size: 0.85rem;
+    }
+    
+    .mockup-body {
+        padding: 24px;
+    }
+    
+    .mockup-calendar {
+        display: grid;
+        grid-template-columns: 100px repeat(7, 1fr);
+        gap: 2px;
+        font-size: 0.75rem;
+    }
+    
+    .cal-header {
+        background: #1f1f1f;
+        padding: 10px 8px;
+        text-align: center;
+        color: #737373;
+        font-weight: 600;
+    }
+    
+    .cal-header.name-col {
+        text-align: left;
+    }
+    
+    .cal-header.weekend {
+        color: var(--accent);
+    }
+    
+    .cal-row {
+        display: contents;
+    }
+    
+    .cal-cell {
+        background: #1a1a1a;
+        padding: 10px 8px;
+        text-align: center;
+        border: 1px solid #222;
+    }
+    
+    .cal-cell.name {
+        text-align: left;
+        color: #d4d4d4;
+        font-weight: 500;
+    }
+    
+    .cal-shift {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+    
+    .cal-shift.morning {
+        background: rgba(59, 130, 246, 0.2);
+        color: #60a5fa;
+    }
+    
+    .cal-shift.night {
+        background: rgba(139, 92, 246, 0.2);
+        color: #a78bfa;
+    }
+    
+    .cal-shift.long {
+        background: rgba(34, 197, 94, 0.2);
+        color: #4ade80;
+    }
+    
+    /* Floating elements */
+    .hero-float {
+        position: absolute;
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 12px;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: floatAnim 4s ease-in-out infinite;
+    }
+    
+    .hero-float-1 {
+        top: -20px;
+        right: -30px;
+    }
+    
+    .hero-float-2 {
+        bottom: 40px;
+        left: -40px;
+        animation-delay: 2s;
+    }
+    
+    @@keyframes floatAnim {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-12px); }
+    }
+    
+    .float-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(201, 74, 74, 0.15);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+    
+    .float-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: white;
+    }
+    
+    .float-label {
+        font-size: 0.75rem;
+        color: #737373;
+    }
+    
+    /* ═══════════════════════════════════════════════════════════
+       FEATURES SECTION
+       ═══════════════════════════════════════════════════════════ */
+    
+    .features {
+        padding: 120px 0;
+        background: var(--bg-light);
+    }
+    
+    .section-label {
+        display: inline-block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--text-muted);
+        margin-bottom: 16px;
+    }
+    
+    .section-title {
+        font-family: 'Instrument Serif', Georgia, serif;
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 400;
+        font-style: italic;
+        color: var(--text);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        margin-bottom: 24px;
+    }
+    
+    .section-desc {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        line-height: 1.7;
+        max-width: 480px;
+    }
+    
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-top: 64px;
+    }
+    
+    .feature-card {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 32px;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+    }
+    
+    .feature-icon {
+        width: 48px;
+        height: 48px;
+        background: var(--bg-light);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+    }
+    
+    .feature-card:hover .feature-icon {
+        background: rgba(201, 74, 74, 0.1);
+    }
+    
+    .feature-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 10px;
+    }
+    
+    .feature-text {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+    }
+    
+    /* ═══════════════════════════════════════════════════════════
+       HOW IT WORKS
+       ═══════════════════════════════════════════════════════════ */
+    
+    .how-it-works {
+        padding: 120px 0;
+        background: white;
+    }
+    
+    .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 48px;
+        margin-top: 64px;
+        position: relative;
+    }
+    
+    .steps-grid::before {
+        content: '';
+        position: absolute;
+        top: 48px;
+        left: 20%;
+        right: 20%;
+        height: 1px;
+        background: var(--border);
+    }
+    
+    .step {
+        text-align: center;
+        position: relative;
+    }
+    
+    .step-number {
+        width: 96px;
+        height: 96px;
+        background: var(--bg-light);
+        border: 2px solid var(--border);
+        border-radius: 24px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        margin-bottom: 28px;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    
+    .step:hover .step-number {
+        border-color: var(--accent);
+        background: white;
+    }
+    
+    .step-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        width: 28px;
+        height: 28px;
+        background: var(--text);
+        color: white;
+        border-radius: 50%;
+        font-size: 0.8rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .step-title {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 10px;
+    }
+    
+    .step-text {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+    }
+    
+    /* ═══════════════════════════════════════════════════════════
+       TIMESHEET PREVIEW
+       ═══════════════════════════════════════════════════════════ */
+    
+    .timesheet-section {
+        padding: 120px 0;
+        background: var(--bg-light);
+    }
+    
+    .timesheet-preview {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
+    }
+    
+    .ts-header {
+        background: var(--text);
+        color: white;
+        padding: 20px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .ts-header h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    .ts-body {
+        padding: 24px;
+    }
+    
+    .ts-table {
+        width: 100%;
+        font-size: 0.9rem;
+    }
+    
+    .ts-table th {
+        text-align: left;
+        padding: 12px 16px;
+        background: var(--bg-light);
+        color: var(--text-muted);
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .ts-table td {
+        padding: 16px;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .ts-table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .ts-name {
+        font-weight: 600;
+        color: var(--text);
+    }
+    
+    .ts-night { color: #7c3aed; font-weight: 600; }
+    .ts-weekend { color: #f59e0b; font-weight: 600; }
+    .ts-overtime { color: var(--accent); font-weight: 600; }
+    .ts-total { font-weight: 700; color: var(--text); }
+    
+    .ts-footer {
+        padding: 20px 28px;
+        background: var(--bg-light);
+        display: flex;
+        justify-content: flex-end;
+    }
+    
+    .btn-export {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        background: #16a34a;
+        color: white;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-export:hover {
+        background: #15803d;
+    }
+    
+    .ts-features {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+    
+    .ts-feature-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    
+    .ts-feature-icon {
+        width: 48px;
+        height: 48px;
+        background: var(--bg-light);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+    
+    .ts-feature-content h5 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 4px;
+    }
+    
+    .ts-feature-content p {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin: 0;
+    }
+    
+    /* ═══════════════════════════════════════════════════════════
+       CTA SECTION
+       ═══════════════════════════════════════════════════════════ */
+    
+    .cta {
+        padding: 120px 0;
+        background: var(--bg-dark);
+        text-align: center;
+    }
+    
+    .cta-title {
+        font-family: 'Instrument Serif', Georgia, serif;
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 400;
+        font-style: italic;
+        color: white;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        margin-bottom: 24px;
+    }
+    
+    .cta-desc {
+        font-size: 1.1rem;
+        color: #a3a3a3;
+        margin-bottom: 40px;
+    }
+    
+    .btn-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 20px 40px;
+        background: white;
+        color: var(--bg-dark);
+        font-weight: 600;
+        font-size: 1.1rem;
+        border-radius: 14px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-cta:hover {
+        background: var(--accent);
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    /* ═══════════════════════════════════════════════════════════
+       RESPONSIVE
+       ═══════════════════════════════════════════════════════════ */
+    
+    @@media (max-width: 991px) {
+        .hero-visual {
+            display: none;
+        }
+        
+        .feature-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .steps-grid {
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+        
+        .steps-grid::before {
+            display: none;
+        }
+    }
+    
+    @@media (max-width: 767px) {
+        .feature-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .hero-actions {
+            flex-direction: column;
+        }
+        
+        .btn-hero-primary,
+        .btn-hero-secondary {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+}
+
 <!-- Hero Section -->
-<section class="hero-section">
-    <div class="hero-bg"></div>
-    <div class="container position-relative">
-        <div class="row align-items-center py-5">
+<section class="hero">
+    <div class="container">
+        <div class="row align-items-center">
             <div class="col-lg-6">
-                <div class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 mb-3 rounded-pill">
-                    @(isTurkish ? "🚀 Ücretsiz Başlayın" : "🚀 Start Free")
-                </div>
-                <h1 class="display-4 fw-bold mb-4 text-dark">
-                    @(isTurkish ? "Akıllı Nöbet Listesi" : "Smart Shift Scheduling")
-                    <span class="text-primary d-block">@(isTurkish ? "& Puantaj Sistemi" : "& Timesheet System")</span>
-                </h1>
-                <p class="lead text-secondary mb-4" style="font-size: 1.1rem;">
-                    @(isTurkish 
-                        ? "Hemşire nöbet programı oluşturun, adil dağıtım algoritması ile vardiyaları planlayın, otomatik puantaj ve fazla mesai hesaplayın."
-                        : "Create nurse duty rosters, plan shifts with fair distribution algorithm, calculate automatic timesheets and overtime.")
-                </p>
-                
-                <div class="d-flex flex-wrap gap-3 mb-4">
-                    <a href="/app" class="btn btn-primary btn-lg px-4 py-3 rounded-3 shadow-sm">
-                        <span class="me-2">▶</span> @(isTurkish ? "Hemen Başla" : "Get Started")
-                    </a>
-                    <a href="#features" class="btn btn-outline-secondary btn-lg px-4 py-3 rounded-3">
-                        @(isTurkish ? "Özellikleri Gör" : "See Features")
-                    </a>
-                </div>
-                
-                <div class="d-flex flex-wrap gap-4 text-secondary small">
-                    <span>✓ @(isTurkish ? "Kayıt gerektirmez" : "No registration")</span>
-                    <span>✓ @(isTurkish ? "10 personele kadar ücretsiz" : "Free up to 10 employees")</span>
-                    <span>✓ @(isTurkish ? "Excel export" : "Excel export")</span>
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <span class="hero-badge-dot"></span>
+                        @(isTurkish ? "Şimdi ücretsiz deneyin" : "Try free now")
+                    </div>
+                    
+                    <h1 class="hero-title">
+                        @if (isTurkish)
+                        {
+                            <text>Nöbet planlamayı <span>kolaylaştırın.</span></text>
+                        }
+                        else
+                        {
+                            <text>Make scheduling <span>effortless.</span></text>
+                        }
+                    </h1>
+                    
+                    <p class="hero-desc">
+                        @(isTurkish 
+                            ? "Hemşire nöbet listesi oluşturun, adil dağıtım algoritması ile vardiyaları planlayın, otomatik puantaj ve fazla mesai hesaplayın."
+                            : "Create nurse duty rosters, plan shifts with fair distribution, calculate automatic timesheets and overtime.")
+                    </p>
+                    
+                    <div class="hero-actions">
+                        <a href="/app" class="btn-hero-primary">
+                            @(isTurkish ? "Hemen Başla" : "Get Started")
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </a>
+                        <a href="#features" class="btn-hero-secondary">
+                            @(isTurkish ? "Özellikleri Keşfet" : "Explore Features")
+                        </a>
+                    </div>
+                    
+                    <div class="hero-features">
+                        <div class="hero-feature">
+                            <span class="hero-feature-icon">✓</span>
+                            @(isTurkish ? "Kayıt gerektirmez" : "No registration")
+                        </div>
+                        <div class="hero-feature">
+                            <span class="hero-feature-icon">✓</span>
+                            @(isTurkish ? "10 personele kadar ücretsiz" : "Free up to 10 employees")
+                        </div>
+                        <div class="hero-feature">
+                            <span class="hero-feature-icon">✓</span>
+                            @(isTurkish ? "Excel export" : "Excel export")
+                        </div>
+                    </div>
                 </div>
             </div>
+            
             <div class="col-lg-6 d-none d-lg-block">
                 <div class="hero-visual">
-                    <!-- Dashboard Preview -->
-                    <div class="dashboard-preview">
-                        <div class="preview-header">
-                            <div class="preview-dots">
-                                <span></span><span></span><span></span>
-                            </div>
-                            <span class="preview-title">@(isTurkish ? "Nöbet Listesi - Ocak 2026" : "Shift Schedule - January 2026")</span>
+                    <div class="hero-mockup">
+                        <div class="mockup-header">
+                            <span class="mockup-dot red"></span>
+                            <span class="mockup-dot yellow"></span>
+                            <span class="mockup-dot green"></span>
+                            <span class="mockup-title">@(isTurkish ? "Nöbet Listesi — Ocak 2026" : "Shift Schedule — January 2026")</span>
                         </div>
-                        <div class="preview-body">
-                            <div class="mini-calendar">
-                                <div class="mini-row header">
-                                    <span>@(isTurkish ? "Personel" : "Staff")</span>
-                                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span class="weekend">6</span><span class="weekend">7</span>
+                        <div class="mockup-body">
+                            <div class="mockup-calendar">
+                                <div class="cal-header name-col">@(isTurkish ? "Personel" : "Staff")</div>
+                                <div class="cal-header">@(isTurkish ? "Pzt" : "Mon")</div>
+                                <div class="cal-header">@(isTurkish ? "Sal" : "Tue")</div>
+                                <div class="cal-header">@(isTurkish ? "Çar" : "Wed")</div>
+                                <div class="cal-header">@(isTurkish ? "Per" : "Thu")</div>
+                                <div class="cal-header">@(isTurkish ? "Cum" : "Fri")</div>
+                                <div class="cal-header weekend">@(isTurkish ? "Cmt" : "Sat")</div>
+                                <div class="cal-header weekend">@(isTurkish ? "Paz" : "Sun")</div>
+                                
+                                <div class="cal-row">
+                                    <div class="cal-cell name">Ayşe Y.</div>
+                                    <div class="cal-cell"><span class="cal-shift morning">08-16</span></div>
+                                    <div class="cal-cell"></div>
+                                    <div class="cal-cell"><span class="cal-shift night">16-08</span></div>
+                                    <div class="cal-cell"></div>
+                                    <div class="cal-cell"><span class="cal-shift morning">08-16</span></div>
+                                    <div class="cal-cell"></div>
+                                    <div class="cal-cell"></div>
                                 </div>
-                                <div class="mini-row">
-                                    <span class="name">Ayşe Y.</span>
-                                    <span class="shift morning">08-16</span>
-                                    <span></span>
-                                    <span class="shift night">16-08</span>
-                                    <span></span>
-                                    <span class="shift morning">08-16</span>
-                                    <span></span>
-                                    <span></span>
+                                
+                                <div class="cal-row">
+                                    <div class="cal-cell name">Mehmet K.</div>
+                                    <div class="cal-cell"></div>
+                                    <div class="cal-cell"><span class="cal-shift morning">08-16</span></div>
+                                    <div class="cal-cell"></div>
+                                    <div class="cal-cell"><span class="cal-shift night">16-08</span></div>
+                                    <div class="cal-cell"></div>
+                                    <div class="cal-cell"><span class="cal-shift long">08-08</span></div>
+                                    <div class="cal-cell"></div>
                                 </div>
-                                <div class="mini-row">
-                                    <span class="name">Mehmet K.</span>
-                                    <span></span>
-                                    <span class="shift morning">08-16</span>
-                                    <span></span>
-                                    <span class="shift night">16-08</span>
-                                    <span></span>
-                                    <span class="shift morning">08-16</span>
-                                    <span></span>
-                                </div>
-                                <div class="mini-row">
-                                    <span class="name">Fatma S.</span>
-                                    <span class="shift night">16-08</span>
-                                    <span></span>
-                                    <span class="shift morning">08-16</span>
-                                    <span></span>
-                                    <span class="shift night">16-08</span>
-                                    <span></span>
-                                    <span class="shift morning">08-16</span>
+                                
+                                <div class="cal-row">
+                                    <div class="cal-cell name">Fatma S.</div>
+                                    <div class="cal-cell"><span class="cal-shift night">16-08</span></div>
+                                    <div class="cal-cell"></div>
+                                    <div class="cal-cell"><span class="cal-shift morning">08-16</span></div>
+                                    <div class="cal-cell"></div>
+                                    <div class="cal-cell"><span class="cal-shift night">16-08</span></div>
+                                    <div class="cal-cell"></div>
+                                    <div class="cal-cell"><span class="cal-shift morning">08-16</span></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Floating Stats -->
-                    <div class="floating-stat stat-1">
-                        <div class="stat-icon">📊</div>
-                        <div class="stat-content">
-                            <div class="stat-value">156</div>
-                            <div class="stat-label">@(isTurkish ? "Toplam Saat" : "Total Hours")</div>
+                    <div class="hero-float hero-float-1">
+                        <div class="float-icon">📊</div>
+                        <div>
+                            <div class="float-value">156h</div>
+                            <div class="float-label">@(isTurkish ? "Toplam" : "Total")</div>
                         </div>
                     </div>
-                    <div class="floating-stat stat-2">
-                        <div class="stat-icon">🌙</div>
-                        <div class="stat-content">
-                            <div class="stat-value">48</div>
-                            <div class="stat-label">@(isTurkish ? "Gece Saati" : "Night Hours")</div>
+                    
+                    <div class="hero-float hero-float-2">
+                        <div class="float-icon">🌙</div>
+                        <div>
+                            <div class="float-value">48h</div>
+                            <div class="float-label">@(isTurkish ? "Gece" : "Night")</div>
                         </div>
                     </div>
                 </div>
@@ -110,256 +847,228 @@
         </div>
     </div>
 </section>
-
 
 <!-- Features Section -->
-<section id="features" class="features-section py-5">
-    <div class="container py-4">
-        <div class="text-center mb-5">
-            <h2 class="display-6 fw-bold">@(isTurkish ? "Güçlü Özellikler" : "Powerful Features")</h2>
-            <p class="text-secondary">@(isTurkish ? "İhtiyacınız olan her şey tek bir platformda" : "Everything you need in one platform")</p>
+<section id="features" class="features">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-5">
+                <span class="section-label">@(isTurkish ? "Özellikler" : "Features")</span>
+                <h2 class="section-title">
+                    @(isTurkish ? "İhtiyacınız olan her şey tek bir yerde." : "Everything you need in one place.")
+                </h2>
+                <p class="section-desc">
+                    @(isTurkish 
+                        ? "Nöbet planlamadan puantaj hesaplamaya, tüm süreçlerinizi kolaylaştırın."
+                        : "Simplify all your processes from shift scheduling to timesheet calculation.")
+                </p>
+            </div>
         </div>
         
-        <div class="row g-4">
-            <!-- Feature 1 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="feature-card h-100">
-                    <div class="feature-icon-wrapper">
-                        <span class="feature-icon">⚡</span>
-                    </div>
-                    <h3 class="h5 fw-bold mt-3">@(isTurkish ? "Hızlı Nöbet Oluşturma" : "Quick Scheduling")</h3>
-                    <p class="text-secondary mb-0">
-                        @(isTurkish 
-                            ? "Hazır şablonlarla saniyeler içinde nöbet listesi oluşturun. Tek tıkla vardiya atayın."
-                            : "Create schedules in seconds with ready templates. Assign shifts with one click.")
-                    </p>
-                </div>
-            </div>
-            
-            <!-- Feature 2 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="feature-card h-100">
-                    <div class="feature-icon-wrapper fair">
-                        <span class="feature-icon">⚖️</span>
-                    </div>
-                    <h3 class="h5 fw-bold mt-3">@(isTurkish ? "Adil Dağıtım" : "Fair Distribution")</h3>
-                    <p class="text-secondary mb-0">
-                        @(isTurkish 
-                            ? "Akıllı algoritma ile gece, hafta sonu ve tatil nöbetlerini adil şekilde dağıtın."
-                            : "Distribute night, weekend and holiday shifts fairly with smart algorithm.")
-                    </p>
-                </div>
-            </div>
-            
-            <!-- Feature 3: Puantaj -->
-            <div class="col-md-6 col-lg-4">
-                <div class="feature-card h-100 featured">
-                    <div class="feature-badge">@(isTurkish ? "Popüler" : "Popular")</div>
-                    <div class="feature-icon-wrapper timesheet">
-                        <span class="feature-icon">📊</span>
-                    </div>
-                    <h3 class="h5 fw-bold mt-3">@(isTurkish ? "Otomatik Puantaj" : "Auto Timesheet")</h3>
-                    <p class="text-secondary mb-0">
-                        @(isTurkish 
-                            ? "Nöbet listesinden otomatik puantaj oluşturun. Normal, gece, hafta sonu ve fazla mesai ayrı hesaplanır."
-                            : "Generate timesheets from schedules. Normal, night, weekend and overtime calculated separately.")
-                    </p>
-                </div>
-            </div>
-            
-            <!-- Feature 4 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="feature-card h-100">
-                    <div class="feature-icon-wrapper night">
-                        <span class="feature-icon">🌙</span>
-                    </div>
-                    <h3 class="h5 fw-bold mt-3">@(isTurkish ? "Gece & Fazla Mesai" : "Night & Overtime")</h3>
-                    <p class="text-secondary mb-0">
-                        @(isTurkish 
-                            ? "Gece çalışma saatleri ve fazla mesailer otomatik hesaplanır. Günlük veya aylık mod seçin."
-                            : "Night hours and overtime calculated automatically. Choose daily or monthly mode.")
-                    </p>
-                </div>
-            </div>
-            
-            <!-- Feature 5 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="feature-card h-100">
-                    <div class="feature-icon-wrapper holiday">
-                        <span class="feature-icon">🎉</span>
-                    </div>
-                    <h3 class="h5 fw-bold mt-3">@(isTurkish ? "Tatil & İzin Yönetimi" : "Holiday Management")</h3>
-                    <p class="text-secondary mb-0">
-                        @(isTurkish 
-                            ? "Resmi tatiller ve personel izinlerini tanımlayın. Tatil çalışması ayrı gösterilir."
-                            : "Define holidays and employee leaves. Holiday work shown separately.")
-                    </p>
-                </div>
-            </div>
-            
-            <!-- Feature 6 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="feature-card h-100">
-                    <div class="feature-icon-wrapper excel">
-                        <span class="feature-icon">📥</span>
-                    </div>
-                    <h3 class="h5 fw-bold mt-3">@(isTurkish ? "Excel Export" : "Excel Export")</h3>
-                    <p class="text-secondary mb-0">
-                        @(isTurkish 
-                            ? "Nöbet listesi ve puantajı tek tıkla Excel'e aktarın. Bordro entegrasyonu için hazır."
-                            : "Export schedules and timesheets to Excel. Ready for payroll integration.")
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Puantaj Detail Section -->
-<section class="timesheet-section py-5 bg-light">
-    <div class="container py-4">
-        <div class="row align-items-center">
-            <div class="col-lg-6 mb-4 mb-lg-0">
-                <div class="timesheet-preview">
-                    <div class="timesheet-card">
-                        <div class="timesheet-header">
-                            <h5 class="mb-0">@(isTurkish ? "Puantaj Raporu - Ocak 2026" : "Timesheet Report - January 2026")</h5>
-                        </div>
-                        <div class="timesheet-body">
-                            <div class="timesheet-row header-row">
-                                <span>@(isTurkish ? "Personel" : "Employee")</span>
-                                <span>@(isTurkish ? "Normal" : "Regular")</span>
-                                <span>@(isTurkish ? "Gece" : "Night")</span>
-                                <span>@(isTurkish ? "H.Sonu" : "Weekend")</span>
-                                <span>@(isTurkish ? "F.Mesai" : "Overtime")</span>
-                                <span>@(isTurkish ? "Toplam" : "Total")</span>
-                            </div>
-                            <div class="timesheet-row">
-                                <span class="emp-name">Ayşe Yılmaz</span>
-                                <span>120s</span>
-                                <span class="night-hours">32s</span>
-                                <span class="weekend-hours">16s</span>
-                                <span class="overtime-hours">8s</span>
-                                <span class="total-hours">176s</span>
-                            </div>
-                            <div class="timesheet-row">
-                                <span class="emp-name">Mehmet Kaya</span>
-                                <span>112s</span>
-                                <span class="night-hours">40s</span>
-                                <span class="weekend-hours">24s</span>
-                                <span class="overtime-hours">4s</span>
-                                <span class="total-hours">180s</span>
-                            </div>
-                            <div class="timesheet-row">
-                                <span class="emp-name">Fatma Şahin</span>
-                                <span>128s</span>
-                                <span class="night-hours">24s</span>
-                                <span class="weekend-hours">8s</span>
-                                <span class="overtime-hours">12s</span>
-                                <span class="total-hours">172s</span>
-                            </div>
-                        </div>
-                        <div class="timesheet-footer">
-                            <button class="btn btn-sm btn-success">
-                                📥 @(isTurkish ? "Excel'e Aktar" : "Export Excel")
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <h2 class="display-6 fw-bold mb-4">
-                    @(isTurkish ? "Detaylı Puantaj Hesaplama" : "Detailed Timesheet Calculation")
-                </h2>
-                <p class="text-secondary mb-4">
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3 class="feature-title">@(isTurkish ? "Hızlı Nöbet Oluşturma" : "Quick Scheduling")</h3>
+                <p class="feature-text">
                     @(isTurkish 
-                        ? "Nöbet listesinden otomatik olarak puantaj oluşturun. Tüm çalışma kategorileri ayrı ayrı hesaplanır ve raporlanır."
-                        : "Generate timesheets automatically from shift schedules. All work categories calculated and reported separately.")
+                        ? "Hazır şablonlarla saniyeler içinde nöbet listesi oluşturun. Tek tıkla vardiya atayın."
+                        : "Create schedules in seconds with ready templates. Assign shifts with one click.")
                 </p>
-                
-                <div class="timesheet-features">
-                    <div class="ts-feature">
-                        <div class="ts-feature-icon">☀️</div>
-                        <div>
-                            <strong>@(isTurkish ? "Normal Çalışma" : "Regular Hours")</strong>
-                            <p class="small text-secondary mb-0">@(isTurkish ? "Standart mesai saatleri" : "Standard working hours")</p>
-                        </div>
-                    </div>
-                    <div class="ts-feature">
-                        <div class="ts-feature-icon">🌙</div>
-                        <div>
-                            <strong>@(isTurkish ? "Gece Çalışması" : "Night Hours")</strong>
-                            <p class="small text-secondary mb-0">@(isTurkish ? "20:00 - 06:00 arası çalışma" : "Work between 20:00 - 06:00")</p>
-                        </div>
-                    </div>
-                    <div class="ts-feature">
-                        <div class="ts-feature-icon">📅</div>
-                        <div>
-                            <strong>@(isTurkish ? "Hafta Sonu" : "Weekend Hours")</strong>
-                            <p class="small text-secondary mb-0">@(isTurkish ? "Cumartesi ve Pazar çalışması" : "Saturday and Sunday work")</p>
-                        </div>
-                    </div>
-                    <div class="ts-feature">
-                        <div class="ts-feature-icon">⏰</div>
-                        <div>
-                            <strong>@(isTurkish ? "Fazla Mesai" : "Overtime")</strong>
-                            <p class="small text-secondary mb-0">@(isTurkish ? "Günlük veya aylık hesaplama" : "Daily or monthly calculation")</p>
-                        </div>
-                    </div>
-                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">⚖️</div>
+                <h3 class="feature-title">@(isTurkish ? "Adil Dağıtım" : "Fair Distribution")</h3>
+                <p class="feature-text">
+                    @(isTurkish 
+                        ? "Akıllı algoritma ile gece, hafta sonu ve tatil nöbetlerini adil şekilde dağıtın."
+                        : "Distribute night, weekend and holiday shifts fairly with smart algorithm.")
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">@(isTurkish ? "Otomatik Puantaj" : "Auto Timesheet")</h3>
+                <p class="feature-text">
+                    @(isTurkish 
+                        ? "Nöbet listesinden otomatik puantaj oluşturun. Normal, gece, hafta sonu ayrı hesaplanır."
+                        : "Generate timesheets from schedules. Regular, night, weekend calculated separately.")
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🌙</div>
+                <h3 class="feature-title">@(isTurkish ? "Gece & Fazla Mesai" : "Night & Overtime")</h3>
+                <p class="feature-text">
+                    @(isTurkish 
+                        ? "Gece çalışma saatleri ve fazla mesailer otomatik hesaplanır."
+                        : "Night hours and overtime calculated automatically.")
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🎉</div>
+                <h3 class="feature-title">@(isTurkish ? "Tatil Yönetimi" : "Holiday Management")</h3>
+                <p class="feature-text">
+                    @(isTurkish 
+                        ? "Resmi tatiller ve personel izinlerini tanımlayın. Tatil çalışması ayrı gösterilir."
+                        : "Define holidays and leaves. Holiday work shown separately.")
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📥</div>
+                <h3 class="feature-title">Excel Export</h3>
+                <p class="feature-text">
+                    @(isTurkish 
+                        ? "Nöbet listesi ve puantajı tek tıkla Excel'e aktarın."
+                        : "Export schedules and timesheets to Excel with one click.")
+                </p>
             </div>
         </div>
     </div>
 </section>
 
 <!-- How It Works -->
-<section class="how-it-works py-5">
-    <div class="container py-5">
-        <div class="text-center mb-5">
-            <span class="badge bg-primary-subtle text-primary mb-3 px-3 py-2 rounded-pill">
-                @(isTurkish ? "Nasıl Çalışır?" : "How It Works?")
-            </span>
-            <h2 class="display-6 fw-bold">@(isTurkish ? "3 Adımda Başlayın" : "Get Started in 3 Steps")</h2>
-            <p class="text-secondary mt-2">@(isTurkish ? "Dakikalar içinde nöbet planınızı oluşturun" : "Create your shift schedule in minutes")</p>
+<section class="how-it-works">
+    <div class="container">
+        <div class="text-center">
+            <span class="section-label">@(isTurkish ? "Nasıl Çalışır?" : "How It Works?")</span>
+            <h2 class="section-title">@(isTurkish ? "3 adımda başlayın." : "Get started in 3 steps.")</h2>
         </div>
         
-        <div class="steps-container">
-            <div class="steps-line d-none d-md-block"></div>
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="step-card text-center">
-                        <div class="step-icon-wrapper">
-                            <span class="step-icon">👥</span>
-                            <span class="step-number-badge">1</span>
-                        </div>
-                        <h4 class="h5 fw-bold mt-4 mb-3">@(isTurkish ? "Personel Ekleyin" : "Add Employees")</h4>
-                        <p class="text-secondary small mb-0">
-                            @(isTurkish ? "Ad, unvan ve sicil numaralarını kolayca girin. Excel'den yapıştırabilirsiniz." : "Enter names, titles and ID numbers. Paste from Excel.")
-                        </p>
+        <div class="steps-grid">
+            <div class="step">
+                <div class="step-number">
+                    👥
+                    <span class="step-badge">1</span>
+                </div>
+                <h4 class="step-title">@(isTurkish ? "Personel Ekleyin" : "Add Employees")</h4>
+                <p class="step-text">
+                    @(isTurkish 
+                        ? "Ad, unvan ve sicil numaralarını girin. Excel'den yapıştırabilirsiniz."
+                        : "Enter names, titles and IDs. Paste from Excel.")
+                </p>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">
+                    📅
+                    <span class="step-badge">2</span>
+                </div>
+                <h4 class="step-title">@(isTurkish ? "Nöbet Atayın" : "Assign Shifts")</h4>
+                <p class="step-text">
+                    @(isTurkish 
+                        ? "Takvim üzerinde tıklayarak veya otomatik atayın."
+                        : "Click on calendar or auto-assign with algorithm.")
+                </p>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">
+                    📊
+                    <span class="step-badge">3</span>
+                </div>
+                <h4 class="step-title">@(isTurkish ? "Puantaj Alın" : "Get Timesheet")</h4>
+                <p class="step-text">
+                    @(isTurkish 
+                        ? "Otomatik hesaplanan puantajı görün ve Excel'e aktarın."
+                        : "View auto-calculated timesheet and export to Excel.")
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Timesheet Section -->
+<section class="timesheet-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-7">
+                <div class="timesheet-preview">
+                    <div class="ts-header">
+                        <h4>@(isTurkish ? "Puantaj Raporu — Ocak 2026" : "Timesheet Report — January 2026")</h4>
+                    </div>
+                    <div class="ts-body">
+                        <table class="ts-table">
+                            <thead>
+                                <tr>
+                                    <th>@(isTurkish ? "Personel" : "Employee")</th>
+                                    <th>@(isTurkish ? "Normal" : "Regular")</th>
+                                    <th>@(isTurkish ? "Gece" : "Night")</th>
+                                    <th>@(isTurkish ? "H.Sonu" : "Weekend")</th>
+                                    <th>@(isTurkish ? "F.Mesai" : "Overtime")</th>
+                                    <th>@(isTurkish ? "Toplam" : "Total")</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="ts-name">Ayşe Yılmaz</td>
+                                    <td>120s</td>
+                                    <td class="ts-night">32s</td>
+                                    <td class="ts-weekend">16s</td>
+                                    <td class="ts-overtime">8s</td>
+                                    <td class="ts-total">176s</td>
+                                </tr>
+                                <tr>
+                                    <td class="ts-name">Mehmet Kaya</td>
+                                    <td>112s</td>
+                                    <td class="ts-night">40s</td>
+                                    <td class="ts-weekend">24s</td>
+                                    <td class="ts-overtime">4s</td>
+                                    <td class="ts-total">180s</td>
+                                </tr>
+                                <tr>
+                                    <td class="ts-name">Fatma Şahin</td>
+                                    <td>128s</td>
+                                    <td class="ts-night">24s</td>
+                                    <td class="ts-weekend">8s</td>
+                                    <td class="ts-overtime">12s</td>
+                                    <td class="ts-total">172s</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="ts-footer">
+                        <button class="btn-export">
+                            📥 @(isTurkish ? "Excel'e Aktar" : "Export Excel")
+                        </button>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="step-card text-center">
-                        <div class="step-icon-wrapper">
-                            <span class="step-icon">📅</span>
-                            <span class="step-number-badge">2</span>
+            </div>
+            
+            <div class="col-lg-5">
+                <span class="section-label">@(isTurkish ? "Puantaj Sistemi" : "Timesheet System")</span>
+                <h2 class="section-title">@(isTurkish ? "Detaylı puantaj hesaplama." : "Detailed timesheet calculation.")</h2>
+                
+                <div class="ts-features">
+                    <div class="ts-feature-item">
+                        <div class="ts-feature-icon">☀️</div>
+                        <div class="ts-feature-content">
+                            <h5>@(isTurkish ? "Normal Çalışma" : "Regular Hours")</h5>
+                            <p>@(isTurkish ? "Standart mesai saatleri" : "Standard working hours")</p>
                         </div>
-                        <h4 class="h5 fw-bold mt-4 mb-3">@(isTurkish ? "Nöbet Atayın" : "Assign Shifts")</h4>
-                        <p class="text-secondary small mb-0">
-                            @(isTurkish ? "Takvim üzerinde tıklayarak veya akıllı algoritma ile otomatik atayın." : "Click on calendar or auto-assign with smart algorithm.")
-                        </p>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="step-card text-center">
-                        <div class="step-icon-wrapper">
-                            <span class="step-icon">📊</span>
-                            <span class="step-number-badge">3</span>
+                    <div class="ts-feature-item">
+                        <div class="ts-feature-icon">🌙</div>
+                        <div class="ts-feature-content">
+                            <h5>@(isTurkish ? "Gece Çalışması" : "Night Hours")</h5>
+                            <p>@(isTurkish ? "20:00 - 06:00 arası" : "Between 20:00 - 06:00")</p>
                         </div>
-                        <h4 class="h5 fw-bold mt-4 mb-3">@(isTurkish ? "Puantaj Alın" : "Get Timesheet")</h4>
-                        <p class="text-secondary small mb-0">
-                            @(isTurkish ? "Otomatik hesaplanan puantajı görün ve Excel'e aktarın." : "View auto-calculated timesheet and export to Excel.")
-                        </p>
+                    </div>
+                    <div class="ts-feature-item">
+                        <div class="ts-feature-icon">📅</div>
+                        <div class="ts-feature-content">
+                            <h5>@(isTurkish ? "Hafta Sonu" : "Weekend Hours")</h5>
+                            <p>@(isTurkish ? "Cumartesi ve Pazar" : "Saturday and Sunday")</p>
+                        </div>
+                    </div>
+                    <div class="ts-feature-item">
+                        <div class="ts-feature-icon">⏰</div>
+                        <div class="ts-feature-content">
+                            <h5>@(isTurkish ? "Fazla Mesai" : "Overtime")</h5>
+                            <p>@(isTurkish ? "Günlük veya aylık hesaplama" : "Daily or monthly calculation")</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -368,421 +1077,17 @@
 </section>
 
 <!-- CTA Section -->
-<section class="cta-section py-5">
-    <div class="container py-4">
-        <div class="cta-card">
-            <div class="cta-bg"></div>
-            <div class="row align-items-center position-relative">
-                <div class="col-lg-8 text-center text-lg-start mb-4 mb-lg-0">
-                    <h2 class="h3 fw-bold text-white mb-2">
-                        @(isTurkish ? "Hemen Ücretsiz Başlayın" : "Start Free Today")
-                    </h2>
-                    <p class="text-white-50 mb-0">
-                        @(isTurkish 
-                            ? "Kayıt olmadan 10 personele kadar ücretsiz. Kredi kartı gerekmez."
-                            : "Free for up to 10 employees without registration. No credit card required.")
-                    </p>
-                </div>
-                <div class="col-lg-4 text-center text-lg-end">
-                    <a href="/app" class="btn btn-light btn-lg px-4 py-3 rounded-pill fw-semibold shadow-sm">
-                        @(isTurkish ? "Hemen Başla" : "Get Started")
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ms-2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                    </a>
-                </div>
-            </div>
-        </div>
+<section class="cta">
+    <div class="container">
+        <h2 class="cta-title">@(isTurkish ? "Hemen ücretsiz başlayın." : "Start free today.")</h2>
+        <p class="cta-desc">
+            @(isTurkish 
+                ? "Kayıt olmadan 10 personele kadar ücretsiz. Kredi kartı gerekmez."
+                : "Free for up to 10 employees without registration. No credit card required.")
+        </p>
+        <a href="/app" class="btn-cta">
+            @(isTurkish ? "Hemen Başla" : "Get Started")
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
     </div>
 </section>
-
-@section Styles {
-<style>
-    /* Hero Section */
-    .hero-section {
-        position: relative;
-        overflow: hidden;
-        background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
-        min-height: 80vh;
-        display: flex;
-        align-items: center;
-    }
-    
-    .hero-bg {
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 50%;
-        height: 100%;
-        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-        opacity: 0.05;
-        transform: skewX(-12deg) translateX(20%);
-    }
-    
-    /* Dashboard Preview */
-    .hero-visual {
-        position: relative;
-        padding: 20px;
-    }
-    
-    .dashboard-preview {
-        background: white;
-        border-radius: 16px;
-        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
-        overflow: hidden;
-        transform: perspective(1000px) rotateY(-5deg) rotateX(2deg);
-        transition: transform 0.5s ease;
-    }
-    
-    .dashboard-preview:hover {
-        transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
-    }
-    
-    .preview-header {
-        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-        padding: 12px 16px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-    
-    .preview-dots span {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        display: inline-block;
-        margin-right: 6px;
-    }
-    
-    .preview-dots span:nth-child(1) { background: #ef4444; }
-    .preview-dots span:nth-child(2) { background: #f59e0b; }
-    .preview-dots span:nth-child(3) { background: #22c55e; }
-    
-    .preview-title {
-        color: white;
-        font-size: 0.85rem;
-        font-weight: 500;
-    }
-    
-    .preview-body {
-        padding: 16px;
-    }
-    
-    .mini-calendar {
-        font-size: 0.75rem;
-    }
-    
-    .mini-row {
-        display: grid;
-        grid-template-columns: 80px repeat(7, 1fr);
-        gap: 4px;
-        padding: 6px 0;
-        border-bottom: 1px solid #f1f5f9;
-    }
-    
-    .mini-row.header {
-        font-weight: 600;
-        color: #64748b;
-        background: #f8fafc;
-        border-radius: 8px;
-        padding: 8px;
-    }
-    
-    .mini-row .name {
-        font-weight: 500;
-        color: #1e293b;
-    }
-    
-    .mini-row .weekend {
-        color: #ef4444;
-    }
-    
-    .shift {
-        padding: 2px 4px;
-        border-radius: 4px;
-        font-size: 0.65rem;
-        text-align: center;
-        font-weight: 500;
-    }
-    
-    .shift.morning {
-        background: #dbeafe;
-        color: #1d4ed8;
-    }
-    
-    .shift.night {
-        background: #ede9fe;
-        color: #7c3aed;
-    }
-    
-    /* Floating Stats */
-    .floating-stat {
-        position: absolute;
-        background: white;
-        padding: 12px 16px;
-        border-radius: 12px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.12);
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        animation: float 3s ease-in-out infinite;
-    }
-    
-    .stat-1 {
-        top: 10%;
-        right: 0;
-        animation-delay: 0s;
-    }
-    
-    .stat-2 {
-        bottom: 20%;
-        right: 10%;
-        animation-delay: 1.5s;
-    }
-    
-    @@keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
-    }
-    
-    .stat-icon {
-        font-size: 1.5rem;
-    }
-    
-    .stat-value {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: #1e293b;
-    }
-    
-    .stat-label {
-        font-size: 0.7rem;
-        color: #64748b;
-    }
-    
-    /* Stats Bar */
-    .stats-bar {
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    }
-    
-    /* Feature Cards */
-    .features-section {
-        background: white;
-    }
-    
-    .feature-card {
-        background: #f8fafc;
-        border-radius: 16px;
-        padding: 24px;
-        position: relative;
-        transition: all 0.3s ease;
-        border: 1px solid transparent;
-    }
-    
-    .feature-card:hover {
-        background: white;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-        border-color: #e2e8f0;
-        transform: translateY(-4px);
-    }
-    
-    .feature-card.featured {
-        background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%);
-        border: 2px solid #6366f1;
-    }
-    
-    .feature-badge {
-        position: absolute;
-        top: -10px;
-        right: 20px;
-        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-        color: white;
-        font-size: 0.7rem;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-weight: 600;
-    }
-    
-    .feature-icon-wrapper {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
-    }
-    
-    .feature-icon-wrapper.fair { background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%); }
-    .feature-icon-wrapper.timesheet { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
-    .feature-icon-wrapper.night { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); }
-    .feature-icon-wrapper.holiday { background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%); }
-    .feature-icon-wrapper.excel { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); }
-    
-    .feature-icon {
-        font-size: 1.5rem;
-        filter: brightness(10);
-    }
-    
-    /* Timesheet Section */
-    .timesheet-section {
-        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    }
-    
-    .timesheet-card {
-        background: white;
-        border-radius: 16px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        overflow: hidden;
-    }
-    
-    .timesheet-header {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        color: white;
-        padding: 16px 20px;
-    }
-    
-    .timesheet-body {
-        padding: 16px;
-    }
-    
-    .timesheet-row {
-        display: grid;
-        grid-template-columns: 1.5fr repeat(5, 1fr);
-        gap: 8px;
-        padding: 10px;
-        border-bottom: 1px solid #f1f5f9;
-        font-size: 0.85rem;
-    }
-    
-    .timesheet-row.header-row {
-        font-weight: 600;
-        color: #64748b;
-        background: #f8fafc;
-        border-radius: 8px;
-    }
-    
-    .emp-name { font-weight: 500; color: #1e293b; }
-    .night-hours { color: #7c3aed; font-weight: 500; }
-    .weekend-hours { color: #f59e0b; font-weight: 500; }
-    .overtime-hours { color: #ef4444; font-weight: 500; }
-    .total-hours { font-weight: 700; color: #1e293b; }
-    
-    .timesheet-footer {
-        padding: 16px;
-        background: #f8fafc;
-        text-align: right;
-    }
-    
-    .ts-feature {
-        display: flex;
-        align-items: flex-start;
-        gap: 12px;
-        padding: 12px 0;
-        border-bottom: 1px solid #e2e8f0;
-    }
-    
-    .ts-feature:last-child {
-        border-bottom: none;
-    }
-    
-    .ts-feature-icon {
-        font-size: 1.5rem;
-        width: 40px;
-        text-align: center;
-    }
-    
-    /* Steps */
-    .how-it-works {
-        background: white;
-    }
-    
-    .steps-container {
-        position: relative;
-    }
-    
-    .steps-line {
-        position: absolute;
-        top: 60px;
-        left: 20%;
-        right: 20%;
-        height: 2px;
-        background: linear-gradient(90deg, #e2e8f0 0%, #6366f1 50%, #e2e8f0 100%);
-        z-index: 0;
-    }
-    
-    .step-card {
-        padding: 32px 24px;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .step-icon-wrapper {
-        width: 80px;
-        height: 80px;
-        border-radius: 20px;
-        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-        border: 2px solid #e2e8f0;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        transition: all 0.3s ease;
-    }
-    
-    .step-card:hover .step-icon-wrapper {
-        background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
-        border-color: #6366f1;
-        transform: translateY(-4px);
-    }
-    
-    .step-icon {
-        font-size: 2rem;
-    }
-    
-    .step-number-badge {
-        position: absolute;
-        top: -8px;
-        right: -8px;
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-        color: white;
-        font-size: 0.8rem;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-    }
-    
-    /* CTA */
-    .cta-card {
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-        border-radius: 24px;
-        padding: 48px;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .cta-bg {
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 50%;
-        height: 100%;
-        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-        opacity: 0.1;
-        transform: skewX(-20deg) translateX(30%);
-    }
-    
-    .cta-card .btn-light {
-        color: #1e293b;
-    }
-    
-    .cta-card .btn-light:hover {
-        background: #f8fafc;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(255,255,255,0.2);
-    }
-</style>
-}
