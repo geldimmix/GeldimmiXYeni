@@ -35,7 +35,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
     
     @await RenderSectionAsync("Styles", required: false)
 </head>
@@ -44,11 +44,7 @@
     <nav class="navbar navbar-expand-lg sticky-top navbar-custom">
         <div class="container">
             <a class="navbar-brand brand-link-main" href="~/">
-                <div class="brand-icon-main">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                    </svg>
-                </div>
+                <div class="brand-icon-main">G</div>
                 <span class="brand-name-main">Geldimmi</span>
             </a>
             
@@ -57,40 +53,29 @@
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav nav-pills-container mx-auto">
+                <ul class="navbar-nav mx-auto nav-center">
                     <li class="nav-item">
-                        <a class="nav-link nav-pill" asp-controller="Home" asp-action="Index">
-                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-                                <polyline points="9 22 9 12 15 12 15 22"/>
-                            </svg>
+                        <a class="nav-link" asp-controller="Home" asp-action="Index">
                             @(isTurkish ? "Ana Sayfa" : "Home")
                         </a>
                     </li>
                     
                     <!-- SEO Pages Dropdown -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link nav-pill dropdown-toggle" href="#" id="featuresDropdown" role="button" data-bs-toggle="dropdown">
-                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-                                <polyline points="2 17 12 22 22 17"/>
-                                <polyline points="2 12 12 17 22 12"/>
-                            </svg>
+                        <a class="nav-link dropdown-toggle" href="#" id="featuresDropdown" role="button" data-bs-toggle="dropdown">
                             @(isTurkish ? "Özellikler" : "Features")
                         </a>
                         <ul class="dropdown-menu dropdown-menu-custom dropdown-mega">
                             <div class="dropdown-mega-inner">
                                 <div class="dropdown-column">
-                                    <div class="dropdown-header">
-                                        <span class="header-icon">📅</span>
-                                        @(isTurkish ? "Nöbet Planlama" : "Shift Scheduling")
-                                    </div>
+                                    <div class="dropdown-header">@(isTurkish ? "Nöbet Planlama" : "Shift Scheduling")</div>
                                     <li>
                                         <a class="dropdown-item" href="@(isTurkish ? "/rehber/nobet-listesi-olusturma" : "/guide/shift-scheduling")">
                                             <span class="dropdown-text">
                                                 <strong>@(isTurkish ? "Nöbet Listesi Oluşturma" : "Shift Scheduling")</strong>
                                                 <small>@(isTurkish ? "Kolay ve hızlı nöbet planı" : "Easy and fast shift planning")</small>
                                             </span>
+                                            <span class="dropdown-arrow">→</span>
                                         </a>
                                     </li>
                                     <li>
@@ -99,6 +84,7 @@
                                                 <strong>@(isTurkish ? "Hemşire Nöbet Programı" : "Nurse Shift Planner")</strong>
                                                 <small>@(isTurkish ? "Hastaneler için özel çözüm" : "Special solution for hospitals")</small>
                                             </span>
+                                            <span class="dropdown-arrow">→</span>
                                         </a>
                                     </li>
                                     <li>
@@ -107,20 +93,19 @@
                                                 <strong>@(isTurkish ? "Adil Nöbet Dağıtımı" : "Fair Shift Distribution")</strong>
                                                 <small>@(isTurkish ? "Akıllı algoritma ile dengeli dağıtım" : "Balanced distribution with smart algorithm")</small>
                                             </span>
+                                            <span class="dropdown-arrow">→</span>
                                         </a>
                                     </li>
                                 </div>
                                 <div class="dropdown-column">
-                                    <div class="dropdown-header">
-                                        <span class="header-icon">📊</span>
-                                        @(isTurkish ? "Puantaj & Raporlama" : "Timesheet & Reporting")
-                                    </div>
+                                    <div class="dropdown-header">@(isTurkish ? "Puantaj & Raporlama" : "Timesheet & Reporting")</div>
                                     <li>
                                         <a class="dropdown-item" href="@(isTurkish ? "/rehber/puantaj-hesaplama" : "/guide/timesheet-calculation")">
                                             <span class="dropdown-text">
                                                 <strong>@(isTurkish ? "Puantaj Hesaplama" : "Timesheet Calculation")</strong>
                                                 <small>@(isTurkish ? "Otomatik mesai hesabı" : "Automatic overtime calculation")</small>
                                             </span>
+                                            <span class="dropdown-arrow">→</span>
                                         </a>
                                     </li>
                                     <li>
@@ -129,6 +114,7 @@
                                                 <strong>@(isTurkish ? "Fazla Mesai Hesaplama" : "Overtime Calculation")</strong>
                                                 <small>@(isTurkish ? "Günlük ve aylık modlar" : "Daily and monthly modes")</small>
                                             </span>
+                                            <span class="dropdown-arrow">→</span>
                                         </a>
                                     </li>
                                 </div>
@@ -137,21 +123,11 @@
                     </li>
                     
                     <li class="nav-item">
-                        <a class="nav-link nav-pill" href="@(isTurkish ? "/blog" : "/blog")">
-                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-                            </svg>
-                            Blog
-                        </a>
+                        <a class="nav-link" href="/blog">Blog</a>
                     </li>
                     
                     <li class="nav-item">
-                        <a class="nav-link nav-pill nav-pill-cta" asp-controller="App" asp-action="Index">
-                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <polygon points="10 8 16 12 10 16 10 8"/>
-                            </svg>
+                        <a class="nav-link nav-link-cta" asp-controller="App" asp-action="Index">
                             @(isTurkish ? "Ücretsiz Başla" : "Start Free")
                         </a>
                     </li>
@@ -160,20 +136,15 @@
                 <ul class="navbar-nav nav-actions">
                     <!-- Language Selector -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link lang-toggle-btn" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link lang-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown">
                             @if (isTurkish)
                             {
-                                <span class="lang-flag">🇹🇷</span>
-                                <span class="lang-text">TR</span>
+                                <span>TR</span>
                             }
                             else
                             {
-                                <span class="lang-flag">🇬🇧</span>
-                                <span class="lang-text">EN</span>
+                                <span>EN</span>
                             }
-                            <svg class="lang-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="6 9 12 15 18 9"/>
-                            </svg>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom dropdown-lang">
                             <li>
@@ -181,14 +152,7 @@
                                     <input type="hidden" name="culture" value="tr" />
                                     <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
                                     <button type="submit" class="dropdown-item @(isTurkish ? "active" : "")">
-                                        <span class="lang-flag">🇹🇷</span>
-                                        <span>Türkçe</span>
-                                        @if (isTurkish)
-                                        {
-                                            <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                                <polyline points="20 6 9 17 4 12"/>
-                                            </svg>
-                                        }
+                                        Türkçe
                                     </button>
                                 </form>
                             </li>
@@ -197,31 +161,17 @@
                                     <input type="hidden" name="culture" value="en" />
                                     <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
                                     <button type="submit" class="dropdown-item @(!isTurkish ? "active" : "")">
-                                        <span class="lang-flag">🇬🇧</span>
-                                        <span>English</span>
-                                        @if (!isTurkish)
-                                        {
-                                            <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                                <polyline points="20 6 9 17 4 12"/>
-                                            </svg>
-                                        }
+                                        English
                                     </button>
                                 </form>
                             </li>
                         </ul>
                     </li>
                     
-                    <div class="nav-divider"></div>
-                    
                     @if (User.Identity?.IsAuthenticated == true)
                     {
                         <li class="nav-item">
-                            <a class="nav-link nav-auth-link" asp-controller="Account" asp-action="Logout">
-                                <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
-                                    <polyline points="16 17 21 12 16 7"/>
-                                    <line x1="21" y1="12" x2="9" y2="12"/>
-                                </svg>
+                            <a class="nav-link" asp-controller="Account" asp-action="Logout">
                                 @(isTurkish ? "Çıkış" : "Logout")
                             </a>
                         </li>
@@ -229,17 +179,13 @@
                     else
                     {
                         <li class="nav-item d-none d-lg-block">
-                            <a class="nav-link nav-auth-link" asp-controller="Account" asp-action="Login">
+                            <a class="nav-link" asp-controller="Account" asp-action="Login">
                                 @(isTurkish ? "Giriş" : "Login")
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="btn btn-nav-signup" asp-controller="Account" asp-action="Register">
-                                <span>@(isTurkish ? "Kayıt Ol" : "Sign Up")</span>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="5" y1="12" x2="19" y2="12"/>
-                                    <polyline points="12 5 19 12 12 19"/>
-                                </svg>
+                                @(isTurkish ? "Kayıt Ol" : "Sign Up")
                             </a>
                         </li>
                     }
@@ -250,428 +196,322 @@
     
     <style>
         /* ═══════════════════════════════════════════════════════════════
-           MODERN NAVBAR STYLES - Geldimmi
+           MINIMAL NAVBAR - Clean & Elegant
            ═══════════════════════════════════════════════════════════════ */
         
+        :root {
+            --nav-bg: #fefefe;
+            --nav-text: #2d2d2d;
+            --nav-text-muted: #737373;
+            --nav-accent: #c94a4a;
+            --nav-border: #ebebeb;
+            --nav-hover-bg: #f5f5f5;
+        }
+        
         .navbar-custom {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-            padding: 10px 0;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--nav-bg);
+            border-bottom: 1px solid var(--nav-border);
+            padding: 0;
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        .navbar-custom .container {
+            padding-top: 16px;
+            padding-bottom: 16px;
         }
         
         .navbar-custom.scrolled {
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 1px 0 var(--nav-border);
         }
         
-        /* Brand Styling */
+        /* Brand */
         .brand-link-main {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             text-decoration: none;
-            position: relative;
         }
         
         .brand-icon-main {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
-            border-radius: 12px;
+            width: 36px;
+            height: 36px;
+            background: var(--nav-accent);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-family: 'Instrument Serif', Georgia, serif;
+            font-size: 20px;
+            font-style: italic;
             color: white;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .brand-icon-main::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(145deg, #dc2626 0%, #f97316 100%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .brand-icon-main svg {
-            position: relative;
-            z-index: 1;
+            transition: transform 0.2s ease;
         }
         
         .brand-name-main {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.6rem;
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            color: #0f172a;
-            transition: all 0.3s ease;
+            font-family: 'Instrument Serif', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 400;
+            font-style: italic;
+            letter-spacing: -0.02em;
+            color: var(--nav-text);
         }
         
         .brand-link-main:hover .brand-icon-main {
-            transform: translateY(-2px) rotate(-3deg);
-            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
+            transform: rotate(-4deg);
         }
         
-        .brand-link-main:hover .brand-icon-main::before {
-            opacity: 1;
+        /* Nav Links */
+        .nav-center {
+            gap: 0;
         }
         
-        .brand-link-main:hover .brand-name-main {
-            background: linear-gradient(145deg, #dc2626 0%, #f97316 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        /* Nav Pills Container */
-        .nav-pills-container {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            background: #f8fafc;
-            padding: 6px;
-            border-radius: 16px;
-            border: 1px solid #e2e8f0;
-        }
-        
-        /* Nav Pill Base */
-        .nav-pill {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #64748b;
+        .navbar-custom .nav-link {
+            color: var(--nav-text-muted);
+            font-size: 0.95rem;
             font-weight: 500;
-            font-size: 0.9rem;
-            padding: 10px 18px;
-            border-radius: 12px;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 8px 20px;
             position: relative;
-            white-space: nowrap;
+            transition: color 0.2s ease;
         }
         
-        .nav-icon {
-            opacity: 0.7;
-            transition: all 0.2s ease;
+        .navbar-custom .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 20px;
+            right: 20px;
+            height: 1px;
+            background: var(--nav-accent);
+            transform: scaleX(0);
+            transition: transform 0.2s ease;
         }
         
-        .nav-pill:hover {
-            color: #0f172a;
-            background: white;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        .navbar-custom .nav-link:hover {
+            color: var(--nav-text);
         }
         
-        .nav-pill:hover .nav-icon {
-            opacity: 1;
-            transform: scale(1.1);
+        .navbar-custom .nav-link:hover::after {
+            transform: scaleX(1);
         }
         
-        /* CTA Pill */
-        .nav-pill-cta {
-            background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
-            color: white !important;
-            font-weight: 600;
+        /* CTA Link */
+        .nav-link-cta {
+            color: var(--nav-accent) !important;
+            font-weight: 600 !important;
         }
         
-        .nav-pill-cta .nav-icon {
-            opacity: 1;
+        .nav-link-cta::after {
+            display: none !important;
         }
         
-        .nav-pill-cta:hover {
-            background: linear-gradient(145deg, #dc2626 0%, #f97316 100%);
-            transform: translateY(-1px);
-            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.25);
+        .nav-link-cta:hover {
+            color: #a33d3d !important;
         }
         
-        /* Actions Area */
+        /* Actions */
         .nav-actions {
             display: flex;
             align-items: center;
             gap: 8px;
         }
         
-        .nav-divider {
-            width: 1px;
-            height: 24px;
-            background: #e2e8f0;
-            margin: 0 8px;
-        }
-        
         /* Language Toggle */
-        .lang-toggle-btn {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 14px !important;
-            background: #f1f5f9;
-            border-radius: 10px;
-            font-weight: 500;
-            font-size: 0.85rem;
-            color: #475569;
-            transition: all 0.2s ease;
+        .lang-toggle {
+            font-size: 0.85rem !important;
+            font-weight: 600 !important;
+            color: var(--nav-text-muted) !important;
+            padding: 6px 12px !important;
+            border: 1px solid var(--nav-border);
+            border-radius: 6px;
         }
         
-        .lang-toggle-btn:hover {
-            background: #e2e8f0;
-            color: #0f172a;
+        .lang-toggle:hover {
+            background: var(--nav-hover-bg);
+            color: var(--nav-text) !important;
         }
         
-        .lang-flag {
-            font-size: 1.1rem;
-        }
-        
-        .lang-text {
-            font-weight: 600;
-        }
-        
-        .lang-chevron {
-            opacity: 0.5;
-            transition: transform 0.2s ease;
-        }
-        
-        .lang-toggle-btn[aria-expanded="true"] .lang-chevron {
-            transform: rotate(180deg);
-        }
-        
-        /* Auth Links */
-        .nav-auth-link {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #64748b;
-            font-weight: 500;
-            padding: 8px 14px;
-            border-radius: 10px;
-            transition: all 0.2s ease;
-        }
-        
-        .nav-auth-link:hover {
-            color: #0f172a;
-            background: #f1f5f9;
+        .lang-toggle::after {
+            display: none !important;
         }
         
         /* Signup Button */
         .btn-nav-signup {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            font-weight: 600;
+            padding: 10px 22px;
             font-size: 0.9rem;
-            border-radius: 12px;
-            background: linear-gradient(145deg, #6366f1 0%, #8b5cf6 100%);
+            font-weight: 600;
+            border-radius: 8px;
+            background: var(--nav-text);
             border: none;
             color: white;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn-nav-signup::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(145deg, #4f46e5 0%, #7c3aed 100%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .btn-nav-signup span,
-        .btn-nav-signup svg {
-            position: relative;
-            z-index: 1;
+            transition: all 0.2s ease;
         }
         
         .btn-nav-signup:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.35);
+            background: #1a1a1a;
             color: white;
-        }
-        
-        .btn-nav-signup:hover::before {
-            opacity: 1;
-        }
-        
-        .btn-nav-signup svg {
-            transition: transform 0.2s ease;
-        }
-        
-        .btn-nav-signup:hover svg {
-            transform: translateX(3px);
+            transform: translateY(-1px);
         }
         
         /* ═══════════════════════════════════════════════════════════════
-           MEGA DROPDOWN STYLES
+           DROPDOWN STYLES
            ═══════════════════════════════════════════════════════════════ */
         
         .dropdown-menu-custom {
-            border: none;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12), 0 4px 15px rgba(0, 0, 0, 0.06);
-            border-radius: 16px;
+            border: 1px solid var(--nav-border);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
             padding: 0;
             overflow: hidden;
-            animation: dropdownSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 12px;
+            animation: dropdownFade 0.2s ease;
         }
         
-        @@keyframes dropdownSlide {
-            from { 
-                opacity: 0; 
-                transform: translateY(-10px) scale(0.98); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0) scale(1); 
-            }
+        @@keyframes dropdownFade {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .dropdown-mega {
-            min-width: 520px;
-            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            min-width: 540px;
+            background: white;
         }
         
         .dropdown-mega-inner {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 0;
         }
         
         .dropdown-column {
-            padding: 20px;
+            padding: 24px;
         }
         
         .dropdown-column:first-child {
-            border-right: 1px solid #f1f5f9;
+            border-right: 1px solid var(--nav-border);
         }
         
         .dropdown-menu-custom .dropdown-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: #0f172a;
-            padding: 0 12px 12px;
-            margin-bottom: 8px;
-            border-bottom: 1px solid #f1f5f9;
-        }
-        
-        .header-icon {
-            font-size: 1rem;
+            letter-spacing: 1.2px;
+            color: var(--nav-text-muted);
+            padding: 0 0 16px 0;
+            margin-bottom: 0;
         }
         
         .dropdown-menu-custom .dropdown-item {
             display: flex;
-            align-items: flex-start;
-            padding: 12px;
-            border-radius: 10px;
-            transition: all 0.2s ease;
-            margin-bottom: 4px;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-radius: 0;
+            border-bottom: 1px solid #f5f5f5;
+            transition: all 0.15s ease;
         }
         
         .dropdown-menu-custom .dropdown-item:last-child {
-            margin-bottom: 0;
+            border-bottom: none;
         }
         
         .dropdown-menu-custom .dropdown-item:hover {
-            background: white;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            transform: translateX(4px);
+            background: transparent;
+            padding-left: 8px;
         }
         
         .dropdown-text {
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            gap: 2px;
         }
         
         .dropdown-text strong {
             font-size: 0.9rem;
             font-weight: 600;
-            color: #1e293b;
-            transition: color 0.2s ease;
-        }
-        
-        .dropdown-item:hover .dropdown-text strong {
-            color: #6366f1;
+            color: var(--nav-text);
         }
         
         .dropdown-text small {
-            font-size: 0.78rem;
-            color: #64748b;
-            line-height: 1.4;
+            font-size: 0.8rem;
+            color: var(--nav-text-muted);
+        }
+        
+        .dropdown-arrow {
+            color: var(--nav-text-muted);
+            font-size: 1rem;
+            opacity: 0;
+            transform: translateX(-4px);
+            transition: all 0.15s ease;
+        }
+        
+        .dropdown-item:hover .dropdown-arrow {
+            opacity: 1;
+            transform: translateX(0);
+            color: var(--nav-accent);
+        }
+        
+        .dropdown-item:hover .dropdown-text strong {
+            color: var(--nav-accent);
         }
         
         /* Language Dropdown */
         .dropdown-lang {
-            min-width: 160px;
+            min-width: 140px;
             padding: 8px;
+            background: white;
         }
         
         .dropdown-lang .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-radius: 8px;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border-bottom: none;
             font-weight: 500;
-            color: #475569;
+            font-size: 0.9rem;
+            color: var(--nav-text-muted);
         }
         
         .dropdown-lang .dropdown-item:hover {
-            background: #f8fafc;
-            transform: none;
+            background: var(--nav-hover-bg);
+            padding-left: 14px;
+            color: var(--nav-text);
         }
         
         .dropdown-lang .dropdown-item.active {
-            background: linear-gradient(145deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
-            color: #6366f1;
-        }
-        
-        .check-icon {
-            margin-left: auto;
-            color: #6366f1;
+            background: var(--nav-hover-bg);
+            color: var(--nav-text);
         }
         
         /* ═══════════════════════════════════════════════════════════════
-           RESPONSIVE STYLES
+           RESPONSIVE
            ═══════════════════════════════════════════════════════════════ */
         
         @@media (max-width: 991.98px) {
-            .nav-pills-container {
-                flex-direction: column;
-                width: 100%;
-                background: transparent;
-                border: none;
-                padding: 16px 0;
-                gap: 4px;
+            .nav-center {
+                padding: 20px 0;
+                border-top: 1px solid var(--nav-border);
+                margin-top: 16px;
             }
             
-            .nav-pill {
-                width: 100%;
-                justify-content: flex-start;
+            .navbar-custom .nav-link {
+                padding: 12px 0;
+            }
+            
+            .navbar-custom .nav-link::after {
+                display: none;
             }
             
             .nav-actions {
                 flex-direction: column;
                 width: 100%;
                 padding-top: 16px;
-                border-top: 1px solid #e2e8f0;
-                margin-top: 8px;
-            }
-            
-            .nav-divider {
-                display: none;
+                border-top: 1px solid var(--nav-border);
+                gap: 12px;
             }
             
             .dropdown-mega {
                 min-width: 100%;
+                border: none;
+                box-shadow: none;
+                margin-top: 0;
             }
             
             .dropdown-mega-inner {
@@ -680,44 +520,30 @@
             
             .dropdown-column:first-child {
                 border-right: none;
-                border-bottom: 1px solid #f1f5f9;
+                border-bottom: 1px solid var(--nav-border);
             }
             
-            .lang-toggle-btn {
-                width: 100%;
-                justify-content: center;
-            }
-            
+            .lang-toggle,
             .btn-nav-signup {
                 width: 100%;
                 justify-content: center;
-            }
-            
-            .nav-auth-link {
-                width: 100%;
-                justify-content: center;
+                text-align: center;
             }
         }
         
         /* Navbar Toggler */
         .navbar-toggler {
-            border: none;
-            padding: 8px;
-            border-radius: 8px;
-            transition: background 0.2s ease;
+            border: 1px solid var(--nav-border);
+            padding: 6px 10px;
+            border-radius: 6px;
         }
         
         .navbar-toggler:focus {
             box-shadow: none;
         }
-        
-        .navbar-toggler:hover {
-            background: #f1f5f9;
-        }
     </style>
     
     <script>
-        // Navbar scroll effect
         window.addEventListener('scroll', function() {
             const navbar = document.querySelector('.navbar-custom');
             if (window.scrollY > 10) {
@@ -737,7 +563,7 @@
     <footer class="footer-section">
         <div class="container">
             <div class="footer-main">
-                <div class="row g-4">
+                <div class="row g-5">
                     <!-- Brand -->
                     <div class="col-lg-4 col-md-6">
                         <div class="footer-brand">
@@ -785,7 +611,7 @@
                     <div class="col-lg-2 col-md-6 col-6">
                         <h6 class="footer-title">@(isTurkish ? "İletişim" : "Contact")</h6>
                         <ul class="footer-links">
-                            <li><a href="mailto:info@geldimmi.com">info@geldimmi.com</a></li>
+                            <li><a href="mailto:info@geldimmi.com">info&#64;geldimmi.com</a></li>
                         </ul>
                     </div>
                 </div>
@@ -798,7 +624,7 @@
                     </div>
                     <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
                         <span class="footer-made">
-                            @(isTurkish ? "🇹🇷 Türkiye'de yapıldı" : "🇹🇷 Made in Turkey")
+                            @(isTurkish ? "Türkiye'de yapıldı" : "Made in Turkey")
                         </span>
                     </div>
                 </div>
@@ -808,53 +634,53 @@
     
     <style>
         .footer-section {
-            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+            background: #fafafa;
+            border-top: 1px solid var(--nav-border);
             margin-top: 0;
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
         }
         
         .footer-main {
-            padding: 60px 0 40px;
+            padding: 64px 0 48px;
         }
         
         .footer-brand-icon {
             width: 32px;
             height: 32px;
-            background: linear-gradient(135deg, #dc2626 0%, #ea580c 100%);
+            background: var(--nav-accent);
             border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-family: 'Instrument Serif', Georgia, serif;
             font-size: 16px;
+            font-style: italic;
             color: white;
-            font-weight: 800;
-            font-family: 'Space Grotesk', sans-serif;
         }
         
         .footer-brand-text {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #dc2626 0%, #ea580c 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-family: 'Instrument Serif', Georgia, serif;
+            font-size: 1.3rem;
+            font-weight: 400;
+            font-style: italic;
+            letter-spacing: -0.02em;
+            color: var(--nav-text);
         }
         
         .footer-desc {
-            color: #64748b;
+            color: var(--nav-text-muted);
             font-size: 0.9rem;
-            line-height: 1.6;
-            max-width: 280px;
+            line-height: 1.7;
+            max-width: 300px;
         }
         
         .footer-title {
-            font-size: 0.8rem;
-            font-weight: 600;
+            font-size: 0.7rem;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #1e293b;
-            margin-bottom: 16px;
+            letter-spacing: 1.2px;
+            color: var(--nav-text-muted);
+            margin-bottom: 20px;
         }
         
         .footer-links {
@@ -864,32 +690,33 @@
         }
         
         .footer-links li {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
         
         .footer-links a {
-            color: #64748b;
+            color: var(--nav-text);
             text-decoration: none;
             font-size: 0.9rem;
+            font-weight: 500;
             transition: color 0.2s ease;
         }
         
         .footer-links a:hover {
-            color: #6366f1;
+            color: var(--nav-accent);
         }
         
         .footer-bottom {
             padding: 24px 0;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid var(--nav-border);
         }
         
         .footer-bottom p {
-            color: #94a3b8;
+            color: var(--nav-text-muted);
             font-size: 0.85rem;
         }
         
         .footer-made {
-            color: #94a3b8;
+            color: var(--nav-text-muted);
             font-size: 0.85rem;
         }
     </style>
