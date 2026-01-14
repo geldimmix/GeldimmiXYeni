@@ -137,6 +137,15 @@ public class AccountController : Controller
         _logger.LogInformation("User logged out.");
         return RedirectToAction("Index", "Home");
     }
+    
+    [HttpGet]
+    [Route("Account/Logout")]
+    public async Task<IActionResult> LogoutGet()
+    {
+        await _signInManager.SignOutAsync();
+        _logger.LogInformation("User logged out.");
+        return RedirectToAction("Index", "Home");
+    }
 
     [HttpGet]
     public IActionResult AccessDenied()
