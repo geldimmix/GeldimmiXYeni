@@ -16,7 +16,7 @@
     <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         *, *::before, *::after {
@@ -26,26 +26,24 @@
         }
         
         :root {
-            --bg: #0a0a0a;
-            --card: #ffffff;
-            --text: #171717;
-            --muted: #737373;
-            --border: #e5e5e5;
-            --accent: #c94a4a;
-            --accent-hover: #b43d3d;
+            --bg-cream: #fffbf7;
+            --bg-warm: #fef7f0;
+            --bg-white: #ffffff;
+            --text: #1a1a1a;
+            --text-muted: #6b6b6b;
+            --border: #ebe5df;
+            --accent: #d4553d;
+            --accent-dark: #b8442f;
             --success: #16a34a;
+            --success-light: #f0fdf4;
         }
         
         body {
-            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg);
+            font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-cream);
             min-height: 100vh;
             display: flex;
         }
-        
-        /* ═══════════════════════════════════════════════════════════
-           SPLIT LAYOUT
-           ═══════════════════════════════════════════════════════════ */
         
         .register-container {
             display: flex;
@@ -56,7 +54,7 @@
         /* Left Panel - Branding */
         .register-brand {
             flex: 1;
-            background: var(--bg);
+            background: var(--bg-warm);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -68,11 +66,11 @@
         .register-brand::before {
             content: '';
             position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 70% 30%, rgba(22, 163, 74, 0.1) 0%, transparent 50%);
+            top: -30%;
+            right: -30%;
+            width: 160%;
+            height: 160%;
+            background: radial-gradient(circle at 70% 30%, rgba(22, 163, 74, 0.08) 0%, transparent 50%);
             pointer-events: none;
         }
         
@@ -96,34 +94,33 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Instrument Serif', Georgia, serif;
+            font-family: 'Playfair Display', Georgia, serif;
             font-size: 22px;
-            font-style: italic;
+            font-weight: 600;
             color: white;
         }
         
         .brand-name {
-            font-family: 'Instrument Serif', Georgia, serif;
+            font-family: 'Playfair Display', Georgia, serif;
             font-size: 1.75rem;
-            font-style: italic;
-            color: white;
+            font-weight: 600;
+            color: var(--text);
             letter-spacing: -0.02em;
         }
         
         .brand-content {
             position: relative;
             z-index: 1;
-            max-width: 420px;
+            max-width: 400px;
         }
         
         .brand-headline {
-            font-family: 'Instrument Serif', Georgia, serif;
-            font-size: 3.2rem;
-            font-weight: 400;
-            font-style: italic;
-            color: white;
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 2.8rem;
+            font-weight: 600;
+            color: var(--text);
             line-height: 1.15;
-            letter-spacing: -0.03em;
+            letter-spacing: -0.02em;
             margin-bottom: 32px;
         }
         
@@ -138,8 +135,8 @@
         }
         
         .benefit-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: var(--bg-white);
+            border: 1px solid var(--border);
             border-radius: 14px;
             padding: 20px;
             display: flex;
@@ -149,7 +146,7 @@
         .benefit-icon {
             width: 44px;
             height: 44px;
-            background: rgba(22, 163, 74, 0.15);
+            background: var(--success-light);
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -159,14 +156,15 @@
         }
         
         .benefit-text h4 {
-            color: white;
+            font-family: 'Playfair Display', Georgia, serif;
+            color: var(--text);
             font-size: 1rem;
             font-weight: 600;
             margin-bottom: 4px;
         }
         
         .benefit-text p {
-            color: #a3a3a3;
+            color: var(--text-muted);
             font-size: 0.9rem;
             line-height: 1.5;
         }
@@ -174,7 +172,7 @@
         .brand-footer {
             position: relative;
             z-index: 1;
-            color: #525252;
+            color: var(--text-muted);
             font-size: 0.85rem;
         }
         
@@ -182,12 +180,13 @@
         .register-form-panel {
             width: 560px;
             min-width: 560px;
-            background: var(--card);
+            background: var(--bg-white);
             display: flex;
             flex-direction: column;
             justify-content: center;
             padding: 56px 64px;
             overflow-y: auto;
+            border-left: 1px solid var(--border);
         }
         
         .form-header {
@@ -195,15 +194,16 @@
         }
         
         .form-header h1 {
+            font-family: 'Playfair Display', Georgia, serif;
             font-size: 2rem;
-            font-weight: 700;
+            font-weight: 600;
             color: var(--text);
             margin-bottom: 8px;
             letter-spacing: -0.02em;
         }
         
         .form-header p {
-            color: var(--muted);
+            color: var(--text-muted);
             font-size: 1rem;
         }
         
@@ -211,7 +211,7 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: #f0fdf4;
+            background: var(--success-light);
             color: var(--success);
             font-size: 0.8rem;
             font-weight: 600;
@@ -233,7 +233,7 @@
         }
         
         .input-group label {
-            font-size: 0.875rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: var(--text);
         }
@@ -245,7 +245,7 @@
             border-radius: 12px;
             font-size: 1rem;
             font-family: inherit;
-            background: #fafafa;
+            background: var(--bg-cream);
             transition: all 0.2s ease;
         }
         
@@ -259,9 +259,9 @@
         
         .input-field:focus {
             outline: none;
-            border-color: var(--text);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.04);
+            border-color: var(--success);
+            background: var(--bg-white);
+            box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.08);
         }
         
         .form-row {
@@ -288,11 +288,7 @@
         .btn-submit:hover {
             background: #15803d;
             transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(22, 163, 74, 0.25);
-        }
-        
-        .btn-submit:active {
-            transform: translateY(0);
+            box-shadow: 0 8px 24px rgba(22, 163, 74, 0.2);
         }
         
         .form-footer {
@@ -303,7 +299,7 @@
         }
         
         .form-footer p {
-            color: var(--muted);
+            color: var(--text-muted);
             font-size: 0.95rem;
         }
         
@@ -334,7 +330,7 @@
         
         .terms-text {
             font-size: 0.85rem;
-            color: var(--muted);
+            color: var(--text-muted);
             text-align: center;
             line-height: 1.6;
         }
@@ -344,42 +340,22 @@
             text-decoration: underline;
         }
         
-        /* ═══════════════════════════════════════════════════════════
-           RESPONSIVE
-           ═══════════════════════════════════════════════════════════ */
-        
+        /* Responsive */
         @@media (max-width: 1024px) {
-            .register-brand {
-                display: none;
-            }
-            
+            .register-brand { display: none; }
             .register-form-panel {
                 width: 100%;
                 min-width: unset;
                 padding: 40px 24px;
-            }
-            
-            .form-header h1 {
-                font-size: 1.75rem;
+                border-left: none;
             }
         }
         
         @@media (max-width: 480px) {
-            .register-form-panel {
-                padding: 32px 20px;
-            }
-            
-            .input-field {
-                padding: 14px 16px;
-            }
-            
-            .btn-submit {
-                padding: 14px 20px;
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
-            }
+            .register-form-panel { padding: 32px 20px; }
+            .input-field { padding: 14px 16px; }
+            .btn-submit { padding: 14px 20px; }
+            .form-row { grid-template-columns: 1fr; }
         }
         
         /* Mobile brand header */
@@ -395,15 +371,12 @@
                 justify-content: center;
                 gap: 10px;
             }
-            
             .mobile-brand .brand-icon {
                 width: 40px;
                 height: 40px;
                 font-size: 20px;
             }
-            
             .mobile-brand .brand-name {
-                color: var(--text);
                 font-size: 1.5rem;
             }
         }
@@ -424,11 +397,11 @@
                 <h2 class="brand-headline">
                     @if (isTurkish)
                     {
-                        <text>Ücretsiz hesap ile <span>daha fazlasını</span> yapın.</text>
+                        <text>Ücretsiz hesap ile <span>daha fazlasını</span> yapın</text>
                     }
                     else
                     {
-                        <text>Do <span>more</span> with a free account.</text>
+                        <text>Do <span>more</span> with a free account</text>
                     }
                 </h2>
                 
@@ -444,14 +417,14 @@
                         <div class="benefit-icon">💾</div>
                         <div class="benefit-text">
                             <h4>@(isTurkish ? "Verileriniz Güvende" : "Your Data is Safe")</h4>
-                            <p>@(isTurkish ? "Nöbet listeleri ve puantaj verileriniz bulutta saklanır, her yerden erişin." : "Your rosters and timesheets are stored in the cloud, accessible anywhere.")</p>
+                            <p>@(isTurkish ? "Nöbet listeleri ve puantaj verileriniz bulutta saklanır." : "Your rosters and timesheets are stored in the cloud.")</p>
                         </div>
                     </div>
                     <div class="benefit-card">
                         <div class="benefit-icon">📊</div>
                         <div class="benefit-text">
                             <h4>@(isTurkish ? "Gelişmiş Raporlama" : "Advanced Reports")</h4>
-                            <p>@(isTurkish ? "Detaylı puantaj ve fazla mesai raporları, Excel export özelliği." : "Detailed timesheet and overtime reports with Excel export.")</p>
+                            <p>@(isTurkish ? "Detaylı puantaj ve fazla mesai raporları, Excel export." : "Detailed timesheet and overtime reports with Excel export.")</p>
                         </div>
                     </div>
                 </div>

@@ -16,7 +16,7 @@
     <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         *, *::before, *::after {
@@ -26,25 +26,22 @@
         }
         
         :root {
-            --bg: #0a0a0a;
-            --card: #ffffff;
-            --text: #171717;
-            --muted: #737373;
-            --border: #e5e5e5;
-            --accent: #c94a4a;
-            --accent-hover: #b43d3d;
+            --bg-cream: #fffbf7;
+            --bg-warm: #fef7f0;
+            --bg-white: #ffffff;
+            --text: #1a1a1a;
+            --text-muted: #6b6b6b;
+            --border: #ebe5df;
+            --accent: #d4553d;
+            --accent-dark: #b8442f;
         }
         
         body {
-            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg);
+            font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-cream);
             min-height: 100vh;
             display: flex;
         }
-        
-        /* ═══════════════════════════════════════════════════════════
-           SPLIT LAYOUT
-           ═══════════════════════════════════════════════════════════ */
         
         .login-container {
             display: flex;
@@ -55,7 +52,7 @@
         /* Left Panel - Branding */
         .login-brand {
             flex: 1;
-            background: var(--bg);
+            background: var(--bg-warm);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -67,11 +64,11 @@
         .login-brand::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 30% 30%, rgba(201, 74, 74, 0.08) 0%, transparent 50%);
+            top: -30%;
+            left: -30%;
+            width: 160%;
+            height: 160%;
+            background: radial-gradient(circle at 30% 30%, rgba(212, 85, 61, 0.08) 0%, transparent 50%);
             pointer-events: none;
         }
         
@@ -95,34 +92,33 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Instrument Serif', Georgia, serif;
+            font-family: 'Playfair Display', Georgia, serif;
             font-size: 22px;
-            font-style: italic;
+            font-weight: 600;
             color: white;
         }
         
         .brand-name {
-            font-family: 'Instrument Serif', Georgia, serif;
+            font-family: 'Playfair Display', Georgia, serif;
             font-size: 1.75rem;
-            font-style: italic;
-            color: white;
+            font-weight: 600;
+            color: var(--text);
             letter-spacing: -0.02em;
         }
         
         .brand-content {
             position: relative;
             z-index: 1;
-            max-width: 420px;
+            max-width: 400px;
         }
         
         .brand-headline {
-            font-family: 'Instrument Serif', Georgia, serif;
-            font-size: 3.5rem;
-            font-weight: 400;
-            font-style: italic;
-            color: white;
-            line-height: 1.1;
-            letter-spacing: -0.03em;
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 3rem;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 1.15;
+            letter-spacing: -0.02em;
             margin-bottom: 24px;
         }
         
@@ -132,7 +128,7 @@
         
         .brand-desc {
             font-size: 1.1rem;
-            color: #a3a3a3;
+            color: var(--text-muted);
             line-height: 1.7;
         }
         
@@ -147,15 +143,15 @@
             display: flex;
             align-items: center;
             gap: 14px;
-            color: #d4d4d4;
+            color: var(--text-muted);
             font-size: 0.95rem;
         }
         
         .feature-icon {
             width: 36px;
             height: 36px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--bg-white);
+            border: 1px solid var(--border);
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -166,7 +162,7 @@
         .brand-footer {
             position: relative;
             z-index: 1;
-            color: #525252;
+            color: var(--text-muted);
             font-size: 0.85rem;
         }
         
@@ -174,11 +170,12 @@
         .login-form-panel {
             width: 520px;
             min-width: 520px;
-            background: var(--card);
+            background: var(--bg-white);
             display: flex;
             flex-direction: column;
             justify-content: center;
             padding: 64px;
+            border-left: 1px solid var(--border);
         }
         
         .form-header {
@@ -186,15 +183,16 @@
         }
         
         .form-header h1 {
+            font-family: 'Playfair Display', Georgia, serif;
             font-size: 2rem;
-            font-weight: 700;
+            font-weight: 600;
             color: var(--text);
             margin-bottom: 8px;
             letter-spacing: -0.02em;
         }
         
         .form-header p {
-            color: var(--muted);
+            color: var(--text-muted);
             font-size: 1rem;
         }
         
@@ -211,7 +209,7 @@
         }
         
         .input-group label {
-            font-size: 0.875rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: var(--text);
         }
@@ -223,7 +221,7 @@
             border-radius: 12px;
             font-size: 1rem;
             font-family: inherit;
-            background: #fafafa;
+            background: var(--bg-cream);
             transition: all 0.2s ease;
         }
         
@@ -237,9 +235,9 @@
         
         .input-field:focus {
             outline: none;
-            border-color: var(--text);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.04);
+            border-color: var(--accent);
+            background: var(--bg-white);
+            box-shadow: 0 0 0 4px rgba(212, 85, 61, 0.08);
         }
         
         .form-options {
@@ -264,12 +262,12 @@
         
         .checkbox-group span {
             font-size: 0.9rem;
-            color: var(--muted);
+            color: var(--text-muted);
         }
         
         .forgot-link {
             font-size: 0.9rem;
-            color: var(--muted);
+            color: var(--text-muted);
             text-decoration: none;
             transition: color 0.15s;
         }
@@ -294,33 +292,9 @@
         }
         
         .btn-submit:hover {
-            background: #000;
+            background: var(--accent);
             transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-        }
-        
-        .btn-submit:active {
-            transform: translateY(0);
-        }
-        
-        .divider {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin: 8px 0;
-        }
-        
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border);
-        }
-        
-        .divider span {
-            font-size: 0.85rem;
-            color: var(--muted);
+            box-shadow: 0 8px 24px rgba(212, 85, 61, 0.2);
         }
         
         .form-footer {
@@ -331,7 +305,7 @@
         }
         
         .form-footer p {
-            color: var(--muted);
+            color: var(--text-muted);
             font-size: 0.95rem;
         }
         
@@ -360,38 +334,21 @@
             margin-top: 4px;
         }
         
-        /* ═══════════════════════════════════════════════════════════
-           RESPONSIVE
-           ═══════════════════════════════════════════════════════════ */
-        
+        /* Responsive */
         @@media (max-width: 1024px) {
-            .login-brand {
-                display: none;
-            }
-            
+            .login-brand { display: none; }
             .login-form-panel {
                 width: 100%;
                 min-width: unset;
                 padding: 40px 24px;
-            }
-            
-            .form-header h1 {
-                font-size: 1.75rem;
+                border-left: none;
             }
         }
         
         @@media (max-width: 480px) {
-            .login-form-panel {
-                padding: 32px 20px;
-            }
-            
-            .input-field {
-                padding: 14px 16px;
-            }
-            
-            .btn-submit {
-                padding: 14px 20px;
-            }
+            .login-form-panel { padding: 32px 20px; }
+            .input-field { padding: 14px 16px; }
+            .btn-submit { padding: 14px 20px; }
         }
         
         /* Mobile brand header */
@@ -407,15 +364,12 @@
                 justify-content: center;
                 gap: 10px;
             }
-            
             .mobile-brand .brand-icon {
                 width: 40px;
                 height: 40px;
                 font-size: 20px;
             }
-            
             .mobile-brand .brand-name {
-                color: var(--text);
                 font-size: 1.5rem;
             }
         }
@@ -436,11 +390,11 @@
                 <h2 class="brand-headline">
                     @if (isTurkish)
                     {
-                        <text>Nöbet planlamayı <span>kolaylaştırın.</span></text>
+                        <text>Nöbet planlamayı <span>kolaylaştırın</span></text>
                     }
                     else
                     {
-                        <text>Make shift scheduling <span>effortless.</span></text>
+                        <text>Make scheduling <span>effortless</span></text>
                     }
                 </h2>
                 <p class="brand-desc">
