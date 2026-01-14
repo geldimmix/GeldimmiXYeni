@@ -6,6 +6,7 @@ using Microsoft.Extensions.Localization;
 using Nobetci.Web.Data;
 using Nobetci.Web.Data.Entities;
 using Nobetci.Web.Resources;
+using System.Globalization;
 
 namespace Nobetci.Web.Controllers;
 
@@ -33,6 +34,10 @@ public class ExportController : Controller
         if (organization == null)
             return NotFound();
 
+        // Get current culture for localization
+        var culture = CultureInfo.CurrentUICulture;
+        var isTurkish = culture.TwoLetterISOLanguageName == "tr";
+
         var employees = await _context.Employees
             .Where(e => e.OrganizationId == organization.Id && e.IsActive)
             .OrderBy(e => e.FullName)
@@ -50,26 +55,45 @@ public class ExportController : Controller
             .ToListAsync();
 
         var daysInMonth = DateTime.DaysInMonth(year, month);
-        var monthName = new DateTime(year, month, 1).ToString("MMMM yyyy");
+        
+        // Get localized month name
+        var monthDate = new DateTime(year, month, 1);
+        var monthName = monthDate.ToString("MMMM yyyy", culture);
+
+        // Localized texts
+        var sheetName = isTurkish ? $"Nöbet Listesi - {monthName}" : $"Shift Schedule - {monthName}";
+        var employeeHeader = isTurkish ? "Personel" : "Employee";
+        var totalHoursHeader = isTurkish ? "Toplam Saat" : "Total Hours";
+        var hoursAbbrev = isTurkish ? "s" : "h"; // saat / hours abbreviation
+
+        // Day name abbreviations
+        var dayNames = isTurkish 
+            ? new[] { "Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt" }
+            : new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 
         using var workbook = new XLWorkbook();
-        var worksheet = workbook.Worksheets.Add($"Nöbet Listesi - {monthName}");
+        var worksheet = workbook.Worksheets.Add(sheetName.Length > 31 ? sheetName.Substring(0, 31) : sheetName);
 
-        // Header row
-        worksheet.Cell(1, 1).Value = _localizer["Employees"].Value;
+        // Header row - Employee column
+        worksheet.Cell(1, 1).Value = employeeHeader;
         worksheet.Cell(1, 1).Style.Font.Bold = true;
         worksheet.Cell(1, 1).Style.Fill.BackgroundColor = XLColor.LightGray;
+        worksheet.Cell(1, 1).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
 
+        // Header row - Day columns with day names
         for (int day = 1; day <= daysInMonth; day++)
         {
             var date = new DateOnly(year, month, day);
             var holiday = holidays.FirstOrDefault(h => h.Date == date);
             var isWeekend = IsWeekend(date, organization);
+            var dayName = dayNames[(int)date.DayOfWeek];
 
             var cell = worksheet.Cell(1, day + 1);
-            cell.Value = day;
+            cell.Value = $"{day}\n{dayName}";
             cell.Style.Font.Bold = true;
             cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            cell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+            cell.Style.Alignment.WrapText = true;
 
             if (holiday != null)
             {
@@ -83,15 +107,18 @@ public class ExportController : Controller
         }
 
         // Total column header
-        worksheet.Cell(1, daysInMonth + 2).Value = _localizer["TotalHours"].Value;
+        worksheet.Cell(1, daysInMonth + 2).Value = totalHoursHeader;
         worksheet.Cell(1, daysInMonth + 2).Style.Font.Bold = true;
         worksheet.Cell(1, daysInMonth + 2).Style.Fill.BackgroundColor = XLColor.LightGray;
+        worksheet.Cell(1, daysInMonth + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+        worksheet.Cell(1, daysInMonth + 2).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
 
         // Employee rows
         int row = 2;
         foreach (var employee in employees)
         {
             worksheet.Cell(row, 1).Value = employee.FullName;
+            worksheet.Cell(row, 1).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
             if (!string.IsNullOrEmpty(employee.Title))
             {
                 worksheet.Cell(row, 1).CreateComment().AddText(employee.Title);
@@ -108,6 +135,7 @@ public class ExportController : Controller
 
                 var cell = worksheet.Cell(row, day + 1);
                 cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                cell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
 
                 if (holiday != null)
                 {
@@ -120,30 +148,58 @@ public class ExportController : Controller
 
                 if (shift != null)
                 {
-                    var shiftText = $"{shift.StartTime:HH:mm}-{shift.EndTime:HH:mm}";
-                    if (shift.SpansNextDay)
+                    if (shift.IsDayOff)
                     {
-                        shiftText += "↓";
+                        // Day off - show X or İzin
+                        cell.Value = isTurkish ? "İzin" : "Off";
+                        cell.Style.Font.FontSize = 9;
+                        cell.Style.Font.Italic = true;
                     }
-                    cell.Value = shiftText;
-                    cell.Style.Font.FontSize = 9;
-                    totalHours += shift.TotalHours;
+                    else
+                    {
+                        // Build shift text: time range + hours
+                        var timeText = $"{shift.StartTime:HH:mm}-{shift.EndTime:HH:mm}";
+                        if (shift.SpansNextDay)
+                        {
+                            timeText += "↓";
+                        }
+                        
+                        // Add hours in parentheses
+                        var hoursText = shift.TotalHours % 1 == 0 
+                            ? $"({(int)shift.TotalHours}{hoursAbbrev})"
+                            : $"({shift.TotalHours:0.#}{hoursAbbrev})";
+                        
+                        cell.Value = $"{timeText}\n{hoursText}";
+                        cell.Style.Font.FontSize = 9;
+                        cell.Style.Alignment.WrapText = true;
+                        totalHours += shift.TotalHours;
+                    }
                 }
             }
 
+            // Total hours for employee
             worksheet.Cell(row, daysInMonth + 2).Value = totalHours;
             worksheet.Cell(row, daysInMonth + 2).Style.Font.Bold = true;
             worksheet.Cell(row, daysInMonth + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            worksheet.Cell(row, daysInMonth + 2).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
 
             row++;
         }
 
-        // Auto-fit columns
-        worksheet.Column(1).Width = 20;
-        for (int col = 2; col <= daysInMonth + 2; col++)
+        // Set row heights for better display
+        worksheet.Row(1).Height = 35;
+        for (int r = 2; r < row; r++)
         {
-            worksheet.Column(col).Width = 10;
+            worksheet.Row(r).Height = 30;
         }
+
+        // Auto-fit columns
+        worksheet.Column(1).Width = 22;
+        for (int col = 2; col <= daysInMonth + 1; col++)
+        {
+            worksheet.Column(col).Width = 12;
+        }
+        worksheet.Column(daysInMonth + 2).Width = 12;
 
         // Freeze first row and column
         worksheet.SheetView.FreezeRows(1);
@@ -159,7 +215,11 @@ public class ExportController : Controller
         workbook.SaveAs(stream);
         stream.Position = 0;
 
-        var fileName = $"Nobet_Listesi_{year}_{month:00}.xlsx";
+        // Localized filename
+        var fileName = isTurkish 
+            ? $"Nobet_Listesi_{year}_{month:00}.xlsx"
+            : $"Shift_Schedule_{year}_{month:00}.xlsx";
+            
         return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
     }
 
@@ -191,4 +251,3 @@ public class ExportController : Controller
         return weekendDays.Contains((int)date.DayOfWeek);
     }
 }
-
