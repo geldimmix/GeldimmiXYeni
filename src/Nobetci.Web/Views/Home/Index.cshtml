@@ -7,14 +7,32 @@
 }
 
 @section Styles {
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
     :root {
-        --bg-dark: #0a0a0a;
-        --bg-light: #fafafa;
-        --text: #171717;
-        --text-muted: #737373;
-        --border: #e5e5e5;
-        --accent: #c94a4a;
+        --bg-cream: #fffbf7;
+        --bg-warm: #fef7f0;
+        --bg-white: #ffffff;
+        --text: #1a1a1a;
+        --text-muted: #6b6b6b;
+        --border: #ebe5df;
+        --accent: #d4553d;
+        --accent-dark: #b8442f;
+    }
+    
+    /* ═══════════════════════════════════════════════════════════
+       TYPOGRAPHY
+       ═══════════════════════════════════════════════════════════ */
+    
+    .heading-display {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+    }
+    
+    .text-body {
+        font-family: 'Source Sans 3', -apple-system, sans-serif;
     }
     
     /* ═══════════════════════════════════════════════════════════
@@ -22,10 +40,10 @@
        ═══════════════════════════════════════════════════════════ */
     
     .hero {
-        min-height: 90vh;
+        min-height: 92vh;
         display: flex;
         align-items: center;
-        background: var(--bg-dark);
+        background: var(--bg-cream);
         position: relative;
         overflow: hidden;
     }
@@ -33,141 +51,168 @@
     .hero::before {
         content: '';
         position: absolute;
-        top: -50%;
-        right: -25%;
-        width: 80%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(201, 74, 74, 0.08) 0%, transparent 60%);
+        top: -30%;
+        right: -20%;
+        width: 70%;
+        height: 160%;
+        background: radial-gradient(ellipse, rgba(212, 85, 61, 0.06) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    
+    .hero::after {
+        content: '';
+        position: absolute;
+        bottom: -20%;
+        left: -10%;
+        width: 50%;
+        height: 100%;
+        background: radial-gradient(ellipse, rgba(212, 85, 61, 0.04) 0%, transparent 60%);
         pointer-events: none;
     }
     
     .hero-content {
         position: relative;
         z-index: 1;
-        padding: 80px 0;
+        padding: 60px 0;
     }
     
-    .hero-badge {
+    .hero-label {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 8px 16px;
-        border-radius: 100px;
-        font-size: 0.85rem;
-        color: #a3a3a3;
-        margin-bottom: 32px;
+        gap: 10px;
+        margin-bottom: 28px;
     }
     
-    .hero-badge-dot {
-        width: 8px;
-        height: 8px;
-        background: #22c55e;
-        border-radius: 50%;
-        animation: pulse 2s infinite;
+    .hero-label-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--accent);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        font-family: 'Source Sans 3', sans-serif;
     }
     
-    @@keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.5; }
+    .hero-label-text {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-family: 'Source Sans 3', sans-serif;
     }
     
     .hero-title {
-        font-family: 'Instrument Serif', Georgia, serif;
-        font-size: clamp(3rem, 8vw, 5.5rem);
-        font-weight: 400;
-        font-style: italic;
-        color: white;
-        line-height: 1.05;
-        letter-spacing: -0.03em;
-        margin-bottom: 32px;
+        font-size: clamp(2.8rem, 6vw, 4.5rem);
+        color: var(--text);
+        margin-bottom: 28px;
+        max-width: 600px;
     }
     
-    .hero-title span {
+    .hero-title .highlight {
         color: var(--accent);
+        position: relative;
+    }
+    
+    .hero-title .highlight::after {
+        content: '';
+        position: absolute;
+        bottom: 0.1em;
+        left: 0;
+        right: 0;
+        height: 0.12em;
+        background: var(--accent);
+        opacity: 0.3;
+        border-radius: 2px;
     }
     
     .hero-desc {
-        font-size: 1.2rem;
-        color: #a3a3a3;
+        font-family: 'Source Sans 3', sans-serif;
+        font-size: 1.25rem;
+        color: var(--text-muted);
         line-height: 1.7;
-        max-width: 520px;
-        margin-bottom: 48px;
+        max-width: 500px;
+        margin-bottom: 40px;
     }
     
     .hero-actions {
         display: flex;
         flex-wrap: wrap;
-        gap: 16px;
-        margin-bottom: 64px;
+        gap: 14px;
+        margin-bottom: 48px;
     }
     
-    .btn-hero-primary {
+    .btn-primary-hero {
         display: inline-flex;
         align-items: center;
-        gap: 12px;
-        padding: 18px 32px;
-        background: white;
-        color: var(--bg-dark);
+        gap: 10px;
+        padding: 16px 28px;
+        background: var(--text);
+        color: white;
+        font-family: 'Source Sans 3', sans-serif;
         font-weight: 600;
         font-size: 1rem;
-        border-radius: 12px;
+        border-radius: 10px;
         text-decoration: none;
-        transition: all 0.2s ease;
+        transition: all 0.25s ease;
+        box-shadow: 0 4px 14px rgba(26, 26, 26, 0.15);
     }
     
-    .btn-hero-primary:hover {
+    .btn-primary-hero:hover {
         background: var(--accent);
         color: white;
         transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(212, 85, 61, 0.25);
     }
     
-    .btn-hero-secondary {
+    .btn-secondary-hero {
         display: inline-flex;
         align-items: center;
-        gap: 12px;
-        padding: 18px 32px;
+        gap: 10px;
+        padding: 16px 28px;
         background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: white;
-        font-weight: 500;
+        border: 2px solid var(--border);
+        color: var(--text);
+        font-family: 'Source Sans 3', sans-serif;
+        font-weight: 600;
         font-size: 1rem;
-        border-radius: 12px;
+        border-radius: 10px;
         text-decoration: none;
-        transition: all 0.2s ease;
+        transition: all 0.25s ease;
     }
     
-    .btn-hero-secondary:hover {
-        border-color: rgba(255, 255, 255, 0.4);
-        background: rgba(255, 255, 255, 0.05);
+    .btn-secondary-hero:hover {
+        border-color: var(--text);
+        background: var(--text);
         color: white;
     }
     
-    .hero-features {
+    .hero-trust {
         display: flex;
         flex-wrap: wrap;
-        gap: 32px;
+        gap: 28px;
+        font-family: 'Source Sans 3', sans-serif;
     }
     
-    .hero-feature {
+    .trust-item {
         display: flex;
         align-items: center;
-        gap: 10px;
-        color: #737373;
-        font-size: 0.9rem;
+        gap: 8px;
+        color: var(--text-muted);
+        font-size: 0.95rem;
     }
     
-    .hero-feature-icon {
-        width: 20px;
-        height: 20px;
-        background: rgba(34, 197, 94, 0.2);
+    .trust-icon {
+        width: 22px;
+        height: 22px;
+        background: rgba(34, 197, 94, 0.12);
+        color: #16a34a;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.7rem;
-        color: #22c55e;
+        font-size: 0.75rem;
+        font-weight: 700;
     }
     
     /* Hero Visual */
@@ -175,155 +220,134 @@
         position: relative;
     }
     
-    .hero-mockup {
-        background: #1a1a1a;
-        border: 1px solid #2a2a2a;
-        border-radius: 16px;
+    .hero-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: 20px;
         overflow: hidden;
-        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08), 0 10px 20px rgba(0, 0, 0, 0.04);
     }
     
-    .mockup-header {
+    .card-header {
         display: flex;
         align-items: center;
-        gap: 8px;
-        padding: 14px 18px;
-        background: #141414;
-        border-bottom: 1px solid #2a2a2a;
+        justify-content: space-between;
+        padding: 18px 24px;
+        background: var(--bg-warm);
+        border-bottom: 1px solid var(--border);
     }
     
-    .mockup-dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-    }
-    
-    .mockup-dot.red { background: #ff5f57; }
-    .mockup-dot.yellow { background: #febc2e; }
-    .mockup-dot.green { background: #28c840; }
-    
-    .mockup-title {
-        margin-left: 12px;
-        color: #737373;
-        font-size: 0.85rem;
-    }
-    
-    .mockup-body {
-        padding: 24px;
-    }
-    
-    .mockup-calendar {
-        display: grid;
-        grid-template-columns: 100px repeat(7, 1fr);
-        gap: 2px;
-        font-size: 0.75rem;
-    }
-    
-    .cal-header {
-        background: #1f1f1f;
-        padding: 10px 8px;
-        text-align: center;
-        color: #737373;
+    .card-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.1rem;
         font-weight: 600;
+        color: var(--text);
     }
     
-    .cal-header.name-col {
-        text-align: left;
+    .card-badge {
+        background: var(--accent);
+        color: white;
+        padding: 4px 10px;
+        border-radius: 5px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        font-family: 'Source Sans 3', sans-serif;
     }
     
-    .cal-header.weekend {
-        color: var(--accent);
+    .card-body {
+        padding: 20px;
     }
     
-    .cal-row {
-        display: contents;
+    .schedule-grid {
+        display: grid;
+        grid-template-columns: 90px repeat(7, 1fr);
+        gap: 3px;
+        font-family: 'Source Sans 3', sans-serif;
+        font-size: 0.8rem;
     }
     
-    .cal-cell {
-        background: #1a1a1a;
-        padding: 10px 8px;
+    .sg-header {
+        background: var(--bg-warm);
+        padding: 10px 6px;
         text-align: center;
-        border: 1px solid #222;
+        color: var(--text-muted);
+        font-weight: 600;
+        border-radius: 6px;
     }
     
-    .cal-cell.name {
+    .sg-header.name { text-align: left; padding-left: 10px; }
+    .sg-header.weekend { color: var(--accent); }
+    
+    .sg-cell {
+        background: var(--bg-cream);
+        padding: 12px 6px;
+        text-align: center;
+        border-radius: 6px;
+    }
+    
+    .sg-cell.name {
         text-align: left;
-        color: #d4d4d4;
-        font-weight: 500;
+        padding-left: 10px;
+        font-weight: 600;
+        color: var(--text);
     }
     
-    .cal-shift {
+    .shift-tag {
         display: inline-block;
         padding: 4px 8px;
-        border-radius: 6px;
+        border-radius: 5px;
         font-size: 0.7rem;
-        font-weight: 600;
+        font-weight: 700;
     }
     
-    .cal-shift.morning {
-        background: rgba(59, 130, 246, 0.2);
-        color: #60a5fa;
-    }
+    .shift-tag.morning { background: #dbeafe; color: #1d4ed8; }
+    .shift-tag.night { background: #ede9fe; color: #7c3aed; }
+    .shift-tag.long { background: #dcfce7; color: #16a34a; }
     
-    .cal-shift.night {
-        background: rgba(139, 92, 246, 0.2);
-        color: #a78bfa;
-    }
-    
-    .cal-shift.long {
-        background: rgba(34, 197, 94, 0.2);
-        color: #4ade80;
-    }
-    
-    /* Floating elements */
-    .hero-float {
+    /* Floating Stats */
+    .float-stat {
         position: absolute;
-        background: #1a1a1a;
-        border: 1px solid #2a2a2a;
-        border-radius: 12px;
-        padding: 16px 20px;
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px 22px;
         display: flex;
         align-items: center;
-        gap: 12px;
-        animation: floatAnim 4s ease-in-out infinite;
+        gap: 14px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+        animation: floatUp 5s ease-in-out infinite;
     }
     
-    .hero-float-1 {
-        top: -20px;
-        right: -30px;
-    }
+    .float-stat-1 { top: -10px; right: -20px; }
+    .float-stat-2 { bottom: 30px; left: -30px; animation-delay: 2.5s; }
     
-    .hero-float-2 {
-        bottom: 40px;
-        left: -40px;
-        animation-delay: 2s;
-    }
-    
-    @@keyframes floatAnim {
+    @@keyframes floatUp {
         0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-12px); }
+        50% { transform: translateY(-10px); }
     }
     
-    .float-icon {
-        width: 40px;
-        height: 40px;
-        background: rgba(201, 74, 74, 0.15);
-        border-radius: 10px;
+    .stat-icon {
+        width: 44px;
+        height: 44px;
+        background: var(--bg-warm);
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.2rem;
+        font-size: 1.3rem;
     }
     
-    .float-value {
-        font-size: 1.25rem;
+    .stat-value {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.4rem;
         font-weight: 700;
-        color: white;
+        color: var(--text);
     }
     
-    .float-label {
-        font-size: 0.75rem;
-        color: #737373;
+    .stat-label {
+        font-family: 'Source Sans 3', sans-serif;
+        font-size: 0.8rem;
+        color: var(--text-muted);
     }
     
     /* ═══════════════════════════════════════════════════════════
@@ -332,82 +356,73 @@
     
     .features {
         padding: 120px 0;
-        background: var(--bg-light);
+        background: var(--bg-white);
     }
     
-    .section-label {
+    .section-eyebrow {
         display: inline-block;
-        font-size: 0.7rem;
+        font-family: 'Source Sans 3', sans-serif;
+        font-size: 0.75rem;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 1.5px;
-        color: var(--text-muted);
+        letter-spacing: 2px;
+        color: var(--accent);
         margin-bottom: 16px;
     }
     
-    .section-title {
-        font-family: 'Instrument Serif', Georgia, serif;
-        font-size: clamp(2rem, 5vw, 3rem);
-        font-weight: 400;
-        font-style: italic;
+    .section-heading {
+        font-size: clamp(2rem, 4vw, 2.8rem);
         color: var(--text);
-        line-height: 1.15;
-        letter-spacing: -0.02em;
-        margin-bottom: 24px;
+        margin-bottom: 20px;
+        max-width: 500px;
     }
     
-    .section-desc {
-        font-size: 1.1rem;
+    .section-text {
+        font-family: 'Source Sans 3', sans-serif;
+        font-size: 1.15rem;
         color: var(--text-muted);
         line-height: 1.7;
-        max-width: 480px;
+        max-width: 460px;
     }
     
-    .feature-grid {
+    .features-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 24px;
-        margin-top: 64px;
+        gap: 20px;
+        margin-top: 56px;
     }
     
-    .feature-card {
-        background: white;
-        border: 1px solid var(--border);
-        border-radius: 16px;
+    .feature-box {
+        background: var(--bg-cream);
+        border: 1px solid transparent;
+        border-radius: 18px;
         padding: 32px;
         transition: all 0.3s ease;
     }
     
-    .feature-card:hover {
-        border-color: var(--accent);
+    .feature-box:hover {
+        background: var(--bg-white);
+        border-color: var(--border);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
         transform: translateY(-4px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
     }
     
-    .feature-icon {
-        width: 48px;
-        height: 48px;
-        background: var(--bg-light);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
+    .feature-emoji {
+        font-size: 2rem;
         margin-bottom: 20px;
+        display: block;
     }
     
-    .feature-card:hover .feature-icon {
-        background: rgba(201, 74, 74, 0.1);
-    }
-    
-    .feature-title {
-        font-size: 1.1rem;
+    .feature-name {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.2rem;
         font-weight: 600;
         color: var(--text);
         margin-bottom: 10px;
     }
     
-    .feature-text {
+    .feature-desc {
+        font-family: 'Source Sans 3', sans-serif;
         font-size: 0.95rem;
         color: var(--text-muted);
         line-height: 1.6;
@@ -417,128 +432,124 @@
        HOW IT WORKS
        ═══════════════════════════════════════════════════════════ */
     
-    .how-it-works {
+    .steps-section {
         padding: 120px 0;
-        background: white;
+        background: var(--bg-warm);
     }
     
-    .steps-grid {
+    .steps-row {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 48px;
-        margin-top: 64px;
-        position: relative;
+        gap: 40px;
+        margin-top: 56px;
     }
     
-    .steps-grid::before {
-        content: '';
-        position: absolute;
-        top: 48px;
-        left: 20%;
-        right: 20%;
-        height: 1px;
-        background: var(--border);
-    }
-    
-    .step {
+    .step-box {
         text-align: center;
         position: relative;
     }
     
-    .step-number {
-        width: 96px;
-        height: 96px;
-        background: var(--bg-light);
+    .step-num {
+        width: 80px;
+        height: 80px;
+        background: var(--bg-white);
         border: 2px solid var(--border);
-        border-radius: 24px;
+        border-radius: 20px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 2.5rem;
-        margin-bottom: 28px;
+        font-size: 2rem;
+        margin-bottom: 24px;
         position: relative;
         transition: all 0.3s ease;
     }
     
-    .step:hover .step-number {
+    .step-box:hover .step-num {
         border-color: var(--accent);
-        background: white;
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(212, 85, 61, 0.12);
     }
     
     .step-badge {
         position: absolute;
         top: -8px;
         right: -8px;
-        width: 28px;
-        height: 28px;
-        background: var(--text);
+        width: 26px;
+        height: 26px;
+        background: var(--accent);
         color: white;
         border-radius: 50%;
-        font-size: 0.8rem;
+        font-family: 'Playfair Display', serif;
+        font-size: 0.85rem;
         font-weight: 700;
         display: flex;
         align-items: center;
         justify-content: center;
     }
     
-    .step-title {
-        font-size: 1.15rem;
+    .step-name {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.25rem;
         font-weight: 600;
         color: var(--text);
         margin-bottom: 10px;
     }
     
     .step-text {
+        font-family: 'Source Sans 3', sans-serif;
         font-size: 0.95rem;
         color: var(--text-muted);
         line-height: 1.6;
     }
     
     /* ═══════════════════════════════════════════════════════════
-       TIMESHEET PREVIEW
+       TIMESHEET SECTION
        ═══════════════════════════════════════════════════════════ */
     
-    .timesheet-section {
+    .timesheet {
         padding: 120px 0;
-        background: var(--bg-light);
+        background: var(--bg-white);
     }
     
-    .timesheet-preview {
-        background: white;
+    .ts-card {
+        background: var(--bg-cream);
         border: 1px solid var(--border);
         border-radius: 20px;
         overflow: hidden;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
     }
     
-    .ts-header {
+    .ts-head {
         background: var(--text);
         color: white;
-        padding: 20px 28px;
+        padding: 22px 28px;
         display: flex;
         align-items: center;
         justify-content: space-between;
     }
     
-    .ts-header h4 {
-        font-size: 1rem;
+    .ts-head h4 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.15rem;
         font-weight: 600;
         margin: 0;
     }
     
     .ts-body {
         padding: 24px;
+        background: var(--bg-white);
     }
     
     .ts-table {
         width: 100%;
+        font-family: 'Source Sans 3', sans-serif;
         font-size: 0.9rem;
+        border-collapse: collapse;
     }
     
     .ts-table th {
         text-align: left;
-        padding: 12px 16px;
-        background: var(--bg-light);
+        padding: 14px 16px;
+        background: var(--bg-cream);
         color: var(--text-muted);
         font-weight: 600;
         font-size: 0.8rem;
@@ -547,38 +558,33 @@
     }
     
     .ts-table td {
-        padding: 16px;
+        padding: 18px 16px;
         border-bottom: 1px solid var(--border);
     }
     
-    .ts-table tr:last-child td {
-        border-bottom: none;
-    }
+    .ts-table tr:last-child td { border-bottom: none; }
     
-    .ts-name {
-        font-weight: 600;
-        color: var(--text);
-    }
-    
+    .ts-emp { font-weight: 600; color: var(--text); }
     .ts-night { color: #7c3aed; font-weight: 600; }
-    .ts-weekend { color: #f59e0b; font-weight: 600; }
-    .ts-overtime { color: var(--accent); font-weight: 600; }
-    .ts-total { font-weight: 700; color: var(--text); }
+    .ts-wknd { color: #f59e0b; font-weight: 600; }
+    .ts-ot { color: var(--accent); font-weight: 600; }
+    .ts-tot { font-weight: 700; color: var(--text); }
     
-    .ts-footer {
+    .ts-foot {
         padding: 20px 28px;
-        background: var(--bg-light);
+        background: var(--bg-cream);
         display: flex;
         justify-content: flex-end;
     }
     
-    .btn-export {
+    .btn-excel {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        padding: 12px 20px;
+        padding: 12px 22px;
         background: #16a34a;
         color: white;
+        font-family: 'Source Sans 3', sans-serif;
         font-weight: 600;
         font-size: 0.9rem;
         border-radius: 10px;
@@ -587,45 +593,45 @@
         transition: all 0.2s ease;
     }
     
-    .btn-export:hover {
-        background: #15803d;
-    }
+    .btn-excel:hover { background: #15803d; transform: translateY(-1px); }
     
-    .ts-features {
+    .ts-features-list {
         display: flex;
         flex-direction: column;
-        gap: 24px;
+        gap: 28px;
     }
     
-    .ts-feature-item {
+    .tsf-item {
         display: flex;
-        align-items: flex-start;
-        gap: 16px;
+        gap: 18px;
     }
     
-    .ts-feature-icon {
-        width: 48px;
-        height: 48px;
-        background: var(--bg-light);
-        border-radius: 12px;
+    .tsf-icon {
+        width: 52px;
+        height: 52px;
+        background: var(--bg-cream);
+        border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
+        font-size: 1.6rem;
         flex-shrink: 0;
     }
     
-    .ts-feature-content h5 {
-        font-size: 1rem;
+    .tsf-content h5 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.1rem;
         font-weight: 600;
         color: var(--text);
         margin-bottom: 4px;
     }
     
-    .ts-feature-content p {
-        font-size: 0.9rem;
+    .tsf-content p {
+        font-family: 'Source Sans 3', sans-serif;
+        font-size: 0.95rem;
         color: var(--text-muted);
         margin: 0;
+        line-height: 1.5;
     }
     
     /* ═══════════════════════════════════════════════════════════
@@ -633,46 +639,45 @@
        ═══════════════════════════════════════════════════════════ */
     
     .cta {
-        padding: 120px 0;
-        background: var(--bg-dark);
+        padding: 100px 0;
+        background: var(--bg-warm);
         text-align: center;
     }
     
-    .cta-title {
-        font-family: 'Instrument Serif', Georgia, serif;
-        font-size: clamp(2rem, 5vw, 3.5rem);
-        font-weight: 400;
-        font-style: italic;
-        color: white;
-        line-height: 1.15;
-        letter-spacing: -0.02em;
-        margin-bottom: 24px;
+    .cta-heading {
+        font-size: clamp(2rem, 5vw, 3rem);
+        color: var(--text);
+        margin-bottom: 18px;
     }
     
-    .cta-desc {
-        font-size: 1.1rem;
-        color: #a3a3a3;
-        margin-bottom: 40px;
+    .cta-text {
+        font-family: 'Source Sans 3', sans-serif;
+        font-size: 1.15rem;
+        color: var(--text-muted);
+        margin-bottom: 36px;
     }
     
     .btn-cta {
         display: inline-flex;
         align-items: center;
-        gap: 12px;
-        padding: 20px 40px;
-        background: white;
-        color: var(--bg-dark);
-        font-weight: 600;
+        gap: 10px;
+        padding: 18px 36px;
+        background: var(--accent);
+        color: white;
+        font-family: 'Source Sans 3', sans-serif;
+        font-weight: 700;
         font-size: 1.1rem;
-        border-radius: 14px;
+        border-radius: 12px;
         text-decoration: none;
-        transition: all 0.2s ease;
+        transition: all 0.25s ease;
+        box-shadow: 0 6px 20px rgba(212, 85, 61, 0.25);
     }
     
     .btn-cta:hover {
-        background: var(--accent);
+        background: var(--accent-dark);
         color: white;
         transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(212, 85, 61, 0.35);
     }
     
     /* ═══════════════════════════════════════════════════════════
@@ -680,38 +685,15 @@
        ═══════════════════════════════════════════════════════════ */
     
     @@media (max-width: 991px) {
-        .hero-visual {
-            display: none;
-        }
-        
-        .feature-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-        
-        .steps-grid {
-            grid-template-columns: 1fr;
-            gap: 40px;
-        }
-        
-        .steps-grid::before {
-            display: none;
-        }
+        .hero-visual { display: none; }
+        .features-grid { grid-template-columns: repeat(2, 1fr); }
+        .steps-row { grid-template-columns: 1fr; gap: 32px; }
     }
     
     @@media (max-width: 767px) {
-        .feature-grid {
-            grid-template-columns: 1fr;
-        }
-        
-        .hero-actions {
-            flex-direction: column;
-        }
-        
-        .btn-hero-primary,
-        .btn-hero-secondary {
-            width: 100%;
-            justify-content: center;
-        }
+        .features-grid { grid-template-columns: 1fr; }
+        .hero-actions { flex-direction: column; }
+        .btn-primary-hero, .btn-secondary-hero { width: 100%; justify-content: center; }
     }
 </style>
 }
@@ -722,19 +704,19 @@
         <div class="row align-items-center">
             <div class="col-lg-6">
                 <div class="hero-content">
-                    <div class="hero-badge">
-                        <span class="hero-badge-dot"></span>
-                        @(isTurkish ? "Şimdi ücretsiz deneyin" : "Try free now")
+                    <div class="hero-label">
+                        <span class="hero-label-badge">🚀 @(isTurkish ? "Ücretsiz" : "Free")</span>
+                        <span class="hero-label-text">@(isTurkish ? "Hemen kullanmaya başlayın" : "Start using today")</span>
                     </div>
                     
-                    <h1 class="hero-title">
+                    <h1 class="hero-title heading-display">
                         @if (isTurkish)
                         {
-                            <text>Nöbet planlamayı <span>kolaylaştırın.</span></text>
+                            <text>Nöbet planlamayı <span class="highlight">kolaylaştırın</span></text>
                         }
                         else
                         {
-                            <text>Make scheduling <span>effortless.</span></text>
+                            <text>Make scheduling <span class="highlight">effortless</span></text>
                         }
                     </h1>
                     
@@ -745,27 +727,27 @@
                     </p>
                     
                     <div class="hero-actions">
-                        <a href="/app" class="btn-hero-primary">
+                        <a href="/app" class="btn-primary-hero">
                             @(isTurkish ? "Hemen Başla" : "Get Started")
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </a>
-                        <a href="#features" class="btn-hero-secondary">
+                        <a href="#features" class="btn-secondary-hero">
                             @(isTurkish ? "Özellikleri Keşfet" : "Explore Features")
                         </a>
                     </div>
                     
-                    <div class="hero-features">
-                        <div class="hero-feature">
-                            <span class="hero-feature-icon">✓</span>
+                    <div class="hero-trust">
+                        <div class="trust-item">
+                            <span class="trust-icon">✓</span>
                             @(isTurkish ? "Kayıt gerektirmez" : "No registration")
                         </div>
-                        <div class="hero-feature">
-                            <span class="hero-feature-icon">✓</span>
+                        <div class="trust-item">
+                            <span class="trust-icon">✓</span>
                             @(isTurkish ? "10 personele kadar ücretsiz" : "Free up to 10 employees")
                         </div>
-                        <div class="hero-feature">
-                            <span class="hero-feature-icon">✓</span>
-                            @(isTurkish ? "Excel export" : "Excel export")
+                        <div class="trust-item">
+                            <span class="trust-icon">✓</span>
+                            Excel export
                         </div>
                     </div>
                 </div>
@@ -773,73 +755,65 @@
             
             <div class="col-lg-6 d-none d-lg-block">
                 <div class="hero-visual">
-                    <div class="hero-mockup">
-                        <div class="mockup-header">
-                            <span class="mockup-dot red"></span>
-                            <span class="mockup-dot yellow"></span>
-                            <span class="mockup-dot green"></span>
-                            <span class="mockup-title">@(isTurkish ? "Nöbet Listesi — Ocak 2026" : "Shift Schedule — January 2026")</span>
+                    <div class="hero-card">
+                        <div class="card-header">
+                            <span class="card-title">@(isTurkish ? "Nöbet Listesi" : "Shift Schedule")</span>
+                            <span class="card-badge">@(isTurkish ? "Ocak 2026" : "Jan 2026")</span>
                         </div>
-                        <div class="mockup-body">
-                            <div class="mockup-calendar">
-                                <div class="cal-header name-col">@(isTurkish ? "Personel" : "Staff")</div>
-                                <div class="cal-header">@(isTurkish ? "Pzt" : "Mon")</div>
-                                <div class="cal-header">@(isTurkish ? "Sal" : "Tue")</div>
-                                <div class="cal-header">@(isTurkish ? "Çar" : "Wed")</div>
-                                <div class="cal-header">@(isTurkish ? "Per" : "Thu")</div>
-                                <div class="cal-header">@(isTurkish ? "Cum" : "Fri")</div>
-                                <div class="cal-header weekend">@(isTurkish ? "Cmt" : "Sat")</div>
-                                <div class="cal-header weekend">@(isTurkish ? "Paz" : "Sun")</div>
+                        <div class="card-body">
+                            <div class="schedule-grid">
+                                <div class="sg-header name">@(isTurkish ? "Personel" : "Staff")</div>
+                                <div class="sg-header">@(isTurkish ? "Pzt" : "Mon")</div>
+                                <div class="sg-header">@(isTurkish ? "Sal" : "Tue")</div>
+                                <div class="sg-header">@(isTurkish ? "Çar" : "Wed")</div>
+                                <div class="sg-header">@(isTurkish ? "Per" : "Thu")</div>
+                                <div class="sg-header">@(isTurkish ? "Cum" : "Fri")</div>
+                                <div class="sg-header weekend">@(isTurkish ? "Cmt" : "Sat")</div>
+                                <div class="sg-header weekend">@(isTurkish ? "Paz" : "Sun")</div>
                                 
-                                <div class="cal-row">
-                                    <div class="cal-cell name">Ayşe Y.</div>
-                                    <div class="cal-cell"><span class="cal-shift morning">08-16</span></div>
-                                    <div class="cal-cell"></div>
-                                    <div class="cal-cell"><span class="cal-shift night">16-08</span></div>
-                                    <div class="cal-cell"></div>
-                                    <div class="cal-cell"><span class="cal-shift morning">08-16</span></div>
-                                    <div class="cal-cell"></div>
-                                    <div class="cal-cell"></div>
-                                </div>
+                                <div class="sg-cell name">Ayşe Y.</div>
+                                <div class="sg-cell"><span class="shift-tag morning">08-16</span></div>
+                                <div class="sg-cell"></div>
+                                <div class="sg-cell"><span class="shift-tag night">16-08</span></div>
+                                <div class="sg-cell"></div>
+                                <div class="sg-cell"><span class="shift-tag morning">08-16</span></div>
+                                <div class="sg-cell"></div>
+                                <div class="sg-cell"></div>
                                 
-                                <div class="cal-row">
-                                    <div class="cal-cell name">Mehmet K.</div>
-                                    <div class="cal-cell"></div>
-                                    <div class="cal-cell"><span class="cal-shift morning">08-16</span></div>
-                                    <div class="cal-cell"></div>
-                                    <div class="cal-cell"><span class="cal-shift night">16-08</span></div>
-                                    <div class="cal-cell"></div>
-                                    <div class="cal-cell"><span class="cal-shift long">08-08</span></div>
-                                    <div class="cal-cell"></div>
-                                </div>
+                                <div class="sg-cell name">Mehmet K.</div>
+                                <div class="sg-cell"></div>
+                                <div class="sg-cell"><span class="shift-tag morning">08-16</span></div>
+                                <div class="sg-cell"></div>
+                                <div class="sg-cell"><span class="shift-tag night">16-08</span></div>
+                                <div class="sg-cell"></div>
+                                <div class="sg-cell"><span class="shift-tag long">08-08</span></div>
+                                <div class="sg-cell"></div>
                                 
-                                <div class="cal-row">
-                                    <div class="cal-cell name">Fatma S.</div>
-                                    <div class="cal-cell"><span class="cal-shift night">16-08</span></div>
-                                    <div class="cal-cell"></div>
-                                    <div class="cal-cell"><span class="cal-shift morning">08-16</span></div>
-                                    <div class="cal-cell"></div>
-                                    <div class="cal-cell"><span class="cal-shift night">16-08</span></div>
-                                    <div class="cal-cell"></div>
-                                    <div class="cal-cell"><span class="cal-shift morning">08-16</span></div>
-                                </div>
+                                <div class="sg-cell name">Fatma S.</div>
+                                <div class="sg-cell"><span class="shift-tag night">16-08</span></div>
+                                <div class="sg-cell"></div>
+                                <div class="sg-cell"><span class="shift-tag morning">08-16</span></div>
+                                <div class="sg-cell"></div>
+                                <div class="sg-cell"><span class="shift-tag night">16-08</span></div>
+                                <div class="sg-cell"></div>
+                                <div class="sg-cell"><span class="shift-tag morning">08-16</span></div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="hero-float hero-float-1">
-                        <div class="float-icon">📊</div>
+                    <div class="float-stat float-stat-1">
+                        <div class="stat-icon">📊</div>
                         <div>
-                            <div class="float-value">156h</div>
-                            <div class="float-label">@(isTurkish ? "Toplam" : "Total")</div>
+                            <div class="stat-value">156s</div>
+                            <div class="stat-label">@(isTurkish ? "Toplam Saat" : "Total Hours")</div>
                         </div>
                     </div>
                     
-                    <div class="hero-float hero-float-2">
-                        <div class="float-icon">🌙</div>
+                    <div class="float-stat float-stat-2">
+                        <div class="stat-icon">🌙</div>
                         <div>
-                            <div class="float-value">48h</div>
-                            <div class="float-label">@(isTurkish ? "Gece" : "Night")</div>
+                            <div class="stat-value">48s</div>
+                            <div class="stat-label">@(isTurkish ? "Gece Saati" : "Night Hours")</div>
                         </div>
                     </div>
                 </div>
@@ -853,140 +827,104 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-5">
-                <span class="section-label">@(isTurkish ? "Özellikler" : "Features")</span>
-                <h2 class="section-title">
-                    @(isTurkish ? "İhtiyacınız olan her şey tek bir yerde." : "Everything you need in one place.")
+                <span class="section-eyebrow">@(isTurkish ? "Özellikler" : "Features")</span>
+                <h2 class="section-heading heading-display">
+                    @(isTurkish ? "İhtiyacınız olan her şey tek bir yerde" : "Everything you need in one place")
                 </h2>
-                <p class="section-desc">
+                <p class="section-text">
                     @(isTurkish 
                         ? "Nöbet planlamadan puantaj hesaplamaya, tüm süreçlerinizi kolaylaştırın."
-                        : "Simplify all your processes from shift scheduling to timesheet calculation.")
+                        : "Simplify all your processes from shift planning to timesheet calculation.")
                 </p>
             </div>
         </div>
         
-        <div class="feature-grid">
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3 class="feature-title">@(isTurkish ? "Hızlı Nöbet Oluşturma" : "Quick Scheduling")</h3>
-                <p class="feature-text">
-                    @(isTurkish 
-                        ? "Hazır şablonlarla saniyeler içinde nöbet listesi oluşturun. Tek tıkla vardiya atayın."
-                        : "Create schedules in seconds with ready templates. Assign shifts with one click.")
-                </p>
+        <div class="features-grid">
+            <div class="feature-box">
+                <span class="feature-emoji">⚡</span>
+                <h3 class="feature-name">@(isTurkish ? "Hızlı Nöbet Oluşturma" : "Quick Scheduling")</h3>
+                <p class="feature-desc">@(isTurkish ? "Hazır şablonlarla saniyeler içinde nöbet listesi oluşturun." : "Create schedules in seconds with ready templates.")</p>
             </div>
             
-            <div class="feature-card">
-                <div class="feature-icon">⚖️</div>
-                <h3 class="feature-title">@(isTurkish ? "Adil Dağıtım" : "Fair Distribution")</h3>
-                <p class="feature-text">
-                    @(isTurkish 
-                        ? "Akıllı algoritma ile gece, hafta sonu ve tatil nöbetlerini adil şekilde dağıtın."
-                        : "Distribute night, weekend and holiday shifts fairly with smart algorithm.")
-                </p>
+            <div class="feature-box">
+                <span class="feature-emoji">⚖️</span>
+                <h3 class="feature-name">@(isTurkish ? "Adil Dağıtım" : "Fair Distribution")</h3>
+                <p class="feature-desc">@(isTurkish ? "Akıllı algoritma ile gece ve hafta sonu nöbetlerini adil dağıtın." : "Distribute night and weekend shifts fairly with smart algorithm.")</p>
             </div>
             
-            <div class="feature-card">
-                <div class="feature-icon">📊</div>
-                <h3 class="feature-title">@(isTurkish ? "Otomatik Puantaj" : "Auto Timesheet")</h3>
-                <p class="feature-text">
-                    @(isTurkish 
-                        ? "Nöbet listesinden otomatik puantaj oluşturun. Normal, gece, hafta sonu ayrı hesaplanır."
-                        : "Generate timesheets from schedules. Regular, night, weekend calculated separately.")
-                </p>
+            <div class="feature-box">
+                <span class="feature-emoji">📊</span>
+                <h3 class="feature-name">@(isTurkish ? "Otomatik Puantaj" : "Auto Timesheet")</h3>
+                <p class="feature-desc">@(isTurkish ? "Normal, gece, hafta sonu ve fazla mesai ayrı hesaplanır." : "Regular, night, weekend and overtime calculated separately.")</p>
             </div>
             
-            <div class="feature-card">
-                <div class="feature-icon">🌙</div>
-                <h3 class="feature-title">@(isTurkish ? "Gece & Fazla Mesai" : "Night & Overtime")</h3>
-                <p class="feature-text">
-                    @(isTurkish 
-                        ? "Gece çalışma saatleri ve fazla mesailer otomatik hesaplanır."
-                        : "Night hours and overtime calculated automatically.")
-                </p>
+            <div class="feature-box">
+                <span class="feature-emoji">🌙</span>
+                <h3 class="feature-name">@(isTurkish ? "Gece & Fazla Mesai" : "Night & Overtime")</h3>
+                <p class="feature-desc">@(isTurkish ? "Gece çalışma saatleri ve fazla mesailer otomatik hesaplanır." : "Night hours and overtime calculated automatically.")</p>
             </div>
             
-            <div class="feature-card">
-                <div class="feature-icon">🎉</div>
-                <h3 class="feature-title">@(isTurkish ? "Tatil Yönetimi" : "Holiday Management")</h3>
-                <p class="feature-text">
-                    @(isTurkish 
-                        ? "Resmi tatiller ve personel izinlerini tanımlayın. Tatil çalışması ayrı gösterilir."
-                        : "Define holidays and leaves. Holiday work shown separately.")
-                </p>
+            <div class="feature-box">
+                <span class="feature-emoji">🎉</span>
+                <h3 class="feature-name">@(isTurkish ? "Tatil Yönetimi" : "Holiday Management")</h3>
+                <p class="feature-desc">@(isTurkish ? "Resmi tatiller ve personel izinlerini kolayca tanımlayın." : "Define holidays and employee leaves easily.")</p>
             </div>
             
-            <div class="feature-card">
-                <div class="feature-icon">📥</div>
-                <h3 class="feature-title">Excel Export</h3>
-                <p class="feature-text">
-                    @(isTurkish 
-                        ? "Nöbet listesi ve puantajı tek tıkla Excel'e aktarın."
-                        : "Export schedules and timesheets to Excel with one click.")
-                </p>
+            <div class="feature-box">
+                <span class="feature-emoji">📥</span>
+                <h3 class="feature-name">Excel Export</h3>
+                <p class="feature-desc">@(isTurkish ? "Nöbet listesi ve puantajı tek tıkla Excel'e aktarın." : "Export schedules and timesheets to Excel with one click.")</p>
             </div>
         </div>
     </div>
 </section>
 
 <!-- How It Works -->
-<section class="how-it-works">
+<section class="steps-section">
     <div class="container">
         <div class="text-center">
-            <span class="section-label">@(isTurkish ? "Nasıl Çalışır?" : "How It Works?")</span>
-            <h2 class="section-title">@(isTurkish ? "3 adımda başlayın." : "Get started in 3 steps.")</h2>
+            <span class="section-eyebrow">@(isTurkish ? "Nasıl Çalışır?" : "How It Works?")</span>
+            <h2 class="section-heading heading-display">@(isTurkish ? "3 adımda başlayın" : "Get started in 3 steps")</h2>
         </div>
         
-        <div class="steps-grid">
-            <div class="step">
-                <div class="step-number">
+        <div class="steps-row">
+            <div class="step-box">
+                <div class="step-num">
                     👥
                     <span class="step-badge">1</span>
                 </div>
-                <h4 class="step-title">@(isTurkish ? "Personel Ekleyin" : "Add Employees")</h4>
-                <p class="step-text">
-                    @(isTurkish 
-                        ? "Ad, unvan ve sicil numaralarını girin. Excel'den yapıştırabilirsiniz."
-                        : "Enter names, titles and IDs. Paste from Excel.")
-                </p>
+                <h4 class="step-name">@(isTurkish ? "Personel Ekleyin" : "Add Employees")</h4>
+                <p class="step-text">@(isTurkish ? "Ad, unvan ve sicil numaralarını girin. Excel'den yapıştırabilirsiniz." : "Enter names, titles and IDs. Paste from Excel.")</p>
             </div>
             
-            <div class="step">
-                <div class="step-number">
+            <div class="step-box">
+                <div class="step-num">
                     📅
                     <span class="step-badge">2</span>
                 </div>
-                <h4 class="step-title">@(isTurkish ? "Nöbet Atayın" : "Assign Shifts")</h4>
-                <p class="step-text">
-                    @(isTurkish 
-                        ? "Takvim üzerinde tıklayarak veya otomatik atayın."
-                        : "Click on calendar or auto-assign with algorithm.")
-                </p>
+                <h4 class="step-name">@(isTurkish ? "Nöbet Atayın" : "Assign Shifts")</h4>
+                <p class="step-text">@(isTurkish ? "Takvim üzerinde tıklayarak veya otomatik atayın." : "Click on calendar or auto-assign with algorithm.")</p>
             </div>
             
-            <div class="step">
-                <div class="step-number">
+            <div class="step-box">
+                <div class="step-num">
                     📊
                     <span class="step-badge">3</span>
                 </div>
-                <h4 class="step-title">@(isTurkish ? "Puantaj Alın" : "Get Timesheet")</h4>
-                <p class="step-text">
-                    @(isTurkish 
-                        ? "Otomatik hesaplanan puantajı görün ve Excel'e aktarın."
-                        : "View auto-calculated timesheet and export to Excel.")
-                </p>
+                <h4 class="step-name">@(isTurkish ? "Puantaj Alın" : "Get Timesheet")</h4>
+                <p class="step-text">@(isTurkish ? "Otomatik hesaplanan puantajı görün ve Excel'e aktarın." : "View auto-calculated timesheet and export.")</p>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Timesheet Section -->
-<section class="timesheet-section">
+<section class="timesheet">
     <div class="container">
         <div class="row align-items-center g-5">
             <div class="col-lg-7">
-                <div class="timesheet-preview">
-                    <div class="ts-header">
+                <div class="ts-card">
+                    <div class="ts-head">
                         <h4>@(isTurkish ? "Puantaj Raporu — Ocak 2026" : "Timesheet Report — January 2026")</h4>
                     </div>
                     <div class="ts-body">
@@ -997,75 +935,73 @@
                                     <th>@(isTurkish ? "Normal" : "Regular")</th>
                                     <th>@(isTurkish ? "Gece" : "Night")</th>
                                     <th>@(isTurkish ? "H.Sonu" : "Weekend")</th>
-                                    <th>@(isTurkish ? "F.Mesai" : "Overtime")</th>
+                                    <th>@(isTurkish ? "F.Mesai" : "OT")</th>
                                     <th>@(isTurkish ? "Toplam" : "Total")</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td class="ts-name">Ayşe Yılmaz</td>
+                                    <td class="ts-emp">Ayşe Yılmaz</td>
                                     <td>120s</td>
                                     <td class="ts-night">32s</td>
-                                    <td class="ts-weekend">16s</td>
-                                    <td class="ts-overtime">8s</td>
-                                    <td class="ts-total">176s</td>
+                                    <td class="ts-wknd">16s</td>
+                                    <td class="ts-ot">8s</td>
+                                    <td class="ts-tot">176s</td>
                                 </tr>
                                 <tr>
-                                    <td class="ts-name">Mehmet Kaya</td>
+                                    <td class="ts-emp">Mehmet Kaya</td>
                                     <td>112s</td>
                                     <td class="ts-night">40s</td>
-                                    <td class="ts-weekend">24s</td>
-                                    <td class="ts-overtime">4s</td>
-                                    <td class="ts-total">180s</td>
+                                    <td class="ts-wknd">24s</td>
+                                    <td class="ts-ot">4s</td>
+                                    <td class="ts-tot">180s</td>
                                 </tr>
                                 <tr>
-                                    <td class="ts-name">Fatma Şahin</td>
+                                    <td class="ts-emp">Fatma Şahin</td>
                                     <td>128s</td>
                                     <td class="ts-night">24s</td>
-                                    <td class="ts-weekend">8s</td>
-                                    <td class="ts-overtime">12s</td>
-                                    <td class="ts-total">172s</td>
+                                    <td class="ts-wknd">8s</td>
+                                    <td class="ts-ot">12s</td>
+                                    <td class="ts-tot">172s</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div class="ts-footer">
-                        <button class="btn-export">
-                            📥 @(isTurkish ? "Excel'e Aktar" : "Export Excel")
-                        </button>
+                    <div class="ts-foot">
+                        <button class="btn-excel">📥 @(isTurkish ? "Excel'e Aktar" : "Export Excel")</button>
                     </div>
                 </div>
             </div>
             
             <div class="col-lg-5">
-                <span class="section-label">@(isTurkish ? "Puantaj Sistemi" : "Timesheet System")</span>
-                <h2 class="section-title">@(isTurkish ? "Detaylı puantaj hesaplama." : "Detailed timesheet calculation.")</h2>
+                <span class="section-eyebrow">@(isTurkish ? "Puantaj Sistemi" : "Timesheet System")</span>
+                <h2 class="section-heading heading-display">@(isTurkish ? "Detaylı puantaj hesaplama" : "Detailed timesheet calculation")</h2>
                 
-                <div class="ts-features">
-                    <div class="ts-feature-item">
-                        <div class="ts-feature-icon">☀️</div>
-                        <div class="ts-feature-content">
+                <div class="ts-features-list">
+                    <div class="tsf-item">
+                        <div class="tsf-icon">☀️</div>
+                        <div class="tsf-content">
                             <h5>@(isTurkish ? "Normal Çalışma" : "Regular Hours")</h5>
                             <p>@(isTurkish ? "Standart mesai saatleri" : "Standard working hours")</p>
                         </div>
                     </div>
-                    <div class="ts-feature-item">
-                        <div class="ts-feature-icon">🌙</div>
-                        <div class="ts-feature-content">
+                    <div class="tsf-item">
+                        <div class="tsf-icon">🌙</div>
+                        <div class="tsf-content">
                             <h5>@(isTurkish ? "Gece Çalışması" : "Night Hours")</h5>
                             <p>@(isTurkish ? "20:00 - 06:00 arası" : "Between 20:00 - 06:00")</p>
                         </div>
                     </div>
-                    <div class="ts-feature-item">
-                        <div class="ts-feature-icon">📅</div>
-                        <div class="ts-feature-content">
+                    <div class="tsf-item">
+                        <div class="tsf-icon">📅</div>
+                        <div class="tsf-content">
                             <h5>@(isTurkish ? "Hafta Sonu" : "Weekend Hours")</h5>
                             <p>@(isTurkish ? "Cumartesi ve Pazar" : "Saturday and Sunday")</p>
                         </div>
                     </div>
-                    <div class="ts-feature-item">
-                        <div class="ts-feature-icon">⏰</div>
-                        <div class="ts-feature-content">
+                    <div class="tsf-item">
+                        <div class="tsf-icon">⏰</div>
+                        <div class="tsf-content">
                             <h5>@(isTurkish ? "Fazla Mesai" : "Overtime")</h5>
                             <p>@(isTurkish ? "Günlük veya aylık hesaplama" : "Daily or monthly calculation")</p>
                         </div>
@@ -1079,15 +1015,11 @@
 <!-- CTA Section -->
 <section class="cta">
     <div class="container">
-        <h2 class="cta-title">@(isTurkish ? "Hemen ücretsiz başlayın." : "Start free today.")</h2>
-        <p class="cta-desc">
-            @(isTurkish 
-                ? "Kayıt olmadan 10 personele kadar ücretsiz. Kredi kartı gerekmez."
-                : "Free for up to 10 employees without registration. No credit card required.")
-        </p>
+        <h2 class="cta-heading heading-display">@(isTurkish ? "Hemen ücretsiz başlayın" : "Start free today")</h2>
+        <p class="cta-text">@(isTurkish ? "Kayıt olmadan 10 personele kadar ücretsiz. Kredi kartı gerekmez." : "Free for up to 10 employees without registration. No credit card required.")</p>
         <a href="/app" class="btn-cta">
             @(isTurkish ? "Hemen Başla" : "Get Started")
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
     </div>
 </section>
