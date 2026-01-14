@@ -43,18 +43,31 @@ public class ExportController : Controller
             .OrderBy(e => e.FullName)
             .ToListAsync();
 
+        var daysInMonth = DateTime.DaysInMonth(year, month);
+        var firstDayOfMonth = new DateOnly(year, month, 1);
+        var lastDayOfMonth = new DateOnly(year, month, daysInMonth);
+        
+        // Get previous month's last day to check for overnight shifts spilling into this month
+        var prevMonth = firstDayOfMonth.AddDays(-1);
+        
+        // Get shifts for current month
         var shifts = await _context.Shifts
             .Include(s => s.Employee)
             .Where(s => s.Employee.OrganizationId == organization.Id)
             .Where(s => s.Date.Year == year && s.Date.Month == month)
+            .ToListAsync();
+            
+        // Get overnight shifts from previous month that may spill into this month
+        var prevMonthOvernightShifts = await _context.Shifts
+            .Include(s => s.Employee)
+            .Where(s => s.Employee.OrganizationId == organization.Id)
+            .Where(s => s.Date == prevMonth && s.SpansNextDay)
             .ToListAsync();
 
         var holidays = await _context.Holidays
             .Where(h => h.OrganizationId == organization.Id)
             .Where(h => h.Date.Year == year && h.Date.Month == month)
             .ToListAsync();
-
-        var daysInMonth = DateTime.DaysInMonth(year, month);
         
         // Get localized month name
         var monthDate = new DateTime(year, month, 1);
@@ -125,6 +138,14 @@ public class ExportController : Controller
             }
 
             decimal totalWorkedHours = 0;
+            
+            // Add hours from overnight shift that spilled from previous month (day 1 only)
+            var prevMonthShiftForEmployee = prevMonthOvernightShifts.FirstOrDefault(s => s.EmployeeId == employee.Id);
+            if (prevMonthShiftForEmployee != null && !prevMonthShiftForEmployee.IsDayOff)
+            {
+                var spilledHours = CalculateSpilledHoursFromPreviousMonth(prevMonthShiftForEmployee);
+                totalWorkedHours += spilledHours;
+            }
 
             for (int day = 1; day <= daysInMonth; day++)
             {
@@ -164,7 +185,10 @@ public class ExportController : Controller
                             timeText += "↓";
                         }
                         
-                        // Add hours in parentheses
+                        // Calculate hours for this month considering overnight mode
+                        var hoursForThisMonth = CalculateShiftHoursForMonth(shift, year, month);
+                        
+                        // Add hours in parentheses (display total hours, not split hours)
                         var hoursText = shift.TotalHours % 1 == 0 
                             ? $"({(int)shift.TotalHours}{hoursAbbrev})"
                             : $"({shift.TotalHours:0.#}{hoursAbbrev})";
@@ -172,7 +196,9 @@ public class ExportController : Controller
                         cell.Value = $"{timeText}\n{hoursText}";
                         cell.Style.Font.FontSize = 9;
                         cell.Style.Alignment.WrapText = true;
-                        totalWorkedHours += shift.TotalHours;
+                        
+                        // Add only the hours that count for THIS month
+                        totalWorkedHours += hoursForThisMonth;
                     }
                 }
             }
@@ -369,5 +395,117 @@ public class ExportController : Controller
     {
         var weekendDays = org.WeekendDays.Split(',').Select(int.Parse).ToList();
         return weekendDays.Contains((int)date.DayOfWeek);
+    }
+    
+    /// <summary>
+    /// Calculate how many hours of a shift count for the specified month
+    /// Handles overnight shifts that span month boundaries based on OvernightHoursMode
+    /// </summary>
+    private decimal CalculateShiftHoursForMonth(Shift shift, int year, int month)
+    {
+        var daysInMonth = DateTime.DaysInMonth(year, month);
+        var lastDayOfMonth = new DateOnly(year, month, daysInMonth);
+        
+        // If shift doesn't span next day, all hours count for this month
+        if (!shift.SpansNextDay)
+        {
+            return shift.TotalHours;
+        }
+        
+        // Check if shift spans to next month (shift on last day of month)
+        bool spansToNextMonth = shift.Date == lastDayOfMonth;
+        
+        if (!spansToNextMonth)
+        {
+            // Shift spans to next day but still within the same month
+            // All hours count based on OvernightHoursMode, but for display purposes,
+            // this is already handled correctly in the frontend
+            return shift.TotalHours;
+        }
+        
+        // Shift spans from last day of month to first day of next month
+        // Apply OvernightHoursMode logic
+        switch (shift.OvernightHoursMode)
+        {
+            case 0: // Split at midnight - only hours before midnight count for this month
+                return CalculateHoursBeforeMidnight(shift);
+                
+            case 1: // All hours count in current month (start day)
+                return shift.TotalHours;
+                
+            case 2: // All hours count in next month
+                return 0;
+                
+            default:
+                return shift.TotalHours;
+        }
+    }
+    
+    /// <summary>
+    /// Calculate hours from a previous month's overnight shift that spill into this month
+    /// </summary>
+    private decimal CalculateSpilledHoursFromPreviousMonth(Shift shift)
+    {
+        // This is called for shifts from the previous month's last day that span to this month
+        switch (shift.OvernightHoursMode)
+        {
+            case 0: // Split at midnight - hours after midnight count for this month
+                return CalculateHoursAfterMidnight(shift);
+                
+            case 1: // All hours counted in previous month (start day)
+                return 0;
+                
+            case 2: // All hours count in this month (next month from shift's perspective)
+                return shift.TotalHours;
+                
+            default:
+                return 0;
+        }
+    }
+    
+    /// <summary>
+    /// Calculate hours worked before midnight (from StartTime to 00:00)
+    /// </summary>
+    private decimal CalculateHoursBeforeMidnight(Shift shift)
+    {
+        // Hours from start time to midnight (24:00)
+        var startMinutes = shift.StartTime.Hour * 60 + shift.StartTime.Minute;
+        var minutesUntilMidnight = (24 * 60) - startMinutes;
+        
+        // Subtract proportional break time
+        // If total shift is X hours with Y break minutes, before midnight gets proportional break
+        var totalShiftMinutes = (int)(shift.TotalHours * 60) + shift.BreakMinutes;
+        var breakProportion = totalShiftMinutes > 0 
+            ? (decimal)minutesUntilMidnight / totalShiftMinutes 
+            : 0;
+        var breakBeforeMidnight = (int)(shift.BreakMinutes * breakProportion);
+        
+        var hoursBeforeMidnight = (minutesUntilMidnight - breakBeforeMidnight) / 60m;
+        return Math.Max(0, hoursBeforeMidnight);
+    }
+    
+    /// <summary>
+    /// Calculate hours worked after midnight (from 00:00 to EndTime)
+    /// </summary>
+    private decimal CalculateHoursAfterMidnight(Shift shift)
+    {
+        // Hours from midnight to end time
+        var endMinutes = shift.EndTime.Hour * 60 + shift.EndTime.Minute;
+        
+        // Subtract proportional break time
+        var totalShiftMinutes = (int)(shift.TotalHours * 60) + shift.BreakMinutes;
+        var minutesUntilMidnight = (24 * 60) - (shift.StartTime.Hour * 60 + shift.StartTime.Minute);
+        var minutesAfterMidnight = totalShiftMinutes - minutesUntilMidnight;
+        
+        if (minutesAfterMidnight <= 0)
+            return 0;
+            
+        var breakProportion = totalShiftMinutes > 0 
+            ? (decimal)minutesAfterMidnight / totalShiftMinutes 
+            : 0;
+        var breakAfterMidnight = (int)(shift.BreakMinutes * breakProportion);
+        
+        var hoursAfterMidnight = (endMinutes - breakAfterMidnight) / 60m;
+        return Math.Max(0, hoursAfterMidnight);
     }
 }
