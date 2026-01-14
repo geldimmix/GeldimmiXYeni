@@ -6,6 +6,12 @@
     var content = isTurkish ? Model.ContentTr : Model.ContentEn;
     var keywords = isTurkish ? Model.KeywordsTr : Model.KeywordsEn;
     ViewData["Title"] = title;
+    var paragraphs = content
+        .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+        .Where(p => !p.TrimStart().StartsWith("SEO", StringComparison.OrdinalIgnoreCase)
+                 && !p.Contains("SEO kelimeleri", StringComparison.OrdinalIgnoreCase)
+                 && !p.Contains("SEO keywords", StringComparison.OrdinalIgnoreCase))
+        .ToList();
 }
 
 <section class="blog-detail">
@@ -21,7 +27,7 @@
                     }
                 </div>
                 <div class="blog-content">
-                    @foreach (var paragraph in content.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+                    @foreach (var paragraph in paragraphs)
                     {
                         <p>@paragraph.Trim()</p>
                     }
