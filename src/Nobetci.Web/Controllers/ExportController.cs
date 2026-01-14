@@ -400,6 +400,7 @@ public class ExportController : Controller
     /// <summary>
     /// Calculate how many hours of a shift count for the specified month
     /// Handles overnight shifts that span month boundaries based on OvernightHoursMode
+    /// Mode 0 = Split at midnight, Mode 1 = All hours this month
     /// </summary>
     private decimal CalculateShiftHoursForMonth(Shift shift, int year, int month)
     {
@@ -418,48 +419,39 @@ public class ExportController : Controller
         if (!spansToNextMonth)
         {
             // Shift spans to next day but still within the same month
-            // All hours count based on OvernightHoursMode, but for display purposes,
-            // this is already handled correctly in the frontend
             return shift.TotalHours;
         }
         
         // Shift spans from last day of month to first day of next month
-        // Apply OvernightHoursMode logic
-        switch (shift.OvernightHoursMode)
+        // OvernightHoursMode: 0 = Split at midnight, 1 = All hours this month
+        if (shift.OvernightHoursMode == 0)
         {
-            case 0: // Split at midnight - only hours before midnight count for this month
-                return CalculateHoursBeforeMidnight(shift);
-                
-            case 1: // All hours count in current month (start day)
-                return shift.TotalHours;
-                
-            case 2: // All hours count in next month
-                return 0;
-                
-            default:
-                return shift.TotalHours;
+            // Split at midnight - only hours before midnight count for this month
+            return CalculateHoursBeforeMidnight(shift);
+        }
+        else
+        {
+            // Mode 1: All hours count in current month
+            return shift.TotalHours;
         }
     }
     
     /// <summary>
     /// Calculate hours from a previous month's overnight shift that spill into this month
+    /// Mode 0 = Split at midnight (add hours after midnight), Mode 1 = All hours in previous month (add nothing)
     /// </summary>
     private decimal CalculateSpilledHoursFromPreviousMonth(Shift shift)
     {
-        // This is called for shifts from the previous month's last day that span to this month
-        switch (shift.OvernightHoursMode)
+        // OvernightHoursMode: 0 = Split at midnight, 1 = All hours in start month
+        if (shift.OvernightHoursMode == 0)
         {
-            case 0: // Split at midnight - hours after midnight count for this month
-                return CalculateHoursAfterMidnight(shift);
-                
-            case 1: // All hours counted in previous month (start day)
-                return 0;
-                
-            case 2: // All hours count in this month (next month from shift's perspective)
-                return shift.TotalHours;
-                
-            default:
-                return 0;
+            // Split at midnight - hours after midnight count for this month
+            return CalculateHoursAfterMidnight(shift);
+        }
+        else
+        {
+            // Mode 1: All hours counted in previous month, nothing to add
+            return 0;
         }
     }
     

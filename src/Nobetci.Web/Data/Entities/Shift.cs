@@ -65,8 +65,7 @@ public class Shift
     /// <summary>
     /// How to count overnight hours when shift spans month boundary
     /// 0 = Split at midnight (default) - hours before midnight go to current month, after to next
-    /// 1 = All hours count in current month
-    /// 2 = All hours count in next month
+    /// 1 = All hours count in current month (start day)
     /// </summary>
     public int OvernightHoursMode { get; set; } = 0;
     

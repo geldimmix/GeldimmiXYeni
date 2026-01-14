@@ -333,6 +333,7 @@ public class AppController : Controller
             existingShift.ShiftTemplateId = dto.ShiftTemplateId;
             existingShift.BreakMinutes = dto.BreakMinutes ?? organization.BreakMinutes;
             existingShift.IsDayOff = dto.IsDayOff;
+            existingShift.OvernightHoursMode = dto.OvernightHoursMode; // FIX: Save overnight hours mode on update
             existingShift.UpdatedAt = DateTime.UtcNow;
             
             if (dto.IsDayOff) {
@@ -1229,7 +1230,7 @@ public class ShiftDto
     public int? BreakMinutes { get; set; }
     public bool IsDayOff { get; set; }
     /// <summary>
-    /// 0 = Split at midnight, 1 = All current month, 2 = All next month
+    /// 0 = Split at midnight (default), 1 = All hours count in current month
     /// </summary>
     public int OvernightHoursMode { get; set; } = 0;
 }
