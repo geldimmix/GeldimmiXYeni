@@ -44,7 +44,11 @@
     <nav class="navbar navbar-expand-lg sticky-top navbar-custom">
         <div class="container">
             <a class="navbar-brand brand-link-main" href="~/">
-                <div class="brand-icon-main">G</div>
+                <div class="brand-icon-main">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
                 <span class="brand-name-main">Geldimmi</span>
             </a>
             
@@ -53,97 +57,138 @@
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mx-auto">
+                <ul class="navbar-nav nav-pills-container mx-auto">
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Home" asp-action="Index">
+                        <a class="nav-link nav-pill" asp-controller="Home" asp-action="Index">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                                <polyline points="9 22 9 12 15 12 15 22"/>
+                            </svg>
                             @(isTurkish ? "Ana Sayfa" : "Home")
                         </a>
                     </li>
                     
                     <!-- SEO Pages Dropdown -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="featuresDropdown" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link nav-pill dropdown-toggle" href="#" id="featuresDropdown" role="button" data-bs-toggle="dropdown">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                                <polyline points="2 17 12 22 22 17"/>
+                                <polyline points="2 12 12 17 22 12"/>
+                            </svg>
                             @(isTurkish ? "Özellikler" : "Features")
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-custom">
-                            <li class="dropdown-header">@(isTurkish ? "Nöbet Planlama" : "Shift Scheduling")</li>
-                            <li>
-                                <a class="dropdown-item" href="@(isTurkish ? "/rehber/nobet-listesi-olusturma" : "/guide/shift-scheduling")">
-                                    <span class="dropdown-icon">📅</span>
-                                    <span class="dropdown-text">
-                                        <strong>@(isTurkish ? "Nöbet Listesi Oluşturma" : "Shift Scheduling")</strong>
-                                        <small>@(isTurkish ? "Kolay ve hızlı nöbet planı" : "Easy and fast shift planning")</small>
-                                    </span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="@(isTurkish ? "/rehber/hemsire-nobet-programi" : "/guide/nurse-shift-planner")">
-                                    <span class="dropdown-icon">👩‍⚕️</span>
-                                    <span class="dropdown-text">
-                                        <strong>@(isTurkish ? "Hemşire Nöbet Programı" : "Nurse Shift Planner")</strong>
-                                        <small>@(isTurkish ? "Hastaneler için özel çözüm" : "Special solution for hospitals")</small>
-                                    </span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="@(isTurkish ? "/rehber/adil-nobet-dagitimi" : "/guide/fair-shift-distribution")">
-                                    <span class="dropdown-icon">⚖️</span>
-                                    <span class="dropdown-text">
-                                        <strong>@(isTurkish ? "Adil Nöbet Dağıtımı" : "Fair Shift Distribution")</strong>
-                                        <small>@(isTurkish ? "Akıllı algoritma ile dengeli dağıtım" : "Balanced distribution with smart algorithm")</small>
-                                    </span>
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li class="dropdown-header">@(isTurkish ? "Puantaj & Raporlama" : "Timesheet & Reporting")</li>
-                            <li>
-                                <a class="dropdown-item" href="@(isTurkish ? "/rehber/puantaj-hesaplama" : "/guide/timesheet-calculation")">
-                                    <span class="dropdown-icon">📊</span>
-                                    <span class="dropdown-text">
-                                        <strong>@(isTurkish ? "Puantaj Hesaplama" : "Timesheet Calculation")</strong>
-                                        <small>@(isTurkish ? "Otomatik mesai hesabı" : "Automatic overtime calculation")</small>
-                                    </span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="@(isTurkish ? "/rehber/fazla-mesai-hesaplama" : "/guide/overtime-calculation")">
-                                    <span class="dropdown-icon">⏰</span>
-                                    <span class="dropdown-text">
-                                        <strong>@(isTurkish ? "Fazla Mesai Hesaplama" : "Overtime Calculation")</strong>
-                                        <small>@(isTurkish ? "Günlük ve aylık modlar" : "Daily and monthly modes")</small>
-                                    </span>
-                                </a>
-                            </li>
+                        <ul class="dropdown-menu dropdown-menu-custom dropdown-mega">
+                            <div class="dropdown-mega-inner">
+                                <div class="dropdown-column">
+                                    <div class="dropdown-header">
+                                        <span class="header-icon">📅</span>
+                                        @(isTurkish ? "Nöbet Planlama" : "Shift Scheduling")
+                                    </div>
+                                    <li>
+                                        <a class="dropdown-item" href="@(isTurkish ? "/rehber/nobet-listesi-olusturma" : "/guide/shift-scheduling")">
+                                            <span class="dropdown-text">
+                                                <strong>@(isTurkish ? "Nöbet Listesi Oluşturma" : "Shift Scheduling")</strong>
+                                                <small>@(isTurkish ? "Kolay ve hızlı nöbet planı" : "Easy and fast shift planning")</small>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="@(isTurkish ? "/rehber/hemsire-nobet-programi" : "/guide/nurse-shift-planner")">
+                                            <span class="dropdown-text">
+                                                <strong>@(isTurkish ? "Hemşire Nöbet Programı" : "Nurse Shift Planner")</strong>
+                                                <small>@(isTurkish ? "Hastaneler için özel çözüm" : "Special solution for hospitals")</small>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="@(isTurkish ? "/rehber/adil-nobet-dagitimi" : "/guide/fair-shift-distribution")">
+                                            <span class="dropdown-text">
+                                                <strong>@(isTurkish ? "Adil Nöbet Dağıtımı" : "Fair Shift Distribution")</strong>
+                                                <small>@(isTurkish ? "Akıllı algoritma ile dengeli dağıtım" : "Balanced distribution with smart algorithm")</small>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </div>
+                                <div class="dropdown-column">
+                                    <div class="dropdown-header">
+                                        <span class="header-icon">📊</span>
+                                        @(isTurkish ? "Puantaj & Raporlama" : "Timesheet & Reporting")
+                                    </div>
+                                    <li>
+                                        <a class="dropdown-item" href="@(isTurkish ? "/rehber/puantaj-hesaplama" : "/guide/timesheet-calculation")">
+                                            <span class="dropdown-text">
+                                                <strong>@(isTurkish ? "Puantaj Hesaplama" : "Timesheet Calculation")</strong>
+                                                <small>@(isTurkish ? "Otomatik mesai hesabı" : "Automatic overtime calculation")</small>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="@(isTurkish ? "/rehber/fazla-mesai-hesaplama" : "/guide/overtime-calculation")">
+                                            <span class="dropdown-text">
+                                                <strong>@(isTurkish ? "Fazla Mesai Hesaplama" : "Overtime Calculation")</strong>
+                                                <small>@(isTurkish ? "Günlük ve aylık modlar" : "Daily and monthly modes")</small>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </div>
+                            </div>
                         </ul>
                     </li>
                     
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="App" asp-action="Index">
+                        <a class="nav-link nav-pill" href="@(isTurkish ? "/blog" : "/blog")">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                            </svg>
+                            Blog
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link nav-pill nav-pill-cta" asp-controller="App" asp-action="Index">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polygon points="10 8 16 12 10 16 10 8"/>
+                            </svg>
                             @(isTurkish ? "Ücretsiz Başla" : "Start Free")
                         </a>
                     </li>
                 </ul>
                 
-                <ul class="navbar-nav">
+                <ul class="navbar-nav nav-actions">
                     <!-- Language Selector -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle lang-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link lang-toggle-btn" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown">
                             @if (isTurkish)
                             {
-                                <span>🇹🇷</span>
+                                <span class="lang-flag">🇹🇷</span>
+                                <span class="lang-text">TR</span>
                             }
                             else
                             {
-                                <span>🇬🇧</span>
+                                <span class="lang-flag">🇬🇧</span>
+                                <span class="lang-text">EN</span>
                             }
+                            <svg class="lang-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom">
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom dropdown-lang">
                             <li>
                                 <form asp-controller="Home" asp-action="SetLanguage" method="post">
                                     <input type="hidden" name="culture" value="tr" />
                                     <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
                                     <button type="submit" class="dropdown-item @(isTurkish ? "active" : "")">
-                                        🇹🇷 Türkçe
+                                        <span class="lang-flag">🇹🇷</span>
+                                        <span>Türkçe</span>
+                                        @if (isTurkish)
+                                        {
+                                            <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                                <polyline points="20 6 9 17 4 12"/>
+                                            </svg>
+                                        }
                                     </button>
                                 </form>
                             </li>
@@ -152,17 +197,31 @@
                                     <input type="hidden" name="culture" value="en" />
                                     <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
                                     <button type="submit" class="dropdown-item @(!isTurkish ? "active" : "")">
-                                        🇬🇧 English
+                                        <span class="lang-flag">🇬🇧</span>
+                                        <span>English</span>
+                                        @if (!isTurkish)
+                                        {
+                                            <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                                <polyline points="20 6 9 17 4 12"/>
+                                            </svg>
+                                        }
                                     </button>
                                 </form>
                             </li>
                         </ul>
                     </li>
                     
+                    <div class="nav-divider"></div>
+                    
                     @if (User.Identity?.IsAuthenticated == true)
                     {
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Account" asp-action="Logout">
+                            <a class="nav-link nav-auth-link" asp-controller="Account" asp-action="Logout">
+                                <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                                    <polyline points="16 17 21 12 16 7"/>
+                                    <line x1="21" y1="12" x2="9" y2="12"/>
+                                </svg>
                                 @(isTurkish ? "Çıkış" : "Logout")
                             </a>
                         </li>
@@ -170,13 +229,17 @@
                     else
                     {
                         <li class="nav-item d-none d-lg-block">
-                            <a class="nav-link" asp-controller="Account" asp-action="Login">
+                            <a class="nav-link nav-auth-link" asp-controller="Account" asp-action="Login">
                                 @(isTurkish ? "Giriş" : "Login")
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="btn btn-primary btn-nav-cta ms-2" asp-controller="Account" asp-action="Register">
-                                @(isTurkish ? "Kayıt Ol" : "Sign Up")
+                            <a class="btn btn-nav-signup" asp-controller="Account" asp-action="Register">
+                                <span>@(isTurkish ? "Kayıt Ol" : "Sign Up")</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="5" y1="12" x2="19" y2="12"/>
+                                    <polyline points="12 5 19 12 12 19"/>
+                                </svg>
                             </a>
                         </li>
                     }
@@ -186,171 +249,470 @@
     </nav>
     
     <style>
-        /* Navbar Custom Styles */
+        /* ═══════════════════════════════════════════════════════════════
+           MODERN NAVBAR STYLES - Geldimmi
+           ═══════════════════════════════════════════════════════════════ */
+        
         .navbar-custom {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            padding: 12px 0;
-            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            padding: 10px 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .navbar-custom.scrolled {
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
         }
         
+        /* Brand Styling */
         .brand-link-main {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             text-decoration: none;
+            position: relative;
         }
         
         .brand-icon-main {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, #dc2626 0%, #ea580c 100%);
-            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
             color: white;
-            font-weight: 800;
-            font-family: 'Space Grotesk', sans-serif;
-            box-shadow: 0 3px 10px rgba(220, 38, 38, 0.3);
-            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .brand-icon-main::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(145deg, #dc2626 0%, #f97316 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .brand-icon-main svg {
+            position: relative;
+            z-index: 1;
         }
         
         .brand-name-main {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 700;
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #dc2626 0%, #ea580c 100%);
+            letter-spacing: -0.03em;
+            color: #0f172a;
+            transition: all 0.3s ease;
+        }
+        
+        .brand-link-main:hover .brand-icon-main {
+            transform: translateY(-2px) rotate(-3deg);
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
+        }
+        
+        .brand-link-main:hover .brand-icon-main::before {
+            opacity: 1;
+        }
+        
+        .brand-link-main:hover .brand-name-main {
+            background: linear-gradient(145deg, #dc2626 0%, #f97316 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         
-        .brand-link-main:hover .brand-icon-main {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
+        /* Nav Pills Container */
+        .nav-pills-container {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: #f8fafc;
+            padding: 6px;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
         }
         
-        .brand-link-main:hover .brand-name-main {
-            background: linear-gradient(135deg, #b91c1c 0%, #c2410c 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-        }
-        
-        .navbar-custom .nav-link {
-            color: #475569;
+        /* Nav Pill Base */
+        .nav-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
             font-weight: 500;
-            padding: 8px 16px;
-            border-radius: 8px;
+            font-size: 0.9rem;
+            padding: 10px 18px;
+            border-radius: 12px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            white-space: nowrap;
+        }
+        
+        .nav-icon {
+            opacity: 0.7;
             transition: all 0.2s ease;
         }
         
-        .navbar-custom .nav-link:hover {
-            color: #6366f1;
-            background: rgba(99, 102, 241, 0.08);
+        .nav-pill:hover {
+            color: #0f172a;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
         
-        .lang-toggle {
-            padding: 6px 12px !important;
+        .nav-pill:hover .nav-icon {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        /* CTA Pill */
+        .nav-pill-cta {
+            background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+            color: white !important;
+            font-weight: 600;
+        }
+        
+        .nav-pill-cta .nav-icon {
+            opacity: 1;
+        }
+        
+        .nav-pill-cta:hover {
+            background: linear-gradient(145deg, #dc2626 0%, #f97316 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.25);
+        }
+        
+        /* Actions Area */
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-divider {
+            width: 1px;
+            height: 24px;
+            background: #e2e8f0;
+            margin: 0 8px;
+        }
+        
+        /* Language Toggle */
+        .lang-toggle-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px !important;
+            background: #f1f5f9;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: #475569;
+            transition: all 0.2s ease;
+        }
+        
+        .lang-toggle-btn:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+        
+        .lang-flag {
             font-size: 1.1rem;
         }
         
-        .btn-nav-cta {
-            padding: 8px 20px;
+        .lang-text {
             font-weight: 600;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            border: none;
-            color: white;
+        }
+        
+        .lang-chevron {
+            opacity: 0.5;
+            transition: transform 0.2s ease;
+        }
+        
+        .lang-toggle-btn[aria-expanded="true"] .lang-chevron {
+            transform: rotate(180deg);
+        }
+        
+        /* Auth Links */
+        .nav-auth-link {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #64748b;
+            font-weight: 500;
+            padding: 8px 14px;
+            border-radius: 10px;
             transition: all 0.2s ease;
         }
         
-        .btn-nav-cta:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        .nav-auth-link:hover {
+            color: #0f172a;
+            background: #f1f5f9;
+        }
+        
+        /* Signup Button */
+        .btn-nav-signup {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-radius: 12px;
+            background: linear-gradient(145deg, #6366f1 0%, #8b5cf6 100%);
+            border: none;
+            color: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-nav-signup::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(145deg, #4f46e5 0%, #7c3aed 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .btn-nav-signup span,
+        .btn-nav-signup svg {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .btn-nav-signup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.35);
             color: white;
         }
         
-        /* Dropdown Styles */
-        .dropdown-menu-custom {
-            border: none;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
-            border-radius: 12px;
-            padding: 12px;
-            min-width: 280px;
-            animation: dropdownFade 0.2s ease;
+        .btn-nav-signup:hover::before {
+            opacity: 1;
         }
         
-        @@keyframes dropdownFade {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
+        .btn-nav-signup svg {
+            transition: transform 0.2s ease;
+        }
+        
+        .btn-nav-signup:hover svg {
+            transform: translateX(3px);
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           MEGA DROPDOWN STYLES
+           ═══════════════════════════════════════════════════════════════ */
+        
+        .dropdown-menu-custom {
+            border: none;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12), 0 4px 15px rgba(0, 0, 0, 0.06);
+            border-radius: 16px;
+            padding: 0;
+            overflow: hidden;
+            animation: dropdownSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @@keyframes dropdownSlide {
+            from { 
+                opacity: 0; 
+                transform: translateY(-10px) scale(0.98); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+        
+        .dropdown-mega {
+            min-width: 520px;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        }
+        
+        .dropdown-mega-inner {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+        
+        .dropdown-column {
+            padding: 20px;
+        }
+        
+        .dropdown-column:first-child {
+            border-right: 1px solid #f1f5f9;
         }
         
         .dropdown-menu-custom .dropdown-header {
-            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.75rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #94a3b8;
-            padding: 8px 12px 4px;
+            letter-spacing: 0.8px;
+            color: #0f172a;
+            padding: 0 12px 12px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .header-icon {
+            font-size: 1rem;
         }
         
         .dropdown-menu-custom .dropdown-item {
             display: flex;
             align-items: flex-start;
-            gap: 12px;
-            padding: 10px 12px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 10px;
             transition: all 0.2s ease;
+            margin-bottom: 4px;
+        }
+        
+        .dropdown-menu-custom .dropdown-item:last-child {
+            margin-bottom: 0;
         }
         
         .dropdown-menu-custom .dropdown-item:hover {
-            background: rgba(99, 102, 241, 0.08);
-        }
-        
-        .dropdown-menu-custom .dropdown-item.active {
-            background: rgba(99, 102, 241, 0.1);
-            color: #6366f1;
-        }
-        
-        .dropdown-icon {
-            font-size: 1.25rem;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f1f5f9;
-            border-radius: 8px;
-            flex-shrink: 0;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transform: translateX(4px);
         }
         
         .dropdown-text {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 3px;
         }
         
         .dropdown-text strong {
             font-size: 0.9rem;
+            font-weight: 600;
             color: #1e293b;
+            transition: color 0.2s ease;
+        }
+        
+        .dropdown-item:hover .dropdown-text strong {
+            color: #6366f1;
         }
         
         .dropdown-text small {
-            font-size: 0.75rem;
+            font-size: 0.78rem;
             color: #64748b;
+            line-height: 1.4;
         }
         
-        .dropdown-divider {
-            margin: 8px 0;
+        /* Language Dropdown */
+        .dropdown-lang {
+            min-width: 160px;
+            padding: 8px;
+        }
+        
+        .dropdown-lang .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-weight: 500;
+            color: #475569;
+        }
+        
+        .dropdown-lang .dropdown-item:hover {
+            background: #f8fafc;
+            transform: none;
+        }
+        
+        .dropdown-lang .dropdown-item.active {
+            background: linear-gradient(145deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
+            color: #6366f1;
+        }
+        
+        .check-icon {
+            margin-left: auto;
+            color: #6366f1;
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           RESPONSIVE STYLES
+           ═══════════════════════════════════════════════════════════════ */
+        
+        @@media (max-width: 991.98px) {
+            .nav-pills-container {
+                flex-direction: column;
+                width: 100%;
+                background: transparent;
+                border: none;
+                padding: 16px 0;
+                gap: 4px;
+            }
+            
+            .nav-pill {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
+            .nav-actions {
+                flex-direction: column;
+                width: 100%;
+                padding-top: 16px;
+                border-top: 1px solid #e2e8f0;
+                margin-top: 8px;
+            }
+            
+            .nav-divider {
+                display: none;
+            }
+            
+            .dropdown-mega {
+                min-width: 100%;
+            }
+            
+            .dropdown-mega-inner {
+                grid-template-columns: 1fr;
+            }
+            
+            .dropdown-column:first-child {
+                border-right: none;
+                border-bottom: 1px solid #f1f5f9;
+            }
+            
+            .lang-toggle-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .btn-nav-signup {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .nav-auth-link {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        /* Navbar Toggler */
+        .navbar-toggler {
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+        
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+        
+        .navbar-toggler:hover {
+            background: #f1f5f9;
         }
     </style>
     
@@ -404,6 +766,7 @@
                     <div class="col-lg-2 col-md-6 col-6">
                         <h6 class="footer-title">@(isTurkish ? "Kaynaklar" : "Resources")</h6>
                         <ul class="footer-links">
+                            <li><a href="/blog">Blog</a></li>
                             <li><a href="/seo/nobet-listesi-olusturma">@(isTurkish ? "Nöbet Rehberi" : "Shift Guide")</a></li>
                             <li><a href="/seo/puantaj-hesaplama">@(isTurkish ? "Puantaj Rehberi" : "Timesheet Guide")</a></li>
                         </ul>
