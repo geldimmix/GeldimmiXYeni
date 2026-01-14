@@ -542,6 +542,10 @@ public class AppController : Controller
     public async Task<IActionResult> GetShiftTemplates()
     {
         var organization = await GetOrCreateOrganizationAsync();
+        
+        // Ensure default templates exist
+        await CopyDefaultTemplatesToOrganization(organization.Id);
+        
         var templates = await _context.ShiftTemplates
             .Where(t => t.OrganizationId == organization.Id)
             .Where(t => t.IsActive)
