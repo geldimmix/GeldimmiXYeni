@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Nobetci.Web")]
 [assembly: System.Reflection.AssemblyCopyrightAttribute(" ")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a600f5bd1be0c76312cdf45060656579fe61c928")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8d8aadf945ebcdc8d31f080f9977df39ad8487f6")]
 [assembly: System.Reflection.AssemblyProductAttribute("Nobetci.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Nobetci.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -58,6 +58,11 @@ public class Organization
     /// </summary>
     public OvertimeCalcMode OvertimeCalcMode { get; set; } = OvertimeCalcMode.Monthly;
     
+    /// <summary>
+    /// Whether default templates have been initialized for this organization
+    /// </summary>
+    public bool DefaultTemplatesInitialized { get; set; } = false;
+    
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     
