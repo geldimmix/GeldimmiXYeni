@@ -1,0 +1,124 @@
+@using Nobetci.Web.Controllers
+@model BlogListViewModel
+@{
+    var isTurkish = Model.IsTurkish;
+    ViewData["Title"] = "Blog";
+}
+
+<section class="blog-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <p class="eyebrow">@(isTurkish ? "Blog" : "Blog")</p>
+                <h1 class="display-5 fw-bold">
+                    @(isTurkish ? "Online Hemşire Nöbet Programı ve Akıllı Vardiya Rehberi" : "Online Nurse Scheduling and Smart Rostering Guide")
+                </h1>
+                <p class="lead text-muted">
+                    @(isTurkish
+                        ? "Online hemşire nöbet programı, yapay zeka destekli planlama, adil dağıtım ve mobil deneyim üzerine derinlemesine içerikler."
+                        : "Deep dives into online nurse scheduling, AI-powered planning, fairness, and great mobile experiences.")
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="blog-list">
+    <div class="container">
+        <div class="row g-4">
+            @foreach (var post in Model.Posts)
+            {
+                var title = isTurkish ? post.TitleTr : post.TitleEn;
+                var excerpt = isTurkish ? post.ExcerptTr : post.ExcerptEn;
+                var keywords = isTurkish ? post.KeywordsTr : post.KeywordsEn;
+                <div class="col-lg-6">
+                    <div class="blog-card">
+                        <p class="blog-date">@post.PublishedAt.ToString("dd MMM yyyy")</p>
+                        <h3 class="blog-title">
+                            <a asp-controller="Blog" asp-action="Detail" asp-route-slug="@post.Slug">@title</a>
+                        </h3>
+                        <p class="blog-excerpt">@excerpt</p>
+                        <div class="blog-tags">
+                            @foreach (var tag in keywords.Take(3))
+                            {
+                                <span class="blog-tag">@tag</span>
+                            }
+                        </div>
+                        <a class="blog-readmore" asp-controller="Blog" asp-action="Detail" asp-route-slug="@post.Slug">
+                            @(isTurkish ? "Devamını Oku" : "Read More")
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<style>
+    .blog-hero {
+        padding: 56px 0 24px;
+    }
+    .eyebrow {
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-weight: 700;
+        font-size: 0.8rem;
+        color: #c94a4a;
+        margin-bottom: 10px;
+    }
+    .blog-list {
+        padding: 0 0 56px;
+    }
+    .blog-card {
+        border: 1px solid #ebebeb;
+        border-radius: 12px;
+        padding: 20px;
+        height: 100%;
+        background: #fff;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .blog-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 40px rgba(0,0,0,0.06);
+    }
+    .blog-date {
+        font-size: 0.85rem;
+        color: #888;
+        margin-bottom: 6px;
+    }
+    .blog-title a {
+        color: #1f1f1f;
+        text-decoration: none;
+    }
+    .blog-title a:hover {
+        color: #c94a4a;
+    }
+    .blog-excerpt {
+        color: #4a4a4a;
+        margin: 12px 0;
+        line-height: 1.6;
+    }
+    .blog-tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+    }
+    .blog-tag {
+        background: #f5f5f5;
+        border: 1px solid #ebebeb;
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 0.82rem;
+        color: #444;
+    }
+    .blog-readmore {
+        font-weight: 600;
+        color: #c94a4a;
+        text-decoration: none;
+    }
+    .blog-readmore:hover {
+        color: #a33d3d;
+    }
+</style>
+

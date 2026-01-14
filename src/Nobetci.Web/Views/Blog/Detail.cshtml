@@ -1,0 +1,55 @@
+@using Nobetci.Web.Controllers
+@model BlogPost
+@{
+    var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+    var title = isTurkish ? Model.TitleTr : Model.TitleEn;
+    var content = isTurkish ? Model.ContentTr : Model.ContentEn;
+    var keywords = isTurkish ? Model.KeywordsTr : Model.KeywordsEn;
+    ViewData["Title"] = title;
+}
+
+<section class="blog-detail">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <p class="blog-date">@Model.PublishedAt.ToString("dd MMM yyyy")</p>
+                <h1 class="blog-detail-title">@title</h1>
+                <div class="blog-tags mb-3">
+                    @foreach (var tag in keywords.Take(4))
+                    {
+                        <span class="blog-tag">@tag</span>
+                    }
+                </div>
+                <div class="blog-content">
+                    @foreach (var paragraph in content.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        <p>@paragraph.Trim()</p>
+                    }
+                </div>
+                <div class="blog-back mt-4">
+                    <a asp-controller="Blog" asp-action="Index" class="blog-readmore">
+                        @(isTurkish ? "Tüm yazılara dön" : "Back to all posts")
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .blog-detail {
+        padding: 48px 0 56px;
+    }
+    .blog-detail-title {
+        font-size: 2.1rem;
+        line-height: 1.3;
+        margin-bottom: 12px;
+    }
+    .blog-content p {
+        font-size: 1rem;
+        line-height: 1.8;
+        color: #353535;
+        margin-bottom: 16px;
+    }
+</style>
+
