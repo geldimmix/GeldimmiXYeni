@@ -741,9 +741,9 @@ public class AppController : Controller
     
     private async Task CopyDefaultTemplatesToOrganization(int organizationId)
     {
-        // Check if organization already has templates
-        var hasTemplates = await _context.ShiftTemplates.AnyAsync(t => t.OrganizationId == organizationId);
-        if (hasTemplates) return;
+        // Check if organization already has ACTIVE templates
+        var hasActiveTemplates = await _context.ShiftTemplates.AnyAsync(t => t.OrganizationId == organizationId && t.IsActive);
+        if (hasActiveTemplates) return;
         
         // Default templates to copy
         var defaultTemplates = new List<ShiftTemplate>
