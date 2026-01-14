@@ -698,10 +698,10 @@ public class AppController : Controller
                     
                     _context.Organizations.Add(org);
                     await _context.SaveChangesAsync();
-                    
-                    // Copy default templates to user's organization
-                    await CopyDefaultTemplatesToOrganization(org.Id);
                 }
+                
+                // Ensure organization has default templates (for existing users too)
+                await CopyDefaultTemplatesToOrganization(org.Id);
                 
                 return org;
             }
@@ -731,10 +731,10 @@ public class AppController : Controller
             
             _context.Organizations.Add(guestOrg);
             await _context.SaveChangesAsync();
-            
-            // Copy default templates to guest organization
-            await CopyDefaultTemplatesToOrganization(guestOrg.Id);
         }
+        
+        // Ensure organization has default templates
+        await CopyDefaultTemplatesToOrganization(guestOrg.Id);
         
         return guestOrg;
     }
