@@ -34,9 +34,9 @@ public class Holiday
     public bool IsHalfDay { get; set; }
     
     /// <summary>
-    /// If half-day, when does the holiday start (e.g., 13:00 for afternoon off)
+    /// If half-day, how many hours should employees work (e.g., 4 hours)
     /// </summary>
-    public TimeOnly? HalfDayStartTime { get; set; }
+    public decimal? HalfDayWorkHours { get; set; }
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     

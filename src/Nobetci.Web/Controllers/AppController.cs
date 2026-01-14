@@ -448,7 +448,8 @@ public class AppController : Controller
                 date = h.Date.ToString("yyyy-MM-dd"),
                 h.Name,
                 h.Type,
-                h.IsHalfDay
+                h.IsHalfDay,
+                h.HalfDayWorkHours
             })
             .ToListAsync();
             
@@ -471,6 +472,7 @@ public class AppController : Controller
             existing.Name = dto.Name;
             existing.Type = dto.Type;
             existing.IsHalfDay = dto.IsHalfDay;
+            existing.HalfDayWorkHours = dto.IsHalfDay ? dto.HalfDayWorkHours : null;
         }
         else
         {
@@ -480,7 +482,8 @@ public class AppController : Controller
                 Date = date,
                 Name = dto.Name,
                 Type = dto.Type,
-                IsHalfDay = dto.IsHalfDay
+                IsHalfDay = dto.IsHalfDay,
+                HalfDayWorkHours = dto.IsHalfDay ? dto.HalfDayWorkHours : null
             };
             _context.Holidays.Add(holiday);
         }
@@ -931,6 +934,7 @@ public class HolidayDto
     public string Name { get; set; } = string.Empty;
     public HolidayType Type { get; set; }
     public bool IsHalfDay { get; set; }
+    public decimal? HalfDayWorkHours { get; set; }
 }
 
 public class ShiftTemplateDto
