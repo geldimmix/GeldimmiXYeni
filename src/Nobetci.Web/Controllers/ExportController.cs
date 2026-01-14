@@ -63,7 +63,7 @@ public class ExportController : Controller
         // Localized texts
         var sheetName = isTurkish ? $"Nöbet Listesi - {monthName}" : $"Shift Schedule - {monthName}";
         var employeeHeader = isTurkish ? "Personel" : "Employee";
-        var totalHoursHeader = isTurkish ? "Toplam Saat" : "Total Hours";
+        var totalHoursHeader = isTurkish ? "Toplam" : "Total";
         var hoursAbbrev = isTurkish ? "s" : "h"; // saat / hours abbreviation
 
         // Day name abbreviations
@@ -124,7 +124,7 @@ public class ExportController : Controller
                 worksheet.Cell(row, 1).CreateComment().AddText(employee.Title);
             }
 
-            decimal totalHours = 0;
+            decimal totalWorkedHours = 0;
 
             for (int day = 1; day <= daysInMonth; day++)
             {
@@ -172,16 +172,37 @@ public class ExportController : Controller
                         cell.Value = $"{timeText}\n{hoursText}";
                         cell.Style.Font.FontSize = 9;
                         cell.Style.Alignment.WrapText = true;
-                        totalHours += shift.TotalHours;
+                        totalWorkedHours += shift.TotalHours;
                     }
                 }
             }
 
-            // Total hours for employee
-            worksheet.Cell(row, daysInMonth + 2).Value = totalHours;
-            worksheet.Cell(row, daysInMonth + 2).Style.Font.Bold = true;
-            worksheet.Cell(row, daysInMonth + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-            worksheet.Cell(row, daysInMonth + 2).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+            // Calculate required hours for this employee
+            var requiredHours = CalculateRequiredHours(employee, year, month, holidays, organization);
+            var difference = totalWorkedHours - requiredHours;
+            var diffSign = difference >= 0 ? "+" : "";
+            
+            // Format: worked / required (difference)
+            var workedDisplay = totalWorkedHours % 1 == 0 ? $"{(int)totalWorkedHours}" : $"{totalWorkedHours:0.#}";
+            var requiredDisplay = requiredHours % 1 == 0 ? $"{(int)requiredHours}" : $"{requiredHours:0.#}";
+            var diffDisplay = difference % 1 == 0 ? $"{diffSign}{(int)difference}" : $"{diffSign}{difference:0.#}";
+            
+            var totalCell = worksheet.Cell(row, daysInMonth + 2);
+            totalCell.Value = $"{workedDisplay}\n/{requiredDisplay}\n({diffDisplay})";
+            totalCell.Style.Font.Bold = true;
+            totalCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            totalCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+            totalCell.Style.Alignment.WrapText = true;
+            
+            // Color code based on difference
+            if (difference > 0)
+            {
+                totalCell.Style.Font.FontColor = XLColor.Green;
+            }
+            else if (difference < 0)
+            {
+                totalCell.Style.Font.FontColor = XLColor.Red;
+            }
 
             row++;
         }
@@ -190,7 +211,7 @@ public class ExportController : Controller
         worksheet.Row(1).Height = 35;
         for (int r = 2; r < row; r++)
         {
-            worksheet.Row(r).Height = 30;
+            worksheet.Row(r).Height = 45;
         }
 
         // Auto-fit columns
@@ -199,7 +220,7 @@ public class ExportController : Controller
         {
             worksheet.Column(col).Width = 12;
         }
-        worksheet.Column(daysInMonth + 2).Width = 12;
+        worksheet.Column(daysInMonth + 2).Width = 10;
 
         // Freeze first row and column
         worksheet.SheetView.FreezeRows(1);
@@ -221,6 +242,105 @@ public class ExportController : Controller
             : $"Shift_Schedule_{year}_{month:00}.xlsx";
             
         return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+    }
+
+    /// <summary>
+    /// Calculate required work hours for an employee in a given month
+    /// </summary>
+    private decimal CalculateRequiredHours(Employee employee, int year, int month, List<Holiday> holidays, Organization organization)
+    {
+        var daysInMonth = DateTime.DaysInMonth(year, month);
+        decimal requiredHours = 0;
+        var weekendDays = organization.WeekendDays.Split(',').Select(int.Parse).ToList();
+
+        for (int day = 1; day <= daysInMonth; day++)
+        {
+            var date = new DateOnly(year, month, day);
+            var dayOfWeek = date.DayOfWeek;
+            var isSaturday = dayOfWeek == DayOfWeek.Saturday;
+            var isSunday = dayOfWeek == DayOfWeek.Sunday;
+            var isWeekend = weekendDays.Contains((int)dayOfWeek);
+            
+            // Check for holiday
+            var holiday = holidays.FirstOrDefault(h => h.Date == date);
+            
+            // Full holiday - no work required (unless half-day)
+            if (holiday != null && !holiday.IsHalfDay)
+            {
+                continue;
+            }
+            
+            // Half-day holiday
+            if (holiday != null && holiday.IsHalfDay)
+            {
+                // Check if employee should work on this day
+                bool shouldWorkThisDay = ShouldEmployeeWorkOnDay(employee, dayOfWeek, isWeekend, isSaturday, isSunday);
+                if (shouldWorkThisDay && holiday.HalfDayWorkHours.HasValue)
+                {
+                    requiredHours += holiday.HalfDayWorkHours.Value;
+                }
+                continue;
+            }
+            
+            // Regular day - check weekend work mode
+            if (isWeekend)
+            {
+                // WeekendWorkMode: 0=No weekend, 1=Both days, 2=Only Saturday, 3=Saturday specific hours
+                switch (employee.WeekendWorkMode)
+                {
+                    case 0: // Does not work on weekends
+                        break;
+                    case 1: // Works both days
+                        requiredHours += employee.DailyWorkHours;
+                        break;
+                    case 2: // Only Saturday
+                        if (isSaturday)
+                        {
+                            requiredHours += employee.DailyWorkHours;
+                        }
+                        break;
+                    case 3: // Saturday specific hours
+                        if (isSaturday && employee.SaturdayWorkHours.HasValue)
+                        {
+                            requiredHours += employee.SaturdayWorkHours.Value;
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                // Weekday - add daily work hours
+                requiredHours += employee.DailyWorkHours;
+            }
+        }
+
+        return requiredHours;
+    }
+
+    /// <summary>
+    /// Check if employee should work on a specific day based on their weekend work mode
+    /// </summary>
+    private bool ShouldEmployeeWorkOnDay(Employee employee, DayOfWeek dayOfWeek, bool isWeekend, bool isSaturday, bool isSunday)
+    {
+        if (!isWeekend)
+        {
+            return true; // Weekdays are always work days
+        }
+
+        // Weekend logic
+        switch (employee.WeekendWorkMode)
+        {
+            case 0: // Does not work on weekends
+                return false;
+            case 1: // Works both days
+                return true;
+            case 2: // Only Saturday
+                return isSaturday;
+            case 3: // Saturday specific hours
+                return isSaturday;
+            default:
+                return false;
+        }
     }
 
     private async Task<Organization?> GetOrganizationAsync()
