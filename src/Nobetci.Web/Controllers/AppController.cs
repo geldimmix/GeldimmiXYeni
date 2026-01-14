@@ -856,73 +856,98 @@ public class AppController : Controller
     [Route("api/saved-schedules/{id}/load")]
     public async Task<IActionResult> LoadSavedSchedule(int id)
     {
-        if (User.Identity?.IsAuthenticated != true)
+        try
         {
-            return Unauthorized(new { error = "Bu özellik için giriş yapmanız gerekiyor" });
-        }
-        
-        var organization = await GetOrCreateOrganizationAsync();
-        var schedule = await _context.SavedSchedules
-            .FirstOrDefaultAsync(s => s.Id == id && s.OrganizationId == organization.Id);
-            
-        if (schedule == null)
-            return NotFound();
-        
-        // Parse the saved shift data
-        var savedShifts = System.Text.Json.JsonSerializer.Deserialize<List<SavedShiftData>>(schedule.ShiftDataJson);
-        if (savedShifts == null)
-            return BadRequest(new { error = "Kaydedilmiş veri okunamadı" });
-        
-        // Get valid employee IDs for this organization
-        var validEmployeeIds = await _context.Employees
-            .Where(e => e.OrganizationId == organization.Id && e.IsActive)
-            .Select(e => e.Id)
-            .ToListAsync();
-        
-        // Delete existing shifts for this month
-        var existingShifts = await _context.Shifts
-            .Where(s => s.Employee.OrganizationId == organization.Id)
-            .Where(s => s.Date.Year == schedule.Year && s.Date.Month == schedule.Month)
-            .ToListAsync();
-        
-        _context.Shifts.RemoveRange(existingShifts);
-        
-        // Create new shifts from saved data
-        var newShifts = new List<Shift>();
-        foreach (var savedShift in savedShifts)
-        {
-            // Only restore shifts for employees that still exist
-            if (!validEmployeeIds.Contains(savedShift.EmployeeId))
-                continue;
-            
-            var shift = new Shift
+            if (User.Identity?.IsAuthenticated != true)
             {
-                EmployeeId = savedShift.EmployeeId,
-                Date = DateOnly.Parse(savedShift.Date),
-                StartTime = TimeOnly.Parse(savedShift.StartTime),
-                EndTime = TimeOnly.Parse(savedShift.EndTime),
-                SpansNextDay = savedShift.SpansNextDay,
-                BreakMinutes = savedShift.BreakMinutes,
-                TotalHours = savedShift.TotalHours,
-                NightHours = savedShift.NightHours,
-                IsWeekend = savedShift.IsWeekend,
-                IsHoliday = savedShift.IsHoliday,
-                IsDayOff = savedShift.IsDayOff,
-                OvernightHoursMode = savedShift.OvernightHoursMode,
-                ShiftTemplateId = savedShift.ShiftTemplateId
+                return Unauthorized(new { error = "Bu özellik için giriş yapmanız gerekiyor" });
+            }
+            
+            var organization = await GetOrCreateOrganizationAsync();
+            var schedule = await _context.SavedSchedules
+                .FirstOrDefaultAsync(s => s.Id == id && s.OrganizationId == organization.Id);
+                
+            if (schedule == null)
+                return NotFound(new { error = "Kayıtlı liste bulunamadı" });
+            
+            // Parse the saved shift data (use case-insensitive option since JSON uses camelCase)
+            var jsonOptions = new System.Text.Json.JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
             };
-            newShifts.Add(shift);
+            
+            List<SavedShiftData>? savedShifts;
+            try
+            {
+                savedShifts = System.Text.Json.JsonSerializer.Deserialize<List<SavedShiftData>>(schedule.ShiftDataJson, jsonOptions);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to deserialize saved schedule data for schedule {ScheduleId}", id);
+                return BadRequest(new { error = "Kaydedilmiş veri formatı hatalı" });
+            }
+            
+            if (savedShifts == null)
+            {
+                return BadRequest(new { error = "Kaydedilmiş veri okunamadı" });
+            }
+            
+            // Get valid employee IDs for this organization
+            var validEmployeeIds = await _context.Employees
+                .Where(e => e.OrganizationId == organization.Id && e.IsActive)
+                .Select(e => e.Id)
+                .ToListAsync();
+            
+            // Delete existing shifts for this month
+            var existingShifts = await _context.Shifts
+                .Where(s => s.Employee.OrganizationId == organization.Id)
+                .Where(s => s.Date.Year == schedule.Year && s.Date.Month == schedule.Month)
+                .ToListAsync();
+            
+            _context.Shifts.RemoveRange(existingShifts);
+            
+            // Create new shifts from saved data
+            var newShifts = new List<Shift>();
+            foreach (var savedShift in savedShifts)
+            {
+                // Only restore shifts for employees that still exist
+                if (!validEmployeeIds.Contains(savedShift.EmployeeId))
+                    continue;
+                
+                var shift = new Shift
+                {
+                    EmployeeId = savedShift.EmployeeId,
+                    Date = DateOnly.Parse(savedShift.Date),
+                    StartTime = TimeOnly.Parse(savedShift.StartTime),
+                    EndTime = TimeOnly.Parse(savedShift.EndTime),
+                    SpansNextDay = savedShift.SpansNextDay,
+                    BreakMinutes = savedShift.BreakMinutes,
+                    TotalHours = savedShift.TotalHours,
+                    NightHours = savedShift.NightHours,
+                    IsWeekend = savedShift.IsWeekend,
+                    IsHoliday = savedShift.IsHoliday,
+                    IsDayOff = savedShift.IsDayOff,
+                    OvernightHoursMode = savedShift.OvernightHoursMode,
+                    ShiftTemplateId = savedShift.ShiftTemplateId
+                };
+                newShifts.Add(shift);
+            }
+            
+            _context.Shifts.AddRange(newShifts);
+            await _context.SaveChangesAsync();
+            
+            return Json(new { 
+                message = $"'{schedule.Name}' nöbet listesi yüklendi",
+                shiftCount = newShifts.Count,
+                year = schedule.Year,
+                month = schedule.Month
+            });
         }
-        
-        _context.Shifts.AddRange(newShifts);
-        await _context.SaveChangesAsync();
-        
-        return Json(new { 
-            message = $"'{schedule.Name}' nöbet listesi yüklendi",
-            shiftCount = newShifts.Count,
-            year = schedule.Year,
-            month = schedule.Month
-        });
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading saved schedule {ScheduleId}", id);
+            return StatusCode(500, new { error = "Yükleme sırasında bir hata oluştu" });
+        }
     }
 
     [HttpDelete]
