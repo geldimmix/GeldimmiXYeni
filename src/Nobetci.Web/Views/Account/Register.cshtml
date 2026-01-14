@@ -3,202 +3,484 @@
 @inject IStringLocalizer<SharedResource> Localizer
 @{
     ViewData["Title"] = Localizer["Register"];
+    Layout = null;
     var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
 }
 
-<style>
-    .auth-container {
-        min-height: calc(100vh - 120px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 40px 20px;
-    }
+<!DOCTYPE html>
+<html lang="@(isTurkish ? "tr" : "en")">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(isTurkish ? "Kayıt Ol" : "Sign Up") - Geldimmi</title>
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
     
-    .auth-card {
-        width: 100%;
-        max-width: 480px;
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        overflow: hidden;
-    }
-    
-    .auth-header {
-        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-        color: white;
-        padding: 32px;
-        text-align: center;
-    }
-    
-    .auth-header h2 {
-        font-size: 1.75rem;
-        font-weight: 700;
-        margin: 0 0 8px 0;
-    }
-    
-    .auth-header p {
-        opacity: 0.9;
-        margin: 0;
-        font-size: 0.9rem;
-    }
-    
-    .auth-body {
-        padding: 32px;
-    }
-    
-    /* Benefits Box */
-    .benefits-box {
-        background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-        border: 1px solid #a7f3d0;
-        border-radius: 12px;
-        padding: 16px 20px;
-        margin-bottom: 24px;
-    }
-    
-    .benefits-box h4 {
-        font-size: 0.9rem;
-        font-weight: 700;
-        color: #059669;
-        margin: 0 0 12px 0;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .benefits-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    
-    .benefits-list li {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.85rem;
-        color: #047857;
-        padding: 4px 0;
-    }
-    
-    .benefits-list li::before {
-        content: '✓';
-        font-weight: bold;
-        color: #22c55e;
-    }
-    
-    .form-input-group {
-        margin-bottom: 16px;
-    }
-    
-    .form-input-group label {
-        display: block;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #374151;
-        margin-bottom: 6px;
-    }
-    
-    .form-input {
-        width: 100%;
-        padding: 12px 16px;
-        border: 2px solid #e2e8f0;
-        border-radius: 10px;
-        font-size: 1rem;
-        transition: all 0.2s;
-    }
-    
-    .form-input:focus {
-        outline: none;
-        border-color: #22c55e;
-        box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
-    }
-    
-    .btn-register {
-        width: 100%;
-        padding: 14px 20px;
-        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-        color: white;
-        border: none;
-        border-radius: 12px;
-        font-weight: 600;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.2s;
-        margin-top: 8px;
-    }
-    
-    .btn-register:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
-    }
-    
-    .auth-footer {
-        text-align: center;
-        padding: 24px;
-        background: #f8fafc;
-        font-size: 0.9rem;
-        color: #64748b;
-    }
-    
-    .auth-footer a {
-        color: #22c55e;
-        font-weight: 600;
-        text-decoration: none;
-    }
-    
-    .auth-footer a:hover {
-        text-decoration: underline;
-    }
-    
-    .alert-custom {
-        padding: 12px 16px;
-        border-radius: 10px;
-        margin-bottom: 16px;
-        font-size: 0.9rem;
-    }
-    
-    .alert-danger-custom {
-        background: #fef2f2;
-        border: 1px solid #fecaca;
-        color: #dc2626;
-    }
-    
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-    }
-</style>
-
-<div class="auth-container">
-    <div class="auth-card">
-        <div class="auth-header">
-            <h2>@(isTurkish ? "Hesap Oluşturun" : "Create Account")</h2>
-            <p>@(isTurkish ? "Ücretsiz kayıt olun, hemen başlayın" : "Sign up for free, start now")</p>
-        </div>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
         
-        <div class="auth-body">
-            <!-- Benefits -->
-            <div class="benefits-box">
-                <h4>🎁 @(isTurkish ? "Ücretsiz Hesap Avantajları" : "Free Account Benefits")</h4>
-                <ul class="benefits-list">
-                    <li>@(isTurkish ? "20 personel yönetimi (kayıtsız 7)" : "20 employees (vs 7 without account)")</li>
-                    <li>@(isTurkish ? "Akıllı nöbet planlaması" : "Smart shift scheduling")</li>
-                    <li>@(isTurkish ? "Puantaj ve mesai hesaplama" : "Timesheet and overtime calculation")</li>
-                    <li>@(isTurkish ? "Excel export" : "Excel export")</li>
-                    <li>@(isTurkish ? "Verileriniz güvende" : "Your data is secure")</li>
-                </ul>
+        :root {
+            --bg: #0a0a0a;
+            --card: #ffffff;
+            --text: #171717;
+            --muted: #737373;
+            --border: #e5e5e5;
+            --accent: #c94a4a;
+            --accent-hover: #b43d3d;
+            --success: #16a34a;
+        }
+        
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        /* ═══════════════════════════════════════════════════════════
+           SPLIT LAYOUT
+           ═══════════════════════════════════════════════════════════ */
+        
+        .register-container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+        
+        /* Left Panel - Branding */
+        .register-brand {
+            flex: 1;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .register-brand::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 70% 30%, rgba(22, 163, 74, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .brand-top {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .brand-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Instrument Serif', Georgia, serif;
+            font-size: 22px;
+            font-style: italic;
+            color: white;
+        }
+        
+        .brand-name {
+            font-family: 'Instrument Serif', Georgia, serif;
+            font-size: 1.75rem;
+            font-style: italic;
+            color: white;
+            letter-spacing: -0.02em;
+        }
+        
+        .brand-content {
+            position: relative;
+            z-index: 1;
+            max-width: 420px;
+        }
+        
+        .brand-headline {
+            font-family: 'Instrument Serif', Georgia, serif;
+            font-size: 3.2rem;
+            font-weight: 400;
+            font-style: italic;
+            color: white;
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            margin-bottom: 32px;
+        }
+        
+        .brand-headline span {
+            color: var(--success);
+        }
+        
+        .benefits-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .benefit-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            gap: 16px;
+        }
+        
+        .benefit-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(22, 163, 74, 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+        
+        .benefit-text h4 {
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .benefit-text p {
+            color: #a3a3a3;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .brand-footer {
+            position: relative;
+            z-index: 1;
+            color: #525252;
+            font-size: 0.85rem;
+        }
+        
+        /* Right Panel - Form */
+        .register-form-panel {
+            width: 560px;
+            min-width: 560px;
+            background: var(--card);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 56px 64px;
+            overflow-y: auto;
+        }
+        
+        .form-header {
+            margin-bottom: 36px;
+        }
+        
+        .form-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+        
+        .form-header p {
+            color: var(--muted);
+            font-size: 1rem;
+        }
+        
+        .free-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f0fdf4;
+            color: var(--success);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .register-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .input-group label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 16px 18px;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: #fafafa;
+            transition: all 0.2s ease;
+        }
+        
+        .input-field::placeholder {
+            color: #a3a3a3;
+        }
+        
+        .input-field:hover {
+            border-color: #d4d4d4;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--text);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.04);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .btn-submit {
+            width: 100%;
+            padding: 16px 24px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+        }
+        
+        .btn-submit:hover {
+            background: #15803d;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(22, 163, 74, 0.25);
+        }
+        
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .form-footer p {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+        
+        .form-footer a {
+            color: var(--accent);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .alert-error {
+            padding: 14px 18px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 12px;
+            color: #dc2626;
+            font-size: 0.9rem;
+        }
+        
+        .text-danger {
+            color: #dc2626;
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+        
+        .terms-text {
+            font-size: 0.85rem;
+            color: var(--muted);
+            text-align: center;
+            line-height: 1.6;
+        }
+        
+        .terms-text a {
+            color: var(--text);
+            text-decoration: underline;
+        }
+        
+        /* ═══════════════════════════════════════════════════════════
+           RESPONSIVE
+           ═══════════════════════════════════════════════════════════ */
+        
+        @@media (max-width: 1024px) {
+            .register-brand {
+                display: none;
+            }
+            
+            .register-form-panel {
+                width: 100%;
+                min-width: unset;
+                padding: 40px 24px;
+            }
+            
+            .form-header h1 {
+                font-size: 1.75rem;
+            }
+        }
+        
+        @@media (max-width: 480px) {
+            .register-form-panel {
+                padding: 32px 20px;
+            }
+            
+            .input-field {
+                padding: 14px 16px;
+            }
+            
+            .btn-submit {
+                padding: 14px 20px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Mobile brand header */
+        .mobile-brand {
+            display: none;
+            margin-bottom: 32px;
+        }
+        
+        @@media (max-width: 1024px) {
+            .mobile-brand {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+            }
+            
+            .mobile-brand .brand-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+            
+            .mobile-brand .brand-name {
+                color: var(--text);
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <!-- Left Panel -->
+        <div class="register-brand">
+            <div class="brand-top">
+                <a href="/" class="brand-logo">
+                    <div class="brand-icon">G</div>
+                    <span class="brand-name">Geldimmi</span>
+                </a>
             </div>
             
-            <!-- Email Registration -->
-            <form asp-action="Register" method="post">
+            <div class="brand-content">
+                <h2 class="brand-headline">
+                    @if (isTurkish)
+                    {
+                        <text>Ücretsiz hesap ile <span>daha fazlasını</span> yapın.</text>
+                    }
+                    else
+                    {
+                        <text>Do <span>more</span> with a free account.</text>
+                    }
+                </h2>
+                
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">👥</div>
+                        <div class="benefit-text">
+                            <h4>@(isTurkish ? "20 Personel Yönetimi" : "20 Employee Management")</h4>
+                            <p>@(isTurkish ? "Kayıtsız kullanıcılar 7 personel ekleyebilirken, ücretsiz hesapla 20 personel yönetin." : "Manage 20 employees instead of 7 for unregistered users.")</p>
+                        </div>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">💾</div>
+                        <div class="benefit-text">
+                            <h4>@(isTurkish ? "Verileriniz Güvende" : "Your Data is Safe")</h4>
+                            <p>@(isTurkish ? "Nöbet listeleri ve puantaj verileriniz bulutta saklanır, her yerden erişin." : "Your rosters and timesheets are stored in the cloud, accessible anywhere.")</p>
+                        </div>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">📊</div>
+                        <div class="benefit-text">
+                            <h4>@(isTurkish ? "Gelişmiş Raporlama" : "Advanced Reports")</h4>
+                            <p>@(isTurkish ? "Detaylı puantaj ve fazla mesai raporları, Excel export özelliği." : "Detailed timesheet and overtime reports with Excel export.")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="brand-footer">
+                © 2026 Geldimmi. @(isTurkish ? "Tüm hakları saklıdır." : "All rights reserved.")
+            </div>
+        </div>
+        
+        <!-- Right Panel -->
+        <div class="register-form-panel">
+            <div class="mobile-brand">
+                <div class="brand-icon">G</div>
+                <span class="brand-name">Geldimmi</span>
+            </div>
+            
+            <div class="form-header">
+                <span class="free-badge">✨ @(isTurkish ? "Tamamen Ücretsiz" : "Completely Free")</span>
+                <h1>@(isTurkish ? "Hesap oluşturun" : "Create your account")</h1>
+                <p>@(isTurkish ? "Hemen başlayın, kredi kartı gerekmez" : "Get started now, no credit card required")</p>
+            </div>
+            
+            <form asp-action="Register" method="post" class="register-form">
                 <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
                 
                 @if (!ViewData.ModelState.IsValid)
                 {
-                    <div class="alert-custom alert-danger-custom">
+                    <div class="alert-error">
                         @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
                         {
                             <div>@error.ErrorMessage</div>
@@ -206,47 +488,59 @@
                     </div>
                 }
                 
-                <div class="form-input-group">
+                <div class="input-group">
                     <label for="FullName">@(isTurkish ? "Ad Soyad" : "Full Name")</label>
-                    <input asp-for="FullName" class="form-input" placeholder="@(isTurkish ? "Adınız Soyadınız" : "Your Name")" />
-                    <span asp-validation-for="FullName" class="text-danger small"></span>
+                    <input asp-for="FullName" class="input-field" placeholder="@(isTurkish ? "Adınız Soyadınız" : "Your full name")" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
                 </div>
                 
-                <div class="form-input-group">
-                    <label for="Email">Email</label>
-                    <input asp-for="Email" type="email" class="form-input" placeholder="ornek@email.com" />
-                    <span asp-validation-for="Email" class="text-danger small"></span>
+                <div class="input-group">
+                    <label for="Email">@(isTurkish ? "E-posta adresi" : "Email address")</label>
+                    <input asp-for="Email" type="email" class="input-field" placeholder="ornek@email.com" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
                 
                 <div class="form-row">
-                    <div class="form-input-group">
+                    <div class="input-group">
                         <label for="Password">@(isTurkish ? "Şifre" : "Password")</label>
-                        <input asp-for="Password" type="password" class="form-input" placeholder="••••••••" />
-                        <span asp-validation-for="Password" class="text-danger small"></span>
+                        <input asp-for="Password" type="password" class="input-field" placeholder="••••••••" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
                     
-                    <div class="form-input-group">
-                        <label for="ConfirmPassword">@(isTurkish ? "Şifre Tekrar" : "Confirm")</label>
-                        <input asp-for="ConfirmPassword" type="password" class="form-input" placeholder="••••••••" />
-                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                    <div class="input-group">
+                        <label for="ConfirmPassword">@(isTurkish ? "Şifre Tekrar" : "Confirm Password")</label>
+                        <input asp-for="ConfirmPassword" type="password" class="input-field" placeholder="••••••••" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                     </div>
                 </div>
                 
-                <button type="submit" class="btn-register">
-                    @(isTurkish ? "Ücretsiz Kayıt Ol" : "Create Free Account")
+                <button type="submit" class="btn-submit">
+                    @(isTurkish ? "Ücretsiz Hesap Oluştur" : "Create Free Account")
                 </button>
+                
+                <p class="terms-text">
+                    @(isTurkish 
+                        ? "Kayıt olarak " 
+                        : "By signing up, you agree to our ")
+                    <a href="/terms">@(isTurkish ? "Kullanım Şartları" : "Terms of Service")</a>
+                    @(isTurkish ? " ve " : " and ")
+                    <a href="/privacy">@(isTurkish ? "Gizlilik Politikası" : "Privacy Policy")</a>@(isTurkish ? "'nı kabul etmiş olursunuz." : ".")
+                </p>
             </form>
-        </div>
-        
-        <div class="auth-footer">
-            @(isTurkish ? "Zaten hesabınız var mı?" : "Already have an account?")
-            <a asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]">
-                @(isTurkish ? "Giriş Yapın" : "Sign In")
-            </a>
+            
+            <div class="form-footer">
+                <p>
+                    @(isTurkish ? "Zaten hesabınız var mı?" : "Already have an account?")
+                    <a asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]">
+                        @(isTurkish ? "Giriş yapın" : "Sign in")
+                    </a>
+                </p>
+            </div>
         </div>
     </div>
-</div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+    
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

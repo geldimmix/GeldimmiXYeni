@@ -3,221 +3,536 @@
 @inject IStringLocalizer<SharedResource> Localizer
 @{
     ViewData["Title"] = Localizer["Login"];
+    Layout = null;
     var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
 }
 
-<style>
-    :root {
-        --auth-bg: #f7f7f7;
-        --card-bg: #ffffff;
-        --text: #1f1f1f;
-        --muted: #6b7280;
-        --border: #e5e7eb;
-        --accent: #c94a4a;
-        --accent-strong: #a33d3d;
-    }
-    .auth-wrap {
-        min-height: calc(100vh - 120px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--auth-bg);
-        padding: 48px 16px;
-        font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    .auth-card {
-        width: 100%;
-        max-width: 520px;
-        background: var(--card-bg);
-        border: 1px solid var(--border);
-        border-radius: 18px;
-        box-shadow: 0 14px 48px rgba(0,0,0,0.08);
-        padding: 28px;
-    }
-    .auth-head {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 18px;
-    }
-    .auth-badge {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        background: var(--accent);
-        color: #fff;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 800;
-        letter-spacing: -0.03em;
-    }
-    .auth-title {
-        margin: 0;
-        font-size: 1.6rem;
-        font-weight: 700;
-        color: var(--text);
-    }
-    .auth-sub {
-        margin: 4px 0 0;
-        color: var(--muted);
-        font-size: 0.95rem;
-    }
-    .auth-body {
-        margin-top: 12px;
-    }
-    .form-input-group {
-        margin-bottom: 18px;
-    }
-    .form-input-group label {
-        display: block;
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: var(--text);
-        margin-bottom: 8px;
-    }
-    .form-input {
-        width: 100%;
-        padding: 13px 14px;
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        font-size: 1rem;
-        background: #fcfcfc;
-        transition: border-color 0.15s ease, box-shadow 0.15s ease;
-    }
-    .form-input:focus {
-        outline: none;
-        border-color: var(--accent);
-        box-shadow: 0 0 0 4px rgba(201, 74, 74, 0.12);
-        background: #fff;
-    }
-    .form-check-custom {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 18px;
-    }
-    .form-check-custom input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-        accent-color: var(--accent);
-    }
-    .form-check-custom label {
-        font-size: 0.93rem;
-        color: var(--muted);
-    }
-    .btn-login {
-        width: 100%;
-        padding: 13px 18px;
-        background: var(--accent);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        font-weight: 700;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-    }
-    .btn-login:hover {
-        background: var(--accent-strong);
-        transform: translateY(-1px);
-        box-shadow: 0 10px 24px rgba(201, 74, 74, 0.25);
-    }
-    .auth-footer {
-        margin-top: 18px;
-        font-size: 0.95rem;
-        color: var(--muted);
-        text-align: center;
-    }
-    .auth-footer a {
-        color: var(--accent);
-        font-weight: 700;
-        text-decoration: none;
-    }
-    .auth-footer a:hover {
-        color: var(--accent-strong);
-        text-decoration: underline;
-    }
-    .alert-custom {
-        padding: 12px 14px;
-        border-radius: 10px;
-        margin-bottom: 18px;
-        font-size: 0.93rem;
-        border: 1px solid #f3c5c5;
-        background: #fff5f5;
-        color: #b91c1c;
-    }
-    .auth-hint {
-        margin-top: 14px;
-        font-size: 0.9rem;
-        color: var(--muted);
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-</style>
-
-<div class="auth-wrap">
-    <div class="auth-card">
-        <div class="auth-head">
-            <div class="auth-badge">G</div>
-            <div>
-                <h1 class="auth-title">@((isTurkish ? "Hoş Geldiniz" : "Welcome Back"))</h1>
-                <p class="auth-sub">@((isTurkish ? "Hesabınıza giriş yapın" : "Sign in to your account"))</p>
+<!DOCTYPE html>
+<html lang="@(isTurkish ? "tr" : "en")">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(isTurkish ? "Giriş Yap" : "Sign In") - Geldimmi</title>
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        :root {
+            --bg: #0a0a0a;
+            --card: #ffffff;
+            --text: #171717;
+            --muted: #737373;
+            --border: #e5e5e5;
+            --accent: #c94a4a;
+            --accent-hover: #b43d3d;
+        }
+        
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        /* ═══════════════════════════════════════════════════════════
+           SPLIT LAYOUT
+           ═══════════════════════════════════════════════════════════ */
+        
+        .login-container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+        
+        /* Left Panel - Branding */
+        .login-brand {
+            flex: 1;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-brand::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 30%, rgba(201, 74, 74, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .brand-top {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .brand-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Instrument Serif', Georgia, serif;
+            font-size: 22px;
+            font-style: italic;
+            color: white;
+        }
+        
+        .brand-name {
+            font-family: 'Instrument Serif', Georgia, serif;
+            font-size: 1.75rem;
+            font-style: italic;
+            color: white;
+            letter-spacing: -0.02em;
+        }
+        
+        .brand-content {
+            position: relative;
+            z-index: 1;
+            max-width: 420px;
+        }
+        
+        .brand-headline {
+            font-family: 'Instrument Serif', Georgia, serif;
+            font-size: 3.5rem;
+            font-weight: 400;
+            font-style: italic;
+            color: white;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 24px;
+        }
+        
+        .brand-headline span {
+            color: var(--accent);
+        }
+        
+        .brand-desc {
+            font-size: 1.1rem;
+            color: #a3a3a3;
+            line-height: 1.7;
+        }
+        
+        .brand-features {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 40px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #d4d4d4;
+            font-size: 0.95rem;
+        }
+        
+        .feature-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        
+        .brand-footer {
+            position: relative;
+            z-index: 1;
+            color: #525252;
+            font-size: 0.85rem;
+        }
+        
+        /* Right Panel - Form */
+        .login-form-panel {
+            width: 520px;
+            min-width: 520px;
+            background: var(--card);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 64px;
+        }
+        
+        .form-header {
+            margin-bottom: 40px;
+        }
+        
+        .form-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+        
+        .form-header p {
+            color: var(--muted);
+            font-size: 1rem;
+        }
+        
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .input-group label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 16px 18px;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: #fafafa;
+            transition: all 0.2s ease;
+        }
+        
+        .input-field::placeholder {
+            color: #a3a3a3;
+        }
+        
+        .input-field:hover {
+            border-color: #d4d4d4;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--text);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.04);
+        }
+        
+        .form-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+        
+        .checkbox-group span {
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+        
+        .forgot-link {
+            font-size: 0.9rem;
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+        
+        .forgot-link:hover {
+            color: var(--accent);
+        }
+        
+        .btn-submit {
+            width: 100%;
+            padding: 16px 24px;
+            background: var(--text);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+        }
+        
+        .btn-submit:hover {
+            background: #000;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 8px 0;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+        
+        .divider span {
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .form-footer p {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+        
+        .form-footer a {
+            color: var(--accent);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .alert-error {
+            padding: 14px 18px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 12px;
+            color: #dc2626;
+            font-size: 0.9rem;
+        }
+        
+        .text-danger {
+            color: #dc2626;
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+        
+        /* ═══════════════════════════════════════════════════════════
+           RESPONSIVE
+           ═══════════════════════════════════════════════════════════ */
+        
+        @@media (max-width: 1024px) {
+            .login-brand {
+                display: none;
+            }
+            
+            .login-form-panel {
+                width: 100%;
+                min-width: unset;
+                padding: 40px 24px;
+            }
+            
+            .form-header h1 {
+                font-size: 1.75rem;
+            }
+        }
+        
+        @@media (max-width: 480px) {
+            .login-form-panel {
+                padding: 32px 20px;
+            }
+            
+            .input-field {
+                padding: 14px 16px;
+            }
+            
+            .btn-submit {
+                padding: 14px 20px;
+            }
+        }
+        
+        /* Mobile brand header */
+        .mobile-brand {
+            display: none;
+            margin-bottom: 32px;
+        }
+        
+        @@media (max-width: 1024px) {
+            .mobile-brand {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+            }
+            
+            .mobile-brand .brand-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+            
+            .mobile-brand .brand-name {
+                color: var(--text);
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Left Panel -->
+        <div class="login-brand">
+            <div class="brand-top">
+                <a href="/" class="brand-logo">
+                    <div class="brand-icon">G</div>
+                    <span class="brand-name">Geldimmi</span>
+                </a>
+            </div>
+            
+            <div class="brand-content">
+                <h2 class="brand-headline">
+                    @if (isTurkish)
+                    {
+                        <text>Nöbet planlamayı <span>kolaylaştırın.</span></text>
+                    }
+                    else
+                    {
+                        <text>Make shift scheduling <span>effortless.</span></text>
+                    }
+                </h2>
+                <p class="brand-desc">
+                    @(isTurkish 
+                        ? "Hastaneler ve işletmeler için akıllı nöbet planlama sistemi. Otomatik puantaj, adil dağıtım ve gerçek zamanlı takip."
+                        : "Smart shift scheduling for hospitals and businesses. Automatic timesheets, fair distribution, and real-time tracking.")
+                </p>
+                
+                <div class="brand-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">⚡</div>
+                        <span>@(isTurkish ? "Saniyeler içinde nöbet listesi oluşturun" : "Create rosters in seconds")</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">⚖️</div>
+                        <span>@(isTurkish ? "Adil ve dengeli nöbet dağıtımı" : "Fair and balanced shift distribution")</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📊</div>
+                        <span>@(isTurkish ? "Otomatik puantaj ve raporlama" : "Automatic timesheets and reports")</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="brand-footer">
+                © 2026 Geldimmi. @(isTurkish ? "Tüm hakları saklıdır." : "All rights reserved.")
             </div>
         </div>
-
-        <div class="auth-body">
-            <form asp-action="Login" method="post">
+        
+        <!-- Right Panel -->
+        <div class="login-form-panel">
+            <div class="mobile-brand">
+                <div class="brand-icon">G</div>
+                <span class="brand-name">Geldimmi</span>
+            </div>
+            
+            <div class="form-header">
+                <h1>@(isTurkish ? "Tekrar hoş geldiniz" : "Welcome back")</h1>
+                <p>@(isTurkish ? "Hesabınıza giriş yaparak devam edin" : "Sign in to continue to your account")</p>
+            </div>
+            
+            <form asp-action="Login" method="post" class="login-form">
                 <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
-
+                
                 @if (!ViewData.ModelState.IsValid)
                 {
-                    <div class="alert-custom">
+                    <div class="alert-error">
                         @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
                         {
                             <div>@error.ErrorMessage</div>
                         }
                     </div>
                 }
-
-                <div class="form-input-group">
-                    <label for="Email">Email</label>
-                    <input asp-for="Email" type="email" class="form-input" placeholder="ornek@email.com" />
-                    <span asp-validation-for="Email" class="text-danger small"></span>
+                
+                <div class="input-group">
+                    <label for="Email">@(isTurkish ? "E-posta adresi" : "Email address")</label>
+                    <input asp-for="Email" type="email" class="input-field" placeholder="ornek@email.com" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
-
-                <div class="form-input-group">
+                
+                <div class="input-group">
                     <label for="Password">@(isTurkish ? "Şifre" : "Password")</label>
-                    <input asp-for="Password" type="password" class="form-input" placeholder="••••••••" />
-                    <span asp-validation-for="Password" class="text-danger small"></span>
+                    <input asp-for="Password" type="password" class="input-field" placeholder="••••••••" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
-
-                <div class="form-check-custom">
-                    <input asp-for="RememberMe" type="checkbox" id="RememberMe" />
-                    <label for="RememberMe">@(isTurkish ? "Beni hatırla" : "Remember me")</label>
+                
+                <div class="form-options">
+                    <label class="checkbox-group">
+                        <input asp-for="RememberMe" type="checkbox" />
+                        <span>@(isTurkish ? "Beni hatırla" : "Remember me")</span>
+                    </label>
+                    <a href="#" class="forgot-link">@(isTurkish ? "Şifremi unuttum" : "Forgot password?")</a>
                 </div>
-
-                <button type="submit" class="btn-login">
+                
+                <button type="submit" class="btn-submit">
                     @(isTurkish ? "Giriş Yap" : "Sign In")
                 </button>
             </form>
-
-            <div class="auth-hint">
-                <span>• @(isTurkish ? "Şifreni unuttuysan yeni şifre alabilirsin." : "Forgot password? Request a reset link.")</span>
-                <span>• @(isTurkish ? "Güvenli oturum için kişisel cihazını kullan." : "Use a trusted device for secure sign-in.")</span>
+            
+            <div class="form-footer">
+                <p>
+                    @(isTurkish ? "Hesabınız yok mu?" : "Don't have an account?")
+                    <a asp-action="Register" asp-route-returnUrl="@ViewData["ReturnUrl"]">
+                        @(isTurkish ? "Ücretsiz kayıt olun" : "Sign up for free")
+                    </a>
+                </p>
             </div>
         </div>
-
-        <div class="auth-footer">
-            @(isTurkish ? "Hesabınız yok mu?" : "Don't have an account?")
-            <a asp-action="Register" asp-route-returnUrl="@ViewData["ReturnUrl"]">
-                @(isTurkish ? "Kayıt Olun" : "Sign Up")
-            </a>
-        </div>
     </div>
-</div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+    
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>
