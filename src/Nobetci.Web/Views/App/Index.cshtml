@@ -130,6 +130,21 @@
                         Excel
                     </button>
                 }
+                
+                @if (Model.IsRegistered)
+                {
+                    <button class="toolbar-btn" id="savedSchedulesBtn" data-bs-toggle="modal" data-bs-target="#savedSchedulesModal">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+                        @(isTurkish ? "Kayıtlı Listeler" : "Saved Schedules")
+                    </button>
+                }
+                else
+                {
+                    <button class="toolbar-btn locked" id="savedSchedulesBtn" data-premium="true">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                        @(isTurkish ? "Kayıtlı Listeler" : "Saved")
+                    </button>
+                }
             </div>
         </div>
         
@@ -720,10 +735,11 @@
         </div>
         <div class="premium-modal-body">
             <ul class="premium-features">
-                <li>@(isTurkish ? "20 personele kadar yönetim (şu an 7)" : "Manage up to 20 employees (currently 7)")</li>
+                <li>@(isTurkish ? "10 personele kadar yönetim (şu an 5)" : "Manage up to 10 employees (currently 5)")</li>
                 <li>@(isTurkish ? "Akıllı nöbet planlaması" : "Smart shift scheduling")</li>
                 <li>@(isTurkish ? "Puantaj ve mesai hesaplama" : "Timesheet and overtime calculation")</li>
                 <li>@(isTurkish ? "Excel export" : "Excel export")</li>
+                <li>@(isTurkish ? "Nöbet listelerini kaydetme" : "Save shift schedules")</li>
                 <li>@(isTurkish ? "Verileriniz güvende kalır" : "Your data stays safe")</li>
             </ul>
         </div>
@@ -737,6 +753,61 @@
         </div>
     </div>
 </div>
+
+@if (Model.IsRegistered)
+{
+<!-- Saved Schedules Modal -->
+<div class="modal fade" id="savedSchedulesModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content custom-modal">
+            <div class="modal-header-custom">
+                <div class="modal-icon">📋</div>
+                <div class="modal-title-group">
+                    <h5 class="modal-title">@(isTurkish ? "Kayıtlı Nöbet Listeleri" : "Saved Schedules")</h5>
+                    <p class="modal-subtitle">@Model.MonthName - @(isTurkish ? "için kayıtlı listeler" : "saved schedules")</p>
+                </div>
+                <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body-custom">
+                <!-- Save Current Schedule Section -->
+                <div class="saved-schedule-section">
+                    <h6 class="section-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+                        @(isTurkish ? "Mevcut Listeyi Kaydet" : "Save Current Schedule")
+                    </h6>
+                    <div class="save-schedule-form">
+                        <input type="text" id="scheduleNameInput" class="form-input" placeholder="@(isTurkish ? "Liste adı (örn: Ocak Final)" : "Schedule name (e.g., January Final)")">
+                        <input type="text" id="scheduleDescInput" class="form-input" placeholder="@(isTurkish ? "Açıklama (isteğe bağlı)" : "Description (optional)")" style="margin-top: 8px;">
+                        <button class="btn-save-schedule" id="saveScheduleBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+                            @(isTurkish ? "Kaydet" : "Save")
+                        </button>
+                    </div>
+                </div>
+                
+                <hr class="section-divider">
+                
+                <!-- Saved Schedules List -->
+                <div class="saved-schedule-section">
+                    <h6 class="section-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+                        @(isTurkish ? "Kayıtlı Listeler" : "Saved Schedules")
+                    </h6>
+                    <div class="saved-schedules-filter">
+                        <label>
+                            <input type="checkbox" id="filterCurrentMonthOnly" checked>
+                            @(isTurkish ? "Sadece bu ay" : "This month only")
+                        </label>
+                    </div>
+                    <div id="savedSchedulesList" class="saved-schedules-list">
+                        <div class="loading-placeholder">@(isTurkish ? "Yükleniyor..." : "Loading...")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}
 
 <!-- Overnight Hours Mode Modal -->
 <div class="modal fade" id="overnightHoursModal" tabindex="-1" data-bs-backdrop="static">
@@ -3398,6 +3469,158 @@
         background: #e5e7eb;
     }
     
+    /* Saved Schedules Modal */
+    .saved-schedule-section {
+        margin-bottom: 16px;
+    }
+    
+    .saved-schedule-section .section-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #374151;
+        margin-bottom: 12px;
+    }
+    
+    .save-schedule-form {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .save-schedule-form .form-input {
+        padding: 10px 14px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    
+    .save-schedule-form .form-input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .btn-save-schedule {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 16px;
+        background: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background 0.15s;
+        margin-top: 8px;
+    }
+    
+    .btn-save-schedule:hover {
+        background: #2563eb;
+    }
+    
+    .section-divider {
+        border: none;
+        border-top: 1px solid #e5e7eb;
+        margin: 20px 0;
+    }
+    
+    .saved-schedules-filter {
+        margin-bottom: 12px;
+    }
+    
+    .saved-schedules-filter label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        color: #6b7280;
+        cursor: pointer;
+    }
+    
+    .saved-schedules-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .saved-schedule-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 14px;
+        background: #f9fafb;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        border: 1px solid #e5e7eb;
+        transition: all 0.15s;
+    }
+    
+    .saved-schedule-item:hover {
+        background: #f3f4f6;
+        border-color: #d1d5db;
+    }
+    
+    .saved-schedule-info {
+        flex: 1;
+    }
+    
+    .saved-schedule-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #374151;
+        margin-bottom: 4px;
+    }
+    
+    .saved-schedule-meta {
+        font-size: 0.75rem;
+        color: #9ca3af;
+    }
+    
+    .saved-schedule-actions {
+        display: flex;
+        gap: 6px;
+    }
+    
+    .btn-schedule-action {
+        padding: 6px 10px;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+    
+    .btn-schedule-load {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+    
+    .btn-schedule-load:hover {
+        background: #bbf7d0;
+    }
+    
+    .btn-schedule-delete {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+    
+    .btn-schedule-delete:hover {
+        background: #fecaca;
+    }
+    
+    .loading-placeholder, .empty-placeholder {
+        text-align: center;
+        padding: 20px;
+        color: #9ca3af;
+        font-size: 0.9rem;
+    }
+    
     /* Overnight Hours Modal */
     .overnight-info {
         font-size: 0.85rem;
@@ -3707,6 +3930,7 @@
         initWeekendModeToggle();
         restoreSelectedTemplate();
         initTemplateManager();
+        initSavedSchedules();
         loadUserTemplates();
     });
     
@@ -4052,6 +4276,193 @@
     window.editTemplate = editTemplate;
     
     // ========== End Template Manager Functions ==========
+    
+    // ========== Saved Schedules Functions ==========
+    
+    function initSavedSchedules() {
+        const isRegistered = @(Model.IsRegistered ? "true" : "false");
+        if (!isRegistered) return;
+        
+        const modal = document.getElementById('savedSchedulesModal');
+        if (!modal) return;
+        
+        // Load schedules when modal opens
+        modal.addEventListener('show.bs.modal', loadSavedSchedules);
+        
+        // Save schedule button
+        const saveBtn = document.getElementById('saveScheduleBtn');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', saveCurrentSchedule);
+        }
+        
+        // Filter checkbox
+        const filterCheckbox = document.getElementById('filterCurrentMonthOnly');
+        if (filterCheckbox) {
+            filterCheckbox.addEventListener('change', loadSavedSchedules);
+        }
+    }
+    
+    async function loadSavedSchedules() {
+        const listEl = document.getElementById('savedSchedulesList');
+        if (!listEl) return;
+        
+        listEl.innerHTML = '<div class="loading-placeholder">' + (isTurkish ? 'Yükleniyor...' : 'Loading...') + '</div>';
+        
+        try {
+            const filterCurrentMonth = document.getElementById('filterCurrentMonthOnly')?.checked;
+            let url = '/api/saved-schedules';
+            
+            if (filterCurrentMonth) {
+                url += `?year=${state.year}&month=${state.month}`;
+            }
+            
+            const response = await fetch(url);
+            if (response.ok) {
+                const schedules = await response.json();
+                renderSavedSchedules(schedules);
+            } else {
+                listEl.innerHTML = '<div class="empty-placeholder">' + (isTurkish ? 'Hata oluştu' : 'Error occurred') + '</div>';
+            }
+        } catch (error) {
+            listEl.innerHTML = '<div class="empty-placeholder">' + (isTurkish ? 'Hata oluştu' : 'Error occurred') + '</div>';
+        }
+    }
+    
+    function renderSavedSchedules(schedules) {
+        const listEl = document.getElementById('savedSchedulesList');
+        if (!listEl) return;
+        
+        if (schedules.length === 0) {
+            listEl.innerHTML = '<div class="empty-placeholder">' + 
+                (isTurkish ? 'Henüz kayıtlı liste yok' : 'No saved schedules yet') + 
+                '</div>';
+            return;
+        }
+        
+        const months = isTurkish 
+            ? ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık']
+            : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        
+        listEl.innerHTML = schedules.map(s => `
+            <div class="saved-schedule-item" data-id="${s.id}">
+                <div class="saved-schedule-info">
+                    <div class="saved-schedule-name">${s.name}</div>
+                    <div class="saved-schedule-meta">
+                        ${months[s.month - 1]} ${s.year} • ${isTurkish ? 'Kaydedildi:' : 'Saved:'} ${s.createdAt}
+                        ${s.description ? '<br><em>' + s.description + '</em>' : ''}
+                    </div>
+                </div>
+                <div class="saved-schedule-actions">
+                    <button class="btn-schedule-action btn-schedule-load" onclick="loadSchedule(${s.id}, ${s.year}, ${s.month})">
+                        ${isTurkish ? 'Yükle' : 'Load'}
+                    </button>
+                    <button class="btn-schedule-action btn-schedule-delete" onclick="deleteSchedule(${s.id})">
+                        ${isTurkish ? 'Sil' : 'Delete'}
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    async function saveCurrentSchedule() {
+        const nameInput = document.getElementById('scheduleNameInput');
+        const descInput = document.getElementById('scheduleDescInput');
+        
+        const name = nameInput?.value.trim();
+        if (!name) {
+            showToast(isTurkish ? 'Liste adı gerekli' : 'Schedule name is required', 'error');
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/saved-schedules', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: name,
+                    year: state.year,
+                    month: state.month,
+                    description: descInput?.value.trim() || null
+                })
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                showToast(result.message || (isTurkish ? 'Kaydedildi' : 'Saved'), 'success');
+                nameInput.value = '';
+                if (descInput) descInput.value = '';
+                loadSavedSchedules();
+            } else {
+                const error = await response.json();
+                showToast(error.error || (isTurkish ? 'Hata oluştu' : 'Error occurred'), 'error');
+            }
+        } catch (error) {
+            showToast(isTurkish ? 'Hata oluştu' : 'Error occurred', 'error');
+        }
+    }
+    
+    async function loadSchedule(id, year, month) {
+        if (!confirm(isTurkish 
+            ? 'Bu liste yüklenirse mevcut nöbetler silinecek. Devam etmek istiyor musunuz?' 
+            : 'Loading this schedule will replace current shifts. Continue?')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/api/saved-schedules/${id}/load`, {
+                method: 'POST'
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                showToast(result.message, 'success');
+                
+                // Close modal and reload the page to show loaded shifts
+                const modal = bootstrap.Modal.getInstance(document.getElementById('savedSchedulesModal'));
+                if (modal) modal.hide();
+                
+                // If the saved schedule is for a different month, navigate there
+                if (year !== state.year || month !== state.month) {
+                    window.location.href = `/app?year=${year}&month=${month}`;
+                } else {
+                    window.location.reload();
+                }
+            } else {
+                const error = await response.json();
+                showToast(error.error || (isTurkish ? 'Hata oluştu' : 'Error occurred'), 'error');
+            }
+        } catch (error) {
+            showToast(isTurkish ? 'Hata oluştu' : 'Error occurred', 'error');
+        }
+    }
+    
+    async function deleteSchedule(id) {
+        if (!confirm(isTurkish ? 'Bu kaydı silmek istediğinize emin misiniz?' : 'Are you sure you want to delete this saved schedule?')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/api/saved-schedules/${id}`, {
+                method: 'DELETE'
+            });
+            
+            if (response.ok) {
+                showToast(isTurkish ? 'Silindi' : 'Deleted', 'success');
+                loadSavedSchedules();
+            } else {
+                const error = await response.json();
+                showToast(error.error || (isTurkish ? 'Hata oluştu' : 'Error occurred'), 'error');
+            }
+        } catch (error) {
+            showToast(isTurkish ? 'Hata oluştu' : 'Error occurred', 'error');
+        }
+    }
+    
+    // Make functions globally available for onclick handlers
+    window.loadSchedule = loadSchedule;
+    window.deleteSchedule = deleteSchedule;
+    
+    // ========== End Saved Schedules Functions ==========
     
     // Template Selection
     function initTemplates() {

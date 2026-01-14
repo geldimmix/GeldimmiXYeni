@@ -217,3 +217,4 @@ C:\Users\memin\Desktop\Geldimmi\src\Nobetci.Web\obj\Debug\net9.0\Nobetci.Web.gen
 C:\Users\memin\Desktop\Geldimmi\src\Nobetci.Web\obj\Debug\net9.0\ref\Nobetci.Web.dll
 C:\Users\memin\Desktop\Geldimmi\src\Nobetci.Web\obj\Debug\net9.0\Nobetci.Web.sourcelink.json
 C:\Users\memin\Desktop\Geldimmi\src\Nobetci.Web\obj\Debug\net9.0\compressed\irqpd5mf2p-lugek5hnai.gz
+C:\Users\memin\Desktop\Geldimmi\src\Nobetci.Web\bin\Debug\net9.0\appsettings.Production.json

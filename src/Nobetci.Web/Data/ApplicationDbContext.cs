@@ -21,6 +21,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<EmployeeAvailability> EmployeeAvailabilities => Set<EmployeeAvailability>();
     public DbSet<ContentPage> ContentPages => Set<ContentPage>();
     public DbSet<VisitorLog> VisitorLogs => Set<VisitorLog>();
+    public DbSet<SavedSchedule> SavedSchedules => Set<SavedSchedule>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -149,6 +150,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasIndex(e => e.SessionId);
             entity.HasIndex(e => e.UserId);
             entity.HasIndex(e => e.PagePath);
+        });
+
+        // SavedSchedule configuration
+        builder.Entity<SavedSchedule>(entity =>
+        {
+            entity.HasIndex(e => new { e.OrganizationId, e.Year, e.Month });
+            entity.HasIndex(e => e.OrganizationId);
+            
+            entity.HasOne(e => e.Organization)
+                .WithMany()
+                .HasForeignKey(e => e.OrganizationId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         // Seed global shift templates

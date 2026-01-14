@@ -676,6 +676,279 @@ public class AppController : Controller
 
     #endregion
 
+    #region Saved Schedules API (Registered Users Only)
+
+    [HttpGet]
+    [Route("api/saved-schedules")]
+    public async Task<IActionResult> GetSavedSchedules(int? year, int? month)
+    {
+        if (User.Identity?.IsAuthenticated != true)
+        {
+            return Unauthorized(new { error = "Bu özellik için giriş yapmanız gerekiyor" });
+        }
+        
+        var organization = await GetOrCreateOrganizationAsync();
+        
+        var query = _context.SavedSchedules
+            .Where(s => s.OrganizationId == organization.Id);
+        
+        if (year.HasValue)
+            query = query.Where(s => s.Year == year.Value);
+        if (month.HasValue)
+            query = query.Where(s => s.Month == month.Value);
+        
+        var schedules = await query
+            .OrderByDescending(s => s.Year)
+            .ThenByDescending(s => s.Month)
+            .ThenByDescending(s => s.CreatedAt)
+            .Select(s => new {
+                s.Id,
+                s.Name,
+                s.Year,
+                s.Month,
+                s.Description,
+                createdAt = s.CreatedAt.ToString("yyyy-MM-dd HH:mm"),
+                updatedAt = s.UpdatedAt.ToString("yyyy-MM-dd HH:mm")
+            })
+            .ToListAsync();
+            
+        return Json(schedules);
+    }
+
+    [HttpGet]
+    [Route("api/saved-schedules/{id}")]
+    public async Task<IActionResult> GetSavedSchedule(int id)
+    {
+        if (User.Identity?.IsAuthenticated != true)
+        {
+            return Unauthorized(new { error = "Bu özellik için giriş yapmanız gerekiyor" });
+        }
+        
+        var organization = await GetOrCreateOrganizationAsync();
+        var schedule = await _context.SavedSchedules
+            .FirstOrDefaultAsync(s => s.Id == id && s.OrganizationId == organization.Id);
+            
+        if (schedule == null)
+            return NotFound();
+        
+        return Json(new {
+            schedule.Id,
+            schedule.Name,
+            schedule.Year,
+            schedule.Month,
+            schedule.Description,
+            schedule.ShiftDataJson,
+            createdAt = schedule.CreatedAt.ToString("yyyy-MM-dd HH:mm"),
+            updatedAt = schedule.UpdatedAt.ToString("yyyy-MM-dd HH:mm")
+        });
+    }
+
+    [HttpPost]
+    [Route("api/saved-schedules")]
+    public async Task<IActionResult> SaveSchedule([FromBody] SaveScheduleDto dto)
+    {
+        if (User.Identity?.IsAuthenticated != true)
+        {
+            return Unauthorized(new { error = "Bu özellik için giriş yapmanız gerekiyor" });
+        }
+        
+        var organization = await GetOrCreateOrganizationAsync();
+        
+        // Get current shifts for the specified month
+        var shifts = await _context.Shifts
+            .Include(s => s.ShiftTemplate)
+            .Where(s => s.Employee.OrganizationId == organization.Id)
+            .Where(s => s.Date.Year == dto.Year && s.Date.Month == dto.Month)
+            .Select(s => new {
+                s.EmployeeId,
+                date = s.Date.ToString("yyyy-MM-dd"),
+                startTime = s.StartTime.ToString("HH:mm"),
+                endTime = s.EndTime.ToString("HH:mm"),
+                s.SpansNextDay,
+                s.BreakMinutes,
+                s.TotalHours,
+                s.NightHours,
+                s.IsWeekend,
+                s.IsHoliday,
+                s.IsDayOff,
+                s.OvernightHoursMode,
+                s.ShiftTemplateId
+            })
+            .ToListAsync();
+        
+        var shiftDataJson = System.Text.Json.JsonSerializer.Serialize(shifts);
+        
+        var savedSchedule = new SavedSchedule
+        {
+            OrganizationId = organization.Id,
+            Name = dto.Name,
+            Year = dto.Year,
+            Month = dto.Month,
+            Description = dto.Description,
+            ShiftDataJson = shiftDataJson
+        };
+        
+        _context.SavedSchedules.Add(savedSchedule);
+        await _context.SaveChangesAsync();
+        
+        return Json(new {
+            savedSchedule.Id,
+            savedSchedule.Name,
+            savedSchedule.Year,
+            savedSchedule.Month,
+            message = "Nöbet listesi kaydedildi"
+        });
+    }
+
+    [HttpPut]
+    [Route("api/saved-schedules/{id}")]
+    public async Task<IActionResult> UpdateSavedSchedule(int id, [FromBody] SaveScheduleDto dto)
+    {
+        if (User.Identity?.IsAuthenticated != true)
+        {
+            return Unauthorized(new { error = "Bu özellik için giriş yapmanız gerekiyor" });
+        }
+        
+        var organization = await GetOrCreateOrganizationAsync();
+        var schedule = await _context.SavedSchedules
+            .FirstOrDefaultAsync(s => s.Id == id && s.OrganizationId == organization.Id);
+            
+        if (schedule == null)
+            return NotFound();
+        
+        schedule.Name = dto.Name;
+        schedule.Description = dto.Description;
+        schedule.UpdatedAt = DateTime.UtcNow;
+        
+        // If updateShifts is true, also update the shift data
+        if (dto.UpdateShiftData)
+        {
+            var shifts = await _context.Shifts
+                .Include(s => s.ShiftTemplate)
+                .Where(s => s.Employee.OrganizationId == organization.Id)
+                .Where(s => s.Date.Year == dto.Year && s.Date.Month == dto.Month)
+                .Select(s => new {
+                    s.EmployeeId,
+                    date = s.Date.ToString("yyyy-MM-dd"),
+                    startTime = s.StartTime.ToString("HH:mm"),
+                    endTime = s.EndTime.ToString("HH:mm"),
+                    s.SpansNextDay,
+                    s.BreakMinutes,
+                    s.TotalHours,
+                    s.NightHours,
+                    s.IsWeekend,
+                    s.IsHoliday,
+                    s.IsDayOff,
+                    s.OvernightHoursMode,
+                    s.ShiftTemplateId
+                })
+                .ToListAsync();
+            
+            schedule.ShiftDataJson = System.Text.Json.JsonSerializer.Serialize(shifts);
+        }
+        
+        await _context.SaveChangesAsync();
+        
+        return Ok(new { message = "Nöbet listesi güncellendi" });
+    }
+
+    [HttpPost]
+    [Route("api/saved-schedules/{id}/load")]
+    public async Task<IActionResult> LoadSavedSchedule(int id)
+    {
+        if (User.Identity?.IsAuthenticated != true)
+        {
+            return Unauthorized(new { error = "Bu özellik için giriş yapmanız gerekiyor" });
+        }
+        
+        var organization = await GetOrCreateOrganizationAsync();
+        var schedule = await _context.SavedSchedules
+            .FirstOrDefaultAsync(s => s.Id == id && s.OrganizationId == organization.Id);
+            
+        if (schedule == null)
+            return NotFound();
+        
+        // Parse the saved shift data
+        var savedShifts = System.Text.Json.JsonSerializer.Deserialize<List<SavedShiftData>>(schedule.ShiftDataJson);
+        if (savedShifts == null)
+            return BadRequest(new { error = "Kaydedilmiş veri okunamadı" });
+        
+        // Get valid employee IDs for this organization
+        var validEmployeeIds = await _context.Employees
+            .Where(e => e.OrganizationId == organization.Id && e.IsActive)
+            .Select(e => e.Id)
+            .ToListAsync();
+        
+        // Delete existing shifts for this month
+        var existingShifts = await _context.Shifts
+            .Where(s => s.Employee.OrganizationId == organization.Id)
+            .Where(s => s.Date.Year == schedule.Year && s.Date.Month == schedule.Month)
+            .ToListAsync();
+        
+        _context.Shifts.RemoveRange(existingShifts);
+        
+        // Create new shifts from saved data
+        var newShifts = new List<Shift>();
+        foreach (var savedShift in savedShifts)
+        {
+            // Only restore shifts for employees that still exist
+            if (!validEmployeeIds.Contains(savedShift.EmployeeId))
+                continue;
+            
+            var shift = new Shift
+            {
+                EmployeeId = savedShift.EmployeeId,
+                Date = DateOnly.Parse(savedShift.Date),
+                StartTime = TimeOnly.Parse(savedShift.StartTime),
+                EndTime = TimeOnly.Parse(savedShift.EndTime),
+                SpansNextDay = savedShift.SpansNextDay,
+                BreakMinutes = savedShift.BreakMinutes,
+                TotalHours = savedShift.TotalHours,
+                NightHours = savedShift.NightHours,
+                IsWeekend = savedShift.IsWeekend,
+                IsHoliday = savedShift.IsHoliday,
+                IsDayOff = savedShift.IsDayOff,
+                OvernightHoursMode = savedShift.OvernightHoursMode,
+                ShiftTemplateId = savedShift.ShiftTemplateId
+            };
+            newShifts.Add(shift);
+        }
+        
+        _context.Shifts.AddRange(newShifts);
+        await _context.SaveChangesAsync();
+        
+        return Json(new { 
+            message = $"'{schedule.Name}' nöbet listesi yüklendi",
+            shiftCount = newShifts.Count,
+            year = schedule.Year,
+            month = schedule.Month
+        });
+    }
+
+    [HttpDelete]
+    [Route("api/saved-schedules/{id}")]
+    public async Task<IActionResult> DeleteSavedSchedule(int id)
+    {
+        if (User.Identity?.IsAuthenticated != true)
+        {
+            return Unauthorized(new { error = "Bu özellik için giriş yapmanız gerekiyor" });
+        }
+        
+        var organization = await GetOrCreateOrganizationAsync();
+        var schedule = await _context.SavedSchedules
+            .FirstOrDefaultAsync(s => s.Id == id && s.OrganizationId == organization.Id);
+            
+        if (schedule == null)
+            return NotFound();
+        
+        _context.SavedSchedules.Remove(schedule);
+        await _context.SaveChangesAsync();
+        
+        return Ok(new { message = "Nöbet listesi silindi" });
+    }
+
+    #endregion
+
     #region Helper Methods
 
     private async Task<Organization> GetOrCreateOrganizationAsync()
@@ -818,11 +1091,11 @@ public class AppController : Controller
     {
         if (User.Identity?.IsAuthenticated == true)
         {
-            // TODO: Check user plan
-            return _configuration.GetValue<int>("AppSettings:FreemiumEmployeeLimit", 25);
+            // TODO: Check user plan for premium
+            return _configuration.GetValue<int>("AppSettings:RegisteredEmployeeLimit", 10);
         }
         
-        return _configuration.GetValue<int>("AppSettings:GuestEmployeeLimit", 10);
+        return _configuration.GetValue<int>("AppSettings:GuestEmployeeLimit", 5);
     }
 
     private void CalculateShiftHours(Shift shift, Organization org)
@@ -954,5 +1227,31 @@ public class ShiftTemplateDto
     public int? BreakMinutes { get; set; }
     public string? Color { get; set; }
     public int DisplayOrder { get; set; }
+}
+
+public class SaveScheduleDto
+{
+    public string Name { get; set; } = string.Empty;
+    public int Year { get; set; }
+    public int Month { get; set; }
+    public string? Description { get; set; }
+    public bool UpdateShiftData { get; set; } = false;
+}
+
+public class SavedShiftData
+{
+    public int EmployeeId { get; set; }
+    public string Date { get; set; } = string.Empty;
+    public string StartTime { get; set; } = string.Empty;
+    public string EndTime { get; set; } = string.Empty;
+    public bool SpansNextDay { get; set; }
+    public int BreakMinutes { get; set; }
+    public decimal TotalHours { get; set; }
+    public decimal NightHours { get; set; }
+    public bool IsWeekend { get; set; }
+    public bool IsHoliday { get; set; }
+    public bool IsDayOff { get; set; }
+    public int OvernightHoursMode { get; set; }
+    public int? ShiftTemplateId { get; set; }
 }
 
