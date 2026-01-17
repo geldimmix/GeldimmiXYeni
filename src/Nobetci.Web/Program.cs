@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
@@ -111,6 +112,18 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
+// Forward proxy headers (for production behind reverse proxy - nginx, Apache, etc.)
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | 
+                       ForwardedHeaders.XForwardedProto | 
+                       ForwardedHeaders.XForwardedHost,
+    // Trust known proxy IPs (adjust for your production setup)
+    RequireHeaderSymmetry = false,
+    ForwardedProtoHeaderName = "X-Forwarded-Proto",
+    ForwardedHostHeaderName = "X-Forwarded-Host"
+});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
