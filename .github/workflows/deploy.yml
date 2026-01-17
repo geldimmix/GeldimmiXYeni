@@ -56,11 +56,52 @@ jobs:
     
     - name: Configure and Start Service
       uses: appleboy/ssh-action@v1.0.3
+      env:
+        GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+        GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+        RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY }}
+        RECAPTCHA_SECRET_KEY: ${{ secrets.RECAPTCHA_SECRET_KEY }}
       with:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USER }}
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
+          # Create appsettings.Production.json with secrets
+          cat > /var/www/geldimmi/appsettings.Production.json << EOF
+          {
+            "Logging": {
+              "LogLevel": {
+                "Default": "Warning",
+                "Microsoft.AspNetCore": "Warning",
+                "Microsoft.EntityFrameworkCore": "Warning"
+              }
+            },
+            "AllowedHosts": "geldimmi.com;www.geldimmi.com",
+            "ConnectionStrings": {
+              "DefaultConnection": "Host=142.93.32.204;Port=5432;Database=nobetci;Username=nobetci;Password=NobetciApp2026!Secure"
+            },
+            "AppSettings": {
+              "GuestEmployeeLimit": 5,
+              "RegisteredEmployeeLimit": 10,
+              "PremiumEmployeeLimit": 100,
+              "DefaultLanguage": "tr",
+              "SupportedLanguages": ["tr", "en"]
+            },
+            "AdminSettings": {
+              "Username": "Geldimmix",
+              "Password": "Liberemall423445"
+            },
+            "Google": {
+              "ClientId": "${{ secrets.GOOGLE_CLIENT_ID }}",
+              "ClientSecret": "${{ secrets.GOOGLE_CLIENT_SECRET }}"
+            },
+            "ReCaptcha": {
+              "SiteKey": "${{ secrets.RECAPTCHA_SITE_KEY }}",
+              "SecretKey": "${{ secrets.RECAPTCHA_SECRET_KEY }}"
+            }
+          }
+          EOF
+          
           # Create systemd service if not exists
           cat > /etc/systemd/system/geldimmi.service << 'EOF'
           [Unit]
