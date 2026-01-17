@@ -35,6 +35,21 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
+// Google Authentication
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        var googleClientId = builder.Configuration["Google:ClientId"];
+        var googleClientSecret = builder.Configuration["Google:ClientSecret"];
+        
+        if (!string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientSecret) &&
+            googleClientId != "YOUR_GOOGLE_CLIENT_ID" && googleClientSecret != "YOUR_GOOGLE_CLIENT_SECRET")
+        {
+            options.ClientId = googleClientId;
+            options.ClientSecret = googleClientSecret;
+        }
+    });
+
 // Cookie settings
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -149,6 +164,15 @@ using (var scope = app.Services.CreateScope())
                     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Shifts' AND column_name='OvernightHoursMode') THEN
                         ALTER TABLE ""Shifts"" ADD COLUMN ""OvernightHoursMode"" INTEGER DEFAULT 0 NOT NULL;
                     END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Organizations' AND column_name='DefaultTemplatesInitialized') THEN
+                        ALTER TABLE ""Organizations"" ADD COLUMN ""DefaultTemplatesInitialized"" BOOLEAN DEFAULT FALSE NOT NULL;
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Holidays' AND column_name='HalfDayStartTime') THEN
+                        ALTER TABLE ""Holidays"" DROP COLUMN ""HalfDayStartTime"";
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Holidays' AND column_name='HalfDayWorkHours') THEN
+                        ALTER TABLE ""Holidays"" ADD COLUMN ""HalfDayWorkHours"" DECIMAL NULL;
+                    END IF;
                 END $$;
             ");
         }
@@ -171,19 +195,14 @@ app.Run();
 // Seed method for content pages
 static async Task SeedContentPages(ApplicationDbContext context)
 {
-    // Check if we already have the correct pages
-    var hasCorrectPages = await context.ContentPages.AnyAsync(p => p.Slug == "nobet-listesi-olusturma" && p.Language == "tr");
-    if (hasCorrectPages) return;
+    // Get all existing pages first to check what we have
+    var existingPages = await context.ContentPages
+        .Select(p => new { p.Slug, p.Language })
+        .ToListAsync();
     
-    // Clear ALL existing content pages first
-    await context.Database.ExecuteSqlRawAsync("DELETE FROM \"ContentPages\"");
-    
-    // Reset the sequence for PostgreSQL
-    try 
-    {
-        await context.Database.ExecuteSqlRawAsync("ALTER SEQUENCE \"ContentPages_Id_seq\" RESTART WITH 1");
-    }
-    catch { /* Ignore if sequence doesn't exist */ }
+    var existingKeys = existingPages
+        .Select(p => $"{p.Slug}:{p.Language}")
+        .ToHashSet();
 
     var contentPages = new List<ContentPage>
     {
@@ -702,6 +721,14 @@ static async Task SeedContentPages(ApplicationDbContext context)
         }
     };
 
-    await context.ContentPages.AddRangeAsync(contentPages);
-    await context.SaveChangesAsync();
+    // Only add pages that don't already exist
+    var pagesToAdd = contentPages
+        .Where(p => !existingKeys.Contains($"{p.Slug}:{p.Language}"))
+        .ToList();
+
+    if (pagesToAdd.Any())
+    {
+        await context.ContentPages.AddRangeAsync(pagesToAdd);
+        await context.SaveChangesAsync();
+    }
 }

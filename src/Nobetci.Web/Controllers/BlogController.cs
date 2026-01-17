@@ -534,6 +534,11 @@ namespace Nobetci.Web.Controllers
             }
         };
 
+        /// <summary>
+        /// Static property to access blog post slugs (for sitemap generation)
+        /// </summary>
+        public static IEnumerable<string> AllSlugs => Posts.Select(p => p.Slug);
+
         public IActionResult Index()
         {
             var isTurkish = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";

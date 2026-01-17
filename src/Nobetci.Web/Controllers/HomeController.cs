@@ -497,6 +497,84 @@ public class HomeController : Controller
         };
     }
 
+    /// <summary>
+    /// Dynamic robots.txt
+    /// </summary>
+    [Route("robots.txt")]
+    public ContentResult RobotsTxt()
+    {
+        var baseUrl = $"{Request.Scheme}://{Request.Host}";
+        var robotsTxt = $@"User-agent: *
+Allow: /
+Allow: /blog/
+Allow: /rehber/
+Allow: /guide/
+
+Disallow: /app/
+Disallow: /admin/
+Disallow: /Account/
+Disallow: /api/
+
+Sitemap: {baseUrl}/sitemap.xml
+";
+        return Content(robotsTxt, "text/plain");
+    }
+
+    /// <summary>
+    /// Dynamic sitemap.xml - automatically generated from ContentPages and blog posts
+    /// </summary>
+    [Route("sitemap.xml")]
+    public async Task<ContentResult> SitemapXml()
+    {
+        var baseUrl = $"{Request.Scheme}://{Request.Host}";
+        var currentDate = DateTime.UtcNow.ToString("yyyy-MM-dd");
+
+        // Get all published content pages from database
+        var contentPages = await _context.ContentPages
+            .Where(p => p.IsPublished)
+            .OrderBy(p => p.Language)
+            .ThenBy(p => p.DisplayOrder)
+            .ToListAsync();
+
+        // Build sitemap URLs
+        var sitemapUrls = new List<string>
+        {
+            // Homepage
+            $"  <url><loc>{baseUrl}/</loc><lastmod>{currentDate}</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>",
+            
+            // App page
+            $"  <url><loc>{baseUrl}/app</loc><lastmod>{currentDate}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>",
+            
+            // Blog index
+            $"  <url><loc>{baseUrl}/blog</loc><lastmod>{currentDate}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>"
+        };
+
+        // Add content pages (rehber/guide pages)
+        foreach (var page in contentPages)
+        {
+            var path = page.Language == "tr" ? $"/rehber/{page.Slug}" : $"/guide/{page.Slug}";
+            var lastmod = page.UpdatedAt.ToString("yyyy-MM-dd");
+            sitemapUrls.Add($"  <url><loc>{baseUrl}{path}</loc><lastmod>{lastmod}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>");
+        }
+
+        // Add blog posts (automatically from BlogController)
+        // Blog posts are static in BlogController, automatically retrieved via AllSlugs property
+        var blogSlugs = Nobetci.Web.Controllers.BlogController.AllSlugs;
+
+        foreach (var slug in blogSlugs)
+        {
+            sitemapUrls.Add($"  <url><loc>{baseUrl}/blog/{slug}</loc><lastmod>{currentDate}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>");
+        }
+
+        // Build XML
+        var sitemapXml = $@"<?xml version=""1.0"" encoding=""UTF-8""?>
+<urlset xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">
+{string.Join("\n", sitemapUrls)}
+</urlset>";
+
+        return Content(sitemapXml, "application/xml");
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
