@@ -51,15 +51,29 @@ public class AccountController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        // Validate reCAPTCHA
+        // Validate reCAPTCHA v2 (required for v2 Checkbox)
         var recaptchaToken = Request.Form["g-recaptcha-response"].ToString();
-        if (!string.IsNullOrEmpty(recaptchaToken))
+        var recaptchaSecretKey = _configuration["ReCaptcha:SecretKey"];
+        
+        if (!string.IsNullOrEmpty(recaptchaSecretKey) && 
+            recaptchaSecretKey != "YOUR_RECAPTCHA_SECRET_KEY" && 
+            !recaptchaSecretKey.Contains("YOUR_"))
         {
+            // reCAPTCHA is configured, so it's required
+            if (string.IsNullOrEmpty(recaptchaToken))
+            {
+                var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+                ModelState.AddModelError(string.Empty, isTurkish ? "Lütfen reCAPTCHA'yı işaretleyin." : "Please complete the reCAPTCHA.");
+                ViewData["RecaptchaSiteKey"] = _configuration["ReCaptcha:SiteKey"] ?? "";
+                return View(model);
+            }
+            
             var isValid = await ValidateReCaptchaAsync(recaptchaToken);
             if (!isValid)
             {
                 var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
                 ModelState.AddModelError(string.Empty, isTurkish ? "reCAPTCHA doğrulaması başarısız. Lütfen tekrar deneyin." : "reCAPTCHA verification failed. Please try again.");
+                ViewData["RecaptchaSiteKey"] = _configuration["ReCaptcha:SiteKey"] ?? "";
                 return View(model);
             }
         }
@@ -173,7 +187,7 @@ public class AccountController : Controller
     // Google OAuth External Login
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult ExternalLogin(string provider, string returnUrl = null)
+    public IActionResult ExternalLogin(string provider, string? returnUrl = null)
     {
         var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl });
         var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
@@ -181,7 +195,7 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
+    public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = null, string? remoteError = null)
     {
         if (remoteError != null)
         {
@@ -311,17 +325,18 @@ public class AccountController : Controller
             }
 
             // reCAPTCHA v3: Check score (0.0 = bot, 1.0 = human)
-            // Accept score >= 0.5 (you can adjust this threshold)
+            // v2 Checkbox doesn't have score, so this check is for v3 compatibility
             if (result.TryGetProperty("score", out var scoreElement))
             {
                 var score = scoreElement.GetDouble();
-                _logger.LogInformation("reCAPTCHA score: {Score}", score);
+                _logger.LogInformation("reCAPTCHA v3 score: {Score}", score);
                 
                 // Threshold: 0.5 (adjust based on your needs: 0.5 = lenient, 0.7 = strict)
                 return score >= 0.5;
             }
 
-            // If no score property (v2 fallback), just check success
+            // reCAPTCHA v2 Checkbox: success = true means user completed the challenge
+            _logger.LogInformation("reCAPTCHA v2 validation: Success");
             return true;
         }
         catch (Exception ex)

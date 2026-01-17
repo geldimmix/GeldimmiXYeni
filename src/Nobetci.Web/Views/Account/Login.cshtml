@@ -519,8 +519,16 @@
                     <a href="#" class="forgot-link">@(isTurkish ? "Şifremi unuttum" : "Forgot password?")</a>
                 </div>
                 
-                <!-- reCAPTCHA v3 (invisible - hidden input) -->
-                <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" />
+                <!-- reCAPTCHA v2 Checkbox -->
+                @{
+                    var recaptchaSiteKey = ViewData["RecaptchaSiteKey"]?.ToString() ?? "";
+                }
+                @if (!string.IsNullOrEmpty(recaptchaSiteKey) && 
+                     recaptchaSiteKey != "YOUR_RECAPTCHA_SITE_KEY" &&
+                     !recaptchaSiteKey.Contains("YOUR_"))
+                {
+                    <div class="g-recaptcha" data-sitekey="@recaptchaSiteKey" style="margin: 15px 0;"></div>
+                }
                 
                 <button type="submit" class="btn-submit" id="submit-btn">
                     @(isTurkish ? "Giriş Yap" : "Sign In")
@@ -560,7 +568,7 @@
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
     <script>
-        // reCAPTCHA v3 - invisible (score-based)
+        // reCAPTCHA v2 Checkbox
         (function() {
             const recaptchaSiteKey = '@ViewData["RecaptchaSiteKey"]';
             
@@ -568,54 +576,24 @@
                 return; // Skip if no key configured
             }
             
-            // Load reCAPTCHA script dynamically
+            // Load reCAPTCHA v2 script
             const script = document.createElement('script');
-            script.src = 'https://www.google.com/recaptcha/api.js?render=' + recaptchaSiteKey;
+            script.src = 'https://www.google.com/recaptcha/api.js';
             script.async = true;
             script.defer = true;
             document.head.appendChild(script);
             
-            // Wait for DOM and reCAPTCHA to be ready
+            // Form validation: Ensure reCAPTCHA is checked before submit
             document.addEventListener('DOMContentLoaded', function() {
                 const form = document.querySelector('.login-form');
                 if (!form) return;
                 
-                // Get token on form submit
                 form.addEventListener('submit', function(e) {
-                    const tokenField = document.getElementById('g-recaptcha-response');
-                    if (!tokenField) return;
-                    
-                    if (!tokenField.value) {
+                    const recaptchaResponse = form.querySelector('[name="g-recaptcha-response"]');
+                    if (recaptchaResponse && !recaptchaResponse.value) {
                         e.preventDefault();
-                        
-                        if (typeof grecaptcha === 'undefined') {
-                            // reCAPTCHA not loaded yet, wait a bit
-                            setTimeout(function() {
-                                if (typeof grecaptcha !== 'undefined') {
-                                    grecaptcha.ready(function() {
-                                        grecaptcha.execute(recaptchaSiteKey, { action: 'login' }).then(function(token) {
-                                            tokenField.value = token;
-                                            form.submit();
-                                        }).catch(function(error) {
-                                            console.error('reCAPTCHA error:', error);
-                                            form.submit();
-                                        });
-                                    });
-                                } else {
-                                    form.submit();
-                                }
-                            }, 1000);
-                        } else {
-                            grecaptcha.ready(function() {
-                                grecaptcha.execute(recaptchaSiteKey, { action: 'login' }).then(function(token) {
-                                    tokenField.value = token;
-                                    form.submit();
-                                }).catch(function(error) {
-                                    console.error('reCAPTCHA error:', error);
-                                    form.submit();
-                                });
-                            });
-                        }
+                        alert('@(isTurkish ? "Lütfen reCAPTCHA\'yı işaretleyin." : "Please complete the reCAPTCHA.")');
+                        return false;
                     }
                 });
             });
