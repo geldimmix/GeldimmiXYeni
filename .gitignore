@@ -12,6 +12,12 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
+# Build artifacts
+*.dll
+*.pdb
+*.exe
+*.cache
+
 # Visual Studio
 .vs/
 *.suo
@@ -27,10 +33,6 @@ bld/
 
 # User-specific files
 *.rsuser
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
 
 # Windows image file caches
 Thumbs.db
@@ -56,6 +58,8 @@ publish/
 
 # Secrets (DO NOT COMMIT!)
 appsettings.Development.json
+appsettings.Production.json
+**/appsettings.Production.json
 
 # Entity Framework Migrations (keep these)
 # !**/Migrations/
