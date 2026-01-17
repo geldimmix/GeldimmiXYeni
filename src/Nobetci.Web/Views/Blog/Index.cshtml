@@ -122,3 +122,16 @@
     }
 </style>
 
+@section Scripts {
+<script>
+    // Google Analytics: Blog page view
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'page_view', {
+            'page_title': 'Blog',
+            'page_location': window.location.href,
+            'page_path': window.location.pathname
+        });
+        console.log('Blog page view tracked in Google Analytics');
+    }
+</script>
+}
