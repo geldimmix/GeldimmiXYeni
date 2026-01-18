@@ -343,35 +343,110 @@
     }
 
     .detail-cell {
-        padding: 0 !important;
+        padding: 8px 12px !important;
         background: #f9fafb;
     }
 
-    .detail-table {
-        width: 100%;
-        font-size: 0.75rem;
-        border-collapse: collapse;
+    /* Monthly View (Horizontal Calendar) */
+    .monthly-view {
+        overflow-x: auto;
+        padding: 4px 0;
     }
 
-    .detail-table th {
-        background: #f0f0f0;
-        padding: 6px 10px;
+    .monthly-scroll {
+        display: flex;
+        gap: 3px;
+        min-width: max-content;
+    }
+
+    .day-box {
+        width: 38px;
+        min-width: 38px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 4px 2px;
         text-align: center;
+        font-size: 0.7rem;
+        transition: all 0.15s;
+    }
+
+    .day-box:hover {
+        border-color: #3b82f6;
+        box-shadow: 0 2px 6px rgba(59,130,246,0.15);
+    }
+
+    .day-box .day-num {
+        font-weight: 700;
+        font-size: 0.8rem;
+        color: #1a1a2e;
+    }
+
+    .day-box .day-name {
+        font-size: 0.55rem;
+        color: #9ca3af;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+    }
+
+    .day-box .day-hrs {
         font-weight: 600;
-        color: #555;
+        font-size: 0.75rem;
+        color: #3b82f6;
+        background: #eff6ff;
+        border-radius: 3px;
+        padding: 1px 3px;
+        margin-top: 2px;
     }
 
-    .detail-table td {
-        padding: 5px 10px;
-        text-align: center;
-        border-bottom: 1px solid #e8e8e8;
+    .day-box .day-hrs.empty {
+        color: #d1d5db;
+        background: transparent;
     }
 
-    .detail-table tr:last-child td { border-bottom: none; }
+    .day-box .day-night {
+        font-size: 0.55rem;
+        color: #6366f1;
+        margin-top: 1px;
+    }
 
-    .day-off { color: #e91e63; font-style: italic; }
-    .weekend { background: #fff8f8; }
-    .holiday { background: #fffde7; }
+    .day-box .off-text {
+        color: #e91e63;
+        background: #fce7f3;
+    }
+
+    /* Weekend */
+    .day-box.wknd {
+        background: #fef2f2;
+        border-color: #fecaca;
+    }
+
+    .day-box.wknd .day-num { color: #dc2626; }
+
+    /* Holiday */
+    .day-box.hol {
+        background: #fef3c7;
+        border-color: #fcd34d;
+    }
+
+    .day-box.hol .day-num { color: #d97706; }
+
+    /* Day Off */
+    .day-box.off {
+        background: #fce7f3;
+        border-color: #f9a8d4;
+    }
+
+    /* Work day with data */
+    .day-box.work {
+        background: #f0fdf4;
+        border-color: #86efac;
+    }
+
+    .day-box.work .day-hrs {
+        background: #dcfce7;
+        color: #16a34a;
+    }
 
     /* Editable inputs */
     .edit-input {
@@ -730,38 +805,45 @@
                         </tr>
                         <tr class="detail-row" id="@rowId">
                             <td colspan="10" class="detail-cell">
-                                <table class="detail-table">
-                                    <thead>
-                                        <tr>
-                                            <th>@(isTurkish ? "Tarih" : "Date")</th>
-                                            <th>@(isTurkish ? "Giriş" : "In")</th>
-                                            <th>@(isTurkish ? "Çıkış" : "Out")</th>
-                                            <th>@(isTurkish ? "Saat" : "Hrs")</th>
-                                            <th>@(isTurkish ? "Gece" : "Night")</th>
-                                            <th>@(isTurkish ? "Not" : "Note")</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var detail in payroll.ShiftDetails.OrderBy(d => d.Date))
-                                        {
-                                            var trClass = detail.IsDayOff ? "day-off" : (detail.IsHoliday ? "holiday" : (detail.IsWeekend ? "weekend" : ""));
-                                            <tr class="@trClass">
-                                                <td>
-                                                    @detail.Date.ToString("dd.MM")
-                                                    <span style="color:#999;font-size:0.65rem;">@dayNames[(int)detail.Date.DayOfWeek]</span>
-                                                </td>
-                                                <td>@(detail.StartTime?.ToString("HH:mm") ?? "-")</td>
-                                                <td>
-                                                    @(detail.EndTime?.ToString("HH:mm") ?? "-")
-                                                    @if (detail.SpansNextDay) { <span style="color:#e91e63;">↓</span> }
-                                                </td>
-                                                <td>@(detail.IsDayOff ? (isTurkish ? "İzin" : "Off") : detail.TotalHours.ToString("0.#"))</td>
-                                                <td>@(detail.NightHours > 0 ? detail.NightHours.ToString("0.#") : "-")</td>
-                                                <td>@(detail.HolidayName ?? detail.Note ?? "-")</td>
-                                            </tr>
+                                <div class="monthly-view">
+                                    <div class="monthly-scroll">
+                                        @{
+                                            var detailsDict = payroll.ShiftDetails.ToDictionary(d => d.Date.Day, d => d);
                                         }
-                                    </tbody>
-                                </table>
+                                        @for (int day = 1; day <= Model.DaysInMonth; day++)
+                                        {
+                                            var date = new DateOnly(Model.SelectedYear, Model.SelectedMonth, day);
+                                            var dow = (int)date.DayOfWeek;
+                                            var isWeekendDay = dow == 0 || dow == 6;
+                                            detailsDict.TryGetValue(day, out var detail);
+                                            var hasData = detail != null;
+                                            var isDayOff = detail?.IsDayOff == true;
+                                            var isHolidayDay = detail?.IsHoliday == true;
+                                            var cellClass = isDayOff ? "off" : (isHolidayDay ? "hol" : (isWeekendDay ? "wknd" : (hasData ? "work" : "")));
+                                            
+                                            <div class="day-box @cellClass" title="@date.ToString("dd.MM.yyyy") @dayNames[dow]">
+                                                <div class="day-num">@day</div>
+                                                <div class="day-name">@dayNames[dow]</div>
+                                                @if (isDayOff)
+                                                {
+                                                    <div class="day-hrs off-text">İ</div>
+                                                }
+                                                else if (hasData && detail!.TotalHours > 0)
+                                                {
+                                                    <div class="day-hrs">@detail.TotalHours.ToString("0.#")</div>
+                                                    @if (detail.NightHours > 0)
+                                                    {
+                                                        <div class="day-night">🌙@detail.NightHours.ToString("0.#")</div>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <div class="day-hrs empty">-</div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     }
