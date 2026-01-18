@@ -22,6 +22,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<ContentPage> ContentPages => Set<ContentPage>();
     public DbSet<VisitorLog> VisitorLogs => Set<VisitorLog>();
     public DbSet<SavedSchedule> SavedSchedules => Set<SavedSchedule>();
+    public DbSet<TimeAttendance> TimeAttendances => Set<TimeAttendance>();
+    public DbSet<ApiKey> ApiKeys => Set<ApiKey>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -156,6 +158,30 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<SavedSchedule>(entity =>
         {
             entity.HasIndex(e => new { e.OrganizationId, e.Year, e.Month });
+            entity.HasIndex(e => e.OrganizationId);
+            
+            entity.HasOne(e => e.Organization)
+                .WithMany()
+                .HasForeignKey(e => e.OrganizationId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // TimeAttendance configuration
+        builder.Entity<TimeAttendance>(entity =>
+        {
+            entity.HasIndex(e => new { e.EmployeeId, e.Date });
+            entity.HasIndex(e => e.Date);
+            
+            entity.HasOne(e => e.Employee)
+                .WithMany()
+                .HasForeignKey(e => e.EmployeeId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ApiKey configuration
+        builder.Entity<ApiKey>(entity =>
+        {
+            entity.HasIndex(e => e.KeyHash).IsUnique();
             entity.HasIndex(e => e.OrganizationId);
             
             entity.HasOne(e => e.Organization)

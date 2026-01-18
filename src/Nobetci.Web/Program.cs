@@ -88,6 +88,7 @@ builder.Services.AddScoped<ITranslationService, TranslationService>();
 builder.Services.AddHttpClient<ITranslationService, TranslationService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IVisitorLogService, VisitorLogService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
 
 // Session for guest users
 builder.Services.AddDistributedMemoryCache();
