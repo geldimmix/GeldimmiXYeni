@@ -3,87 +3,121 @@
     var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
     ViewData["Title"] = isTurkish ? "Puantaj" : "Payroll";
     Layout = "_AppLayout";
+    
+    var dayNames = isTurkish 
+        ? new[] { "Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt" }
+        : new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 }
 
 <style>
-    .payroll-container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 24px;
+    .payroll-page {
+        min-height: calc(100vh - 60px);
+        background: #f5f7fa;
+        padding: 20px;
     }
 
     .payroll-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 24px;
+        margin-bottom: 20px;
         flex-wrap: wrap;
-        gap: 16px;
+        gap: 12px;
     }
 
     .payroll-title {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         font-weight: 700;
-        color: #1f2937;
-        margin: 0;
+        color: #1a1a2e;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
-    .payroll-actions {
+    .nav-row {
         display: flex;
-        gap: 12px;
+        gap: 10px;
         align-items: center;
         flex-wrap: wrap;
     }
 
-    /* Month Navigation */
-    .month-nav {
+    .month-picker {
         display: flex;
         align-items: center;
-        gap: 8px;
-        background: #f9fafb;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .month-picker a {
         padding: 8px 12px;
-        border-radius: 8px;
-        border: 1px solid #e5e7eb;
-    }
-
-    .month-nav a {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        border-radius: 6px;
-        color: #6b7280;
+        color: #666;
         text-decoration: none;
-        transition: background 0.15s, color 0.15s;
     }
 
-    .month-nav a:hover {
-        background: #e5e7eb;
-        color: #1f2937;
-    }
+    .month-picker a:hover { background: #f5f5f5; }
 
-    .month-nav .month-label {
+    .month-picker .month-text {
+        padding: 8px 16px;
         font-weight: 600;
-        color: #1f2937;
-        min-width: 140px;
+        color: #1a1a2e;
+        min-width: 130px;
         text-align: center;
+        border-left: 1px solid #ddd;
+        border-right: 1px solid #ddd;
     }
 
-    /* Settings Panel */
-    .settings-panel {
-        background: #f9fafb;
-        border: 1px solid #e5e7eb;
+    .btn {
+        padding: 8px 16px;
         border-radius: 8px;
-        padding: 16px;
-        margin-bottom: 24px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.15s;
+        text-decoration: none;
+    }
+
+    .btn-outline {
+        background: #fff;
+        color: #333;
+        border: 1px solid #ddd;
+    }
+
+    .btn-outline:hover { background: #f5f5f5; }
+
+    .btn-primary {
+        background: #3b82f6;
+        color: #fff;
+    }
+
+    .btn-primary:hover { background: #2563eb; }
+
+    .btn-success {
+        background: #22c55e;
+        color: #fff;
+    }
+
+    .btn-success:hover { background: #16a34a; }
+
+    /* Settings Card */
+    .settings-card {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
     }
 
     .settings-row {
         display: flex;
-        gap: 24px;
-        flex-wrap: wrap;
+        gap: 20px;
         align-items: flex-end;
+        flex-wrap: wrap;
     }
 
     .setting-group {
@@ -93,113 +127,150 @@
     }
 
     .setting-group label {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: 600;
-        color: #6b7280;
+        color: #666;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
     }
 
-    .setting-group input, .setting-group select {
+    .setting-group select, .setting-group input {
         padding: 8px 12px;
-        border: 1px solid #d1d5db;
+        border: 1px solid #ddd;
         border-radius: 6px;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         min-width: 100px;
     }
 
-    .setting-group input:focus, .setting-group select:focus {
+    .setting-group select:focus, .setting-group input:focus {
         outline: none;
         border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
 
-    .btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 8px 16px;
-        border-radius: 6px;
-        font-size: 0.85rem;
-        font-weight: 500;
-        cursor: pointer;
-        border: none;
-        transition: background 0.15s;
-    }
-
-    .btn-primary {
-        background: #3b82f6;
-        color: white;
-    }
-
-    .btn-primary:hover {
-        background: #2563eb;
-    }
-
-    .btn-success {
-        background: #22c55e;
-        color: white;
-    }
-
-    .btn-success:hover {
-        background: #16a34a;
-    }
-
-    .btn-outline {
-        background: white;
-        color: #374151;
-        border: 1px solid #d1d5db;
-    }
-
-    .btn-outline:hover {
-        background: #f9fafb;
-    }
-
-    /* Summary Cards */
-    .summary-cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 16px;
-        margin-bottom: 24px;
-    }
-
-    .summary-card {
-        background: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        padding: 16px;
-    }
-
-    .summary-card-label {
-        font-size: 0.75rem;
-        color: #6b7280;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 4px;
-    }
-
-    .summary-card-value {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #1f2937;
-    }
-
-    .summary-card-value.positive {
-        color: #22c55e;
-    }
-
-    .summary-card-value.negative {
-        color: #ef4444;
-    }
-
-    /* Payroll Table */
-    .payroll-table-wrapper {
-        background: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
+    /* Saved Payrolls */
+    .saved-list {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        margin-bottom: 20px;
         overflow: hidden;
     }
 
+    .saved-list-header {
+        padding: 12px 16px;
+        background: #f9fafb;
+        border-bottom: 1px solid #e0e0e0;
+        font-weight: 600;
+        color: #333;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .saved-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 16px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .saved-item:last-child { border-bottom: none; }
+    .saved-item:hover { background: #f9fafb; }
+
+    .saved-item-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .saved-item-name {
+        font-weight: 600;
+        color: #1a1a2e;
+    }
+
+    .saved-item-meta {
+        font-size: 0.75rem;
+        color: #999;
+    }
+
+    .saved-item-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-sm {
+        padding: 4px 10px;
+        font-size: 0.75rem;
+        border-radius: 5px;
+    }
+
+    .btn-danger {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .btn-danger:hover { background: #fecaca; }
+
+    /* Results */
+    .results-card {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .results-header {
+        padding: 14px 20px;
+        background: #f9fafb;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .results-header h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1a1a2e;
+        margin: 0;
+    }
+
+    .results-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    /* Summary */
+    .summary-row {
+        display: flex;
+        gap: 16px;
+        padding: 16px 20px;
+        background: #f9fafb;
+        border-bottom: 1px solid #e0e0e0;
+        flex-wrap: wrap;
+    }
+
+    .summary-item {
+        text-align: center;
+        min-width: 80px;
+    }
+
+    .summary-label {
+        font-size: 0.65rem;
+        color: #666;
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+
+    .summary-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1a1a2e;
+    }
+
+    .summary-value.green { color: #22c55e; }
+
+    /* Table */
     .payroll-table {
         width: 100%;
         border-collapse: collapse;
@@ -207,163 +278,263 @@
     }
 
     .payroll-table th {
-        background: #f9fafb;
-        padding: 12px 16px;
+        background: #fafafa;
+        padding: 10px 12px;
         text-align: left;
         font-weight: 600;
-        color: #374151;
-        border-bottom: 1px solid #e5e7eb;
-        white-space: nowrap;
+        color: #555;
+        border-bottom: 1px solid #e0e0e0;
     }
 
-    .payroll-table th.text-right {
-        text-align: right;
-    }
+    .payroll-table th.num { text-align: right; }
 
     .payroll-table td {
-        padding: 12px 16px;
-        border-bottom: 1px solid #f3f4f6;
-        color: #1f2937;
+        padding: 10px 12px;
+        border-bottom: 1px solid #f0f0f0;
     }
 
-    .payroll-table td.text-right {
+    .payroll-table td.num {
         text-align: right;
         font-variant-numeric: tabular-nums;
     }
 
-    .payroll-table tr:last-child td {
-        border-bottom: none;
+    .payroll-table tr:hover { background: #f9fafb; }
+
+    .emp-name {
+        font-weight: 600;
+        color: #1a1a2e;
     }
 
-    .payroll-table tr:hover {
+    .emp-title {
+        font-size: 0.7rem;
+        color: #999;
+    }
+
+    .expand-btn {
+        width: 24px;
+        height: 24px;
+        border: none;
+        background: #f0f0f0;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        color: #666;
+    }
+
+    .expand-btn:hover { background: #e0e0e0; }
+    .expand-btn.open { background: #3b82f6; color: #fff; }
+
+    /* Detail Row */
+    .detail-row {
+        display: none;
+    }
+
+    .detail-row.open {
+        display: table-row;
+    }
+
+    .detail-cell {
+        padding: 0 !important;
         background: #f9fafb;
     }
 
-    .employee-name {
-        font-weight: 600;
-    }
-
-    .employee-title {
+    .detail-table {
+        width: 100%;
         font-size: 0.75rem;
-        color: #6b7280;
+        border-collapse: collapse;
     }
 
-    .hours-cell {
-        font-weight: 500;
+    .detail-table th {
+        background: #f0f0f0;
+        padding: 6px 10px;
+        text-align: center;
+        font-weight: 600;
+        color: #555;
     }
 
-    .hours-positive {
-        color: #22c55e;
+    .detail-table td {
+        padding: 5px 10px;
+        text-align: center;
+        border-bottom: 1px solid #e8e8e8;
     }
 
-    .hours-negative {
-        color: #ef4444;
-    }
+    .detail-table tr:last-child td { border-bottom: none; }
 
-    .hours-badge {
-        display: inline-block;
-        padding: 2px 8px;
+    .day-off { color: #e91e63; font-style: italic; }
+    .weekend { background: #fff8f8; }
+    .holiday { background: #fffde7; }
+
+    /* Editable inputs */
+    .edit-input {
+        width: 55px;
+        padding: 4px 6px;
+        border: 1px solid #e0e0e0;
         border-radius: 4px;
-        font-size: 0.75rem;
+        font-size: 0.8rem;
+        text-align: right;
+        background: #fafafa;
+    }
+
+    .edit-input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        background: #fff;
+    }
+
+    .edit-input.edit-main {
         font-weight: 600;
+        background: #f0f7ff;
     }
 
-    .badge-overtime {
-        background: #dcfce7;
-        color: #166534;
+    .edit-input::-webkit-inner-spin-button {
+        opacity: 0;
     }
 
-    .badge-under {
-        background: #fee2e2;
-        color: #991b1b;
-    }
-
-    .badge-neutral {
-        background: #f3f4f6;
-        color: #374151;
+    .edit-input:hover::-webkit-inner-spin-button {
+        opacity: 1;
     }
 
     /* Empty State */
     .empty-state {
         text-align: center;
-        padding: 48px 24px;
-        color: #6b7280;
+        padding: 50px 20px;
+        color: #888;
     }
 
-    .empty-state-icon {
-        font-size: 3rem;
-        margin-bottom: 16px;
+    .empty-state-icon { font-size: 3rem; margin-bottom: 12px; }
+    .empty-state-title { font-size: 1.1rem; font-weight: 600; color: #333; margin-bottom: 6px; }
+
+    /* Modal */
+    .modal-backdrop {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.4);
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
     }
 
-    .empty-state-title {
-        font-size: 1.1rem;
+    .modal-backdrop.open { display: flex; }
+
+    .modal-box {
+        background: #fff;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 400px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h4 { margin: 0; font-size: 1rem; }
+
+    .modal-close {
+        width: 28px; height: 28px;
+        border: none;
+        background: #f5f5f5;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1rem;
+        color: #666;
+    }
+
+    .modal-close:hover { background: #eee; }
+
+    .modal-body { padding: 20px; }
+
+    .form-group {
+        margin-bottom: 14px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.75rem;
         font-weight: 600;
-        color: #374151;
-        margin-bottom: 8px;
+        color: #555;
+        margin-bottom: 4px;
     }
 
-    /* Responsive */
+    .form-group input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 0.9rem;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: #3b82f6;
+    }
+
+    .modal-footer {
+        padding: 14px 20px;
+        border-top: 1px solid #eee;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
     @@media (max-width: 768px) {
-        .payroll-container {
-            padding: 16px;
-        }
-
-        .payroll-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .payroll-table-wrapper {
-            overflow-x: auto;
-        }
-
-        .settings-row {
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .summary-cards {
-            grid-template-columns: repeat(2, 1fr);
-        }
+        .payroll-page { padding: 12px; }
+        .payroll-header { flex-direction: column; align-items: flex-start; }
+        .settings-row { flex-direction: column; gap: 12px; }
+        .summary-row { flex-direction: column; }
     }
 </style>
 
-<div class="payroll-container">
+<div class="payroll-page">
     <!-- Header -->
     <div class="payroll-header">
         <h1 class="payroll-title">📊 @(isTurkish ? "Puantaj" : "Payroll")</h1>
         
-        <div class="payroll-actions">
-            <!-- Month Navigation -->
-            <div class="month-nav">
-                <a href="@Url.Action("Payroll", new { year = Model.SelectedMonth == 1 ? Model.SelectedYear - 1 : Model.SelectedYear, month = Model.SelectedMonth == 1 ? 12 : Model.SelectedMonth - 1, nightStartHour = Model.NightStartTime.Hour, nightEndHour = Model.NightEndTime.Hour })">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-                </a>
-                <span class="month-label">@Model.MonthName</span>
-                <a href="@Url.Action("Payroll", new { year = Model.SelectedMonth == 12 ? Model.SelectedYear + 1 : Model.SelectedYear, month = Model.SelectedMonth == 12 ? 1 : Model.SelectedMonth + 1, nightStartHour = Model.NightStartTime.Hour, nightEndHour = Model.NightEndTime.Hour })">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-                </a>
+        <div class="nav-row">
+            <div class="month-picker">
+                <a href="@Url.Action("Payroll", new { year = Model.SelectedMonth == 1 ? Model.SelectedYear - 1 : Model.SelectedYear, month = Model.SelectedMonth == 1 ? 12 : Model.SelectedMonth - 1 })">‹</a>
+                <span class="month-text">@Model.MonthName</span>
+                <a href="@Url.Action("Payroll", new { year = Model.SelectedMonth == 12 ? Model.SelectedYear + 1 : Model.SelectedYear, month = Model.SelectedMonth == 12 ? 1 : Model.SelectedMonth + 1 })">›</a>
             </div>
-
             <a href="@Url.Action("Index", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="btn btn-outline">
-                ← @(isTurkish ? "Takvime Dön" : "Back to Calendar")
+                ← @(isTurkish ? "Takvim" : "Calendar")
             </a>
-            
-            <button class="btn btn-success" onclick="exportExcel()">
-                📥 @(isTurkish ? "Excel İndir" : "Export Excel")
-            </button>
         </div>
     </div>
 
-    <!-- Settings Panel -->
-    <div class="settings-panel">
-        <form method="get" class="settings-row">
+    <!-- Settings -->
+    <div class="settings-card">
+        <form method="get" class="settings-row" id="settingsForm">
             <input type="hidden" name="year" value="@Model.SelectedYear" />
             <input type="hidden" name="month" value="@Model.SelectedMonth" />
             
             <div class="setting-group">
-                <label>@(isTurkish ? "Gece Başlangıç Saati" : "Night Start Hour")</label>
-                <select name="nightStartHour" onchange="this.form.submit()">
+                <label>@(isTurkish ? "Veri Kaynağı" : "Data Source")</label>
+                <select name="source" id="sourceSelect">
+                    @if (Model.DataSource == "shift")
+                    {
+                        <option value="shift" selected>@(isTurkish ? "Nöbet Çizelgesi" : "Shift Schedule")</option>
+                        <option value="attendance">@(isTurkish ? "Mesai Takip" : "Time Attendance")</option>
+                    }
+                    else
+                    {
+                        <option value="shift">@(isTurkish ? "Nöbet Çizelgesi" : "Shift Schedule")</option>
+                        <option value="attendance" selected>@(isTurkish ? "Mesai Takip" : "Time Attendance")</option>
+                    }
+                </select>
+            </div>
+            
+            <div class="setting-group">
+                <label>@(isTurkish ? "Gece Başlangıç" : "Night Start")</label>
+                <select name="nightStartHour">
                     @for (int h = 18; h <= 23; h++)
                     {
                         if (Model.NightStartTime.Hour == h)
@@ -379,8 +550,8 @@
             </div>
             
             <div class="setting-group">
-                <label>@(isTurkish ? "Gece Bitiş Saati" : "Night End Hour")</label>
-                <select name="nightEndHour" onchange="this.form.submit()">
+                <label>@(isTurkish ? "Gece Bitiş" : "Night End")</label>
+                <select name="nightEndHour">
                     @for (int h = 4; h <= 9; h++)
                     {
                         if (Model.NightEndTime.Hour == h)
@@ -394,129 +565,400 @@
                     }
                 </select>
             </div>
-            
-            <div class="setting-group">
-                <label>@(isTurkish ? "Haftalık Çalışma Hedefi" : "Weekly Target")</label>
-                <span style="padding: 8px 12px; background: #f3f4f6; border-radius: 6px; font-weight: 600;">
-                    @Model.WeeklyRequiredHours @(isTurkish ? "saat" : "hrs")
-                </span>
-            </div>
+
+            <button type="submit" name="calculate" value="true" class="btn btn-primary">
+                📊 @(isTurkish ? "Hesapla" : "Calculate")
+            </button>
         </form>
     </div>
 
-    @if (Model.EmployeePayrolls.Any())
+    <!-- Saved Payrolls -->
+    @if (Model.SavedPayrolls.Any())
+    {
+        <div class="saved-list">
+            <div class="saved-list-header">
+                <span>@(isTurkish ? "Kaydedilmiş Puantajlar" : "Saved Payrolls")</span>
+            </div>
+            @foreach (var saved in Model.SavedPayrolls)
+            {
+                <div class="saved-item">
+                    <div class="saved-item-info">
+                        <span class="saved-item-name">@saved.Name</span>
+                        <span class="saved-item-meta">
+                            @(saved.DataSource == "attendance" ? (isTurkish ? "Mesai Takip" : "Attendance") : (isTurkish ? "Nöbet" : "Shift"))
+                            · @saved.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+                        </span>
+                    </div>
+                    <div class="saved-item-actions">
+                        <button class="btn btn-sm btn-outline" onclick="loadSavedPayroll(@saved.Id)">
+                            @(isTurkish ? "Yükle" : "Load")
+                        </button>
+                        <button class="btn btn-sm btn-success" onclick="exportSavedPayroll(@saved.Id)">
+                            📥
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteSavedPayroll(@saved.Id)">
+                            🗑
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Results -->
+    @if (Model.IsCalculated && Model.EmployeePayrolls.Any())
     {
         var totalWorked = Model.EmployeePayrolls.Sum(p => p.TotalWorkedHours);
-        var totalRequired = Model.EmployeePayrolls.Sum(p => p.RequiredHours);
-        var totalOvertime = Model.EmployeePayrolls.Sum(p => p.OvertimeHours);
         var totalNight = Model.EmployeePayrolls.Sum(p => p.NightHours);
         var totalWeekend = Model.EmployeePayrolls.Sum(p => p.WeekendHours);
         var totalHoliday = Model.EmployeePayrolls.Sum(p => p.HolidayHours);
 
-        <!-- Summary Cards -->
-        <div class="summary-cards">
-            <div class="summary-card">
-                <div class="summary-card-label">@(isTurkish ? "Toplam Çalışılan" : "Total Worked")</div>
-                <div class="summary-card-value">@totalWorked.ToString("0.#") @(isTurkish ? "saat" : "hrs")</div>
+        <div class="results-card">
+            <div class="results-header">
+                <h3>@(isTurkish ? "Hesaplama Sonuçları" : "Calculation Results") <span id="editIndicator" style="display:none;color:#f59e0b;font-size:0.8rem;">(@(isTurkish ? "düzenlendi" : "edited"))</span></h3>
+                <div class="results-actions">
+                    <button class="btn btn-sm btn-primary" onclick="recalculate()" title="@(isTurkish ? "Tekrar Hesapla" : "Recalculate")">
+                        🔄 @(isTurkish ? "Tekrar Hesapla" : "Recalculate")
+                    </button>
+                    <button class="btn btn-sm btn-outline" onclick="openSaveModal()">
+                        💾 @(isTurkish ? "Kaydet" : "Save")
+                    </button>
+                    <button class="btn btn-sm btn-success" onclick="exportExcel()">
+                        📥 Excel
+                    </button>
+                </div>
             </div>
-            <div class="summary-card">
-                <div class="summary-card-label">@(isTurkish ? "Hedef Saat" : "Target Hours")</div>
-                <div class="summary-card-value">@totalRequired.ToString("0.#") @(isTurkish ? "saat" : "hrs")</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-card-label">@(isTurkish ? "Fazla Mesai" : "Overtime")</div>
-                <div class="summary-card-value @(totalOvertime > 0 ? "positive" : "")">+@totalOvertime.ToString("0.#") @(isTurkish ? "saat" : "hrs")</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-card-label">@(isTurkish ? "Gece Çalışması" : "Night Work")</div>
-                <div class="summary-card-value">@totalNight.ToString("0.#") @(isTurkish ? "saat" : "hrs")</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-card-label">@(isTurkish ? "Hafta Sonu" : "Weekend")</div>
-                <div class="summary-card-value">@totalWeekend.ToString("0.#") @(isTurkish ? "saat" : "hrs")</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-card-label">@(isTurkish ? "Resmi Tatil" : "Holidays")</div>
-                <div class="summary-card-value">@totalHoliday.ToString("0.#") @(isTurkish ? "saat" : "hrs")</div>
-            </div>
-        </div>
 
-        <!-- Payroll Table -->
-        <div class="payroll-table-wrapper">
-            <table class="payroll-table">
+            <!-- Summary (auto-updates when edited) -->
+            <div class="summary-row">
+                <div class="summary-item">
+                    <div class="summary-label">@(isTurkish ? "Toplam Çalışılan" : "Total Worked")</div>
+                    <div class="summary-value" id="sumWorked">@totalWorked.ToString("0.#")s</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">@(isTurkish ? "Gece" : "Night")</div>
+                    <div class="summary-value" id="sumNight">@totalNight.ToString("0.#")s</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">@(isTurkish ? "Hafta Sonu" : "Weekend")</div>
+                    <div class="summary-value" id="sumWeekend">@totalWeekend.ToString("0.#")s</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">@(isTurkish ? "Tatil" : "Holiday")</div>
+                    <div class="summary-value green" id="sumHoliday">@totalHoliday.ToString("0.#")s</div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <table class="payroll-table" id="payrollTable">
                 <thead>
                     <tr>
+                        <th style="width:30px;"></th>
                         <th>@(isTurkish ? "Personel" : "Employee")</th>
-                        <th class="text-right">@(isTurkish ? "Çalışılan Gün" : "Days Worked")</th>
-                        <th class="text-right">@(isTurkish ? "Çalışılan Saat" : "Hours Worked")</th>
-                        <th class="text-right">@(isTurkish ? "Hedef Saat" : "Target Hours")</th>
-                        <th class="text-right">@(isTurkish ? "Fazla Mesai" : "Overtime")</th>
-                        <th class="text-right">@(isTurkish ? "Gece" : "Night")</th>
-                        <th class="text-right">@(isTurkish ? "Hafta Sonu" : "Weekend")</th>
-                        <th class="text-right">@(isTurkish ? "Tatil" : "Holiday")</th>
-                        <th class="text-right">@(isTurkish ? "İzin" : "Days Off")</th>
+                        <th class="num">@(isTurkish ? "Gün" : "Days")</th>
+                        <th class="num">@(isTurkish ? "Saat" : "Hours")</th>
+                        <th class="num">@(isTurkish ? "Gece" : "Night")</th>
+                        <th class="num">@(isTurkish ? "H.Sonu" : "Wknd")</th>
+                        <th class="num">@(isTurkish ? "Tatil" : "Hol.")</th>
+                        <th class="num">@(isTurkish ? "İzin" : "Off")</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var payroll in Model.EmployeePayrolls.OrderBy(p => p.Employee.FullName))
                     {
-                        var diff = payroll.TotalWorkedHours - payroll.RequiredHours;
-                        var diffClass = diff > 0 ? "hours-positive" : (diff < 0 ? "hours-negative" : "");
-                        var badgeClass = diff > 0 ? "badge-overtime" : (diff < 0 ? "badge-under" : "badge-neutral");
-                        <tr>
+                        var rowId = $"row_{payroll.Employee.Id}";
+                        var empId = payroll.Employee.Id;
+                        <tr data-emp="@empId">
                             <td>
-                                <div class="employee-name">@payroll.Employee.FullName</div>
+                                <button class="expand-btn" onclick="toggleDetail('@rowId', this)">+</button>
+                            </td>
+                            <td>
+                                <div class="emp-name">@payroll.Employee.FullName</div>
                                 @if (!string.IsNullOrEmpty(payroll.Employee.Title))
                                 {
-                                    <div class="employee-title">@payroll.Employee.Title</div>
+                                    <div class="emp-title">@payroll.Employee.Title</div>
                                 }
                             </td>
-                            <td class="text-right">@payroll.WorkedDays / @payroll.TotalWorkDays</td>
-                            <td class="text-right hours-cell">@payroll.TotalWorkedHours.ToString("0.#")</td>
-                            <td class="text-right">@payroll.RequiredHours.ToString("0.#")</td>
-                            <td class="text-right">
-                                @if (diff != 0)
-                                {
-                                    <span class="hours-badge @badgeClass">
-                                        @(diff > 0 ? "+" : "")@diff.ToString("0.#")
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="hours-badge badge-neutral">0</span>
-                                }
+                            <td class="num">
+                                <input type="number" class="edit-input" data-emp="@empId" data-field="days" value="@payroll.WorkedDays" min="0" max="31" onchange="markEdited()">
                             </td>
-                            <td class="text-right">@(payroll.NightHours > 0 ? payroll.NightHours.ToString("0.#") : "-")</td>
-                            <td class="text-right">@(payroll.WeekendHours > 0 ? payroll.WeekendHours.ToString("0.#") : "-")</td>
-                            <td class="text-right">@(payroll.HolidayHours > 0 ? payroll.HolidayHours.ToString("0.#") : "-")</td>
-                            <td class="text-right">@(payroll.DayOffCount > 0 ? payroll.DayOffCount.ToString() : "-")</td>
+                            <td class="num">
+                                <input type="number" class="edit-input edit-main" data-emp="@empId" data-field="hours" value="@payroll.TotalWorkedHours.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" step="0.5" min="0" onchange="markEdited(); updateSummary()">
+                            </td>
+                            <td class="num">
+                                <input type="number" class="edit-input" data-emp="@empId" data-field="night" value="@payroll.NightHours.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" step="0.5" min="0" onchange="markEdited(); updateSummary()">
+                            </td>
+                            <td class="num">
+                                <input type="number" class="edit-input" data-emp="@empId" data-field="weekend" value="@payroll.WeekendHours.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" step="0.5" min="0" onchange="markEdited(); updateSummary()">
+                            </td>
+                            <td class="num">
+                                <input type="number" class="edit-input" data-emp="@empId" data-field="holiday" value="@payroll.HolidayHours.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" step="0.5" min="0" onchange="markEdited(); updateSummary()">
+                            </td>
+                            <td class="num">
+                                <input type="number" class="edit-input" data-emp="@empId" data-field="off" value="@payroll.DayOffCount" min="0" max="31" onchange="markEdited()">
+                            </td>
+                        </tr>
+                        <tr class="detail-row" id="@rowId">
+                            <td colspan="8" class="detail-cell">
+                                <table class="detail-table">
+                                    <thead>
+                                        <tr>
+                                            <th>@(isTurkish ? "Tarih" : "Date")</th>
+                                            <th>@(isTurkish ? "Giriş" : "In")</th>
+                                            <th>@(isTurkish ? "Çıkış" : "Out")</th>
+                                            <th>@(isTurkish ? "Saat" : "Hrs")</th>
+                                            <th>@(isTurkish ? "Gece" : "Night")</th>
+                                            <th>@(isTurkish ? "Not" : "Note")</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var detail in payroll.ShiftDetails.OrderBy(d => d.Date))
+                                        {
+                                            var trClass = detail.IsDayOff ? "day-off" : (detail.IsHoliday ? "holiday" : (detail.IsWeekend ? "weekend" : ""));
+                                            <tr class="@trClass">
+                                                <td>
+                                                    @detail.Date.ToString("dd.MM")
+                                                    <span style="color:#999;font-size:0.65rem;">@dayNames[(int)detail.Date.DayOfWeek]</span>
+                                                </td>
+                                                <td>@(detail.StartTime?.ToString("HH:mm") ?? "-")</td>
+                                                <td>
+                                                    @(detail.EndTime?.ToString("HH:mm") ?? "-")
+                                                    @if (detail.SpansNextDay) { <span style="color:#e91e63;">↓</span> }
+                                                </td>
+                                                <td>@(detail.IsDayOff ? (isTurkish ? "İzin" : "Off") : detail.TotalHours.ToString("0.#"))</td>
+                                                <td>@(detail.NightHours > 0 ? detail.NightHours.ToString("0.#") : "-")</td>
+                                                <td>@(detail.HolidayName ?? detail.Note ?? "-")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
     }
-    else
+    else if (Model.IsCalculated)
     {
-        <div class="empty-state">
-            <div class="empty-state-icon">📋</div>
-            <div class="empty-state-title">@(isTurkish ? "Henüz personel yok" : "No employees yet")</div>
-            <p>@(isTurkish ? "Puantaj hesaplamak için önce personel ekleyin ve nöbet atayın." : "Add employees and assign shifts to calculate payroll.")</p>
-            <a href="@Url.Action("Index")" class="btn btn-primary" style="margin-top: 16px;">
-                @(isTurkish ? "Takvime Git" : "Go to Calendar")
-            </a>
+        <div class="results-card">
+            <div class="empty-state">
+                <div class="empty-state-icon">📋</div>
+                <div class="empty-state-title">@(isTurkish ? "Veri bulunamadı" : "No data found")</div>
+                <p>@(Model.DataSource == "attendance" 
+                    ? (isTurkish ? "Seçilen ay için mesai kaydı bulunmuyor." : "No attendance records for selected month.")
+                    : (isTurkish ? "Seçilen ay için nöbet ataması bulunmuyor." : "No shifts assigned for selected month."))</p>
+            </div>
+        </div>
+    }
+    else if (!Model.IsCalculated)
+    {
+        <div class="results-card">
+            <div class="empty-state">
+                <div class="empty-state-icon">📊</div>
+                <div class="empty-state-title">@(isTurkish ? "Puantaj Hesapla" : "Calculate Payroll")</div>
+                <p>@(isTurkish ? "Veri kaynağını seçip 'Hesapla' butonuna tıklayın." : "Select data source and click 'Calculate'.")</p>
+            </div>
         </div>
     }
 </div>
 
+<!-- Save Modal -->
+<div class="modal-backdrop" id="saveModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h4>@(isTurkish ? "Puantajı Kaydet" : "Save Payroll")</h4>
+            <button class="modal-close" onclick="closeSaveModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>@(isTurkish ? "İsim" : "Name")</label>
+                <input type="text" id="payrollName" placeholder="@(isTurkish ? "örn: Ocak 2026 Final" : "e.g., January 2026 Final")">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeSaveModal()">@(isTurkish ? "İptal" : "Cancel")</button>
+            <button class="btn btn-primary" onclick="savePayroll()">@(isTurkish ? "Kaydet" : "Save")</button>
+        </div>
+    </div>
+</div>
+
 <script>
+    let isEdited = false;
+    
+    // Employee base data (for daily entries)
+    const employeeData = {
+        @foreach (var payroll in Model.EmployeePayrolls)
+        {
+            @:@payroll.Employee.Id: {
+                @:name: '@payroll.Employee.FullName.Replace("'", "\\'")',
+                @:title: '@(payroll.Employee.Title?.Replace("'", "\\'") ?? "")',
+                @:dailyEntries: [
+                    @foreach (var d in payroll.ShiftDetails)
+                    {
+                        @:{ date: '@d.Date.ToString("yyyy-MM-dd")', startTime: '@(d.StartTime?.ToString("HH:mm") ?? "")', endTime: '@(d.EndTime?.ToString("HH:mm") ?? "")', hours: @d.TotalHours.ToString(System.Globalization.CultureInfo.InvariantCulture), nightHours: @d.NightHours.ToString(System.Globalization.CultureInfo.InvariantCulture), isWeekend: @d.IsWeekend.ToString().ToLower(), isHoliday: @d.IsHoliday.ToString().ToLower(), isDayOff: @d.IsDayOff.ToString().ToLower(), note: '@(d.HolidayName?.Replace("'", "\\'") ?? d.Note?.Replace("'", "\\'") ?? "")' },
+                    }
+                @:]
+            @:},
+        }
+    };
+
+    function toggleDetail(rowId, btn) {
+        const row = document.getElementById(rowId);
+        row.classList.toggle('open');
+        btn.classList.toggle('open');
+        btn.textContent = row.classList.contains('open') ? '−' : '+';
+    }
+
+    function markEdited() {
+        isEdited = true;
+        document.getElementById('editIndicator').style.display = 'inline';
+    }
+
+    function updateSummary() {
+        let totalHours = 0, totalNight = 0, totalWeekend = 0, totalHoliday = 0;
+        
+        document.querySelectorAll('input[data-field="hours"]').forEach(inp => {
+            totalHours += parseFloat(inp.value) || 0;
+        });
+        document.querySelectorAll('input[data-field="night"]').forEach(inp => {
+            totalNight += parseFloat(inp.value) || 0;
+        });
+        document.querySelectorAll('input[data-field="weekend"]').forEach(inp => {
+            totalWeekend += parseFloat(inp.value) || 0;
+        });
+        document.querySelectorAll('input[data-field="holiday"]').forEach(inp => {
+            totalHoliday += parseFloat(inp.value) || 0;
+        });
+
+        document.getElementById('sumWorked').textContent = totalHours.toFixed(1) + 's';
+        document.getElementById('sumNight').textContent = totalNight.toFixed(1) + 's';
+        document.getElementById('sumWeekend').textContent = totalWeekend.toFixed(1) + 's';
+        document.getElementById('sumHoliday').textContent = totalHoliday.toFixed(1) + 's';
+    }
+
+    function recalculate() {
+        if (isEdited && !confirm('@(isTurkish ? "Düzenlemeleriniz kaybolacak. Devam etmek istiyor musunuz?" : "Your edits will be lost. Continue?")')) {
+            return;
+        }
+        // Re-submit the form with calculate=true
+        const form = document.getElementById('settingsForm');
+        form.submit();
+    }
+
+    function openSaveModal() {
+        document.getElementById('saveModal').classList.add('open');
+        document.getElementById('payrollName').value = '@Model.MonthName';
+        document.getElementById('payrollName').focus();
+    }
+
+    function closeSaveModal() {
+        document.getElementById('saveModal').classList.remove('open');
+    }
+
+    function collectPayrollData() {
+        const payrollData = [];
+        const rows = document.querySelectorAll('tr[data-emp]');
+        
+        rows.forEach(row => {
+            const empId = row.getAttribute('data-emp');
+            const empInfo = employeeData[empId] || {};
+            
+            payrollData.push({
+                employeeId: parseInt(empId),
+                employeeName: empInfo.name || '',
+                employeeTitle: empInfo.title || '',
+                workedDays: parseInt(row.querySelector('input[data-field="days"]')?.value) || 0,
+                totalWorkedHours: parseFloat(row.querySelector('input[data-field="hours"]')?.value) || 0,
+                nightHours: parseFloat(row.querySelector('input[data-field="night"]')?.value) || 0,
+                weekendHours: parseFloat(row.querySelector('input[data-field="weekend"]')?.value) || 0,
+                holidayHours: parseFloat(row.querySelector('input[data-field="holiday"]')?.value) || 0,
+                dayOffCount: parseInt(row.querySelector('input[data-field="off"]')?.value) || 0,
+                dailyEntries: empInfo.dailyEntries || []
+            });
+        });
+        
+        return payrollData;
+    }
+
+    async function savePayroll() {
+        const name = document.getElementById('payrollName').value.trim();
+        if (!name) {
+            alert('@(isTurkish ? "İsim gerekli" : "Name required")');
+            return;
+        }
+
+        const payrollData = collectPayrollData();
+
+        try {
+            const res = await fetch('/api/payroll/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: name,
+                    year: @Model.SelectedYear,
+                    month: @Model.SelectedMonth,
+                    dataSource: '@Model.DataSource',
+                    nightStartHour: @Model.NightStartTime.Hour,
+                    nightEndHour: @Model.NightEndTime.Hour,
+                    payrollDataJson: JSON.stringify(payrollData)
+                })
+            });
+            const result = await res.json();
+            if (result.success) {
+                isEdited = false;
+                closeSaveModal();
+                alert('@(isTurkish ? "Puantaj kaydedildi!" : "Payroll saved!")');
+                location.reload();
+            } else {
+                alert(result.error || '@(isTurkish ? "Hata" : "Error")');
+            }
+        } catch (e) {
+            alert('@(isTurkish ? "Bağlantı hatası" : "Connection error")');
+        }
+    }
+
+    async function loadSavedPayroll(id) {
+        try {
+            const res = await fetch(`/api/payroll/${id}`);
+            const result = await res.json();
+            if (result.success) {
+                // Redirect with saved payroll's settings
+                const d = result.data;
+                window.location.href = `?year=${d.year}&month=${d.month}&source=${d.dataSource}&nightStartHour=${d.nightStartHour}&nightEndHour=${d.nightEndHour}&calculate=true`;
+            }
+        } catch (e) {
+            alert('@(isTurkish ? "Yükleme hatası" : "Load error")');
+        }
+    }
+
+    async function deleteSavedPayroll(id) {
+        if (!confirm('@(isTurkish ? "Bu puantajı silmek istediğinize emin misiniz?" : "Are you sure you want to delete this payroll?")')) return;
+        
+        try {
+            const res = await fetch(`/api/payroll/${id}`, { method: 'DELETE' });
+            const result = await res.json();
+            if (result.success) {
+                location.reload();
+            } else {
+                alert(result.error || '@(isTurkish ? "Hata" : "Error")');
+            }
+        } catch (e) {
+            alert('@(isTurkish ? "Bağlantı hatası" : "Connection error")');
+        }
+    }
+
+    function exportSavedPayroll(id) {
+        window.location.href = `/api/export/payroll-saved/${id}`;
+    }
+
     function exportExcel() {
         const year = @Model.SelectedYear;
         const month = @Model.SelectedMonth;
+        const source = '@Model.DataSource';
         const nightStartHour = @Model.NightStartTime.Hour;
         const nightEndHour = @Model.NightEndTime.Hour;
         
-        window.location.href = `/api/export/payroll?year=${year}&month=${month}&nightStartHour=${nightStartHour}&nightEndHour=${nightEndHour}`;
+        window.location.href = `/api/export/payroll?year=${year}&month=${month}&source=${source}&nightStartHour=${nightStartHour}&nightEndHour=${nightEndHour}`;
     }
 </script>
-

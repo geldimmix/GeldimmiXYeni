@@ -93,7 +93,8 @@ public enum AttendanceType
     Late = 1,         // Geç giriş
     EarlyLeave = 2,   // Erken çıkış
     Overtime = 3,     // Fazla mesai
-    Remote = 4        // Uzaktan çalışma
+    Remote = 4,       // Uzaktan çalışma
+    DayOff = 5        // İzin
 }
 
 public enum AttendanceSource

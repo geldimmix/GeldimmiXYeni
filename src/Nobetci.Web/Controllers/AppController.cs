@@ -981,7 +981,7 @@ public class AppController : Controller
     /// Payroll/Timesheet page - only for registered users
     /// </summary>
     [HttpGet]
-    public async Task<IActionResult> Payroll(int? year, int? month, int? nightStartHour, int? nightEndHour)
+    public async Task<IActionResult> Payroll(int? year, int? month, int? nightStartHour, int? nightEndHour, string? source, bool calculate = false)
     {
         // Only registered users can access payroll
         if (User.Identity?.IsAuthenticated != true)
@@ -991,6 +991,7 @@ public class AppController : Controller
 
         var selectedYear = year ?? DateTime.Now.Year;
         var selectedMonth = month ?? DateTime.Now.Month;
+        var dataSource = source ?? "shift"; // "shift" or "attendance"
         
         var organization = await GetOrCreateOrganizationAsync();
         
@@ -1019,12 +1020,25 @@ public class AppController : Controller
             .Where(s => s.Date.Year == selectedYear && s.Date.Month == selectedMonth)
             .ToListAsync();
         
+        // Get attendance for current month
+        var attendances = await _context.TimeAttendances
+            .Include(a => a.Employee)
+            .Where(a => a.Employee.OrganizationId == organization.Id)
+            .Where(a => a.Date.Year == selectedYear && a.Date.Month == selectedMonth)
+            .ToListAsync();
+        
         // Get overnight shifts from previous month
         var previousMonthLastDay = new DateOnly(selectedYear, selectedMonth, 1).AddDays(-1);
         var previousMonthShifts = await _context.Shifts
             .Include(s => s.Employee)
             .Where(s => s.Employee.OrganizationId == organization.Id)
             .Where(s => s.Date == previousMonthLastDay && s.SpansNextDay)
+            .ToListAsync();
+        
+        // Get saved payrolls for this month
+        var savedPayrolls = await _context.SavedPayrolls
+            .Where(p => p.OrganizationId == organization.Id && p.Year == selectedYear && p.Month == selectedMonth)
+            .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();
 
         var viewModel = new PayrollViewModel
@@ -1033,20 +1047,111 @@ public class AppController : Controller
             Employees = employees,
             Holidays = holidays,
             Shifts = shifts,
+            Attendances = attendances,
             PreviousMonthOvernightShifts = previousMonthShifts,
+            SavedPayrolls = savedPayrolls,
             SelectedYear = selectedYear,
             SelectedMonth = selectedMonth,
             NightStartTime = nightStart,
             NightEndTime = nightEnd,
-            WeeklyRequiredHours = organization.WeeklyWorkHours
+            DataSource = dataSource,
+            IsCalculated = calculate
         };
 
-        // Calculate payroll for each employee
-        viewModel.EmployeePayrolls = CalculateEmployeePayrolls(
-            employees, shifts, previousMonthShifts, holidays, 
-            organization, selectedYear, selectedMonth, nightStart, nightEnd);
+        // Only calculate if requested
+        if (calculate)
+        {
+            if (dataSource == "attendance")
+            {
+                viewModel.EmployeePayrolls = CalculatePayrollFromAttendance(
+                    employees, attendances, holidays, organization, selectedYear, selectedMonth, nightStart, nightEnd);
+            }
+            else
+            {
+                viewModel.EmployeePayrolls = CalculateEmployeePayrolls(
+                    employees, shifts, previousMonthShifts, holidays, 
+                    organization, selectedYear, selectedMonth, nightStart, nightEnd);
+            }
+        }
 
         return View(viewModel);
+    }
+    
+    /// <summary>
+    /// Calculate payroll from time attendance records
+    /// </summary>
+    private List<EmployeePayroll> CalculatePayrollFromAttendance(
+        List<Employee> employees,
+        List<TimeAttendance> attendances,
+        List<Holiday> holidays,
+        Organization organization,
+        int year, int month,
+        TimeOnly nightStart, TimeOnly nightEnd)
+    {
+        var payrolls = new List<EmployeePayroll>();
+        var weekendDays = organization.WeekendDays.Split(',').Select(int.Parse).ToList();
+
+        foreach (var employee in employees)
+        {
+            var employeeAttendances = attendances.Where(a => a.EmployeeId == employee.Id).ToList();
+            
+            var payroll = new EmployeePayroll
+            {
+                Employee = employee,
+                ShiftDetails = new List<ShiftDetail>()
+            };
+
+            foreach (var att in employeeAttendances.OrderBy(a => a.Date))
+            {
+                var holiday = holidays.FirstOrDefault(h => h.Date == att.Date);
+                var isWeekend = weekendDays.Contains((int)att.Date.DayOfWeek);
+
+                var detail = new ShiftDetail
+                {
+                    Date = att.Date,
+                    StartTime = att.CheckInTime,
+                    EndTime = att.CheckOutTime,
+                    SpansNextDay = att.CheckOutToNextDay,
+                    IsDayOff = att.Type == AttendanceType.DayOff,
+                    IsWeekend = isWeekend,
+                    IsHoliday = holiday != null,
+                    HolidayName = holiday?.Name,
+                    Note = att.Notes
+                };
+
+                if (att.Type == AttendanceType.DayOff)
+                {
+                    payroll.DayOffCount++;
+                }
+                else if (att.WorkedHours.HasValue && att.WorkedHours > 0)
+                {
+                    payroll.WorkedDays++;
+                    detail.TotalHours = att.WorkedHours.Value;
+                    payroll.TotalWorkedHours += att.WorkedHours.Value;
+
+                    // Calculate night hours from attendance
+                    if (att.CheckInTime.HasValue && att.CheckOutTime.HasValue)
+                    {
+                        var nightHours = CalculateFullNightHours(att.CheckInTime.Value, att.CheckOutTime.Value, 
+                            att.CheckOutToNextDay, nightStart, nightEnd, 0);
+                        detail.NightHours = nightHours;
+                        payroll.NightHours += nightHours;
+                    }
+
+                    if (isWeekend)
+                        payroll.WeekendHours += att.WorkedHours.Value;
+
+                    if (holiday != null)
+                        payroll.HolidayHours += att.WorkedHours.Value;
+                }
+
+                payroll.ShiftDetails.Add(detail);
+            }
+
+            payrolls.Add(payroll);
+        }
+
+        return payrolls;
     }
 
     /// <summary>
@@ -1075,10 +1180,6 @@ public class AppController : Controller
                 Employee = employee,
                 ShiftDetails = new List<ShiftDetail>()
             };
-
-            // Calculate total work days in month for this employee
-            payroll.TotalWorkDays = CalculateTotalWorkDays(employee, year, month, holidays, weekendDays);
-            payroll.RequiredHours = CalculateRequiredHours(employee, year, month, holidays, weekendDays);
 
             // Add hours from overnight shift from previous month (if split mode)
             if (prevMonthShift != null && !prevMonthShift.IsDayOff && prevMonthShift.OvernightHoursMode == 0)
@@ -1498,81 +1599,143 @@ public class AppController : Controller
     [HttpPost("api/attendance/manual")]
     public async Task<IActionResult> SaveAttendance([FromBody] ManualAttendanceDto dto)
     {
-        if (User.Identity?.IsAuthenticated != true)
-            return Unauthorized();
-
-        var organization = await GetOrCreateOrganizationAsync();
-        
-        if (organization == null)
-            return BadRequest(new { success = false, error = "Organization not found" });
-        
-        var employee = await _context.Employees
-            .FirstOrDefaultAsync(e => e.Id == dto.EmployeeId && e.OrganizationId == organization.Id);
-            
-        if (employee == null)
-            return NotFound(new { error = "Personel bulunamadı" });
-
-        var date = DateOnly.Parse(dto.Date);
-        
-        var attendance = await _context.TimeAttendances
-            .FirstOrDefaultAsync(a => a.EmployeeId == dto.EmployeeId && a.Date == date);
-
-        if (attendance == null)
+        try
         {
-            attendance = new TimeAttendance
+            _logger.LogInformation("SaveAttendance called: EmployeeId={EmpId}, Date={Date}", dto?.EmployeeId, dto?.Date);
+            
+            if (User.Identity?.IsAuthenticated != true)
             {
-                EmployeeId = dto.EmployeeId,
-                Date = date,
-                Source = AttendanceSource.Manual
-            };
-            _context.TimeAttendances.Add(attendance);
-        }
-
-        // Allow setting only check-in, only check-out, or both
-        if (!string.IsNullOrEmpty(dto.CheckInTime))
-            attendance.CheckInTime = TimeOnly.Parse(dto.CheckInTime);
-        else if (dto.ClearCheckIn)
-            attendance.CheckInTime = null;
-            
-        if (!string.IsNullOrEmpty(dto.CheckOutTime))
-            attendance.CheckOutTime = TimeOnly.Parse(dto.CheckOutTime);
-        else if (dto.ClearCheckOut)
-            attendance.CheckOutTime = null;
-            
-        attendance.CheckOutToNextDay = dto.CheckOutToNextDay;
-        attendance.Notes = dto.Notes;
-        attendance.Type = dto.Type;
-        attendance.UpdatedAt = DateTime.UtcNow;
-
-        // Calculate worked hours only if both times are present
-        if (attendance.CheckInTime.HasValue && attendance.CheckOutTime.HasValue)
-        {
-            var inMinutes = attendance.CheckInTime.Value.Hour * 60 + attendance.CheckInTime.Value.Minute;
-            var outMinutes = attendance.CheckOutTime.Value.Hour * 60 + attendance.CheckOutTime.Value.Minute;
-            
-            // Handle overnight shifts (check-out next day)
-            if (attendance.CheckOutToNextDay || outMinutes < inMinutes)
-                outMinutes += 24 * 60;
-                
-            attendance.WorkedHours = Math.Round((outMinutes - inMinutes) / 60m, 2);
-        }
-        else
-        {
-            attendance.WorkedHours = null; // Clear if not both times present
-        }
-
-        await _context.SaveChangesAsync();
-
-        return Ok(new { 
-            success = true, 
-            message = "Mesai kaydı güncellendi",
-            data = new {
-                id = attendance.Id,
-                checkIn = attendance.CheckInTime?.ToString("HH:mm"),
-                checkOut = attendance.CheckOutTime?.ToString("HH:mm"),
-                workedHours = attendance.WorkedHours
+                _logger.LogWarning("SaveAttendance: User not authenticated");
+                return Unauthorized(new { success = false, error = "Not authenticated" });
             }
-        });
+
+            if (dto == null)
+            {
+                _logger.LogWarning("SaveAttendance: dto is null");
+                return BadRequest(new { success = false, error = "Request body is null" });
+            }
+
+            var organization = await GetOrCreateOrganizationAsync();
+            
+            if (organization == null)
+            {
+                _logger.LogWarning("SaveAttendance: Organization is null for user");
+                return BadRequest(new { success = false, error = "Organization not found" });
+            }
+            
+            _logger.LogInformation("SaveAttendance: OrgId={OrgId}", organization.Id);
+            
+            var employee = await _context.Employees
+                .FirstOrDefaultAsync(e => e.Id == dto.EmployeeId && e.OrganizationId == organization.Id);
+                
+            if (employee == null)
+            {
+                _logger.LogWarning("SaveAttendance: Employee not found. EmpId={EmpId}, OrgId={OrgId}", dto.EmployeeId, organization.Id);
+                return NotFound(new { success = false, error = "Personel bulunamadı" });
+            }
+
+            var date = DateOnly.Parse(dto.Date);
+            _logger.LogInformation("SaveAttendance: Parsed date={Date}", date);
+            
+            var attendance = await _context.TimeAttendances
+                .FirstOrDefaultAsync(a => a.EmployeeId == dto.EmployeeId && a.Date == date);
+
+            if (attendance == null)
+            {
+                _logger.LogInformation("SaveAttendance: Creating new attendance record");
+                attendance = new TimeAttendance
+                {
+                    EmployeeId = dto.EmployeeId,
+                    Date = date,
+                    Source = AttendanceSource.Manual
+                };
+                _context.TimeAttendances.Add(attendance);
+            }
+            else
+            {
+                _logger.LogInformation("SaveAttendance: Updating existing attendance record Id={Id}", attendance.Id);
+            }
+
+            // Allow setting only check-in, only check-out, or both
+            if (!string.IsNullOrEmpty(dto.CheckInTime))
+                attendance.CheckInTime = TimeOnly.Parse(dto.CheckInTime);
+            else if (dto.ClearCheckIn)
+                attendance.CheckInTime = null;
+                
+            if (!string.IsNullOrEmpty(dto.CheckOutTime))
+                attendance.CheckOutTime = TimeOnly.Parse(dto.CheckOutTime);
+            else if (dto.ClearCheckOut)
+                attendance.CheckOutTime = null;
+                
+            attendance.CheckOutToNextDay = dto.CheckOutToNextDay;
+            attendance.Notes = dto.Notes;
+            attendance.Type = dto.Type;
+            attendance.UpdatedAt = DateTime.UtcNow;
+
+            // Calculate worked hours only if both times are present
+            if (attendance.CheckInTime.HasValue && attendance.CheckOutTime.HasValue)
+            {
+                var inMinutes = attendance.CheckInTime.Value.Hour * 60 + attendance.CheckInTime.Value.Minute;
+                var outMinutes = attendance.CheckOutTime.Value.Hour * 60 + attendance.CheckOutTime.Value.Minute;
+                
+                // Handle overnight shifts (check-out next day)
+                if (attendance.CheckOutToNextDay || outMinutes < inMinutes)
+                    outMinutes += 24 * 60;
+                
+                var totalMinutes = outMinutes - inMinutes;
+                
+                // Check if there's a shift for this day and subtract break time
+                var shift = await _context.Shifts
+                    .Include(s => s.ShiftTemplate)
+                    .FirstOrDefaultAsync(s => s.EmployeeId == dto.EmployeeId && s.Date == date);
+                
+                int breakMinutes = 0;
+                if (shift != null)
+                {
+                    // Use shift's break minutes if set, otherwise use template's break minutes
+                    // Do NOT fall back to organization default - only use what's defined in shift/template
+                    if (shift.BreakMinutes > 0)
+                        breakMinutes = shift.BreakMinutes;
+                    else if (shift.ShiftTemplate?.BreakMinutes.HasValue == true)
+                        breakMinutes = shift.ShiftTemplate.BreakMinutes.Value;
+                    // else breakMinutes stays 0 (no break defined for this shift)
+                    _logger.LogInformation("SaveAttendance: Found shift with break={Break}min", breakMinutes);
+                }
+                
+                totalMinutes -= breakMinutes;
+                if (totalMinutes < 0) totalMinutes = 0;
+                    
+                attendance.WorkedHours = Math.Round(totalMinutes / 60m, 2);
+            }
+            else
+            {
+                attendance.WorkedHours = null; // Clear if not both times present
+            }
+
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("SaveAttendance: Success, Id={Id}", attendance.Id);
+
+            return Ok(new { 
+                success = true, 
+                message = "Mesai kaydı güncellendi",
+                data = new {
+                    id = attendance.Id,
+                    checkIn = attendance.CheckInTime?.ToString("HH:mm"),
+                    checkOut = attendance.CheckOutTime?.ToString("HH:mm"),
+                    workedHours = attendance.WorkedHours
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "SaveAttendance error: {Message}", ex.Message);
+            return StatusCode(500, new { 
+                success = false, 
+                error = ex.Message, 
+                innerError = ex.InnerException?.Message,
+                stackTrace = ex.StackTrace
+            });
+        }
     }
 
     /// <summary>
@@ -1629,6 +1792,136 @@ public class AppController : Controller
             .ToListAsync();
 
         return Ok(new { success = true, data = attendances });
+    }
+
+    #endregion
+
+    #region Payroll API
+
+    /// <summary>
+    /// Save payroll calculation
+    /// </summary>
+    [HttpPost("api/payroll/save")]
+    public async Task<IActionResult> SavePayroll([FromBody] SavePayrollDto dto)
+    {
+        if (User.Identity?.IsAuthenticated != true)
+            return Unauthorized();
+
+        var organization = await GetOrCreateOrganizationAsync();
+        if (organization == null)
+            return BadRequest(new { success = false, error = "Organization not found" });
+
+        var savedPayroll = new SavedPayroll
+        {
+            OrganizationId = organization.Id,
+            Name = dto.Name,
+            Year = dto.Year,
+            Month = dto.Month,
+            DataSource = dto.DataSource,
+            NightStartHour = dto.NightStartHour,
+            NightEndHour = dto.NightEndHour,
+            PayrollDataJson = dto.PayrollDataJson,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        _context.SavedPayrolls.Add(savedPayroll);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { success = true, id = savedPayroll.Id, message = "Puantaj kaydedildi" });
+    }
+
+    /// <summary>
+    /// Update saved payroll
+    /// </summary>
+    [HttpPut("api/payroll/{id}")]
+    public async Task<IActionResult> UpdatePayroll(int id, [FromBody] SavePayrollDto dto)
+    {
+        if (User.Identity?.IsAuthenticated != true)
+            return Unauthorized();
+
+        var organization = await GetOrCreateOrganizationAsync();
+        
+        var savedPayroll = await _context.SavedPayrolls
+            .FirstOrDefaultAsync(p => p.Id == id && p.OrganizationId == organization.Id);
+            
+        if (savedPayroll == null)
+            return NotFound();
+
+        savedPayroll.Name = dto.Name;
+        savedPayroll.PayrollDataJson = dto.PayrollDataJson;
+        savedPayroll.UpdatedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new { success = true, message = "Puantaj güncellendi" });
+    }
+
+    /// <summary>
+    /// Delete saved payroll
+    /// </summary>
+    [HttpDelete("api/payroll/{id}")]
+    public async Task<IActionResult> DeletePayroll(int id)
+    {
+        if (User.Identity?.IsAuthenticated != true)
+            return Unauthorized();
+
+        var organization = await GetOrCreateOrganizationAsync();
+        
+        var savedPayroll = await _context.SavedPayrolls
+            .FirstOrDefaultAsync(p => p.Id == id && p.OrganizationId == organization.Id);
+            
+        if (savedPayroll == null)
+            return NotFound();
+
+        _context.SavedPayrolls.Remove(savedPayroll);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { success = true, message = "Puantaj silindi" });
+    }
+
+    /// <summary>
+    /// Get saved payroll
+    /// </summary>
+    [HttpGet("api/payroll/{id}")]
+    public async Task<IActionResult> GetPayroll(int id)
+    {
+        if (User.Identity?.IsAuthenticated != true)
+            return Unauthorized();
+
+        var organization = await GetOrCreateOrganizationAsync();
+        
+        var savedPayroll = await _context.SavedPayrolls
+            .FirstOrDefaultAsync(p => p.Id == id && p.OrganizationId == organization.Id);
+            
+        if (savedPayroll == null)
+            return NotFound();
+
+        return Ok(new { 
+            success = true, 
+            data = new {
+                id = savedPayroll.Id,
+                name = savedPayroll.Name,
+                year = savedPayroll.Year,
+                month = savedPayroll.Month,
+                dataSource = savedPayroll.DataSource,
+                nightStartHour = savedPayroll.NightStartHour,
+                nightEndHour = savedPayroll.NightEndHour,
+                payrollData = savedPayroll.PayrollDataJson,
+                createdAt = savedPayroll.CreatedAt
+            }
+        });
+    }
+
+    public class SavePayrollDto
+    {
+        public string Name { get; set; } = string.Empty;
+        public int Year { get; set; }
+        public int Month { get; set; }
+        public string DataSource { get; set; } = "shift";
+        public int NightStartHour { get; set; } = 22;
+        public int NightEndHour { get; set; } = 6;
+        public string PayrollDataJson { get; set; } = "[]";
     }
 
     #endregion

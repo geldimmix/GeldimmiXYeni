@@ -255,6 +255,25 @@ using (var scope = app.Services.CreateScope())
                 CREATE UNIQUE INDEX IF NOT EXISTS ""IX_ApiKeys_KeyHash"" ON ""ApiKeys"" (""KeyHash"");
                 CREATE INDEX IF NOT EXISTS ""IX_ApiKeys_OrganizationId"" ON ""ApiKeys"" (""OrganizationId"");
             ");
+            
+            // Create SavedPayrolls table if not exists
+            await context.Database.ExecuteSqlRawAsync(@"
+                CREATE TABLE IF NOT EXISTS ""SavedPayrolls"" (
+                    ""Id"" SERIAL PRIMARY KEY,
+                    ""OrganizationId"" INTEGER NOT NULL REFERENCES ""Organizations""(""Id"") ON DELETE CASCADE,
+                    ""Name"" VARCHAR(100) NOT NULL,
+                    ""Year"" INTEGER NOT NULL,
+                    ""Month"" INTEGER NOT NULL,
+                    ""DataSource"" VARCHAR(20) NOT NULL DEFAULT 'shift',
+                    ""NightStartHour"" INTEGER NOT NULL DEFAULT 22,
+                    ""NightEndHour"" INTEGER NOT NULL DEFAULT 6,
+                    ""PayrollDataJson"" TEXT NOT NULL DEFAULT '[]',
+                    ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                    ""UpdatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+                );
+                CREATE INDEX IF NOT EXISTS ""IX_SavedPayrolls_OrganizationId"" ON ""SavedPayrolls"" (""OrganizationId"");
+                CREATE INDEX IF NOT EXISTS ""IX_SavedPayrolls_OrgYearMonth"" ON ""SavedPayrolls"" (""OrganizationId"", ""Year"", ""Month"");
+            ");
         }
         catch { /* Columns may already exist */ }
         

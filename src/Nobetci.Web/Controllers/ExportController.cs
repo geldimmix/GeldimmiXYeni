@@ -505,7 +505,7 @@ public class ExportController : Controller
     /// Export payroll/timesheet to Excel
     /// </summary>
     [HttpGet("payroll")]
-    public async Task<IActionResult> ExportPayroll(int year, int month, int nightStartHour = 22, int nightEndHour = 6)
+    public async Task<IActionResult> ExportPayroll(int year, int month, string source = "shift", int nightStartHour = 22, int nightEndHour = 6)
     {
         // Only registered users
         if (User.Identity?.IsAuthenticated != true)
@@ -548,16 +548,28 @@ public class ExportController : Controller
         var nightStart = new TimeOnly(nightStartHour, 0);
         var nightEnd = new TimeOnly(nightEndHour, 0);
 
+        // Get attendance if source is attendance
+        var attendances = source == "attendance" 
+            ? await _context.TimeAttendances
+                .Include(a => a.Employee)
+                .Where(a => a.Employee.OrganizationId == organization.Id)
+                .Where(a => a.Date.Year == year && a.Date.Month == month)
+                .ToListAsync()
+            : new List<TimeAttendance>();
+
         var monthDate = new DateTime(year, month, 1);
         var monthName = monthDate.ToString("MMMM yyyy", culture);
 
         // Sheet name
+        var sourceText = source == "attendance" 
+            ? (isTurkish ? "Mesai Takip" : "Attendance") 
+            : (isTurkish ? "Nöbet" : "Shift");
         var sheetName = isTurkish ? $"Puantaj - {monthName}" : $"Payroll - {monthName}";
 
-        // Headers
+        // Simplified headers (removed target columns)
         var headers = isTurkish
-            ? new[] { "Personel", "Ünvan", "Çalışılan Gün", "Hedef Gün", "Çalışılan Saat", "Hedef Saat", "Fazla Mesai", "Gece Çalışma", "Hafta Sonu", "Resmi Tatil", "İzin Günü" }
-            : new[] { "Employee", "Title", "Days Worked", "Target Days", "Hours Worked", "Target Hours", "Overtime", "Night Hours", "Weekend Hours", "Holiday Hours", "Days Off" };
+            ? new[] { "Personel", "Ünvan", "Çalışılan Gün", "Çalışılan Saat", "Gece Çalışma", "Hafta Sonu", "Resmi Tatil", "İzin Günü" }
+            : new[] { "Employee", "Title", "Days Worked", "Hours Worked", "Night Hours", "Weekend Hours", "Holiday Hours", "Days Off" };
 
         using var workbook = new XLWorkbook();
         var worksheet = workbook.Worksheets.Add(sheetName.Length > 31 ? sheetName.Substring(0, 31) : sheetName);
@@ -570,8 +582,8 @@ public class ExportController : Controller
 
         worksheet.Cell(2, 1).Value = isTurkish ? $"Dönem: {monthName}" : $"Period: {monthName}";
         worksheet.Cell(2, 5).Value = isTurkish 
-            ? $"Gece Saatleri: {nightStartHour:00}:00 - {nightEndHour:00}:00" 
-            : $"Night Hours: {nightStartHour:00}:00 - {nightEndHour:00}:00";
+            ? $"Kaynak: {sourceText} | Gece: {nightStartHour:00}:00 - {nightEndHour:00}:00" 
+            : $"Source: {sourceText} | Night: {nightStartHour:00}:00 - {nightEndHour:00}:00";
 
         // Column headers
         int headerRow = 4;
@@ -588,46 +600,58 @@ public class ExportController : Controller
         int row = headerRow + 1;
         foreach (var employee in employees)
         {
-            var employeeShifts = shifts.Where(s => s.EmployeeId == employee.Id).ToList();
-            var prevMonthShift = prevMonthOvernightShifts.FirstOrDefault(s => s.EmployeeId == employee.Id);
+            decimal workedHours, nightHours, weekendHours, holidayHours;
+            int workedDays, daysOff;
 
-            // Calculate payroll data
-            var (workedDays, totalWorkDays) = CalculateWorkDays(employee, employeeShifts, year, month, holidays, weekendDays);
-            var requiredHours = CalculateRequiredHoursForExport(employee, year, month, holidays, weekendDays);
-            var workedHours = CalculateWorkedHoursForExport(employeeShifts, prevMonthShift, year, month);
-            var nightHours = CalculateNightHoursForExport(employeeShifts, prevMonthShift, nightStart, nightEnd, year, month);
-            var weekendHours = employeeShifts.Where(s => !s.IsDayOff && weekendDays.Contains((int)s.Date.DayOfWeek)).Sum(s => s.TotalHours);
-            var holidayHours = employeeShifts.Where(s => !s.IsDayOff && holidays.Any(h => h.Date == s.Date)).Sum(s => s.TotalHours);
-            var daysOff = employeeShifts.Count(s => s.IsDayOff);
-            var overtime = Math.Max(0, workedHours - requiredHours);
+            if (source == "attendance")
+            {
+                // Calculate from attendance
+                var empAttendances = attendances.Where(a => a.EmployeeId == employee.Id).ToList();
+                workedDays = empAttendances.Count(a => a.WorkedHours > 0);
+                workedHours = empAttendances.Where(a => a.WorkedHours.HasValue).Sum(a => a.WorkedHours ?? 0);
+                weekendHours = empAttendances
+                    .Where(a => a.WorkedHours > 0 && weekendDays.Contains((int)a.Date.DayOfWeek))
+                    .Sum(a => a.WorkedHours ?? 0);
+                holidayHours = empAttendances
+                    .Where(a => a.WorkedHours > 0 && holidays.Any(h => h.Date == a.Date))
+                    .Sum(a => a.WorkedHours ?? 0);
+                daysOff = empAttendances.Count(a => a.Type == AttendanceType.DayOff);
+                
+                // Calculate night hours from attendance
+                nightHours = 0;
+                foreach (var att in empAttendances.Where(a => a.CheckInTime.HasValue && a.CheckOutTime.HasValue))
+                {
+                    nightHours += CalculateNightHoursFromTimes(att.CheckInTime!.Value, att.CheckOutTime!.Value, 
+                        att.CheckOutToNextDay, nightStart, nightEnd);
+                }
+            }
+            else
+            {
+                // Calculate from shifts
+                var employeeShifts = shifts.Where(s => s.EmployeeId == employee.Id).ToList();
+                var prevMonthShift = prevMonthOvernightShifts.FirstOrDefault(s => s.EmployeeId == employee.Id);
+                
+                workedDays = employeeShifts.Count(s => !s.IsDayOff);
+                workedHours = CalculateWorkedHoursForExport(employeeShifts, prevMonthShift, year, month);
+                nightHours = CalculateNightHoursForExport(employeeShifts, prevMonthShift, nightStart, nightEnd, year, month);
+                weekendHours = employeeShifts.Where(s => !s.IsDayOff && weekendDays.Contains((int)s.Date.DayOfWeek)).Sum(s => s.TotalHours);
+                holidayHours = employeeShifts.Where(s => !s.IsDayOff && holidays.Any(h => h.Date == s.Date)).Sum(s => s.TotalHours);
+                daysOff = employeeShifts.Count(s => s.IsDayOff);
+            }
 
             worksheet.Cell(row, 1).Value = employee.FullName;
             worksheet.Cell(row, 2).Value = employee.Title ?? "";
             worksheet.Cell(row, 3).Value = workedDays;
-            worksheet.Cell(row, 4).Value = totalWorkDays;
-            worksheet.Cell(row, 5).Value = (double)workedHours;
-            worksheet.Cell(row, 6).Value = (double)requiredHours;
-            worksheet.Cell(row, 7).Value = (double)overtime;
-            worksheet.Cell(row, 8).Value = (double)nightHours;
-            worksheet.Cell(row, 9).Value = (double)weekendHours;
-            worksheet.Cell(row, 10).Value = (double)holidayHours;
-            worksheet.Cell(row, 11).Value = daysOff;
+            worksheet.Cell(row, 4).Value = (double)workedHours;
+            worksheet.Cell(row, 5).Value = (double)nightHours;
+            worksheet.Cell(row, 6).Value = (double)weekendHours;
+            worksheet.Cell(row, 7).Value = (double)holidayHours;
+            worksheet.Cell(row, 8).Value = daysOff;
 
             // Format numbers
-            for (int col = 5; col <= 10; col++)
+            for (int col = 4; col <= 7; col++)
             {
                 worksheet.Cell(row, col).Style.NumberFormat.Format = "0.0";
-            }
-
-            // Color code overtime
-            if (overtime > 0)
-            {
-                worksheet.Cell(row, 7).Style.Font.FontColor = XLColor.Green;
-            }
-            else if (workedHours < requiredHours)
-            {
-                worksheet.Cell(row, 7).Value = (double)(workedHours - requiredHours);
-                worksheet.Cell(row, 7).Style.Font.FontColor = XLColor.Red;
             }
 
             row++;
@@ -773,27 +797,32 @@ public class ExportController : Controller
 
     private decimal CalculateShiftNightHours(Shift shift, TimeOnly nightStart, TimeOnly nightEnd)
     {
+        return CalculateNightHoursFromTimes(shift.StartTime, shift.EndTime, shift.SpansNextDay, nightStart, nightEnd);
+    }
+
+    private decimal CalculateNightHoursFromTimes(TimeOnly startTime, TimeOnly endTime, bool spansNextDay, TimeOnly nightStart, TimeOnly nightEnd)
+    {
         decimal nightMinutes = 0;
         var nightStartMinutes = nightStart.Hour * 60 + nightStart.Minute;
         var nightEndMinutes = nightEnd.Hour * 60 + nightEnd.Minute;
 
-        if (shift.SpansNextDay)
+        if (spansNextDay)
         {
             // Part 1: Start to midnight
-            var startMinutes = shift.StartTime.Hour * 60 + shift.StartTime.Minute;
+            var startMinutes = startTime.Hour * 60 + startTime.Minute;
             if (startMinutes < nightStartMinutes)
                 nightMinutes += 1440 - nightStartMinutes;
             else
                 nightMinutes += 1440 - startMinutes;
 
             // Part 2: Midnight to end
-            var endMinutes = shift.EndTime.Hour * 60 + shift.EndTime.Minute;
+            var endMinutes = endTime.Hour * 60 + endTime.Minute;
             nightMinutes += Math.Min(endMinutes, nightEndMinutes);
         }
         else
         {
-            var startMinutes = shift.StartTime.Hour * 60 + shift.StartTime.Minute;
-            var endMinutes = shift.EndTime.Hour * 60 + shift.EndTime.Minute;
+            var startMinutes = startTime.Hour * 60 + startTime.Minute;
+            var endMinutes = endTime.Hour * 60 + endTime.Minute;
 
             // Night spans midnight
             if (nightEndMinutes < nightStartMinutes)

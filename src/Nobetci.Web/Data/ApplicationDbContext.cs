@@ -24,6 +24,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<SavedSchedule> SavedSchedules => Set<SavedSchedule>();
     public DbSet<TimeAttendance> TimeAttendances => Set<TimeAttendance>();
     public DbSet<ApiKey> ApiKeys => Set<ApiKey>();
+    public DbSet<SavedPayroll> SavedPayrolls => Set<SavedPayroll>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -182,6 +183,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<ApiKey>(entity =>
         {
             entity.HasIndex(e => e.KeyHash).IsUnique();
+            entity.HasIndex(e => e.OrganizationId);
+            
+            entity.HasOne(e => e.Organization)
+                .WithMany()
+                .HasForeignKey(e => e.OrganizationId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // SavedPayroll configuration
+        builder.Entity<SavedPayroll>(entity =>
+        {
+            entity.HasIndex(e => new { e.OrganizationId, e.Year, e.Month });
             entity.HasIndex(e => e.OrganizationId);
             
             entity.HasOne(e => e.Organization)
