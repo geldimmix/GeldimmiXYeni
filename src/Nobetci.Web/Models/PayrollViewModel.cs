@@ -50,6 +50,10 @@ public class EmployeePayroll
     
     // Hours
     public decimal TotalWorkedHours { get; set; }
+    public decimal RequiredHours { get; set; }  // Hedef saat
+    
+    // Overtime (calculated)
+    public decimal OvertimeHours => Math.Max(0, TotalWorkedHours - RequiredHours);
     
     // Special hours
     public decimal WeekendHours { get; set; }

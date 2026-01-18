@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Nobetci.Web.Data.Entities;
 
@@ -51,33 +52,73 @@ public class SavedPayroll
 /// </summary>
 public class SavedPayrollEntry
 {
+    [JsonPropertyName("employeeId")]
     public int EmployeeId { get; set; }
+    
+    [JsonPropertyName("employeeName")]
     public string EmployeeName { get; set; } = string.Empty;
+    
+    [JsonPropertyName("employeeTitle")]
     public string? EmployeeTitle { get; set; }
     
+    [JsonPropertyName("workedDays")]
     public int WorkedDays { get; set; }
+    
+    [JsonPropertyName("totalWorkedHours")]
     public decimal TotalWorkedHours { get; set; }
+    
+    [JsonPropertyName("requiredHours")]
+    public decimal RequiredHours { get; set; }
+    
+    [JsonPropertyName("overtimeHours")]
+    public decimal OvertimeHours { get; set; }
+    
+    [JsonPropertyName("nightHours")]
     public decimal NightHours { get; set; }
+    
+    [JsonPropertyName("weekendHours")]
     public decimal WeekendHours { get; set; }
+    
+    [JsonPropertyName("holidayHours")]
     public decimal HolidayHours { get; set; }
+    
+    [JsonPropertyName("dayOffCount")]
     public int DayOffCount { get; set; }
     
     /// <summary>
     /// Daily breakdown
     /// </summary>
+    [JsonPropertyName("dailyEntries")]
     public List<DailyEntry> DailyEntries { get; set; } = new();
 }
 
 public class DailyEntry
 {
+    [JsonPropertyName("date")]
     public string Date { get; set; } = string.Empty;
+    
+    [JsonPropertyName("startTime")]
     public string? StartTime { get; set; }
+    
+    [JsonPropertyName("endTime")]
     public string? EndTime { get; set; }
+    
+    [JsonPropertyName("hours")]
     public decimal Hours { get; set; }
+    
+    [JsonPropertyName("nightHours")]
     public decimal NightHours { get; set; }
+    
+    [JsonPropertyName("isWeekend")]
     public bool IsWeekend { get; set; }
+    
+    [JsonPropertyName("isHoliday")]
     public bool IsHoliday { get; set; }
+    
+    [JsonPropertyName("isDayOff")]
     public bool IsDayOff { get; set; }
+    
+    [JsonPropertyName("note")]
     public string? Note { get; set; }
 }
 

@@ -566,10 +566,9 @@ public class ExportController : Controller
             : (isTurkish ? "Nöbet" : "Shift");
         var sheetName = isTurkish ? $"Puantaj - {monthName}" : $"Payroll - {monthName}";
 
-        // Simplified headers (removed target columns)
         var headers = isTurkish
-            ? new[] { "Personel", "Ünvan", "Çalışılan Gün", "Çalışılan Saat", "Gece Çalışma", "Hafta Sonu", "Resmi Tatil", "İzin Günü" }
-            : new[] { "Employee", "Title", "Days Worked", "Hours Worked", "Night Hours", "Weekend Hours", "Holiday Hours", "Days Off" };
+            ? new[] { "Personel", "Ünvan", "Çalışılan Gün", "Çalışılan Saat", "Hedef Saat", "Fazla Mesai", "Gece Çalışma", "Hafta Sonu", "Resmi Tatil", "İzin Günü" }
+            : new[] { "Employee", "Title", "Days Worked", "Hours Worked", "Target Hours", "Overtime", "Night Hours", "Weekend Hours", "Holiday Hours", "Days Off" };
 
         using var workbook = new XLWorkbook();
         var worksheet = workbook.Worksheets.Add(sheetName.Length > 31 ? sheetName.Substring(0, 31) : sheetName);
@@ -600,8 +599,11 @@ public class ExportController : Controller
         int row = headerRow + 1;
         foreach (var employee in employees)
         {
-            decimal workedHours, nightHours, weekendHours, holidayHours;
+            decimal workedHours, nightHours, weekendHours, holidayHours, requiredHours;
             int workedDays, daysOff;
+
+            // Calculate required hours for employee
+            requiredHours = CalculateRequiredHoursForExport(employee, year, month, holidays, weekendDays);
 
             if (source == "attendance")
             {
@@ -639,19 +641,30 @@ public class ExportController : Controller
                 daysOff = employeeShifts.Count(s => s.IsDayOff);
             }
 
+            var overtime = Math.Max(0, workedHours - requiredHours);
+
             worksheet.Cell(row, 1).Value = employee.FullName;
             worksheet.Cell(row, 2).Value = employee.Title ?? "";
             worksheet.Cell(row, 3).Value = workedDays;
             worksheet.Cell(row, 4).Value = (double)workedHours;
-            worksheet.Cell(row, 5).Value = (double)nightHours;
-            worksheet.Cell(row, 6).Value = (double)weekendHours;
-            worksheet.Cell(row, 7).Value = (double)holidayHours;
-            worksheet.Cell(row, 8).Value = daysOff;
+            worksheet.Cell(row, 5).Value = (double)requiredHours;
+            worksheet.Cell(row, 6).Value = (double)overtime;
+            worksheet.Cell(row, 7).Value = (double)nightHours;
+            worksheet.Cell(row, 8).Value = (double)weekendHours;
+            worksheet.Cell(row, 9).Value = (double)holidayHours;
+            worksheet.Cell(row, 10).Value = daysOff;
 
             // Format numbers
-            for (int col = 4; col <= 7; col++)
+            for (int col = 4; col <= 9; col++)
             {
                 worksheet.Cell(row, col).Style.NumberFormat.Format = "0.0";
+            }
+            
+            // Highlight overtime in green if positive
+            if (overtime > 0)
+            {
+                worksheet.Cell(row, 6).Style.Font.FontColor = XLColor.Green;
+                worksheet.Cell(row, 6).Style.Font.Bold = true;
             }
 
             row++;
@@ -710,28 +723,31 @@ public class ExportController : Controller
         var sourceText = savedPayroll.DataSource == "attendance" 
             ? (isTurkish ? "Mesai Takip" : "Attendance") 
             : (isTurkish ? "Nöbet" : "Shift");
-        var sheetName = isTurkish ? $"Puantaj - {monthName}" : $"Payroll - {monthName}";
+        var summarySheetName = isTurkish ? "Özet" : "Summary";
+        var detailSheetName = isTurkish ? "Detay" : "Details";
 
         var headers = isTurkish
-            ? new[] { "Personel", "Ünvan", "Çalışılan Gün", "Çalışılan Saat", "Gece Çalışma", "Hafta Sonu", "Resmi Tatil", "İzin Günü" }
-            : new[] { "Employee", "Title", "Days Worked", "Hours Worked", "Night Hours", "Weekend Hours", "Holiday Hours", "Days Off" };
+            ? new[] { "Personel", "Ünvan", "Çalışılan Gün", "Çalışılan Saat", "Hedef Saat", "Fazla Mesai", "Gece Çalışma", "Hafta Sonu", "Resmi Tatil", "İzin Günü" }
+            : new[] { "Employee", "Title", "Days Worked", "Hours Worked", "Target Hours", "Overtime", "Night Hours", "Weekend Hours", "Holiday Hours", "Days Off" };
 
         using var workbook = new XLWorkbook();
-        var worksheet = workbook.Worksheets.Add(sheetName.Length > 31 ? sheetName.Substring(0, 31) : sheetName);
+        
+        // ========== SUMMARY SHEET ==========
+        var summarySheet = workbook.Worksheets.Add(summarySheetName);
 
         // Add info header
-        worksheet.Cell(1, 1).Value = isTurkish ? "Puantaj Raporu" : "Payroll Report";
-        worksheet.Cell(1, 1).Style.Font.Bold = true;
-        worksheet.Cell(1, 1).Style.Font.FontSize = 14;
-        worksheet.Range(1, 1, 1, 4).Merge();
+        summarySheet.Cell(1, 1).Value = isTurkish ? "Puantaj Raporu" : "Payroll Report";
+        summarySheet.Cell(1, 1).Style.Font.Bold = true;
+        summarySheet.Cell(1, 1).Style.Font.FontSize = 14;
+        summarySheet.Range(1, 1, 1, 4).Merge();
 
-        worksheet.Cell(2, 1).Value = isTurkish ? $"Dönem: {monthName}" : $"Period: {monthName}";
-        worksheet.Cell(2, 5).Value = isTurkish 
+        summarySheet.Cell(2, 1).Value = isTurkish ? $"Dönem: {monthName}" : $"Period: {monthName}";
+        summarySheet.Cell(2, 5).Value = isTurkish 
             ? $"Kaynak: {sourceText} | Gece: {savedPayroll.NightStartHour:00}:00 - {savedPayroll.NightEndHour:00}:00" 
             : $"Source: {sourceText} | Night: {savedPayroll.NightStartHour:00}:00 - {savedPayroll.NightEndHour:00}:00";
         
-        worksheet.Cell(3, 1).Value = isTurkish ? $"Kayıt: {savedPayroll.Name}" : $"Record: {savedPayroll.Name}";
-        worksheet.Cell(3, 5).Value = isTurkish 
+        summarySheet.Cell(3, 1).Value = isTurkish ? $"Kayıt: {savedPayroll.Name}" : $"Record: {savedPayroll.Name}";
+        summarySheet.Cell(3, 5).Value = isTurkish 
             ? $"Oluşturulma: {savedPayroll.CreatedAt.ToLocalTime():dd.MM.yyyy HH:mm}" 
             : $"Created: {savedPayroll.CreatedAt.ToLocalTime():dd.MM.yyyy HH:mm}";
 
@@ -739,7 +755,7 @@ public class ExportController : Controller
         int headerRow = 5;
         for (int i = 0; i < headers.Length; i++)
         {
-            var cell = worksheet.Cell(headerRow, i + 1);
+            var cell = summarySheet.Cell(headerRow, i + 1);
             cell.Value = headers[i];
             cell.Style.Font.Bold = true;
             cell.Style.Fill.BackgroundColor = XLColor.LightGray;
@@ -750,33 +766,122 @@ public class ExportController : Controller
         int row = headerRow + 1;
         foreach (var entry in entries.OrderBy(e => e.EmployeeName))
         {
-            worksheet.Cell(row, 1).Value = entry.EmployeeName;
-            worksheet.Cell(row, 2).Value = entry.EmployeeTitle ?? "";
-            worksheet.Cell(row, 3).Value = entry.WorkedDays;
-            worksheet.Cell(row, 4).Value = (double)entry.TotalWorkedHours;
-            worksheet.Cell(row, 5).Value = (double)entry.NightHours;
-            worksheet.Cell(row, 6).Value = (double)entry.WeekendHours;
-            worksheet.Cell(row, 7).Value = (double)entry.HolidayHours;
-            worksheet.Cell(row, 8).Value = entry.DayOffCount;
+            summarySheet.Cell(row, 1).Value = entry.EmployeeName;
+            summarySheet.Cell(row, 2).Value = entry.EmployeeTitle ?? "";
+            summarySheet.Cell(row, 3).Value = entry.WorkedDays;
+            summarySheet.Cell(row, 4).Value = (double)entry.TotalWorkedHours;
+            summarySheet.Cell(row, 5).Value = (double)entry.RequiredHours;
+            summarySheet.Cell(row, 6).Value = (double)entry.OvertimeHours;
+            summarySheet.Cell(row, 7).Value = (double)entry.NightHours;
+            summarySheet.Cell(row, 8).Value = (double)entry.WeekendHours;
+            summarySheet.Cell(row, 9).Value = (double)entry.HolidayHours;
+            summarySheet.Cell(row, 10).Value = entry.DayOffCount;
 
             // Format numbers
-            for (int col = 4; col <= 7; col++)
+            for (int col = 4; col <= 9; col++)
             {
-                worksheet.Cell(row, col).Style.NumberFormat.Format = "0.0";
+                summarySheet.Cell(row, col).Style.NumberFormat.Format = "0.0";
+            }
+            
+            // Highlight overtime in green
+            if (entry.OvertimeHours > 0)
+            {
+                summarySheet.Cell(row, 6).Style.Font.FontColor = XLColor.Green;
+                summarySheet.Cell(row, 6).Style.Font.Bold = true;
             }
 
             row++;
         }
 
         // Auto-fit columns
-        worksheet.Columns().AdjustToContents();
+        summarySheet.Columns().AdjustToContents();
 
         // Add borders
         if (entries.Any())
         {
-            var dataRange = worksheet.Range(headerRow, 1, row - 1, headers.Length);
+            var dataRange = summarySheet.Range(headerRow, 1, row - 1, headers.Length);
             dataRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             dataRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+        }
+
+        // ========== DAILY DETAIL SHEET ==========
+        var detailSheet = workbook.Worksheets.Add(detailSheetName);
+        
+        var detailHeaders = isTurkish
+            ? new[] { "Personel", "Tarih", "Gün", "Giriş", "Çıkış", "Saat", "Gece", "H.Sonu", "Tatil", "İzin", "Not" }
+            : new[] { "Employee", "Date", "Day", "In", "Out", "Hours", "Night", "Wknd", "Hol", "Off", "Note" };
+        
+        var dayNames = isTurkish 
+            ? new[] { "Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt" }
+            : new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+
+        // Detail header row
+        for (int i = 0; i < detailHeaders.Length; i++)
+        {
+            var cell = detailSheet.Cell(1, i + 1);
+            cell.Value = detailHeaders[i];
+            cell.Style.Font.Bold = true;
+            cell.Style.Fill.BackgroundColor = XLColor.LightGray;
+            cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+        }
+
+        int detailRow = 2;
+        foreach (var entry in entries.OrderBy(e => e.EmployeeName))
+        {
+            if (entry.DailyEntries == null || !entry.DailyEntries.Any())
+                continue;
+
+            foreach (var daily in entry.DailyEntries.OrderBy(d => d.Date))
+            {
+                DateOnly.TryParse(daily.Date, out var date);
+                var dayOfWeek = date != default ? (int)date.DayOfWeek : 0;
+                
+                detailSheet.Cell(detailRow, 1).Value = entry.EmployeeName;
+                detailSheet.Cell(detailRow, 2).Value = daily.Date;
+                detailSheet.Cell(detailRow, 3).Value = dayNames[dayOfWeek];
+                detailSheet.Cell(detailRow, 4).Value = daily.StartTime ?? "-";
+                detailSheet.Cell(detailRow, 5).Value = daily.EndTime ?? "-";
+                detailSheet.Cell(detailRow, 6).Value = daily.IsDayOff ? "-" : (double)daily.Hours;
+                detailSheet.Cell(detailRow, 7).Value = daily.NightHours > 0 ? (double)daily.NightHours : 0;
+                detailSheet.Cell(detailRow, 8).Value = daily.IsWeekend ? "✓" : "";
+                detailSheet.Cell(detailRow, 9).Value = daily.IsHoliday ? "✓" : "";
+                detailSheet.Cell(detailRow, 10).Value = daily.IsDayOff ? "✓" : "";
+                detailSheet.Cell(detailRow, 11).Value = daily.Note ?? "";
+
+                // Highlight weekends and holidays
+                if (daily.IsWeekend)
+                {
+                    detailSheet.Range(detailRow, 1, detailRow, detailHeaders.Length).Style.Fill.BackgroundColor = XLColor.LightYellow;
+                }
+                if (daily.IsHoliday)
+                {
+                    detailSheet.Range(detailRow, 1, detailRow, detailHeaders.Length).Style.Fill.BackgroundColor = XLColor.LightGreen;
+                }
+                if (daily.IsDayOff)
+                {
+                    detailSheet.Range(detailRow, 1, detailRow, detailHeaders.Length).Style.Fill.BackgroundColor = XLColor.LightPink;
+                }
+
+                // Format numbers
+                if (!daily.IsDayOff)
+                {
+                    detailSheet.Cell(detailRow, 6).Style.NumberFormat.Format = "0.0";
+                }
+                detailSheet.Cell(detailRow, 7).Style.NumberFormat.Format = "0.0";
+
+                detailRow++;
+            }
+        }
+
+        // Auto-fit detail columns
+        detailSheet.Columns().AdjustToContents();
+
+        // Add borders to detail sheet
+        if (detailRow > 2)
+        {
+            var detailRange = detailSheet.Range(1, 1, detailRow - 1, detailHeaders.Length);
+            detailRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            detailRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
         }
 
         // Generate file

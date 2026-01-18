@@ -1101,6 +1101,9 @@ public class AppController : Controller
                 ShiftDetails = new List<ShiftDetail>()
             };
 
+            // Calculate required hours for employee
+            payroll.RequiredHours = CalculateRequiredHours(employee, year, month, holidays, weekendDays);
+
             foreach (var att in employeeAttendances.OrderBy(a => a.Date))
             {
                 var holiday = holidays.FirstOrDefault(h => h.Date == att.Date);
@@ -1180,6 +1183,9 @@ public class AppController : Controller
                 Employee = employee,
                 ShiftDetails = new List<ShiftDetail>()
             };
+
+            // Calculate required hours for employee
+            payroll.RequiredHours = CalculateRequiredHours(employee, year, month, holidays, weekendDays);
 
             // Add hours from overnight shift from previous month (if split mode)
             if (prevMonthShift != null && !prevMonthShift.IsDayOff && prevMonthShift.OvernightHoursMode == 0)

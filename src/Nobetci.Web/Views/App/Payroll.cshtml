@@ -609,6 +609,8 @@
     @if (Model.IsCalculated && Model.EmployeePayrolls.Any())
     {
         var totalWorked = Model.EmployeePayrolls.Sum(p => p.TotalWorkedHours);
+        var totalRequired = Model.EmployeePayrolls.Sum(p => p.RequiredHours);
+        var totalOvertime = Model.EmployeePayrolls.Sum(p => p.OvertimeHours);
         var totalNight = Model.EmployeePayrolls.Sum(p => p.NightHours);
         var totalWeekend = Model.EmployeePayrolls.Sum(p => p.WeekendHours);
         var totalHoliday = Model.EmployeePayrolls.Sum(p => p.HolidayHours);
@@ -636,6 +638,10 @@
                     <div class="summary-value" id="sumWorked">@totalWorked.ToString("0.#")s</div>
                 </div>
                 <div class="summary-item">
+                    <div class="summary-label">@(isTurkish ? "Fazla Mesai" : "Overtime")</div>
+                    <div class="summary-value green" id="sumOvertime">@totalOvertime.ToString("0.#")s</div>
+                </div>
+                <div class="summary-item">
                     <div class="summary-label">@(isTurkish ? "Gece" : "Night")</div>
                     <div class="summary-value" id="sumNight">@totalNight.ToString("0.#")s</div>
                 </div>
@@ -657,6 +663,8 @@
                         <th>@(isTurkish ? "Personel" : "Employee")</th>
                         <th class="num">@(isTurkish ? "Gün" : "Days")</th>
                         <th class="num">@(isTurkish ? "Saat" : "Hours")</th>
+                        <th class="num">@(isTurkish ? "Hedef" : "Target")</th>
+                        <th class="num" style="color:#22c55e;">@(isTurkish ? "F.Mesai" : "OT")</th>
                         <th class="num">@(isTurkish ? "Gece" : "Night")</th>
                         <th class="num">@(isTurkish ? "H.Sonu" : "Wknd")</th>
                         <th class="num">@(isTurkish ? "Tatil" : "Hol.")</th>
@@ -683,7 +691,13 @@
                                 <input type="number" class="edit-input" data-emp="@empId" data-field="days" value="@payroll.WorkedDays" min="0" max="31" onchange="markEdited()">
                             </td>
                             <td class="num">
-                                <input type="number" class="edit-input edit-main" data-emp="@empId" data-field="hours" value="@payroll.TotalWorkedHours.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" step="0.5" min="0" onchange="markEdited(); updateSummary()">
+                                <input type="number" class="edit-input edit-main" data-emp="@empId" data-field="hours" value="@payroll.TotalWorkedHours.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" step="0.5" min="0" onchange="markEdited(); updateSummary(); updateOvertime(this)">
+                            </td>
+                            <td class="num">
+                                <input type="number" class="edit-input" data-emp="@empId" data-field="required" value="@payroll.RequiredHours.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" step="0.5" min="0" onchange="markEdited(); updateOvertime(this)">
+                            </td>
+                            <td class="num">
+                                <span class="overtime-value" data-emp="@empId" style="color:#22c55e;font-weight:600;">@payroll.OvertimeHours.ToString("0.#")</span>
                             </td>
                             <td class="num">
                                 <input type="number" class="edit-input" data-emp="@empId" data-field="night" value="@payroll.NightHours.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" step="0.5" min="0" onchange="markEdited(); updateSummary()">
@@ -699,7 +713,7 @@
                             </td>
                         </tr>
                         <tr class="detail-row" id="@rowId">
-                            <td colspan="8" class="detail-cell">
+                            <td colspan="10" class="detail-cell">
                                 <table class="detail-table">
                                     <thead>
                                         <tr>
@@ -863,13 +877,18 @@
         rows.forEach(row => {
             const empId = row.getAttribute('data-emp');
             const empInfo = employeeData[empId] || {};
+            const hours = parseFloat(row.querySelector('input[data-field="hours"]')?.value) || 0;
+            const required = parseFloat(row.querySelector('input[data-field="required"]')?.value) || 0;
+            const overtime = Math.max(0, hours - required);
             
             payrollData.push({
                 employeeId: parseInt(empId),
                 employeeName: empInfo.name || '',
                 employeeTitle: empInfo.title || '',
                 workedDays: parseInt(row.querySelector('input[data-field="days"]')?.value) || 0,
-                totalWorkedHours: parseFloat(row.querySelector('input[data-field="hours"]')?.value) || 0,
+                totalWorkedHours: hours,
+                requiredHours: required,
+                overtimeHours: overtime,
                 nightHours: parseFloat(row.querySelector('input[data-field="night"]')?.value) || 0,
                 weekendHours: parseFloat(row.querySelector('input[data-field="weekend"]')?.value) || 0,
                 holidayHours: parseFloat(row.querySelector('input[data-field="holiday"]')?.value) || 0,
@@ -879,6 +898,27 @@
         });
         
         return payrollData;
+    }
+
+    function updateOvertime(input) {
+        const row = input.closest('tr');
+        const empId = row.getAttribute('data-emp');
+        const hours = parseFloat(row.querySelector('input[data-field="hours"]')?.value) || 0;
+        const required = parseFloat(row.querySelector('input[data-field="required"]')?.value) || 0;
+        const overtime = Math.max(0, hours - required);
+        
+        const otSpan = row.querySelector('.overtime-value');
+        if (otSpan) {
+            otSpan.textContent = overtime.toFixed(1);
+        }
+        
+        // Update total overtime in summary
+        let totalOT = 0;
+        document.querySelectorAll('.overtime-value').forEach(span => {
+            totalOT += parseFloat(span.textContent) || 0;
+        });
+        const sumOT = document.getElementById('sumOvertime');
+        if (sumOT) sumOT.textContent = totalOT.toFixed(1) + 's';
     }
 
     async function savePayroll() {
