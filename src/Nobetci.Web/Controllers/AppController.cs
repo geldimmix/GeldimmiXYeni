@@ -1470,6 +1470,12 @@ public class AppController : Controller
             .Where(h => h.Date.Year == selectedYear && h.Date.Month == selectedMonth)
             .ToListAsync();
 
+        // Get shift templates for quick apply
+        var shiftTemplates = await _context.ShiftTemplates
+            .Where(t => t.OrganizationId == organization.Id && t.IsActive)
+            .OrderBy(t => t.DisplayOrder)
+            .ToListAsync();
+
         var viewModel = new AttendanceViewModel
         {
             Organization = organization,
@@ -1480,6 +1486,8 @@ public class AppController : Controller
             SelectedYear = selectedYear,
             SelectedMonth = selectedMonth
         };
+        
+        ViewBag.ShiftTemplates = shiftTemplates;
 
         return View(viewModel);
     }
@@ -1517,23 +1525,37 @@ public class AppController : Controller
             _context.TimeAttendances.Add(attendance);
         }
 
-        attendance.CheckInTime = string.IsNullOrEmpty(dto.CheckInTime) ? null : TimeOnly.Parse(dto.CheckInTime);
-        attendance.CheckOutTime = string.IsNullOrEmpty(dto.CheckOutTime) ? null : TimeOnly.Parse(dto.CheckOutTime);
+        // Allow setting only check-in, only check-out, or both
+        if (!string.IsNullOrEmpty(dto.CheckInTime))
+            attendance.CheckInTime = TimeOnly.Parse(dto.CheckInTime);
+        else if (dto.ClearCheckIn)
+            attendance.CheckInTime = null;
+            
+        if (!string.IsNullOrEmpty(dto.CheckOutTime))
+            attendance.CheckOutTime = TimeOnly.Parse(dto.CheckOutTime);
+        else if (dto.ClearCheckOut)
+            attendance.CheckOutTime = null;
+            
         attendance.CheckOutToNextDay = dto.CheckOutToNextDay;
         attendance.Notes = dto.Notes;
         attendance.Type = dto.Type;
         attendance.UpdatedAt = DateTime.UtcNow;
 
-        // Calculate worked hours
+        // Calculate worked hours only if both times are present
         if (attendance.CheckInTime.HasValue && attendance.CheckOutTime.HasValue)
         {
             var inMinutes = attendance.CheckInTime.Value.Hour * 60 + attendance.CheckInTime.Value.Minute;
             var outMinutes = attendance.CheckOutTime.Value.Hour * 60 + attendance.CheckOutTime.Value.Minute;
             
-            if (dto.CheckOutToNextDay)
+            // Handle overnight shifts (check-out next day)
+            if (attendance.CheckOutToNextDay || outMinutes < inMinutes)
                 outMinutes += 24 * 60;
                 
             attendance.WorkedHours = Math.Round((outMinutes - inMinutes) / 60m, 2);
+        }
+        else
+        {
+            attendance.WorkedHours = null; // Clear if not both times present
         }
 
         await _context.SaveChangesAsync();
@@ -1921,6 +1943,8 @@ public class ManualAttendanceDto
     public string? CheckInTime { get; set; }
     public string? CheckOutTime { get; set; }
     public bool CheckOutToNextDay { get; set; }
+    public bool ClearCheckIn { get; set; }
+    public bool ClearCheckOut { get; set; }
     public string? Notes { get; set; }
     public AttendanceType Type { get; set; } = AttendanceType.Normal;
 }
