@@ -1,0 +1,703 @@
+@model AttendanceViewModel
+@{
+    var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+    ViewData["Title"] = isTurkish ? "Mesai Takip" : "Attendance";
+    Layout = "_AppLayout";
+    
+    var dayNames = isTurkish 
+        ? new[] { "Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt" }
+        : new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+}
+
+<style>
+    .attendance-container {
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f8fafc;
+        min-height: calc(100vh - 60px);
+    }
+
+    .attendance-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 16px;
+        background: white;
+        padding: 16px 20px;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .attendance-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .attendance-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .month-nav {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #f1f5f9;
+        padding: 6px 12px;
+        border-radius: 8px;
+    }
+
+    .month-nav a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        color: #64748b;
+        text-decoration: none;
+        transition: all 0.15s;
+    }
+
+    .month-nav a:hover {
+        background: #e2e8f0;
+        color: #1e293b;
+    }
+
+    .month-nav .month-label {
+        font-weight: 600;
+        color: #1e293b;
+        min-width: 130px;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        text-decoration: none;
+        transition: all 0.15s;
+    }
+
+    .btn-primary {
+        background: #3b82f6;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #2563eb;
+    }
+
+    .btn-outline {
+        background: white;
+        color: #374151;
+        border: 1px solid #d1d5db;
+    }
+
+    .btn-outline:hover {
+        background: #f9fafb;
+    }
+
+    /* Attendance Table */
+    .attendance-table-wrapper {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .attendance-table-scroll {
+        overflow-x: auto;
+    }
+
+    .attendance-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.75rem;
+        min-width: 800px;
+    }
+
+    .attendance-table th {
+        background: #f8fafc;
+        padding: 10px 8px;
+        font-weight: 600;
+        color: #475569;
+        border-bottom: 1px solid #e2e8f0;
+        white-space: nowrap;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .attendance-table th.employee-col {
+        position: sticky;
+        left: 0;
+        z-index: 20;
+        background: #f1f5f9;
+        min-width: 140px;
+    }
+
+    .attendance-table td {
+        padding: 0;
+        border-bottom: 1px solid #f1f5f9;
+        border-right: 1px solid #f8fafc;
+        vertical-align: top;
+    }
+
+    .attendance-table td.employee-cell {
+        position: sticky;
+        left: 0;
+        background: white;
+        z-index: 5;
+        padding: 10px 12px;
+        min-width: 140px;
+    }
+
+    .attendance-table tr:hover td.employee-cell {
+        background: #f8fafc;
+    }
+
+    .employee-name {
+        font-weight: 600;
+        color: #1e293b;
+        font-size: 0.8rem;
+    }
+
+    .employee-title {
+        font-size: 0.65rem;
+        color: #94a3b8;
+    }
+
+    /* Day Header */
+    .day-header {
+        text-align: center;
+        min-width: 70px;
+    }
+
+    .day-header .day-num {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .day-header .day-name {
+        font-size: 0.65rem;
+        color: #94a3b8;
+    }
+
+    .day-header.weekend {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+    .day-header.holiday {
+        background: #fffbeb;
+        color: #d97706;
+    }
+
+    /* Attendance Cell */
+    .attendance-cell {
+        min-width: 70px;
+        height: 60px;
+        cursor: pointer;
+        transition: background 0.15s;
+        position: relative;
+    }
+
+    .attendance-cell:hover {
+        background: #f0f9ff;
+    }
+
+    .attendance-cell.weekend {
+        background: #fef2f2;
+    }
+
+    .attendance-cell.holiday {
+        background: #fffbeb;
+    }
+
+    .attendance-cell.has-data {
+        background: #f0fdf4;
+    }
+
+    .attendance-cell.has-data:hover {
+        background: #dcfce7;
+    }
+
+    .cell-content {
+        padding: 4px 6px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2px;
+    }
+
+    .time-badge {
+        font-size: 0.65rem;
+        padding: 2px 4px;
+        border-radius: 3px;
+        font-weight: 500;
+    }
+
+    .time-in {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .time-out {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .worked-hours {
+        font-size: 0.6rem;
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    .shift-info {
+        font-size: 0.55rem;
+        color: #94a3b8;
+        margin-top: 2px;
+    }
+
+    /* Summary Row */
+    .summary-row td {
+        background: #f8fafc;
+        font-weight: 600;
+        padding: 10px 8px;
+    }
+
+    .summary-value {
+        font-size: 0.75rem;
+        color: #1e293b;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-backdrop.show {
+        display: flex;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 400px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+    }
+
+    .modal-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-weight: 600;
+        font-size: 1rem;
+        color: #1f2937;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        color: #9ca3af;
+        padding: 4px;
+    }
+
+    .modal-close:hover {
+        color: #374151;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 16px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 6px;
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 0.85rem;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    }
+
+    .form-row {
+        display: flex;
+        gap: 12px;
+    }
+
+    .form-row .form-group {
+        flex: 1;
+    }
+
+    .modal-footer {
+        padding: 16px 20px;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .btn-danger {
+        background: #ef4444;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background: #dc2626;
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .checkbox-group input {
+        width: auto;
+    }
+
+    /* Empty state */
+    .empty-cell {
+        color: #d1d5db;
+        font-size: 1rem;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .attendance-container {
+            padding: 12px;
+        }
+
+        .attendance-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<div class="attendance-container">
+    <!-- Header -->
+    <div class="attendance-header">
+        <h1 class="attendance-title">
+            🕐 @(isTurkish ? "Mesai Takip" : "Attendance Tracking")
+        </h1>
+        
+        <div class="attendance-actions">
+            <div class="month-nav">
+                <a href="@Url.Action("Attendance", new { year = Model.SelectedMonth == 1 ? Model.SelectedYear - 1 : Model.SelectedYear, month = Model.SelectedMonth == 1 ? 12 : Model.SelectedMonth - 1 })">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+                </a>
+                <span class="month-label">@Model.MonthName</span>
+                <a href="@Url.Action("Attendance", new { year = Model.SelectedMonth == 12 ? Model.SelectedYear + 1 : Model.SelectedYear, month = Model.SelectedMonth == 12 ? 1 : Model.SelectedMonth + 1 })">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                </a>
+            </div>
+
+            <a href="@Url.Action("Index", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="btn btn-outline">
+                ← @(isTurkish ? "Takvime Dön" : "Back to Calendar")
+            </a>
+        </div>
+    </div>
+
+    @if (Model.Employees.Any())
+    {
+        <!-- Attendance Table -->
+        <div class="attendance-table-wrapper">
+            <div class="attendance-table-scroll">
+                <table class="attendance-table">
+                    <thead>
+                        <tr>
+                            <th class="employee-col">@(isTurkish ? "Personel" : "Employee")</th>
+                            @for (int day = 1; day <= Model.DaysInMonth; day++)
+                            {
+                                var date = new DateOnly(Model.SelectedYear, Model.SelectedMonth, day);
+                                var isWeekend = Model.IsWeekend(date);
+                                var isHoliday = Model.IsHoliday(date);
+                                var dayClass = isHoliday ? "holiday" : (isWeekend ? "weekend" : "");
+                                <th class="day-header @dayClass">
+                                    <div class="day-num">@day</div>
+                                    <div class="day-name">@dayNames[(int)date.DayOfWeek]</div>
+                                </th>
+                            }
+                            <th style="text-align:center; min-width:60px;">@(isTurkish ? "Toplam" : "Total")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var employee in Model.Employees)
+                        {
+                            var totalWorked = Model.Attendances
+                                .Where(a => a.EmployeeId == employee.Id && a.WorkedHours.HasValue)
+                                .Sum(a => a.WorkedHours ?? 0);
+                            var daysWorked = Model.Attendances
+                                .Count(a => a.EmployeeId == employee.Id && a.CheckInTime.HasValue);
+                            
+                            <tr>
+                                <td class="employee-cell">
+                                    <div class="employee-name">@employee.FullName</div>
+                                    @if (!string.IsNullOrEmpty(employee.Title))
+                                    {
+                                        <div class="employee-title">@employee.Title</div>
+                                    }
+                                </td>
+                                @for (int day = 1; day <= Model.DaysInMonth; day++)
+                                {
+                                    var date = new DateOnly(Model.SelectedYear, Model.SelectedMonth, day);
+                                    var attendance = Model.GetAttendance(employee.Id, date);
+                                    var shift = Model.GetShift(employee.Id, date);
+                                    var isWeekend = Model.IsWeekend(date);
+                                    var isHoliday = Model.IsHoliday(date);
+                                    var hasData = attendance?.CheckInTime != null || attendance?.CheckOutTime != null;
+                                    
+                                    var cellClass = "attendance-cell";
+                                    if (isHoliday) cellClass += " holiday";
+                                    else if (isWeekend) cellClass += " weekend";
+                                    if (hasData) cellClass += " has-data";
+                                    
+                                    <td class="@cellClass" 
+                                        onclick="openAttendanceModal(@employee.Id, '@employee.FullName', '@date.ToString("yyyy-MM-dd")', @(attendance?.Id ?? 0), '@(attendance?.CheckInTime?.ToString("HH:mm") ?? "")', '@(attendance?.CheckOutTime?.ToString("HH:mm") ?? "")', @(attendance?.CheckOutToNextDay.ToString().ToLower() ?? "false"), '@(attendance?.Notes ?? "")')">
+                                        <div class="cell-content">
+                                            @if (attendance?.CheckInTime != null)
+                                            {
+                                                <span class="time-badge time-in">↓ @attendance.CheckInTime.Value.ToString("HH:mm")</span>
+                                            }
+                                            @if (attendance?.CheckOutTime != null)
+                                            {
+                                                <span class="time-badge time-out">↑ @attendance.CheckOutTime.Value.ToString("HH:mm")</span>
+                                            }
+                                            @if (attendance?.WorkedHours > 0)
+                                            {
+                                                <span class="worked-hours">@attendance.WorkedHours.Value.ToString("0.#")h</span>
+                                            }
+                                            @if (shift != null && !shift.IsDayOff && attendance == null)
+                                            {
+                                                <span class="shift-info">@shift.StartTime.ToString("HH:mm")-@shift.EndTime.ToString("HH:mm")</span>
+                                            }
+                                            @if (attendance == null && shift == null)
+                                            {
+                                                <span class="empty-cell">+</span>
+                                            }
+                                        </div>
+                                    </td>
+                                }
+                                <td style="text-align:center; padding: 10px 8px;">
+                                    <div class="summary-value">@totalWorked.ToString("0.#")h</div>
+                                    <div style="font-size:0.6rem; color:#64748b;">@daysWorked @(isTurkish ? "gün" : "days")</div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div style="text-align:center; padding:60px 20px; background:white; border-radius:12px;">
+            <div style="font-size:3rem; margin-bottom:16px;">👤</div>
+            <h3 style="color:#374151; margin-bottom:8px;">@(isTurkish ? "Henüz personel yok" : "No employees yet")</h3>
+            <p style="color:#6b7280;">@(isTurkish ? "Mesai takibi için önce personel ekleyin." : "Add employees first to track attendance.")</p>
+            <a href="@Url.Action("Index")" class="btn btn-primary" style="margin-top:16px;">
+                @(isTurkish ? "Takvime Git" : "Go to Calendar")
+            </a>
+        </div>
+    }
+</div>
+
+<!-- Attendance Modal -->
+<div class="modal-backdrop" id="attendanceModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modalTitle">@(isTurkish ? "Mesai Kaydı" : "Attendance Record")</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="attendanceId" value="0">
+            <input type="hidden" id="employeeId" value="0">
+            <input type="hidden" id="attendanceDate" value="">
+            
+            <div class="form-group">
+                <label>@(isTurkish ? "Personel" : "Employee")</label>
+                <input type="text" id="employeeName" readonly style="background:#f9fafb;">
+            </div>
+            
+            <div class="form-group">
+                <label>@(isTurkish ? "Tarih" : "Date")</label>
+                <input type="text" id="displayDate" readonly style="background:#f9fafb;">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>@(isTurkish ? "Giriş Saati" : "Check In")</label>
+                    <input type="time" id="checkInTime">
+                </div>
+                <div class="form-group">
+                    <label>@(isTurkish ? "Çıkış Saati" : "Check Out")</label>
+                    <input type="time" id="checkOutTime">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="checkOutNextDay">
+                    <label for="checkOutNextDay" style="margin:0;">@(isTurkish ? "Çıkış ertesi güne sarkar" : "Check out spans next day")</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>@(isTurkish ? "Not" : "Notes")</label>
+                <textarea id="attendanceNotes" rows="2"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-danger" id="deleteBtn" onclick="deleteAttendance()" style="display:none;">
+                @(isTurkish ? "Sil" : "Delete")
+            </button>
+            <button class="btn btn-outline" onclick="closeModal()">@(isTurkish ? "İptal" : "Cancel")</button>
+            <button class="btn btn-primary" onclick="saveAttendance()">@(isTurkish ? "Kaydet" : "Save")</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openAttendanceModal(employeeId, employeeName, date, attendanceId, checkIn, checkOut, nextDay, notes) {
+        document.getElementById('employeeId').value = employeeId;
+        document.getElementById('employeeName').value = employeeName;
+        document.getElementById('attendanceDate').value = date;
+        document.getElementById('displayDate').value = new Date(date).toLocaleDateString('@(isTurkish ? "tr-TR" : "en-US")', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('attendanceId').value = attendanceId || 0;
+        document.getElementById('checkInTime').value = checkIn || '';
+        document.getElementById('checkOutTime').value = checkOut || '';
+        document.getElementById('checkOutNextDay').checked = nextDay;
+        document.getElementById('attendanceNotes').value = notes || '';
+        
+        document.getElementById('deleteBtn').style.display = attendanceId > 0 ? 'block' : 'none';
+        document.getElementById('modalTitle').textContent = employeeName + ' - ' + date;
+        document.getElementById('attendanceModal').classList.add('show');
+    }
+
+    function closeModal() {
+        document.getElementById('attendanceModal').classList.remove('show');
+    }
+
+    async function saveAttendance() {
+        const data = {
+            employeeId: parseInt(document.getElementById('employeeId').value),
+            date: document.getElementById('attendanceDate').value,
+            checkInTime: document.getElementById('checkInTime').value || null,
+            checkOutTime: document.getElementById('checkOutTime').value || null,
+            checkOutToNextDay: document.getElementById('checkOutNextDay').checked,
+            notes: document.getElementById('attendanceNotes').value || null,
+            type: 0
+        };
+
+        try {
+            const response = await fetch('/api/attendance/manual', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                closeModal();
+                location.reload();
+            } else {
+                alert(result.error || '@(isTurkish ? "Bir hata oluştu" : "An error occurred")');
+            }
+        } catch (error) {
+            alert('@(isTurkish ? "Bağlantı hatası" : "Connection error")');
+        }
+    }
+
+    async function deleteAttendance() {
+        const id = document.getElementById('attendanceId').value;
+        if (!id || id === '0') return;
+        
+        if (!confirm('@(isTurkish ? "Bu kaydı silmek istediğinizden emin misiniz?" : "Are you sure you want to delete this record?")')) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/attendance/' + id, {
+                method: 'DELETE'
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                closeModal();
+                location.reload();
+            } else {
+                alert(result.error || '@(isTurkish ? "Bir hata oluştu" : "An error occurred")');
+            }
+        } catch (error) {
+            alert('@(isTurkish ? "Bağlantı hatası" : "Connection error")');
+        }
+    }
+
+    // Close modal on backdrop click
+    document.getElementById('attendanceModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal();
+    });
+</script>
+

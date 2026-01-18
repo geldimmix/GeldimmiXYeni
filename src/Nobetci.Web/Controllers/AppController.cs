@@ -1431,6 +1431,183 @@ public class AppController : Controller
 
     #endregion
 
+    #region Attendance (Mesai Takip)
+
+    /// <summary>
+    /// Attendance tracking page - only for registered users
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> Attendance(int? year, int? month)
+    {
+        // Only registered users can access attendance
+        if (User.Identity?.IsAuthenticated != true)
+        {
+            return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("Attendance") });
+        }
+
+        var selectedYear = year ?? DateTime.Now.Year;
+        var selectedMonth = month ?? DateTime.Now.Month;
+        
+        var organization = await GetOrCreateOrganizationAsync();
+        
+        var employees = await _context.Employees
+            .Where(e => e.OrganizationId == organization.Id && e.IsActive)
+            .OrderBy(e => e.FullName)
+            .ToListAsync();
+            
+        var attendances = await _context.TimeAttendances
+            .Where(a => a.Employee.OrganizationId == organization.Id)
+            .Where(a => a.Date.Year == selectedYear && a.Date.Month == selectedMonth)
+            .ToListAsync();
+            
+        var shifts = await _context.Shifts
+            .Where(s => s.Employee.OrganizationId == organization.Id)
+            .Where(s => s.Date.Year == selectedYear && s.Date.Month == selectedMonth)
+            .ToListAsync();
+            
+        var holidays = await _context.Holidays
+            .Where(h => h.OrganizationId == organization.Id)
+            .Where(h => h.Date.Year == selectedYear && h.Date.Month == selectedMonth)
+            .ToListAsync();
+
+        var viewModel = new AttendanceViewModel
+        {
+            Organization = organization,
+            Employees = employees,
+            Attendances = attendances,
+            Shifts = shifts,
+            Holidays = holidays,
+            SelectedYear = selectedYear,
+            SelectedMonth = selectedMonth
+        };
+
+        return View(viewModel);
+    }
+
+    /// <summary>
+    /// Add or update attendance record (manual entry)
+    /// </summary>
+    [HttpPost("api/attendance/manual")]
+    public async Task<IActionResult> SaveAttendance([FromBody] ManualAttendanceDto dto)
+    {
+        if (User.Identity?.IsAuthenticated != true)
+            return Unauthorized();
+
+        var organization = await GetOrCreateOrganizationAsync();
+        
+        var employee = await _context.Employees
+            .FirstOrDefaultAsync(e => e.Id == dto.EmployeeId && e.OrganizationId == organization.Id);
+            
+        if (employee == null)
+            return NotFound(new { error = "Personel bulunamadı" });
+
+        var date = DateOnly.Parse(dto.Date);
+        
+        var attendance = await _context.TimeAttendances
+            .FirstOrDefaultAsync(a => a.EmployeeId == dto.EmployeeId && a.Date == date);
+
+        if (attendance == null)
+        {
+            attendance = new TimeAttendance
+            {
+                EmployeeId = dto.EmployeeId,
+                Date = date,
+                Source = AttendanceSource.Manual
+            };
+            _context.TimeAttendances.Add(attendance);
+        }
+
+        attendance.CheckInTime = string.IsNullOrEmpty(dto.CheckInTime) ? null : TimeOnly.Parse(dto.CheckInTime);
+        attendance.CheckOutTime = string.IsNullOrEmpty(dto.CheckOutTime) ? null : TimeOnly.Parse(dto.CheckOutTime);
+        attendance.CheckOutToNextDay = dto.CheckOutToNextDay;
+        attendance.Notes = dto.Notes;
+        attendance.Type = dto.Type;
+        attendance.UpdatedAt = DateTime.UtcNow;
+
+        // Calculate worked hours
+        if (attendance.CheckInTime.HasValue && attendance.CheckOutTime.HasValue)
+        {
+            var inMinutes = attendance.CheckInTime.Value.Hour * 60 + attendance.CheckInTime.Value.Minute;
+            var outMinutes = attendance.CheckOutTime.Value.Hour * 60 + attendance.CheckOutTime.Value.Minute;
+            
+            if (dto.CheckOutToNextDay)
+                outMinutes += 24 * 60;
+                
+            attendance.WorkedHours = Math.Round((outMinutes - inMinutes) / 60m, 2);
+        }
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new { 
+            success = true, 
+            message = "Mesai kaydı güncellendi",
+            data = new {
+                id = attendance.Id,
+                checkIn = attendance.CheckInTime?.ToString("HH:mm"),
+                checkOut = attendance.CheckOutTime?.ToString("HH:mm"),
+                workedHours = attendance.WorkedHours
+            }
+        });
+    }
+
+    /// <summary>
+    /// Delete attendance record
+    /// </summary>
+    [HttpDelete("api/attendance/{id}")]
+    public async Task<IActionResult> DeleteAttendance(int id)
+    {
+        if (User.Identity?.IsAuthenticated != true)
+            return Unauthorized();
+
+        var organization = await GetOrCreateOrganizationAsync();
+        
+        var attendance = await _context.TimeAttendances
+            .Include(a => a.Employee)
+            .FirstOrDefaultAsync(a => a.Id == id && a.Employee.OrganizationId == organization.Id);
+            
+        if (attendance == null)
+            return NotFound();
+
+        _context.TimeAttendances.Remove(attendance);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { success = true, message = "Kayıt silindi" });
+    }
+
+    /// <summary>
+    /// Get attendance data for a specific month (AJAX)
+    /// </summary>
+    [HttpGet("api/attendance/month")]
+    public async Task<IActionResult> GetMonthAttendance(int year, int month)
+    {
+        if (User.Identity?.IsAuthenticated != true)
+            return Unauthorized();
+
+        var organization = await GetOrCreateOrganizationAsync();
+        
+        var attendances = await _context.TimeAttendances
+            .Include(a => a.Employee)
+            .Where(a => a.Employee.OrganizationId == organization.Id)
+            .Where(a => a.Date.Year == year && a.Date.Month == month)
+            .Select(a => new {
+                id = a.Id,
+                employeeId = a.EmployeeId,
+                date = a.Date.ToString("yyyy-MM-dd"),
+                checkIn = a.CheckInTime.HasValue ? a.CheckInTime.Value.ToString("HH:mm") : null,
+                checkOut = a.CheckOutTime.HasValue ? a.CheckOutTime.Value.ToString("HH:mm") : null,
+                checkOutToNextDay = a.CheckOutToNextDay,
+                workedHours = a.WorkedHours,
+                type = a.Type.ToString(),
+                source = a.Source.ToString(),
+                notes = a.Notes
+            })
+            .ToListAsync();
+
+        return Ok(new { success = true, data = attendances });
+    }
+
+    #endregion
+
     #region Helper Methods
 
     private async Task<Organization> GetOrCreateOrganizationAsync()
@@ -1735,5 +1912,16 @@ public class SavedShiftData
     public bool IsDayOff { get; set; }
     public int OvernightHoursMode { get; set; }
     public int? ShiftTemplateId { get; set; }
+}
+
+public class ManualAttendanceDto
+{
+    public int EmployeeId { get; set; }
+    public string Date { get; set; } = string.Empty;
+    public string? CheckInTime { get; set; }
+    public string? CheckOutTime { get; set; }
+    public bool CheckOutToNextDay { get; set; }
+    public string? Notes { get; set; }
+    public AttendanceType Type { get; set; } = AttendanceType.Normal;
 }
 
