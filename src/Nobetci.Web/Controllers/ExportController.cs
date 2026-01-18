@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using Microsoft.Net.Http.Headers;
 using Nobetci.Web.Data;
 using Nobetci.Web.Data.Entities;
 using Nobetci.Web.Resources;
 using System.Globalization;
+using System.Text;
 
 namespace Nobetci.Web.Controllers;
 
@@ -25,6 +27,19 @@ public class ExportController : Controller
         _context = context;
         _userManager = userManager;
         _localizer = localizer;
+    }
+
+    /// <summary>
+    /// Returns Excel file with properly encoded Turkish filename
+    /// </summary>
+    private FileContentResult ExcelFile(byte[] fileContents, string fileName)
+    {
+        var cd = new ContentDispositionHeaderValue("attachment")
+        {
+            FileNameStar = fileName
+        };
+        Response.Headers.Append(HeaderNames.ContentDisposition, cd.ToString());
+        return File(fileContents, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     }
 
     [HttpGet("excel")]
@@ -263,11 +278,11 @@ public class ExportController : Controller
         stream.Position = 0;
 
         // Localized filename
-        var fileName = isTurkish 
+        var fileName = isTurkish
             ? $"Nobet_Listesi_{year}_{month:00}.xlsx"
             : $"Shift_Schedule_{year}_{month:00}.xlsx";
             
-        return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        return ExcelFile(stream.ToArray(), fileName);
     }
 
     /// <summary>
@@ -687,7 +702,7 @@ public class ExportController : Controller
             ? $"Puantaj_{year}_{month:00}.xlsx"
             : $"Payroll_{year}_{month:00}.xlsx";
 
-        return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        return ExcelFile(stream.ToArray(), fileName);
     }
 
     /// <summary>
@@ -893,7 +908,7 @@ public class ExportController : Controller
             ? $"Puantaj_{savedPayroll.Name.Replace(" ", "_")}_{savedPayroll.Year}_{savedPayroll.Month:00}.xlsx"
             : $"Payroll_{savedPayroll.Name.Replace(" ", "_")}_{savedPayroll.Year}_{savedPayroll.Month:00}.xlsx";
 
-        return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        return ExcelFile(stream.ToArray(), fileName);
     }
 
     private (int workedDays, int totalWorkDays) CalculateWorkDays(Employee employee, List<Shift> shifts, int year, int month, List<Holiday> holidays, List<int> weekendDays)
