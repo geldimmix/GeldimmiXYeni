@@ -98,6 +98,11 @@ jobs:
             "ReCaptcha": {
               "SiteKey": "${{ secrets.RECAPTCHA_SITE_KEY }}",
               "SecretKey": "${{ secrets.RECAPTCHA_SECRET_KEY }}"
+            },
+            "Jwt": {
+              "Key": "GeldimmiSuperSecretJwtKey2026ForProductionEnvironment!",
+              "Issuer": "Geldimmi",
+              "Audience": "GeldimmiUsers"
             }
           }
           EOF
