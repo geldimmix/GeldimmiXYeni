@@ -10,472 +10,637 @@
 }
 
 <style>
-    .attendance-container {
-        max-width: 100%;
-        margin: 0 auto;
-        padding: 20px;
-        background: #f8fafc;
-        min-height: calc(100vh - 60px);
+    :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --surface: #ffffff;
+        --surface-2: #f8fafc;
+        --border: #e2e8f0;
+        --text: #1e293b;
+        --text-muted: #64748b;
     }
 
-    .attendance-header {
+    .att-page {
+        min-height: calc(100vh - 60px);
+        background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #fff1f2 100%);
+        padding: 24px;
+    }
+
+    /* Header */
+    .att-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20px;
+        margin-bottom: 24px;
         flex-wrap: wrap;
         gap: 16px;
-        background: white;
-        padding: 16px 20px;
-        border-radius: 12px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
-    .attendance-title {
-        font-size: 1.4rem;
-        font-weight: 700;
-        color: #1f2937;
-        margin: 0;
+    .att-title {
         display: flex;
         align-items: center;
-        gap: 10px;
-    }
-
-    .attendance-actions {
-        display: flex;
         gap: 12px;
-        align-items: center;
-        flex-wrap: wrap;
     }
 
-    .month-nav {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: #f1f5f9;
-        padding: 6px 12px;
-        border-radius: 8px;
-    }
-
-    .month-nav a {
+    .att-title-icon {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+        border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 28px;
-        height: 28px;
-        border-radius: 6px;
-        color: #64748b;
+        font-size: 1.4rem;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .att-title h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text);
+        margin: 0;
+    }
+
+    .att-title p {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin: 2px 0 0 0;
+    }
+
+    .att-nav {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .month-picker {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        background: var(--surface);
+        padding: 6px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .month-picker a {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        color: var(--text-muted);
         text-decoration: none;
-        transition: all 0.15s;
+        transition: all 0.2s;
     }
 
-    .month-nav a:hover {
-        background: #e2e8f0;
-        color: #1e293b;
+    .month-picker a:hover {
+        background: var(--surface-2);
+        color: var(--primary);
     }
 
-    .month-nav .month-label {
-        font-weight: 600;
-        color: #1e293b;
-        min-width: 130px;
+    .month-picker .month-text {
+        min-width: 140px;
         text-align: center;
-        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text);
+        font-size: 0.95rem;
     }
 
-    .btn {
+    .btn-back {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        padding: 8px 14px;
-        border-radius: 6px;
-        font-size: 0.8rem;
-        font-weight: 500;
-        cursor: pointer;
-        border: none;
+        padding: 10px 18px;
+        background: var(--surface);
+        color: var(--text);
+        border-radius: 10px;
         text-decoration: none;
-        transition: all 0.15s;
+        font-size: 0.85rem;
+        font-weight: 500;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        transition: all 0.2s;
     }
 
-    .btn-primary {
-        background: #3b82f6;
-        color: white;
+    .btn-back:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-1px);
     }
 
-    .btn-primary:hover {
-        background: #2563eb;
-    }
-
-    .btn-outline {
-        background: white;
-        color: #374151;
-        border: 1px solid #d1d5db;
-    }
-
-    .btn-outline:hover {
-        background: #f9fafb;
-    }
-
-    /* Attendance Table */
-    .attendance-table-wrapper {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    /* Table Card */
+    .att-card {
+        background: var(--surface);
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
         overflow: hidden;
     }
 
-    .attendance-table-scroll {
+    .att-scroll {
         overflow-x: auto;
     }
 
-    .attendance-table {
+    .att-table {
         width: 100%;
-        border-collapse: collapse;
-        font-size: 0.75rem;
-        min-width: 800px;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.8rem;
     }
 
-    .attendance-table th {
-        background: #f8fafc;
-        padding: 10px 8px;
-        font-weight: 600;
-        color: #475569;
-        border-bottom: 1px solid #e2e8f0;
-        white-space: nowrap;
+    .att-table thead {
         position: sticky;
         top: 0;
         z-index: 10;
     }
 
-    .attendance-table th.employee-col {
+    .att-table th {
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        padding: 14px 10px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-size: 0.65rem;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid var(--border);
+    }
+
+    .att-table th.emp-col {
         position: sticky;
         left: 0;
         z-index: 20;
-        background: #f1f5f9;
-        min-width: 140px;
+        min-width: 160px;
+        text-align: left;
+        background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
     }
 
-    .attendance-table td {
-        padding: 0;
-        border-bottom: 1px solid #f1f5f9;
-        border-right: 1px solid #f8fafc;
-        vertical-align: top;
-    }
-
-    .attendance-table td.employee-cell {
-        position: sticky;
-        left: 0;
-        background: white;
-        z-index: 5;
-        padding: 10px 12px;
-        min-width: 140px;
-    }
-
-    .attendance-table tr:hover td.employee-cell {
-        background: #f8fafc;
-    }
-
-    .employee-name {
-        font-weight: 600;
-        color: #1e293b;
-        font-size: 0.8rem;
-    }
-
-    .employee-title {
-        font-size: 0.65rem;
-        color: #94a3b8;
-    }
-
-    /* Day Header */
-    .day-header {
+    .att-table th.day-col {
+        min-width: 72px;
         text-align: center;
-        min-width: 70px;
     }
 
-    .day-header .day-num {
-        font-size: 0.9rem;
-        font-weight: 600;
-    }
-
-    .day-header .day-name {
-        font-size: 0.65rem;
-        color: #94a3b8;
-    }
-
-    .day-header.weekend {
-        background: #fef2f2;
-        color: #dc2626;
-    }
-
-    .day-header.holiday {
-        background: #fffbeb;
-        color: #d97706;
-    }
-
-    /* Attendance Cell */
-    .attendance-cell {
-        min-width: 70px;
-        height: 60px;
-        cursor: pointer;
-        transition: background 0.15s;
-        position: relative;
-    }
-
-    .attendance-cell:hover {
-        background: #f0f9ff;
-    }
-
-    .attendance-cell.weekend {
-        background: #fef2f2;
-    }
-
-    .attendance-cell.holiday {
-        background: #fffbeb;
-    }
-
-    .attendance-cell.has-data {
-        background: #f0fdf4;
-    }
-
-    .attendance-cell.has-data:hover {
-        background: #dcfce7;
-    }
-
-    .cell-content {
-        padding: 4px 6px;
-        height: 100%;
+    .day-col-inner {
         display: flex;
         flex-direction: column;
-        justify-content: center;
         align-items: center;
         gap: 2px;
     }
 
-    .time-badge {
-        font-size: 0.65rem;
-        padding: 2px 4px;
-        border-radius: 3px;
+    .day-num {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .day-name {
+        font-size: 0.6rem;
+        color: var(--text-muted);
         font-weight: 500;
     }
 
-    .time-in {
+    .day-col.weekend .day-num { color: var(--danger); }
+    .day-col.weekend { background: #fef2f2 !important; }
+    .day-col.holiday { background: #fffbeb !important; }
+    .day-col.holiday .day-num { color: var(--warning); }
+
+    .att-table td {
+        padding: 0;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+    }
+
+    .att-table td.emp-cell {
+        position: sticky;
+        left: 0;
+        background: var(--surface);
+        z-index: 5;
+        padding: 12px 16px;
+        border-right: 1px solid var(--border);
+    }
+
+    .att-table tr:hover td.emp-cell {
+        background: #fafaff;
+    }
+
+    .emp-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .emp-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: var(--primary);
+        font-size: 0.85rem;
+    }
+
+    .emp-details .emp-name {
+        font-weight: 600;
+        color: var(--text);
+        font-size: 0.85rem;
+    }
+
+    .emp-details .emp-role {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+    }
+
+    /* Cells */
+    .att-cell {
+        min-width: 72px;
+        height: 64px;
+        cursor: pointer;
+        transition: all 0.15s;
+        position: relative;
+    }
+
+    .att-cell:hover {
+        background: #f0f4ff !important;
+    }
+
+    .att-cell.weekend { background: #fef2f2; }
+    .att-cell.holiday { background: #fffbeb; }
+    .att-cell.filled { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); }
+    .att-cell.filled:hover { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%) !important; }
+
+    .cell-inner {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+        gap: 3px;
+    }
+
+    .time-tag {
+        font-size: 0.65rem;
+        padding: 3px 6px;
+        border-radius: 6px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+    }
+
+    .time-tag.in {
         background: #dcfce7;
         color: #166534;
     }
 
-    .time-out {
-        background: #fee2e2;
-        color: #991b1b;
+    .time-tag.out {
+        background: #fce7f3;
+        color: #9d174d;
     }
 
-    .worked-hours {
+    .hours-tag {
         font-size: 0.6rem;
-        color: #64748b;
-        font-weight: 600;
+        font-weight: 700;
+        color: var(--primary);
+        background: #e0e7ff;
+        padding: 2px 6px;
+        border-radius: 4px;
     }
 
-    .shift-info {
+    .shift-hint {
         font-size: 0.55rem;
+        color: var(--text-muted);
+        opacity: 0.7;
+    }
+
+    .add-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        background: #f1f5f9;
         color: #94a3b8;
-        margin-top: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        font-weight: 300;
+        transition: all 0.2s;
     }
 
-    /* Summary Row */
-    .summary-row td {
-        background: #f8fafc;
-        font-weight: 600;
-        padding: 10px 8px;
+    .att-cell:hover .add-icon {
+        background: var(--primary);
+        color: white;
+        transform: scale(1.1);
     }
 
-    .summary-value {
-        font-size: 0.75rem;
-        color: #1e293b;
+    /* Summary Column */
+    .summary-cell {
+        text-align: center;
+        padding: 12px !important;
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
     }
 
-    /* Modal */
-    .modal-backdrop {
+    .summary-hours {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .summary-days {
+        font-size: 0.65rem;
+        color: var(--text-muted);
+    }
+
+    /* Empty State */
+    .empty-box {
+        text-align: center;
+        padding: 80px 24px;
+        background: var(--surface);
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+
+    .empty-box-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        filter: grayscale(0.5);
+    }
+
+    .empty-box h3 {
+        color: var(--text);
+        margin-bottom: 8px;
+        font-size: 1.2rem;
+    }
+
+    .empty-box p {
+        color: var(--text-muted);
+        margin-bottom: 24px;
+    }
+
+    /* Modern Modal */
+    .modal-overlay {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.5);
+        inset: 0;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
         z-index: 1000;
         display: none;
         align-items: center;
         justify-content: center;
-    }
-
-    .modal-backdrop.show {
-        display: flex;
-    }
-
-    .modal-content {
-        background: white;
-        border-radius: 12px;
-        width: 100%;
-        max-width: 400px;
-        max-height: 90vh;
-        overflow-y: auto;
-        box-shadow: 0 25px 50px rgba(0,0,0,0.25);
-    }
-
-    .modal-header {
-        padding: 16px 20px;
-        border-bottom: 1px solid #e5e7eb;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .modal-title {
-        font-weight: 600;
-        font-size: 1rem;
-        color: #1f2937;
-    }
-
-    .modal-close {
-        background: none;
-        border: none;
-        font-size: 1.2rem;
-        cursor: pointer;
-        color: #9ca3af;
-        padding: 4px;
-    }
-
-    .modal-close:hover {
-        color: #374151;
-    }
-
-    .modal-body {
         padding: 20px;
+        opacity: 0;
+        transition: opacity 0.2s ease;
     }
 
-    .form-group {
-        margin-bottom: 16px;
+    .modal-overlay.active {
+        display: flex;
+        opacity: 1;
     }
 
-    .form-group label {
-        display: block;
-        font-size: 0.8rem;
-        font-weight: 500;
-        color: #374151;
-        margin-bottom: 6px;
-    }
-
-    .form-group input, .form-group select, .form-group textarea {
+    .modal-box {
+        background: var(--surface);
+        border-radius: 24px;
         width: 100%;
-        padding: 8px 12px;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        font-size: 0.85rem;
+        max-width: 420px;
+        transform: scale(0.95) translateY(10px);
+        transition: transform 0.25s ease;
+        overflow: hidden;
     }
 
-    .form-group input:focus, .form-group select:focus {
+    .modal-overlay.active .modal-box {
+        transform: scale(1) translateY(0);
+    }
+
+    .modal-top {
+        background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+        padding: 24px;
+        color: white;
+        position: relative;
+    }
+
+    .modal-close-btn {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.2);
+        border: none;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        transition: background 0.2s;
+    }
+
+    .modal-close-btn:hover {
+        background: rgba(255,255,255,0.3);
+    }
+
+    .modal-employee {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .modal-date {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    .modal-form {
+        padding: 24px;
+    }
+
+    .input-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .input-group {
+        margin-bottom: 20px;
+    }
+
+    .input-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .input-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+    }
+
+    .input-label svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .input-field {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        font-size: 0.95rem;
+        color: var(--text);
+        background: var(--surface);
+        transition: all 0.2s;
+    }
+
+    .input-field:focus {
         outline: none;
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
     }
 
-    .form-row {
+    .checkbox-field {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        background: var(--surface-2);
+        border-radius: 12px;
+        cursor: pointer;
+    }
+
+    .checkbox-field input {
+        width: 20px;
+        height: 20px;
+        accent-color: var(--primary);
+    }
+
+    .checkbox-field span {
+        font-size: 0.85rem;
+        color: var(--text);
+    }
+
+    .modal-actions {
         display: flex;
         gap: 12px;
+        padding: 20px 24px;
+        background: var(--surface-2);
+        border-top: 1px solid var(--border);
     }
 
-    .form-row .form-group {
+    .btn-modal {
         flex: 1;
+        padding: 14px 20px;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
     }
 
-    .modal-footer {
-        padding: 16px 20px;
-        border-top: 1px solid #e5e7eb;
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
+    .btn-cancel {
+        background: var(--surface);
+        color: var(--text);
+        border: 2px solid var(--border);
     }
 
-    .btn-danger {
-        background: #ef4444;
+    .btn-cancel:hover {
+        background: var(--surface-2);
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
         color: white;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
     }
 
-    .btn-danger:hover {
-        background: #dc2626;
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
     }
 
-    .checkbox-group {
-        display: flex;
-        align-items: center;
-        gap: 8px;
+    .btn-delete {
+        background: #fef2f2;
+        color: var(--danger);
+        flex: 0 0 auto;
+        padding: 14px;
     }
 
-    .checkbox-group input {
-        width: auto;
-    }
-
-    /* Empty state */
-    .empty-cell {
-        color: #d1d5db;
-        font-size: 1rem;
+    .btn-delete:hover {
+        background: #fee2e2;
     }
 
     /* Responsive */
     @@media (max-width: 768px) {
-        .attendance-container {
-            padding: 12px;
-        }
-
-        .attendance-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
+        .att-page { padding: 16px; }
+        .att-header { flex-direction: column; align-items: stretch; }
+        .att-nav { justify-content: space-between; }
+        .modal-box { max-width: 100%; border-radius: 20px 20px 0 0; }
+        .modal-overlay { align-items: flex-end; padding: 0; }
     }
 </style>
 
-<div class="attendance-container">
+<div class="att-page">
     <!-- Header -->
-    <div class="attendance-header">
-        <h1 class="attendance-title">
-            🕐 @(isTurkish ? "Mesai Takip" : "Attendance Tracking")
-        </h1>
+    <div class="att-header">
+        <div class="att-title">
+            <div class="att-title-icon">🕐</div>
+            <div>
+                <h1>@(isTurkish ? "Mesai Takip" : "Attendance")</h1>
+                <p>@(isTurkish ? "Giriş ve çıkış saatlerini takip edin" : "Track check-in and check-out times")</p>
+            </div>
+        </div>
         
-        <div class="attendance-actions">
-            <div class="month-nav">
+        <div class="att-nav">
+            <div class="month-picker">
                 <a href="@Url.Action("Attendance", new { year = Model.SelectedMonth == 1 ? Model.SelectedYear - 1 : Model.SelectedYear, month = Model.SelectedMonth == 1 ? 12 : Model.SelectedMonth - 1 })">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
                 </a>
-                <span class="month-label">@Model.MonthName</span>
+                <span class="month-text">@Model.MonthName</span>
                 <a href="@Url.Action("Attendance", new { year = Model.SelectedMonth == 12 ? Model.SelectedYear + 1 : Model.SelectedYear, month = Model.SelectedMonth == 12 ? 1 : Model.SelectedMonth + 1 })">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
                 </a>
             </div>
-
-            <a href="@Url.Action("Index", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="btn btn-outline">
-                ← @(isTurkish ? "Takvime Dön" : "Back to Calendar")
+            
+            <a href="@Url.Action("Index", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="btn-back">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                @(isTurkish ? "Takvim" : "Calendar")
             </a>
         </div>
     </div>
 
     @if (Model.Employees.Any())
     {
-        <!-- Attendance Table -->
-        <div class="attendance-table-wrapper">
-            <div class="attendance-table-scroll">
-                <table class="attendance-table">
+        <div class="att-card">
+            <div class="att-scroll">
+                <table class="att-table">
                     <thead>
                         <tr>
-                            <th class="employee-col">@(isTurkish ? "Personel" : "Employee")</th>
+                            <th class="emp-col">@(isTurkish ? "Personel" : "Employee")</th>
                             @for (int day = 1; day <= Model.DaysInMonth; day++)
                             {
                                 var date = new DateOnly(Model.SelectedYear, Model.SelectedMonth, day);
                                 var isWeekend = Model.IsWeekend(date);
                                 var isHoliday = Model.IsHoliday(date);
-                                var dayClass = isHoliday ? "holiday" : (isWeekend ? "weekend" : "");
-                                <th class="day-header @dayClass">
-                                    <div class="day-num">@day</div>
-                                    <div class="day-name">@dayNames[(int)date.DayOfWeek]</div>
+                                var colClass = "day-col" + (isHoliday ? " holiday" : (isWeekend ? " weekend" : ""));
+                                <th class="@colClass">
+                                    <div class="day-col-inner">
+                                        <span class="day-num">@day</span>
+                                        <span class="day-name">@dayNames[(int)date.DayOfWeek]</span>
+                                    </div>
                                 </th>
                             }
-                            <th style="text-align:center; min-width:60px;">@(isTurkish ? "Toplam" : "Total")</th>
+                            <th style="min-width:80px; text-align:center;">@(isTurkish ? "Toplam" : "Total")</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -486,14 +651,20 @@
                                 .Sum(a => a.WorkedHours ?? 0);
                             var daysWorked = Model.Attendances
                                 .Count(a => a.EmployeeId == employee.Id && a.CheckInTime.HasValue);
+                            var initials = string.Join("", employee.FullName.Split(' ').Take(2).Select(n => n.FirstOrDefault()));
                             
                             <tr>
-                                <td class="employee-cell">
-                                    <div class="employee-name">@employee.FullName</div>
-                                    @if (!string.IsNullOrEmpty(employee.Title))
-                                    {
-                                        <div class="employee-title">@employee.Title</div>
-                                    }
+                                <td class="emp-cell">
+                                    <div class="emp-info">
+                                        <div class="emp-avatar">@initials</div>
+                                        <div class="emp-details">
+                                            <div class="emp-name">@employee.FullName</div>
+                                            @if (!string.IsNullOrEmpty(employee.Title))
+                                            {
+                                                <div class="emp-role">@employee.Title</div>
+                                            }
+                                        </div>
+                                    </div>
                                 </td>
                                 @for (int day = 1; day <= Model.DaysInMonth; day++)
                                 {
@@ -504,40 +675,40 @@
                                     var isHoliday = Model.IsHoliday(date);
                                     var hasData = attendance?.CheckInTime != null || attendance?.CheckOutTime != null;
                                     
-                                    var cellClass = "attendance-cell";
+                                    var cellClass = "att-cell";
                                     if (isHoliday) cellClass += " holiday";
                                     else if (isWeekend) cellClass += " weekend";
-                                    if (hasData) cellClass += " has-data";
+                                    if (hasData) cellClass += " filled";
                                     
                                     <td class="@cellClass" 
-                                        onclick="openAttendanceModal(@employee.Id, '@employee.FullName', '@date.ToString("yyyy-MM-dd")', @(attendance?.Id ?? 0), '@(attendance?.CheckInTime?.ToString("HH:mm") ?? "")', '@(attendance?.CheckOutTime?.ToString("HH:mm") ?? "")', @(attendance?.CheckOutToNextDay.ToString().ToLower() ?? "false"), '@(attendance?.Notes ?? "")')">
-                                        <div class="cell-content">
+                                        onclick="openModal(@employee.Id, '@employee.FullName.Replace("'", "\\'")', '@date.ToString("yyyy-MM-dd")', @(attendance?.Id ?? 0), '@(attendance?.CheckInTime?.ToString("HH:mm") ?? "")', '@(attendance?.CheckOutTime?.ToString("HH:mm") ?? "")', @(attendance?.CheckOutToNextDay.ToString().ToLower() ?? "false"), '@(attendance?.Notes?.Replace("'", "\\'") ?? "")')">
+                                        <div class="cell-inner">
                                             @if (attendance?.CheckInTime != null)
                                             {
-                                                <span class="time-badge time-in">↓ @attendance.CheckInTime.Value.ToString("HH:mm")</span>
+                                                <span class="time-tag in">↓ @attendance.CheckInTime.Value.ToString("HH:mm")</span>
                                             }
                                             @if (attendance?.CheckOutTime != null)
                                             {
-                                                <span class="time-badge time-out">↑ @attendance.CheckOutTime.Value.ToString("HH:mm")</span>
+                                                <span class="time-tag out">↑ @attendance.CheckOutTime.Value.ToString("HH:mm")</span>
                                             }
                                             @if (attendance?.WorkedHours > 0)
                                             {
-                                                <span class="worked-hours">@attendance.WorkedHours.Value.ToString("0.#")h</span>
+                                                <span class="hours-tag">@attendance.WorkedHours.Value.ToString("0.#")s</span>
                                             }
                                             @if (shift != null && !shift.IsDayOff && attendance == null)
                                             {
-                                                <span class="shift-info">@shift.StartTime.ToString("HH:mm")-@shift.EndTime.ToString("HH:mm")</span>
+                                                <span class="shift-hint">@shift.StartTime.ToString("HH:mm")-@shift.EndTime.ToString("HH:mm")</span>
                                             }
                                             @if (attendance == null && shift == null)
                                             {
-                                                <span class="empty-cell">+</span>
+                                                <span class="add-icon">+</span>
                                             }
                                         </div>
                                     </td>
                                 }
-                                <td style="text-align:center; padding: 10px 8px;">
-                                    <div class="summary-value">@totalWorked.ToString("0.#")h</div>
-                                    <div style="font-size:0.6rem; color:#64748b;">@daysWorked @(isTurkish ? "gün" : "days")</div>
+                                <td class="summary-cell">
+                                    <div class="summary-hours">@totalWorked.ToString("0.#")s</div>
+                                    <div class="summary-days">@daysWorked @(isTurkish ? "gün" : "days")</div>
                                 </td>
                             </tr>
                         }
@@ -548,156 +719,143 @@
     }
     else
     {
-        <div style="text-align:center; padding:60px 20px; background:white; border-radius:12px;">
-            <div style="font-size:3rem; margin-bottom:16px;">👤</div>
-            <h3 style="color:#374151; margin-bottom:8px;">@(isTurkish ? "Henüz personel yok" : "No employees yet")</h3>
-            <p style="color:#6b7280;">@(isTurkish ? "Mesai takibi için önce personel ekleyin." : "Add employees first to track attendance.")</p>
-            <a href="@Url.Action("Index")" class="btn btn-primary" style="margin-top:16px;">
+        <div class="empty-box">
+            <div class="empty-box-icon">👤</div>
+            <h3>@(isTurkish ? "Henüz personel yok" : "No employees yet")</h3>
+            <p>@(isTurkish ? "Mesai takibi için önce personel ekleyin." : "Add employees first to track attendance.")</p>
+            <a href="@Url.Action("Index")" class="btn-save" style="display:inline-flex; padding: 12px 24px;">
                 @(isTurkish ? "Takvime Git" : "Go to Calendar")
             </a>
         </div>
     }
 </div>
 
-<!-- Attendance Modal -->
-<div class="modal-backdrop" id="attendanceModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 class="modal-title" id="modalTitle">@(isTurkish ? "Mesai Kaydı" : "Attendance Record")</h3>
-            <button class="modal-close" onclick="closeModal()">&times;</button>
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+    <div class="modal-box">
+        <div class="modal-top">
+            <button class="modal-close-btn" onclick="closeModal()">✕</button>
+            <div class="modal-employee" id="modalEmployee"></div>
+            <div class="modal-date" id="modalDate"></div>
         </div>
-        <div class="modal-body">
-            <input type="hidden" id="attendanceId" value="0">
-            <input type="hidden" id="employeeId" value="0">
-            <input type="hidden" id="attendanceDate" value="">
+        
+        <div class="modal-form">
+            <input type="hidden" id="attId">
+            <input type="hidden" id="empId">
+            <input type="hidden" id="attDate">
             
-            <div class="form-group">
-                <label>@(isTurkish ? "Personel" : "Employee")</label>
-                <input type="text" id="employeeName" readonly style="background:#f9fafb;">
-            </div>
-            
-            <div class="form-group">
-                <label>@(isTurkish ? "Tarih" : "Date")</label>
-                <input type="text" id="displayDate" readonly style="background:#f9fafb;">
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label>@(isTurkish ? "Giriş Saati" : "Check In")</label>
-                    <input type="time" id="checkInTime">
+            <div class="input-row">
+                <div class="input-group" style="margin-bottom:0;">
+                    <label class="input-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+                        @(isTurkish ? "Giriş" : "Check In")
+                    </label>
+                    <input type="time" class="input-field" id="timeIn">
                 </div>
-                <div class="form-group">
-                    <label>@(isTurkish ? "Çıkış Saati" : "Check Out")</label>
-                    <input type="time" id="checkOutTime">
+                <div class="input-group" style="margin-bottom:0;">
+                    <label class="input-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+                        @(isTurkish ? "Çıkış" : "Check Out")
+                    </label>
+                    <input type="time" class="input-field" id="timeOut">
                 </div>
             </div>
             
-            <div class="form-group">
-                <div class="checkbox-group">
-                    <input type="checkbox" id="checkOutNextDay">
-                    <label for="checkOutNextDay" style="margin:0;">@(isTurkish ? "Çıkış ertesi güne sarkar" : "Check out spans next day")</label>
-                </div>
+            <div class="input-group">
+                <label class="checkbox-field">
+                    <input type="checkbox" id="nextDay">
+                    <span>@(isTurkish ? "Çıkış ertesi güne sarkar (gece vardiyası)" : "Check out spans to next day")</span>
+                </label>
             </div>
             
-            <div class="form-group">
-                <label>@(isTurkish ? "Not" : "Notes")</label>
-                <textarea id="attendanceNotes" rows="2"></textarea>
+            <div class="input-group">
+                <label class="input-label">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+                    @(isTurkish ? "Not" : "Notes")
+                </label>
+                <textarea class="input-field" id="notes" rows="2" placeholder="@(isTurkish ? "İsteğe bağlı not..." : "Optional notes...")"></textarea>
             </div>
         </div>
-        <div class="modal-footer">
-            <button class="btn btn-danger" id="deleteBtn" onclick="deleteAttendance()" style="display:none;">
-                @(isTurkish ? "Sil" : "Delete")
+        
+        <div class="modal-actions">
+            <button class="btn-modal btn-delete" id="deleteBtn" onclick="deleteRecord()" style="display:none;" title="@(isTurkish ? "Sil" : "Delete")">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
             </button>
-            <button class="btn btn-outline" onclick="closeModal()">@(isTurkish ? "İptal" : "Cancel")</button>
-            <button class="btn btn-primary" onclick="saveAttendance()">@(isTurkish ? "Kaydet" : "Save")</button>
+            <button class="btn-modal btn-cancel" onclick="closeModal()">@(isTurkish ? "İptal" : "Cancel")</button>
+            <button class="btn-modal btn-save" onclick="saveRecord()">@(isTurkish ? "Kaydet" : "Save")</button>
         </div>
     </div>
 </div>
 
 <script>
-    function openAttendanceModal(employeeId, employeeName, date, attendanceId, checkIn, checkOut, nextDay, notes) {
-        document.getElementById('employeeId').value = employeeId;
-        document.getElementById('employeeName').value = employeeName;
-        document.getElementById('attendanceDate').value = date;
-        document.getElementById('displayDate').value = new Date(date).toLocaleDateString('@(isTurkish ? "tr-TR" : "en-US")', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        document.getElementById('attendanceId').value = attendanceId || 0;
-        document.getElementById('checkInTime').value = checkIn || '';
-        document.getElementById('checkOutTime').value = checkOut || '';
-        document.getElementById('checkOutNextDay').checked = nextDay;
-        document.getElementById('attendanceNotes').value = notes || '';
+    function openModal(empId, empName, date, attId, timeIn, timeOut, nextDay, notes) {
+        document.getElementById('empId').value = empId;
+        document.getElementById('attDate').value = date;
+        document.getElementById('attId').value = attId || 0;
+        document.getElementById('timeIn').value = timeIn || '';
+        document.getElementById('timeOut').value = timeOut || '';
+        document.getElementById('nextDay').checked = nextDay;
+        document.getElementById('notes').value = notes || '';
         
-        document.getElementById('deleteBtn').style.display = attendanceId > 0 ? 'block' : 'none';
-        document.getElementById('modalTitle').textContent = employeeName + ' - ' + date;
-        document.getElementById('attendanceModal').classList.add('show');
+        document.getElementById('modalEmployee').textContent = empName;
+        document.getElementById('modalDate').textContent = new Date(date).toLocaleDateString('@(isTurkish ? "tr-TR" : "en-US")', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        document.getElementById('deleteBtn').style.display = attId > 0 ? 'flex' : 'none';
+        
+        document.getElementById('modal').classList.add('active');
+        document.body.style.overflow = 'hidden';
     }
 
     function closeModal() {
-        document.getElementById('attendanceModal').classList.remove('show');
+        document.getElementById('modal').classList.remove('active');
+        document.body.style.overflow = '';
     }
 
-    async function saveAttendance() {
+    async function saveRecord() {
         const data = {
-            employeeId: parseInt(document.getElementById('employeeId').value),
-            date: document.getElementById('attendanceDate').value,
-            checkInTime: document.getElementById('checkInTime').value || null,
-            checkOutTime: document.getElementById('checkOutTime').value || null,
-            checkOutToNextDay: document.getElementById('checkOutNextDay').checked,
-            notes: document.getElementById('attendanceNotes').value || null,
+            employeeId: parseInt(document.getElementById('empId').value),
+            date: document.getElementById('attDate').value,
+            checkInTime: document.getElementById('timeIn').value || null,
+            checkOutTime: document.getElementById('timeOut').value || null,
+            checkOutToNextDay: document.getElementById('nextDay').checked,
+            notes: document.getElementById('notes').value || null,
             type: 0
         };
 
         try {
-            const response = await fetch('/api/attendance/manual', {
+            const res = await fetch('/api/attendance/manual', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
-
-            const result = await response.json();
+            const result = await res.json();
             if (result.success) {
                 closeModal();
                 location.reload();
             } else {
-                alert(result.error || '@(isTurkish ? "Bir hata oluştu" : "An error occurred")');
+                alert(result.error || '@(isTurkish ? "Hata oluştu" : "Error occurred")');
             }
-        } catch (error) {
+        } catch (e) {
             alert('@(isTurkish ? "Bağlantı hatası" : "Connection error")');
         }
     }
 
-    async function deleteAttendance() {
-        const id = document.getElementById('attendanceId').value;
+    async function deleteRecord() {
+        const id = document.getElementById('attId').value;
         if (!id || id === '0') return;
-        
-        if (!confirm('@(isTurkish ? "Bu kaydı silmek istediğinizden emin misiniz?" : "Are you sure you want to delete this record?")')) {
-            return;
-        }
+        if (!confirm('@(isTurkish ? "Bu kaydı silmek istediğinizden emin misiniz?" : "Delete this record?")')) return;
 
         try {
-            const response = await fetch('/api/attendance/' + id, {
-                method: 'DELETE'
-            });
-
-            const result = await response.json();
+            const res = await fetch('/api/attendance/' + id, { method: 'DELETE' });
+            const result = await res.json();
             if (result.success) {
                 closeModal();
                 location.reload();
-            } else {
-                alert(result.error || '@(isTurkish ? "Bir hata oluştu" : "An error occurred")');
             }
-        } catch (error) {
-            alert('@(isTurkish ? "Bağlantı hatası" : "Connection error")');
+        } catch (e) {
+            alert('@(isTurkish ? "Hata" : "Error")');
         }
     }
 
-    // Close modal on backdrop click
-    document.getElementById('attendanceModal').addEventListener('click', function(e) {
-        if (e.target === this) closeModal();
-    });
-
-    // Close modal on Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') closeModal();
-    });
+    document.getElementById('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 </script>
-
