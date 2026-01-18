@@ -10,10 +10,16 @@
 }
 
 <style>
+    /* Override body overflow for this page */
+    body {
+        overflow-y: auto !important;
+    }
+    
     .payroll-page {
         min-height: calc(100vh - 60px);
         background: #f5f7fa;
         padding: 20px;
+        padding-bottom: 100px;
     }
 
     .payroll-header {
@@ -617,7 +623,17 @@
 
         <div class="results-card">
             <div class="results-header">
-                <h3>@(isTurkish ? "Hesaplama Sonuçları" : "Calculation Results") <span id="editIndicator" style="display:none;color:#f59e0b;font-size:0.8rem;">(@(isTurkish ? "düzenlendi" : "edited"))</span></h3>
+                <h3>
+                    @if (Model.LoadedPayrollId.HasValue)
+                    {
+                        <span style="color:#3b82f6;">📁 @Model.LoadedPayrollName</span>
+                    }
+                    else
+                    {
+                        @(isTurkish ? "Hesaplama Sonuçları" : "Calculation Results")
+                    }
+                    <span id="editIndicator" style="display:none;color:#f59e0b;font-size:0.8rem;">(@(isTurkish ? "düzenlendi" : "edited"))</span>
+                </h3>
                 <div class="results-actions">
                     <button class="btn btn-sm btn-primary" onclick="recalculate()" title="@(isTurkish ? "Tekrar Hesapla" : "Recalculate")">
                         🔄 @(isTurkish ? "Tekrar Hesapla" : "Recalculate")
@@ -959,17 +975,8 @@
     }
 
     async function loadSavedPayroll(id) {
-        try {
-            const res = await fetch(`/api/payroll/${id}`);
-            const result = await res.json();
-            if (result.success) {
-                // Redirect with saved payroll's settings
-                const d = result.data;
-                window.location.href = `?year=${d.year}&month=${d.month}&source=${d.dataSource}&nightStartHour=${d.nightStartHour}&nightEndHour=${d.nightEndHour}&calculate=true`;
-            }
-        } catch (e) {
-            alert('@(isTurkish ? "Yükleme hatası" : "Load error")');
-        }
+        // Directly load saved payroll with loadId parameter
+        window.location.href = `?year=@Model.SelectedYear&month=@Model.SelectedMonth&loadId=${id}`;
     }
 
     async function deleteSavedPayroll(id) {

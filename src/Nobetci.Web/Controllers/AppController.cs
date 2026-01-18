@@ -981,7 +981,7 @@ public class AppController : Controller
     /// Payroll/Timesheet page - only for registered users
     /// </summary>
     [HttpGet]
-    public async Task<IActionResult> Payroll(int? year, int? month, int? nightStartHour, int? nightEndHour, string? source, bool calculate = false)
+    public async Task<IActionResult> Payroll(int? year, int? month, int? nightStartHour, int? nightEndHour, string? source, bool calculate = false, int? loadId = null)
     {
         // Only registered users can access payroll
         if (User.Identity?.IsAuthenticated != true)
@@ -1055,11 +1055,55 @@ public class AppController : Controller
             NightStartTime = nightStart,
             NightEndTime = nightEnd,
             DataSource = dataSource,
-            IsCalculated = calculate
+            IsCalculated = calculate || loadId.HasValue
         };
 
-        // Only calculate if requested
-        if (calculate)
+        // Load saved payroll if loadId is provided
+        if (loadId.HasValue)
+        {
+            var savedPayroll = await _context.SavedPayrolls
+                .FirstOrDefaultAsync(p => p.Id == loadId.Value && p.OrganizationId == organization.Id);
+            
+            if (savedPayroll != null)
+            {
+                viewModel.LoadedPayrollId = savedPayroll.Id;
+                viewModel.LoadedPayrollName = savedPayroll.Name;
+                viewModel.DataSource = savedPayroll.DataSource;
+                viewModel.NightStartTime = new TimeOnly(savedPayroll.NightStartHour, 0);
+                viewModel.NightEndTime = new TimeOnly(savedPayroll.NightEndHour, 0);
+                
+                // Parse saved payroll data
+                var savedEntries = System.Text.Json.JsonSerializer.Deserialize<List<SavedPayrollEntry>>(savedPayroll.PayrollDataJson) 
+                    ?? new List<SavedPayrollEntry>();
+                
+                // Convert to EmployeePayroll objects
+                viewModel.EmployeePayrolls = savedEntries.Select(e => new EmployeePayroll
+                {
+                    Employee = employees.FirstOrDefault(emp => emp.Id == e.EmployeeId) ?? new Employee { Id = e.EmployeeId, FullName = e.EmployeeName, Title = e.EmployeeTitle },
+                    WorkedDays = e.WorkedDays,
+                    TotalWorkedHours = e.TotalWorkedHours,
+                    RequiredHours = e.RequiredHours,
+                    NightHours = e.NightHours,
+                    WeekendHours = e.WeekendHours,
+                    HolidayHours = e.HolidayHours,
+                    DayOffCount = e.DayOffCount,
+                    ShiftDetails = e.DailyEntries?.Select(d => new ShiftDetail
+                    {
+                        Date = DateOnly.TryParse(d.Date, out var dt) ? dt : default,
+                        StartTime = TimeOnly.TryParse(d.StartTime, out var st) ? st : null,
+                        EndTime = TimeOnly.TryParse(d.EndTime, out var et) ? et : null,
+                        TotalHours = d.Hours,
+                        NightHours = d.NightHours,
+                        IsWeekend = d.IsWeekend,
+                        IsHoliday = d.IsHoliday,
+                        IsDayOff = d.IsDayOff,
+                        Note = d.Note
+                    }).ToList() ?? new List<ShiftDetail>()
+                }).ToList();
+            }
+        }
+        // Only calculate if requested and not loading saved
+        else if (calculate)
         {
             if (dataSource == "attendance")
             {

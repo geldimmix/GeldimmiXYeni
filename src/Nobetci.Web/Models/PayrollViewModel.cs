@@ -28,6 +28,16 @@ public class PayrollViewModel
     /// </summary>
     public bool IsCalculated { get; set; } = false;
     
+    /// <summary>
+    /// ID of the loaded saved payroll (if any)
+    /// </summary>
+    public int? LoadedPayrollId { get; set; }
+    
+    /// <summary>
+    /// Name of the loaded saved payroll
+    /// </summary>
+    public string? LoadedPayrollName { get; set; }
+    
     // Calculated payroll data per employee
     public List<EmployeePayroll> EmployeePayrolls { get; set; } = new();
     
