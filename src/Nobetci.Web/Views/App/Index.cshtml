@@ -1033,24 +1033,23 @@
         background: #f1f5f9;
     }
     
-    /* Sidebar - Premium Design */
+    /* Sidebar - Clean & Minimal */
     .app-sidebar {
-        width: 260px;
-        min-width: 260px;
+        width: 248px;
+        min-width: 248px;
         max-height: calc(100vh - 60px);
-        background: linear-gradient(180deg, #fefefe 0%, #f8fafc 100%);
-        border-right: 1px solid rgba(0,0,0,0.06);
+        background: #ffffff;
+        border-right: 1px solid #e5e7eb;
         display: flex;
         flex-direction: column;
-        padding: 20px 16px;
-        gap: 16px;
+        padding: 16px;
+        gap: 14px;
         overflow-y: auto;
         overflow-x: hidden;
-        box-shadow: 4px 0 24px rgba(0,0,0,0.03);
     }
     
     .app-sidebar::-webkit-scrollbar {
-        width: 5px;
+        width: 6px;
     }
     
     .app-sidebar::-webkit-scrollbar-track {
@@ -1058,150 +1057,115 @@
     }
     
     .app-sidebar::-webkit-scrollbar-thumb {
-        background: linear-gradient(180deg, #c7d2fe 0%, #a5b4fc 100%);
-        border-radius: 10px;
+        background: #d1d5db;
+        border-radius: 3px;
     }
     
     .app-sidebar::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(180deg, #a5b4fc 0%, #818cf8 100%);
+        background: #9ca3af;
     }
     
-    /* Sidebar Actions - Card Style */
+    /* Sidebar Actions */
     .sidebar-actions {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
     }
     
     .action-btn {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 14px 16px;
-        background: white;
-        border: none;
-        border-radius: 14px;
+        gap: 10px;
+        padding: 11px 14px;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
         cursor: pointer;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: background 0.15s, border-color 0.15s;
         width: 100%;
         text-align: left;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .action-btn::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(139,92,246,0.08) 100%);
-        opacity: 0;
-        transition: opacity 0.25s ease;
     }
     
     .action-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(99,102,241,0.12), 0 4px 8px rgba(0,0,0,0.06);
-    }
-    
-    .action-btn:hover::before {
-        opacity: 1;
+        background: #f3f4f6;
+        border-color: #d1d5db;
     }
     
     .action-btn:active {
-        transform: translateY(0);
-    }
-    
-    .action-btn.employees-btn {
-        border-left: 4px solid #6366f1;
-    }
-    
-    .action-btn.holidays-btn {
-        border-left: 4px solid #f59e0b;
+        background: #e5e7eb;
     }
     
     .action-icon {
-        font-size: 1.4rem;
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        font-size: 1.1rem;
     }
     
     .action-label {
         flex: 1;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #1e293b;
-        letter-spacing: -0.01em;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #374151;
     }
     
     .action-badge {
-        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        background: #3b82f6;
         color: white;
-        font-size: 0.7rem;
-        font-weight: 700;
-        padding: 4px 10px;
-        border-radius: 20px;
-        box-shadow: 0 2px 8px rgba(99,102,241,0.3);
+        font-size: 0.65rem;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 10px;
     }
     
     .action-btn.holidays-btn .action-badge {
-        background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
-        box-shadow: 0 2px 8px rgba(245,158,11,0.3);
+        background: #f59e0b;
     }
     
-    /* Templates - Modern Card */
+    /* Templates */
     .templates-compact {
-        background: white;
-        border-radius: 16px;
-        border: none;
-        padding: 16px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+        background: #f9fafb;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        padding: 12px;
     }
     
     .templates-header {
-        font-size: 0.7rem;
-        font-weight: 700;
-        color: #64748b;
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: #6b7280;
         text-transform: uppercase;
-        letter-spacing: 0.8px;
-        margin-bottom: 14px;
+        letter-spacing: 0.5px;
+        margin-bottom: 10px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 8px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #f1f5f9;
+        gap: 6px;
     }
     
     .templates-header > span {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
     }
     
     .tpl-manage-btn {
-        background: #f1f5f9;
+        background: none;
         border: none;
         cursor: pointer;
         font-size: 0.85rem;
-        padding: 6px 10px;
-        border-radius: 8px;
-        opacity: 0.8;
-        transition: all 0.2s ease;
+        padding: 4px 6px;
+        border-radius: 4px;
+        opacity: 0.6;
+        transition: opacity 0.15s, background 0.15s;
     }
     
     .tpl-manage-btn:hover {
         opacity: 1;
-        background: #e2e8f0;
-        transform: rotate(45deg);
+        background: #e5e7eb;
     }
     
     .tpl-divider {
         height: 1px;
-        background: linear-gradient(90deg, transparent 0%, #e2e8f0 50%, transparent 100%);
-        margin: 12px 0;
+        background: #e5e7eb;
+        margin: 8px 0;
     }
     
     /* Template Manager Modal */
@@ -1379,156 +1343,118 @@
     .tpl-btn-row {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 12px 14px;
-        background: #f8fafc;
-        border: none;
-        border-radius: 12px;
+        gap: 10px;
+        padding: 10px 12px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
         cursor: pointer;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: background 0.15s, border-color 0.15s;
         width: 100%;
         text-align: left;
         position: relative;
-        overflow: hidden;
-    }
-    
-    .tpl-btn-row::after {
-        content: '';
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%) scale(0);
-        width: 8px;
-        height: 8px;
-        background: #22c55e;
-        border-radius: 50%;
-        transition: transform 0.2s ease;
-        box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
     }
     
     .tpl-btn-row:hover {
-        background: #f1f5f9;
-        transform: translateX(4px);
+        background: #f9fafb;
+        border-color: #d1d5db;
     }
     
     .tpl-btn-row.active {
-        background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
-        box-shadow: inset 0 0 0 2px rgba(99,102,241,0.3);
-    }
-    
-    .tpl-btn-row.active::after {
-        transform: translateY(-50%) scale(1);
+        background: #eff6ff;
+        border-color: #3b82f6;
     }
     
     .tpl-btn-row.overnight {
-        background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%);
-    }
-    
-    .tpl-btn-row.overnight:hover {
-        background: linear-gradient(135deg, #fef9c3 0%, #fde68a 100%);
+        border-left: 3px solid #f59e0b;
     }
     
     .tpl-btn-row.day-off {
-        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-        border: 2px dashed #cbd5e1;
-    }
-    
-    .tpl-btn-row.day-off:hover {
-        border-color: #94a3b8;
+        border-style: dashed;
+        background: #fafafa;
     }
     
     .tpl-btn-row.custom {
-        background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
-    }
-    
-    .tpl-btn-row.custom:hover {
-        background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+        border-left: 3px solid #8b5cf6;
     }
     
     .tpl-color {
-        width: 6px;
-        height: 32px;
-        border-radius: 6px;
+        width: 4px;
+        height: 26px;
+        border-radius: 2px;
         flex-shrink: 0;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
     
     .tpl-info {
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 3px;
+        gap: 2px;
     }
     
     .tpl-time {
-        font-size: 0.85rem;
-        font-weight: 700;
-        color: #0f172a;
-        letter-spacing: -0.01em;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #1f2937;
     }
     
     .tpl-meta {
-        font-size: 0.7rem;
-        color: #64748b;
-        font-weight: 500;
+        font-size: 0.65rem;
+        color: #6b7280;
+        font-weight: 400;
     }
     
     .tpl-badge-new {
         font-size: 0.6rem;
-        padding: 3px 8px;
-        background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+        padding: 2px 6px;
+        background: #f59e0b;
         color: white;
-        border-radius: 6px;
-        font-weight: 700;
-        box-shadow: 0 2px 6px rgba(245,158,11,0.3);
+        border-radius: 4px;
+        font-weight: 600;
     }
     
-    /* Multi Toggle - Premium */
+    /* Multi Toggle */
     .multi-toggle {
-        padding: 14px 16px;
-        background: white;
-        border: none;
-        border-radius: 14px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+        padding: 10px 12px;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
     }
     
     .multi-toggle label {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
         cursor: pointer;
     }
     
     .multi-toggle .toggle-track {
-        width: 44px;
-        height: 24px;
-        background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
-        border-radius: 12px;
+        width: 36px;
+        height: 20px;
+        background: #d1d5db;
+        border-radius: 10px;
         position: relative;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        transition: background 0.2s;
     }
     
     .multi-toggle .toggle-thumb {
         position: absolute;
-        width: 20px;
-        height: 20px;
+        width: 16px;
+        height: 16px;
         background: white;
         border-radius: 50%;
         top: 2px;
         left: 2px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        transition: left 0.2s;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
     
     .multi-toggle input:checked + .toggle-track {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 0 16px rgba(16,185,129,0.3);
+        background: #10b981;
     }
     
     .multi-toggle input:checked + .toggle-track .toggle-thumb {
-        left: 22px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2), 0 0 0 2px rgba(16,185,129,0.2);
+        left: 18px;
     }
     
     .multi-toggle input {
@@ -1536,65 +1462,49 @@
     }
     
     .multi-toggle .toggle-text {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #1e293b;
-        letter-spacing: -0.01em;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #374151;
     }
     
-    /* Selected Indicator - Premium */
+    /* Selected Indicator */
     .selected-indicator {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 14px 16px;
-        background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
-        border: none;
-        border-radius: 14px;
-        box-shadow: 0 2px 8px rgba(99,102,241,0.1), inset 0 0 0 1px rgba(99,102,241,0.1);
-        animation: slideUp 0.3s ease;
-    }
-    
-    @@keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(8px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        gap: 10px;
+        padding: 10px 12px;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 6px;
     }
     
     .indicator-color {
-        width: 28px;
-        height: 28px;
-        border-radius: 8px;
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
         background: #3b82f6;
         flex-shrink: 0;
-        box-shadow: 0 4px 12px rgba(59,130,246,0.4);
     }
     
     .indicator-text {
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 1px;
     }
     
     .indicator-label {
-        font-size: 0.65rem;
-        color: #6366f1;
+        font-size: 0.6rem;
+        color: #6b7280;
         text-transform: uppercase;
-        letter-spacing: 0.8px;
-        font-weight: 700;
+        letter-spacing: 0.5px;
+        font-weight: 500;
     }
     
     .indicator-time {
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: #312e81;
-        letter-spacing: -0.01em;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #1e40af;
     }
     
     .sidebar-section {
@@ -3927,35 +3837,21 @@
             max-height: none;
             flex-direction: row;
             flex-wrap: wrap;
-            padding: 12px;
-            gap: 10px;
-            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 10px;
+            gap: 8px;
         }
         
         .sidebar-actions {
             flex-direction: row;
             width: 100%;
-            gap: 8px;
         }
         
         .action-btn {
             flex: 1;
-            padding: 12px;
-            border-radius: 12px;
-        }
-        
-        .action-label {
-            font-size: 0.75rem;
         }
         
         .templates-compact {
             width: 100%;
-            border-radius: 12px;
-        }
-        
-        .tpl-btn-row {
-            padding: 10px 12px;
         }
         
         .multi-toggle, .selected-indicator {
