@@ -677,6 +677,120 @@ public class ExportController : Controller
         return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
     }
 
+    /// <summary>
+    /// Export saved payroll to Excel
+    /// </summary>
+    [HttpGet("payroll-saved/{id}")]
+    public async Task<IActionResult> ExportSavedPayroll(int id)
+    {
+        // Only registered users
+        if (User.Identity?.IsAuthenticated != true)
+            return Unauthorized();
+
+        var organization = await GetOrganizationAsync();
+        if (organization == null)
+            return NotFound();
+
+        var savedPayroll = await _context.SavedPayrolls
+            .FirstOrDefaultAsync(p => p.Id == id && p.OrganizationId == organization.Id);
+
+        if (savedPayroll == null)
+            return NotFound();
+
+        var culture = CultureInfo.CurrentUICulture;
+        var isTurkish = culture.TwoLetterISOLanguageName == "tr";
+
+        // Parse the saved payroll data
+        var entries = System.Text.Json.JsonSerializer.Deserialize<List<SavedPayrollEntry>>(savedPayroll.PayrollDataJson) 
+            ?? new List<SavedPayrollEntry>();
+
+        var monthDate = new DateTime(savedPayroll.Year, savedPayroll.Month, 1);
+        var monthName = monthDate.ToString("MMMM yyyy", culture);
+
+        var sourceText = savedPayroll.DataSource == "attendance" 
+            ? (isTurkish ? "Mesai Takip" : "Attendance") 
+            : (isTurkish ? "Nöbet" : "Shift");
+        var sheetName = isTurkish ? $"Puantaj - {monthName}" : $"Payroll - {monthName}";
+
+        var headers = isTurkish
+            ? new[] { "Personel", "Ünvan", "Çalışılan Gün", "Çalışılan Saat", "Gece Çalışma", "Hafta Sonu", "Resmi Tatil", "İzin Günü" }
+            : new[] { "Employee", "Title", "Days Worked", "Hours Worked", "Night Hours", "Weekend Hours", "Holiday Hours", "Days Off" };
+
+        using var workbook = new XLWorkbook();
+        var worksheet = workbook.Worksheets.Add(sheetName.Length > 31 ? sheetName.Substring(0, 31) : sheetName);
+
+        // Add info header
+        worksheet.Cell(1, 1).Value = isTurkish ? "Puantaj Raporu" : "Payroll Report";
+        worksheet.Cell(1, 1).Style.Font.Bold = true;
+        worksheet.Cell(1, 1).Style.Font.FontSize = 14;
+        worksheet.Range(1, 1, 1, 4).Merge();
+
+        worksheet.Cell(2, 1).Value = isTurkish ? $"Dönem: {monthName}" : $"Period: {monthName}";
+        worksheet.Cell(2, 5).Value = isTurkish 
+            ? $"Kaynak: {sourceText} | Gece: {savedPayroll.NightStartHour:00}:00 - {savedPayroll.NightEndHour:00}:00" 
+            : $"Source: {sourceText} | Night: {savedPayroll.NightStartHour:00}:00 - {savedPayroll.NightEndHour:00}:00";
+        
+        worksheet.Cell(3, 1).Value = isTurkish ? $"Kayıt: {savedPayroll.Name}" : $"Record: {savedPayroll.Name}";
+        worksheet.Cell(3, 5).Value = isTurkish 
+            ? $"Oluşturulma: {savedPayroll.CreatedAt.ToLocalTime():dd.MM.yyyy HH:mm}" 
+            : $"Created: {savedPayroll.CreatedAt.ToLocalTime():dd.MM.yyyy HH:mm}";
+
+        // Column headers
+        int headerRow = 5;
+        for (int i = 0; i < headers.Length; i++)
+        {
+            var cell = worksheet.Cell(headerRow, i + 1);
+            cell.Value = headers[i];
+            cell.Style.Font.Bold = true;
+            cell.Style.Fill.BackgroundColor = XLColor.LightGray;
+            cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+        }
+
+        // Employee data
+        int row = headerRow + 1;
+        foreach (var entry in entries.OrderBy(e => e.EmployeeName))
+        {
+            worksheet.Cell(row, 1).Value = entry.EmployeeName;
+            worksheet.Cell(row, 2).Value = entry.EmployeeTitle ?? "";
+            worksheet.Cell(row, 3).Value = entry.WorkedDays;
+            worksheet.Cell(row, 4).Value = (double)entry.TotalWorkedHours;
+            worksheet.Cell(row, 5).Value = (double)entry.NightHours;
+            worksheet.Cell(row, 6).Value = (double)entry.WeekendHours;
+            worksheet.Cell(row, 7).Value = (double)entry.HolidayHours;
+            worksheet.Cell(row, 8).Value = entry.DayOffCount;
+
+            // Format numbers
+            for (int col = 4; col <= 7; col++)
+            {
+                worksheet.Cell(row, col).Style.NumberFormat.Format = "0.0";
+            }
+
+            row++;
+        }
+
+        // Auto-fit columns
+        worksheet.Columns().AdjustToContents();
+
+        // Add borders
+        if (entries.Any())
+        {
+            var dataRange = worksheet.Range(headerRow, 1, row - 1, headers.Length);
+            dataRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            dataRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+        }
+
+        // Generate file
+        using var stream = new MemoryStream();
+        workbook.SaveAs(stream);
+        stream.Position = 0;
+
+        var fileName = isTurkish
+            ? $"Puantaj_{savedPayroll.Name.Replace(" ", "_")}_{savedPayroll.Year}_{savedPayroll.Month:00}.xlsx"
+            : $"Payroll_{savedPayroll.Name.Replace(" ", "_")}_{savedPayroll.Year}_{savedPayroll.Month:00}.xlsx";
+
+        return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+    }
+
     private (int workedDays, int totalWorkDays) CalculateWorkDays(Employee employee, List<Shift> shifts, int year, int month, List<Holiday> holidays, List<int> weekendDays)
     {
         var workedDays = shifts.Count(s => !s.IsDayOff);
