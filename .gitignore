@@ -57,7 +57,8 @@ packages/
 publish/
 
 # Secrets (DO NOT COMMIT!)
-# Note: appsettings.Development.json and appsettings.Production.json are tracked with placeholders
+appsettings.Development.json
+appsettings.Production.json
 
 # Entity Framework Migrations (keep these)
 # !**/Migrations/
