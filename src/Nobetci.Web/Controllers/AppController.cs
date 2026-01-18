@@ -975,6 +975,462 @@ public class AppController : Controller
 
     #endregion
 
+    #region Payroll
+
+    /// <summary>
+    /// Payroll/Timesheet page - only for registered users
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> Payroll(int? year, int? month, int? nightStartHour, int? nightEndHour)
+    {
+        // Only registered users can access payroll
+        if (User.Identity?.IsAuthenticated != true)
+        {
+            return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("Payroll") });
+        }
+
+        var selectedYear = year ?? DateTime.Now.Year;
+        var selectedMonth = month ?? DateTime.Now.Month;
+        
+        var organization = await GetOrCreateOrganizationAsync();
+        
+        // Use custom night hours or organization defaults
+        var nightStart = nightStartHour.HasValue 
+            ? new TimeOnly(nightStartHour.Value, 0) 
+            : organization.NightStartTime;
+        var nightEnd = nightEndHour.HasValue 
+            ? new TimeOnly(nightEndHour.Value, 0) 
+            : organization.NightEndTime;
+        
+        var employees = await _context.Employees
+            .Where(e => e.OrganizationId == organization.Id && e.IsActive)
+            .OrderBy(e => e.FullName)
+            .ToListAsync();
+            
+        var holidays = await _context.Holidays
+            .Where(h => h.OrganizationId == organization.Id)
+            .Where(h => h.Date.Year == selectedYear && h.Date.Month == selectedMonth)
+            .ToListAsync();
+        
+        // Get shifts for current month
+        var shifts = await _context.Shifts
+            .Include(s => s.Employee)
+            .Where(s => s.Employee.OrganizationId == organization.Id)
+            .Where(s => s.Date.Year == selectedYear && s.Date.Month == selectedMonth)
+            .ToListAsync();
+        
+        // Get overnight shifts from previous month
+        var previousMonthLastDay = new DateOnly(selectedYear, selectedMonth, 1).AddDays(-1);
+        var previousMonthShifts = await _context.Shifts
+            .Include(s => s.Employee)
+            .Where(s => s.Employee.OrganizationId == organization.Id)
+            .Where(s => s.Date == previousMonthLastDay && s.SpansNextDay)
+            .ToListAsync();
+
+        var viewModel = new PayrollViewModel
+        {
+            Organization = organization,
+            Employees = employees,
+            Holidays = holidays,
+            Shifts = shifts,
+            PreviousMonthOvernightShifts = previousMonthShifts,
+            SelectedYear = selectedYear,
+            SelectedMonth = selectedMonth,
+            NightStartTime = nightStart,
+            NightEndTime = nightEnd,
+            WeeklyRequiredHours = organization.WeeklyWorkHours
+        };
+
+        // Calculate payroll for each employee
+        viewModel.EmployeePayrolls = CalculateEmployeePayrolls(
+            employees, shifts, previousMonthShifts, holidays, 
+            organization, selectedYear, selectedMonth, nightStart, nightEnd);
+
+        return View(viewModel);
+    }
+
+    /// <summary>
+    /// Calculate payroll data for all employees
+    /// </summary>
+    private List<EmployeePayroll> CalculateEmployeePayrolls(
+        List<Employee> employees,
+        List<Shift> shifts,
+        List<Shift> previousMonthShifts,
+        List<Holiday> holidays,
+        Organization organization,
+        int year, int month,
+        TimeOnly nightStart, TimeOnly nightEnd)
+    {
+        var payrolls = new List<EmployeePayroll>();
+        var daysInMonth = DateTime.DaysInMonth(year, month);
+        var weekendDays = organization.WeekendDays.Split(',').Select(int.Parse).ToList();
+
+        foreach (var employee in employees)
+        {
+            var employeeShifts = shifts.Where(s => s.EmployeeId == employee.Id).ToList();
+            var prevMonthShift = previousMonthShifts.FirstOrDefault(s => s.EmployeeId == employee.Id);
+            
+            var payroll = new EmployeePayroll
+            {
+                Employee = employee,
+                ShiftDetails = new List<ShiftDetail>()
+            };
+
+            // Calculate total work days in month for this employee
+            payroll.TotalWorkDays = CalculateTotalWorkDays(employee, year, month, holidays, weekendDays);
+            payroll.RequiredHours = CalculateRequiredHours(employee, year, month, holidays, weekendDays);
+
+            // Add hours from overnight shift from previous month (if split mode)
+            if (prevMonthShift != null && !prevMonthShift.IsDayOff && prevMonthShift.OvernightHoursMode == 0)
+            {
+                var spilledHours = CalculateHoursAfterMidnight(prevMonthShift);
+                var spilledNightHours = CalculateNightHoursAfterMidnight(prevMonthShift, nightStart, nightEnd);
+                payroll.TotalWorkedHours += spilledHours;
+                payroll.NightHours += spilledNightHours;
+            }
+
+            // Process each shift
+            foreach (var shift in employeeShifts)
+            {
+                var holiday = holidays.FirstOrDefault(h => h.Date == shift.Date);
+                var isWeekend = weekendDays.Contains((int)shift.Date.DayOfWeek);
+
+                var detail = new ShiftDetail
+                {
+                    Date = shift.Date,
+                    StartTime = shift.StartTime,
+                    EndTime = shift.EndTime,
+                    SpansNextDay = shift.SpansNextDay,
+                    IsDayOff = shift.IsDayOff,
+                    IsWeekend = isWeekend,
+                    IsHoliday = holiday != null,
+                    HolidayName = holiday?.Name
+                };
+
+                if (shift.IsDayOff)
+                {
+                    payroll.DayOffCount++;
+                }
+                else
+                {
+                    payroll.WorkedDays++;
+                    
+                    // Calculate hours for this month (considering overnight mode)
+                    var hoursThisMonth = CalculateShiftHoursForMonth(shift, year, month);
+                    detail.TotalHours = hoursThisMonth;
+                    payroll.TotalWorkedHours += hoursThisMonth;
+
+                    // Calculate night hours with custom night time range
+                    var nightHours = CalculateNightHours(shift, nightStart, nightEnd, year, month);
+                    detail.NightHours = nightHours;
+                    payroll.NightHours += nightHours;
+
+                    // Weekend hours
+                    if (isWeekend)
+                    {
+                        payroll.WeekendHours += hoursThisMonth;
+                    }
+
+                    // Holiday hours
+                    if (holiday != null)
+                    {
+                        payroll.HolidayHours += hoursThisMonth;
+                    }
+                }
+
+                payroll.ShiftDetails.Add(detail);
+            }
+
+            payrolls.Add(payroll);
+        }
+
+        return payrolls;
+    }
+
+    /// <summary>
+    /// Calculate total work days for an employee in a month
+    /// </summary>
+    private int CalculateTotalWorkDays(Employee employee, int year, int month, List<Holiday> holidays, List<int> weekendDays)
+    {
+        var daysInMonth = DateTime.DaysInMonth(year, month);
+        int workDays = 0;
+
+        for (int day = 1; day <= daysInMonth; day++)
+        {
+            var date = new DateOnly(year, month, day);
+            var dayOfWeek = date.DayOfWeek;
+            var isSaturday = dayOfWeek == DayOfWeek.Saturday;
+            var isSunday = dayOfWeek == DayOfWeek.Sunday;
+            var isWeekend = weekendDays.Contains((int)dayOfWeek);
+            
+            var holiday = holidays.FirstOrDefault(h => h.Date == date);
+            
+            // Full holiday - not a work day
+            if (holiday != null && !holiday.IsHalfDay)
+                continue;
+
+            if (isWeekend)
+            {
+                // Check weekend work mode
+                switch (employee.WeekendWorkMode)
+                {
+                    case 1: // Works both days
+                        workDays++;
+                        break;
+                    case 2: // Only Saturday
+                    case 3: // Saturday specific hours
+                        if (isSaturday) workDays++;
+                        break;
+                }
+            }
+            else
+            {
+                workDays++;
+            }
+        }
+
+        return workDays;
+    }
+
+    /// <summary>
+    /// Calculate required work hours for an employee
+    /// </summary>
+    private decimal CalculateRequiredHours(Employee employee, int year, int month, List<Holiday> holidays, List<int> weekendDays)
+    {
+        var daysInMonth = DateTime.DaysInMonth(year, month);
+        decimal requiredHours = 0;
+
+        for (int day = 1; day <= daysInMonth; day++)
+        {
+            var date = new DateOnly(year, month, day);
+            var dayOfWeek = date.DayOfWeek;
+            var isSaturday = dayOfWeek == DayOfWeek.Saturday;
+            var isWeekend = weekendDays.Contains((int)dayOfWeek);
+            
+            var holiday = holidays.FirstOrDefault(h => h.Date == date);
+            
+            // Full holiday
+            if (holiday != null && !holiday.IsHalfDay)
+                continue;
+            
+            // Half-day holiday
+            if (holiday != null && holiday.IsHalfDay && holiday.HalfDayWorkHours.HasValue)
+            {
+                if (!isWeekend || employee.WeekendWorkMode > 0)
+                {
+                    requiredHours += holiday.HalfDayWorkHours.Value;
+                }
+                continue;
+            }
+
+            if (isWeekend)
+            {
+                switch (employee.WeekendWorkMode)
+                {
+                    case 1: // Works both days
+                        requiredHours += employee.DailyWorkHours;
+                        break;
+                    case 2: // Only Saturday
+                        if (isSaturday) requiredHours += employee.DailyWorkHours;
+                        break;
+                    case 3: // Saturday specific hours
+                        if (isSaturday && employee.SaturdayWorkHours.HasValue)
+                            requiredHours += employee.SaturdayWorkHours.Value;
+                        break;
+                }
+            }
+            else
+            {
+                requiredHours += employee.DailyWorkHours;
+            }
+        }
+
+        return requiredHours;
+    }
+
+    /// <summary>
+    /// Calculate night hours with custom night time range
+    /// </summary>
+    private decimal CalculateNightHours(Shift shift, TimeOnly nightStart, TimeOnly nightEnd, int year, int month)
+    {
+        if (shift.IsDayOff) return 0;
+
+        var daysInMonth = DateTime.DaysInMonth(year, month);
+        var lastDayOfMonth = new DateOnly(year, month, daysInMonth);
+        bool spansToNextMonth = shift.SpansNextDay && shift.Date == lastDayOfMonth;
+
+        // For shifts spanning to next month with split mode, only count hours before midnight
+        if (spansToNextMonth && shift.OvernightHoursMode == 0)
+        {
+            return CalculateNightHoursBeforeMidnight(shift, nightStart, nightEnd);
+        }
+
+        // Calculate night hours for the full shift
+        return CalculateFullNightHours(shift.StartTime, shift.EndTime, shift.SpansNextDay, nightStart, nightEnd, shift.BreakMinutes);
+    }
+
+    /// <summary>
+    /// Calculate night hours for a full shift
+    /// </summary>
+    private decimal CalculateFullNightHours(TimeOnly start, TimeOnly end, bool spansNextDay, TimeOnly nightStart, TimeOnly nightEnd, int breakMinutes)
+    {
+        decimal nightMinutes = 0;
+
+        if (spansNextDay)
+        {
+            // Shift spans midnight
+            // Part 1: Start to midnight
+            nightMinutes += GetNightMinutesInRange(start, new TimeOnly(23, 59, 59), nightStart, nightEnd);
+            // Part 2: Midnight to end
+            nightMinutes += GetNightMinutesInRange(new TimeOnly(0, 0), end, nightStart, nightEnd);
+        }
+        else
+        {
+            // Regular shift within same day
+            nightMinutes += GetNightMinutesInRange(start, end, nightStart, nightEnd);
+        }
+
+        // Proportionally subtract break time from night hours
+        var totalMinutes = spansNextDay
+            ? (24 * 60 - start.Hour * 60 - start.Minute) + (end.Hour * 60 + end.Minute)
+            : (end.Hour * 60 + end.Minute) - (start.Hour * 60 + start.Minute);
+        
+        if (totalMinutes > 0 && breakMinutes > 0)
+        {
+            var nightRatio = nightMinutes / totalMinutes;
+            nightMinutes -= breakMinutes * nightRatio;
+        }
+
+        return Math.Max(0, nightMinutes / 60m);
+    }
+
+    /// <summary>
+    /// Get night minutes within a time range
+    /// </summary>
+    private decimal GetNightMinutesInRange(TimeOnly start, TimeOnly end, TimeOnly nightStart, TimeOnly nightEnd)
+    {
+        decimal nightMinutes = 0;
+
+        // Night typically spans midnight (e.g., 22:00 - 06:00)
+        // We need to handle two periods:
+        // Period 1: nightStart (22:00) to midnight (24:00)
+        // Period 2: midnight (00:00) to nightEnd (06:00)
+
+        var startMinutes = start.Hour * 60 + start.Minute;
+        var endMinutes = end.Hour * 60 + end.Minute;
+        var nightStartMinutes = nightStart.Hour * 60 + nightStart.Minute;
+        var nightEndMinutes = nightEnd.Hour * 60 + nightEnd.Minute;
+
+        // If night end is before night start (spans midnight)
+        if (nightEndMinutes < nightStartMinutes)
+        {
+            // Period 1: nightStart to midnight (1440)
+            if (endMinutes >= nightStartMinutes || startMinutes >= nightStartMinutes)
+            {
+                var periodStart = Math.Max(startMinutes, nightStartMinutes);
+                var periodEnd = endMinutes >= nightStartMinutes ? Math.Min(endMinutes, 1440) : 1440;
+                if (periodEnd > periodStart)
+                    nightMinutes += periodEnd - periodStart;
+            }
+
+            // Period 2: midnight (0) to nightEnd
+            if (startMinutes < nightEndMinutes || endMinutes <= nightEndMinutes)
+            {
+                var periodStart = startMinutes < nightEndMinutes ? startMinutes : 0;
+                var periodEnd = Math.Min(endMinutes, nightEndMinutes);
+                if (periodEnd > periodStart && startMinutes < nightEndMinutes)
+                    nightMinutes += periodEnd - periodStart;
+            }
+        }
+        else
+        {
+            // Night doesn't span midnight (e.g., 20:00 - 23:00)
+            var overlapStart = Math.Max(startMinutes, nightStartMinutes);
+            var overlapEnd = Math.Min(endMinutes, nightEndMinutes);
+            if (overlapEnd > overlapStart)
+                nightMinutes += overlapEnd - overlapStart;
+        }
+
+        return nightMinutes;
+    }
+
+    /// <summary>
+    /// Calculate night hours before midnight for month-boundary shifts
+    /// </summary>
+    private decimal CalculateNightHoursBeforeMidnight(Shift shift, TimeOnly nightStart, TimeOnly nightEnd)
+    {
+        var startMinutes = shift.StartTime.Hour * 60 + shift.StartTime.Minute;
+        var nightStartMinutes = nightStart.Hour * 60 + nightStart.Minute;
+        
+        // Hours from night start to midnight
+        if (startMinutes < nightStartMinutes)
+        {
+            // Start before night, night starts later
+            return (1440 - nightStartMinutes) / 60m;
+        }
+        else
+        {
+            // Start during night
+            return (1440 - startMinutes) / 60m;
+        }
+    }
+
+    /// <summary>
+    /// Calculate night hours after midnight from previous month shift
+    /// </summary>
+    private decimal CalculateNightHoursAfterMidnight(Shift shift, TimeOnly nightStart, TimeOnly nightEnd)
+    {
+        var endMinutes = shift.EndTime.Hour * 60 + shift.EndTime.Minute;
+        var nightEndMinutes = nightEnd.Hour * 60 + nightEnd.Minute;
+        
+        // Hours from midnight to night end (or shift end, whichever is earlier)
+        return Math.Min(endMinutes, nightEndMinutes) / 60m;
+    }
+
+    /// <summary>
+    /// Calculate hours after midnight for spilled shifts
+    /// </summary>
+    private decimal CalculateHoursAfterMidnight(Shift shift)
+    {
+        var endMinutes = shift.EndTime.Hour * 60 + shift.EndTime.Minute;
+        var breakProportion = shift.TotalHours > 0 
+            ? endMinutes / (decimal)((24 * 60 - shift.StartTime.Hour * 60 - shift.StartTime.Minute) + endMinutes)
+            : 0;
+        var breakAfterMidnight = shift.BreakMinutes * breakProportion;
+        
+        return Math.Max(0, (endMinutes - breakAfterMidnight) / 60m);
+    }
+
+    /// <summary>
+    /// Calculate shift hours for a specific month
+    /// </summary>
+    private decimal CalculateShiftHoursForMonth(Shift shift, int year, int month)
+    {
+        var daysInMonth = DateTime.DaysInMonth(year, month);
+        var lastDayOfMonth = new DateOnly(year, month, daysInMonth);
+        
+        if (!shift.SpansNextDay || shift.Date != lastDayOfMonth)
+            return shift.TotalHours;
+        
+        // Shift spans to next month
+        if (shift.OvernightHoursMode == 0)
+        {
+            // Split at midnight
+            var startMinutes = shift.StartTime.Hour * 60 + shift.StartTime.Minute;
+            var minutesUntilMidnight = 1440 - startMinutes;
+            var totalMinutes = (int)(shift.TotalHours * 60) + shift.BreakMinutes;
+            var breakProportion = totalMinutes > 0 ? (decimal)minutesUntilMidnight / totalMinutes : 0;
+            var breakBeforeMidnight = shift.BreakMinutes * breakProportion;
+            
+            return Math.Max(0, (minutesUntilMidnight - breakBeforeMidnight) / 60m);
+        }
+        
+        // Mode 1: All hours in current month
+        return shift.TotalHours;
+    }
+
+    #endregion
+
     #region Helper Methods
 
     private async Task<Organization> GetOrCreateOrganizationAsync()

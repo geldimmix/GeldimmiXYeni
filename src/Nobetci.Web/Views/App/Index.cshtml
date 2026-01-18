@@ -21,6 +21,23 @@
                 <span class="action-label">@(isTurkish ? "Tatiller" : "Holidays")</span>
                 <span class="action-badge">@Model.Holidays.Count</span>
             </button>
+            
+            @if (Model.IsRegistered)
+            {
+                <a href="@Url.Action("Payroll", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="action-btn payroll-btn">
+                    <span class="action-icon">📊</span>
+                    <span class="action-label">@(isTurkish ? "Puantaj" : "Payroll")</span>
+                    <span class="action-badge">✓</span>
+                </a>
+            }
+            else
+            {
+                <button class="action-btn payroll-btn disabled" title="@(isTurkish ? "Kayıtlı kullanıcılara özel" : "For registered users only")" disabled>
+                    <span class="action-icon">📊</span>
+                    <span class="action-label">@(isTurkish ? "Puantaj" : "Payroll")</span>
+                    <span class="action-badge">🔒</span>
+                </button>
+            }
         </div>
         
         <!-- Shift Templates - Compact Grid -->
@@ -1117,6 +1134,23 @@
     
     .action-btn.holidays-btn .action-badge {
         background: #f59e0b;
+    }
+    
+    .action-btn.payroll-btn {
+        text-decoration: none;
+    }
+    
+    .action-btn.payroll-btn .action-badge {
+        background: #22c55e;
+    }
+    
+    .action-btn.payroll-btn.disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    
+    .action-btn.payroll-btn.disabled .action-badge {
+        background: #9ca3af;
     }
     
     /* Templates */

@@ -500,4 +500,319 @@ public class ExportController : Controller
         var hoursAfterMidnight = (endMinutes - breakAfterMidnight) / 60m;
         return Math.Max(0, hoursAfterMidnight);
     }
+
+    /// <summary>
+    /// Export payroll/timesheet to Excel
+    /// </summary>
+    [HttpGet("payroll")]
+    public async Task<IActionResult> ExportPayroll(int year, int month, int nightStartHour = 22, int nightEndHour = 6)
+    {
+        // Only registered users
+        if (User.Identity?.IsAuthenticated != true)
+            return Unauthorized();
+
+        var organization = await GetOrganizationAsync();
+        if (organization == null)
+            return NotFound();
+
+        var culture = CultureInfo.CurrentUICulture;
+        var isTurkish = culture.TwoLetterISOLanguageName == "tr";
+
+        var employees = await _context.Employees
+            .Where(e => e.OrganizationId == organization.Id && e.IsActive)
+            .OrderBy(e => e.FullName)
+            .ToListAsync();
+
+        var daysInMonth = DateTime.DaysInMonth(year, month);
+        var firstDayOfMonth = new DateOnly(year, month, 1);
+        var prevMonth = firstDayOfMonth.AddDays(-1);
+
+        var shifts = await _context.Shifts
+            .Include(s => s.Employee)
+            .Where(s => s.Employee.OrganizationId == organization.Id)
+            .Where(s => s.Date.Year == year && s.Date.Month == month)
+            .ToListAsync();
+
+        var prevMonthOvernightShifts = await _context.Shifts
+            .Include(s => s.Employee)
+            .Where(s => s.Employee.OrganizationId == organization.Id)
+            .Where(s => s.Date == prevMonth && s.SpansNextDay)
+            .ToListAsync();
+
+        var holidays = await _context.Holidays
+            .Where(h => h.OrganizationId == organization.Id)
+            .Where(h => h.Date.Year == year && h.Date.Month == month)
+            .ToListAsync();
+
+        var weekendDays = organization.WeekendDays.Split(',').Select(int.Parse).ToList();
+        var nightStart = new TimeOnly(nightStartHour, 0);
+        var nightEnd = new TimeOnly(nightEndHour, 0);
+
+        var monthDate = new DateTime(year, month, 1);
+        var monthName = monthDate.ToString("MMMM yyyy", culture);
+
+        // Sheet name
+        var sheetName = isTurkish ? $"Puantaj - {monthName}" : $"Payroll - {monthName}";
+
+        // Headers
+        var headers = isTurkish
+            ? new[] { "Personel", "Ünvan", "Çalışılan Gün", "Hedef Gün", "Çalışılan Saat", "Hedef Saat", "Fazla Mesai", "Gece Çalışma", "Hafta Sonu", "Resmi Tatil", "İzin Günü" }
+            : new[] { "Employee", "Title", "Days Worked", "Target Days", "Hours Worked", "Target Hours", "Overtime", "Night Hours", "Weekend Hours", "Holiday Hours", "Days Off" };
+
+        using var workbook = new XLWorkbook();
+        var worksheet = workbook.Worksheets.Add(sheetName.Length > 31 ? sheetName.Substring(0, 31) : sheetName);
+
+        // Add info header
+        worksheet.Cell(1, 1).Value = isTurkish ? "Puantaj Raporu" : "Payroll Report";
+        worksheet.Cell(1, 1).Style.Font.Bold = true;
+        worksheet.Cell(1, 1).Style.Font.FontSize = 14;
+        worksheet.Range(1, 1, 1, 4).Merge();
+
+        worksheet.Cell(2, 1).Value = isTurkish ? $"Dönem: {monthName}" : $"Period: {monthName}";
+        worksheet.Cell(2, 5).Value = isTurkish 
+            ? $"Gece Saatleri: {nightStartHour:00}:00 - {nightEndHour:00}:00" 
+            : $"Night Hours: {nightStartHour:00}:00 - {nightEndHour:00}:00";
+
+        // Column headers
+        int headerRow = 4;
+        for (int i = 0; i < headers.Length; i++)
+        {
+            var cell = worksheet.Cell(headerRow, i + 1);
+            cell.Value = headers[i];
+            cell.Style.Font.Bold = true;
+            cell.Style.Fill.BackgroundColor = XLColor.LightGray;
+            cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+        }
+
+        // Employee data
+        int row = headerRow + 1;
+        foreach (var employee in employees)
+        {
+            var employeeShifts = shifts.Where(s => s.EmployeeId == employee.Id).ToList();
+            var prevMonthShift = prevMonthOvernightShifts.FirstOrDefault(s => s.EmployeeId == employee.Id);
+
+            // Calculate payroll data
+            var (workedDays, totalWorkDays) = CalculateWorkDays(employee, employeeShifts, year, month, holidays, weekendDays);
+            var requiredHours = CalculateRequiredHoursForExport(employee, year, month, holidays, weekendDays);
+            var workedHours = CalculateWorkedHoursForExport(employeeShifts, prevMonthShift, year, month);
+            var nightHours = CalculateNightHoursForExport(employeeShifts, prevMonthShift, nightStart, nightEnd, year, month);
+            var weekendHours = employeeShifts.Where(s => !s.IsDayOff && weekendDays.Contains((int)s.Date.DayOfWeek)).Sum(s => s.TotalHours);
+            var holidayHours = employeeShifts.Where(s => !s.IsDayOff && holidays.Any(h => h.Date == s.Date)).Sum(s => s.TotalHours);
+            var daysOff = employeeShifts.Count(s => s.IsDayOff);
+            var overtime = Math.Max(0, workedHours - requiredHours);
+
+            worksheet.Cell(row, 1).Value = employee.FullName;
+            worksheet.Cell(row, 2).Value = employee.Title ?? "";
+            worksheet.Cell(row, 3).Value = workedDays;
+            worksheet.Cell(row, 4).Value = totalWorkDays;
+            worksheet.Cell(row, 5).Value = (double)workedHours;
+            worksheet.Cell(row, 6).Value = (double)requiredHours;
+            worksheet.Cell(row, 7).Value = (double)overtime;
+            worksheet.Cell(row, 8).Value = (double)nightHours;
+            worksheet.Cell(row, 9).Value = (double)weekendHours;
+            worksheet.Cell(row, 10).Value = (double)holidayHours;
+            worksheet.Cell(row, 11).Value = daysOff;
+
+            // Format numbers
+            for (int col = 5; col <= 10; col++)
+            {
+                worksheet.Cell(row, col).Style.NumberFormat.Format = "0.0";
+            }
+
+            // Color code overtime
+            if (overtime > 0)
+            {
+                worksheet.Cell(row, 7).Style.Font.FontColor = XLColor.Green;
+            }
+            else if (workedHours < requiredHours)
+            {
+                worksheet.Cell(row, 7).Value = (double)(workedHours - requiredHours);
+                worksheet.Cell(row, 7).Style.Font.FontColor = XLColor.Red;
+            }
+
+            row++;
+        }
+
+        // Auto-fit columns
+        worksheet.Columns().AdjustToContents();
+
+        // Add borders
+        var dataRange = worksheet.Range(headerRow, 1, row - 1, headers.Length);
+        dataRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+        dataRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
+        // Generate file
+        using var stream = new MemoryStream();
+        workbook.SaveAs(stream);
+        stream.Position = 0;
+
+        var fileName = isTurkish
+            ? $"Puantaj_{year}_{month:00}.xlsx"
+            : $"Payroll_{year}_{month:00}.xlsx";
+
+        return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+    }
+
+    private (int workedDays, int totalWorkDays) CalculateWorkDays(Employee employee, List<Shift> shifts, int year, int month, List<Holiday> holidays, List<int> weekendDays)
+    {
+        var workedDays = shifts.Count(s => !s.IsDayOff);
+        var daysInMonth = DateTime.DaysInMonth(year, month);
+        int totalWorkDays = 0;
+
+        for (int day = 1; day <= daysInMonth; day++)
+        {
+            var date = new DateOnly(year, month, day);
+            var dayOfWeek = date.DayOfWeek;
+            var isSaturday = dayOfWeek == DayOfWeek.Saturday;
+            var isWeekend = weekendDays.Contains((int)dayOfWeek);
+            var holiday = holidays.FirstOrDefault(h => h.Date == date);
+
+            if (holiday != null && !holiday.IsHalfDay) continue;
+
+            if (isWeekend)
+            {
+                if (employee.WeekendWorkMode == 1 || 
+                    (employee.WeekendWorkMode >= 2 && isSaturday))
+                    totalWorkDays++;
+            }
+            else
+            {
+                totalWorkDays++;
+            }
+        }
+
+        return (workedDays, totalWorkDays);
+    }
+
+    private decimal CalculateRequiredHoursForExport(Employee employee, int year, int month, List<Holiday> holidays, List<int> weekendDays)
+    {
+        var daysInMonth = DateTime.DaysInMonth(year, month);
+        decimal requiredHours = 0;
+
+        for (int day = 1; day <= daysInMonth; day++)
+        {
+            var date = new DateOnly(year, month, day);
+            var dayOfWeek = date.DayOfWeek;
+            var isSaturday = dayOfWeek == DayOfWeek.Saturday;
+            var isWeekend = weekendDays.Contains((int)dayOfWeek);
+            var holiday = holidays.FirstOrDefault(h => h.Date == date);
+
+            if (holiday != null && !holiday.IsHalfDay) continue;
+
+            if (holiday != null && holiday.IsHalfDay && holiday.HalfDayWorkHours.HasValue)
+            {
+                if (!isWeekend || employee.WeekendWorkMode > 0)
+                    requiredHours += holiday.HalfDayWorkHours.Value;
+                continue;
+            }
+
+            if (isWeekend)
+            {
+                switch (employee.WeekendWorkMode)
+                {
+                    case 1: requiredHours += employee.DailyWorkHours; break;
+                    case 2: if (isSaturday) requiredHours += employee.DailyWorkHours; break;
+                    case 3: if (isSaturday && employee.SaturdayWorkHours.HasValue) requiredHours += employee.SaturdayWorkHours.Value; break;
+                }
+            }
+            else
+            {
+                requiredHours += employee.DailyWorkHours;
+            }
+        }
+
+        return requiredHours;
+    }
+
+    private decimal CalculateWorkedHoursForExport(List<Shift> shifts, Shift? prevMonthShift, int year, int month)
+    {
+        decimal total = 0;
+        var daysInMonth = DateTime.DaysInMonth(year, month);
+        var lastDayOfMonth = new DateOnly(year, month, daysInMonth);
+
+        // Add hours from previous month overnight shift (if split mode)
+        if (prevMonthShift != null && !prevMonthShift.IsDayOff && prevMonthShift.OvernightHoursMode == 0)
+        {
+            total += CalculateHoursAfterMidnight(prevMonthShift);
+        }
+
+        foreach (var shift in shifts.Where(s => !s.IsDayOff))
+        {
+            if (shift.SpansNextDay && shift.Date == lastDayOfMonth && shift.OvernightHoursMode == 0)
+            {
+                total += CalculateHoursBeforeMidnight(shift);
+            }
+            else
+            {
+                total += shift.TotalHours;
+            }
+        }
+
+        return total;
+    }
+
+    private decimal CalculateNightHoursForExport(List<Shift> shifts, Shift? prevMonthShift, TimeOnly nightStart, TimeOnly nightEnd, int year, int month)
+    {
+        decimal nightHours = 0;
+
+        // Add night hours from previous month spill
+        if (prevMonthShift != null && !prevMonthShift.IsDayOff && prevMonthShift.OvernightHoursMode == 0)
+        {
+            var endMinutes = prevMonthShift.EndTime.Hour * 60 + prevMonthShift.EndTime.Minute;
+            var nightEndMinutes = nightEnd.Hour * 60 + nightEnd.Minute;
+            nightHours += Math.Min(endMinutes, nightEndMinutes) / 60m;
+        }
+
+        foreach (var shift in shifts.Where(s => !s.IsDayOff))
+        {
+            nightHours += CalculateShiftNightHours(shift, nightStart, nightEnd);
+        }
+
+        return nightHours;
+    }
+
+    private decimal CalculateShiftNightHours(Shift shift, TimeOnly nightStart, TimeOnly nightEnd)
+    {
+        decimal nightMinutes = 0;
+        var nightStartMinutes = nightStart.Hour * 60 + nightStart.Minute;
+        var nightEndMinutes = nightEnd.Hour * 60 + nightEnd.Minute;
+
+        if (shift.SpansNextDay)
+        {
+            // Part 1: Start to midnight
+            var startMinutes = shift.StartTime.Hour * 60 + shift.StartTime.Minute;
+            if (startMinutes < nightStartMinutes)
+                nightMinutes += 1440 - nightStartMinutes;
+            else
+                nightMinutes += 1440 - startMinutes;
+
+            // Part 2: Midnight to end
+            var endMinutes = shift.EndTime.Hour * 60 + shift.EndTime.Minute;
+            nightMinutes += Math.Min(endMinutes, nightEndMinutes);
+        }
+        else
+        {
+            var startMinutes = shift.StartTime.Hour * 60 + shift.StartTime.Minute;
+            var endMinutes = shift.EndTime.Hour * 60 + shift.EndTime.Minute;
+
+            // Night spans midnight
+            if (nightEndMinutes < nightStartMinutes)
+            {
+                // Evening part (nightStart to shift end or midnight)
+                if (endMinutes >= nightStartMinutes)
+                {
+                    var nightPart = Math.Min(endMinutes, 1440) - Math.Max(startMinutes, nightStartMinutes);
+                    if (nightPart > 0) nightMinutes += nightPart;
+                }
+                // Morning part (0 to nightEnd)
+                if (startMinutes < nightEndMinutes)
+                {
+                    var nightPart = Math.Min(endMinutes, nightEndMinutes) - startMinutes;
+                    if (nightPart > 0) nightMinutes += nightPart;
+                }
+            }
+        }
+
+        return Math.Max(0, nightMinutes / 60m);
+    }
 }
