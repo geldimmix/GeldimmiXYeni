@@ -1503,6 +1503,9 @@ public class AppController : Controller
 
         var organization = await GetOrCreateOrganizationAsync();
         
+        if (organization == null)
+            return BadRequest(new { success = false, error = "Organization not found" });
+        
         var employee = await _context.Employees
             .FirstOrDefaultAsync(e => e.Id == dto.EmployeeId && e.OrganizationId == organization.Id);
             

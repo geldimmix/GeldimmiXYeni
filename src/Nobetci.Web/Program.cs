@@ -36,20 +36,20 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// Google Authentication
-builder.Services.AddAuthentication()
-    .AddGoogle(options =>
-    {
-        var googleClientId = builder.Configuration["Google:ClientId"];
-        var googleClientSecret = builder.Configuration["Google:ClientSecret"];
-        
-        if (!string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientSecret) &&
-            googleClientId != "YOUR_GOOGLE_CLIENT_ID" && googleClientSecret != "YOUR_GOOGLE_CLIENT_SECRET")
+// Google Authentication (only if configured)
+var googleClientId = builder.Configuration["Google:ClientId"];
+var googleClientSecret = builder.Configuration["Google:ClientSecret"];
+
+if (!string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientSecret) &&
+    googleClientId != "YOUR_GOOGLE_CLIENT_ID" && googleClientSecret != "YOUR_GOOGLE_CLIENT_SECRET")
+{
+    builder.Services.AddAuthentication()
+        .AddGoogle(options =>
         {
             options.ClientId = googleClientId;
             options.ClientSecret = googleClientSecret;
-        }
-    });
+        });
+}
 
 // Cookie settings
 builder.Services.ConfigureApplicationCookie(options =>
@@ -188,6 +188,26 @@ using (var scope = app.Services.CreateScope())
                         ALTER TABLE ""Holidays"" ADD COLUMN ""HalfDayWorkHours"" DECIMAL NULL;
                     END IF;
                 END $$;
+            ");
+            
+            // Create VisitorLogs table if not exists
+            await context.Database.ExecuteSqlRawAsync(@"
+                CREATE TABLE IF NOT EXISTS ""VisitorLogs"" (
+                    ""Id"" SERIAL PRIMARY KEY,
+                    ""IpAddress"" VARCHAR(45) NULL,
+                    ""UserAgent"" VARCHAR(500) NULL,
+                    ""Path"" VARCHAR(500) NULL,
+                    ""Referer"" VARCHAR(500) NULL,
+                    ""Country"" VARCHAR(100) NULL,
+                    ""City"" VARCHAR(100) NULL,
+                    ""SessionId"" VARCHAR(100) NULL,
+                    ""UserId"" VARCHAR(450) NULL,
+                    ""VisitedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                    ""Duration"" INTEGER NULL,
+                    ""IsBot"" BOOLEAN NOT NULL DEFAULT FALSE
+                );
+                CREATE INDEX IF NOT EXISTS ""IX_VisitorLogs_VisitedAt"" ON ""VisitorLogs"" (""VisitedAt"");
+                CREATE INDEX IF NOT EXISTS ""IX_VisitorLogs_SessionId"" ON ""VisitorLogs"" (""SessionId"");
             ");
             
             // Create TimeAttendances table if not exists
