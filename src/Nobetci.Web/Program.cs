@@ -189,6 +189,52 @@ using (var scope = app.Services.CreateScope())
                     END IF;
                 END $$;
             ");
+            
+            // Create TimeAttendances table if not exists
+            await context.Database.ExecuteSqlRawAsync(@"
+                CREATE TABLE IF NOT EXISTS ""TimeAttendances"" (
+                    ""Id"" SERIAL PRIMARY KEY,
+                    ""EmployeeId"" INTEGER NOT NULL REFERENCES ""Employees""(""Id"") ON DELETE CASCADE,
+                    ""Date"" DATE NOT NULL,
+                    ""CheckInTime"" TIME NULL,
+                    ""CheckOutTime"" TIME NULL,
+                    ""CheckInFromPreviousDay"" BOOLEAN NOT NULL DEFAULT FALSE,
+                    ""CheckOutToNextDay"" BOOLEAN NOT NULL DEFAULT FALSE,
+                    ""Type"" INTEGER NOT NULL DEFAULT 0,
+                    ""Source"" INTEGER NOT NULL DEFAULT 0,
+                    ""SourceIdentifier"" VARCHAR(100) NULL,
+                    ""Notes"" VARCHAR(500) NULL,
+                    ""CheckInLocation"" VARCHAR(50) NULL,
+                    ""CheckOutLocation"" VARCHAR(50) NULL,
+                    ""WorkedHours"" DECIMAL NULL,
+                    ""IsApproved"" BOOLEAN NOT NULL DEFAULT TRUE,
+                    ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                    ""UpdatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+                );
+                CREATE INDEX IF NOT EXISTS ""IX_TimeAttendances_EmployeeId_Date"" ON ""TimeAttendances"" (""EmployeeId"", ""Date"");
+                CREATE INDEX IF NOT EXISTS ""IX_TimeAttendances_Date"" ON ""TimeAttendances"" (""Date"");
+            ");
+            
+            // Create ApiKeys table if not exists
+            await context.Database.ExecuteSqlRawAsync(@"
+                CREATE TABLE IF NOT EXISTS ""ApiKeys"" (
+                    ""Id"" SERIAL PRIMARY KEY,
+                    ""OrganizationId"" INTEGER NOT NULL REFERENCES ""Organizations""(""Id"") ON DELETE CASCADE,
+                    ""KeyHash"" VARCHAR(64) NOT NULL,
+                    ""KeyPrefix"" VARCHAR(12) NOT NULL,
+                    ""Name"" VARCHAR(100) NOT NULL,
+                    ""Description"" VARCHAR(500) NULL,
+                    ""Permissions"" VARCHAR(500) NOT NULL,
+                    ""IpWhitelist"" VARCHAR(500) NULL,
+                    ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
+                    ""ExpiresAt"" TIMESTAMP WITH TIME ZONE NULL,
+                    ""LastUsedAt"" TIMESTAMP WITH TIME ZONE NULL,
+                    ""UsageCount"" INTEGER NOT NULL DEFAULT 0,
+                    ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+                );
+                CREATE UNIQUE INDEX IF NOT EXISTS ""IX_ApiKeys_KeyHash"" ON ""ApiKeys"" (""KeyHash"");
+                CREATE INDEX IF NOT EXISTS ""IX_ApiKeys_OrganizationId"" ON ""ApiKeys"" (""OrganizationId"");
+            ");
         }
         catch { /* Columns may already exist */ }
         
