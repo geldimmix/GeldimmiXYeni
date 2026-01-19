@@ -136,7 +136,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasIndex(e => e.Date);
             
             entity.HasOne(e => e.Employee)
-                .WithMany()
+                .WithMany(emp => emp.Leaves)
                 .HasForeignKey(e => e.EmployeeId)
                 .OnDelete(DeleteBehavior.Cascade);
                 
