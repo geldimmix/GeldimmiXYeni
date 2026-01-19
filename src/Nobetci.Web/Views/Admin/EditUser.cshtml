@@ -45,12 +45,12 @@
             <div class="form-group">
                 <label class="form-label">Plan</label>
                 <select name="Plan" class="form-control">
-                    <option value="Free" @(Model.Plan == UserPlan.Free ? "selected" : "")>
-                        Free (Varsayılan: @registeredLimit personel)
-                    </option>
-                    <option value="Premium" @(Model.Plan == UserPlan.Premium ? "selected" : "")>
-                        ⭐ Premium (@premiumLimit personel)
-                    </option>
+                    @{
+                        var freeSelected = Model.Plan == UserPlan.Free ? "selected" : "";
+                        var premiumSelected = Model.Plan == UserPlan.Premium ? "selected" : "";
+                    }
+                    <option value="Free" @freeSelected>Free (Varsayılan: @registeredLimit personel)</option>
+                    <option value="Premium" @premiumSelected>⭐ Premium (@premiumLimit personel)</option>
                 </select>
             </div>
             

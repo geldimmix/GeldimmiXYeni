@@ -1,3 +1,4 @@
+@using Nobetci.Web.Data.Entities
 @model AdminUserViewModel
 @{
     ViewData["Title"] = "Yeni Admin Oluştur";
@@ -47,15 +48,14 @@
         <div class="form-group">
             <label class="form-label">Rol</label>
             <select name="Role" class="form-control">
-                <option value="@Nobetci.Web.Data.Entities.AdminRoles.Admin" @(Model.Role == Nobetci.Web.Data.Entities.AdminRoles.Admin ? "selected" : "")>
-                    Admin - Tam erişim (admin yönetimi hariç)
-                </option>
-                <option value="@Nobetci.Web.Data.Entities.AdminRoles.SuperAdmin" @(Model.Role == Nobetci.Web.Data.Entities.AdminRoles.SuperAdmin ? "selected" : "")>
-                    ⭐ SuperAdmin - Tüm yetkilere sahip
-                </option>
-                <option value="@Nobetci.Web.Data.Entities.AdminRoles.Viewer" @(Model.Role == Nobetci.Web.Data.Entities.AdminRoles.Viewer ? "selected" : "")>
-                    Viewer - Sadece görüntüleme
-                </option>
+                @{
+                    var adminSelected = Model.Role == AdminRoles.Admin ? "selected" : "";
+                    var superAdminSelected = Model.Role == AdminRoles.SuperAdmin ? "selected" : "";
+                    var viewerSelected = Model.Role == AdminRoles.Viewer ? "selected" : "";
+                }
+                <option value="Admin" @adminSelected>Admin - Tam erişim (admin yönetimi hariç)</option>
+                <option value="SuperAdmin" @superAdminSelected>⭐ SuperAdmin - Tüm yetkilere sahip</option>
+                <option value="Viewer" @viewerSelected>Viewer - Sadece görüntüleme</option>
             </select>
         </div>
         

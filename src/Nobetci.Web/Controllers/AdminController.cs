@@ -297,15 +297,6 @@ public class AdminController : Controller
 
         return View(stats);
     }
-
-    // GET: /admin/settings
-    public IActionResult Settings()
-    {
-        if (!IsAdminLoggedIn())
-            return RedirectToAction(nameof(Login));
-
-        return View();
-    }
     
     #region User Management
     
