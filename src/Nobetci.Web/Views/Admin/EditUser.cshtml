@@ -1,3 +1,5 @@
+@using Nobetci.Web.Models
+@using Nobetci.Web.Data.Entities
 @model EditUserViewModel
 @{
     ViewData["Title"] = "Kullanıcı Düzenle";
@@ -45,12 +47,16 @@
             <div class="form-group">
                 <label class="form-label">Plan</label>
                 <select name="Plan" class="form-control">
-                    @{
-                        var freeSelected = Model.Plan == UserPlan.Free ? "selected" : "";
-                        var premiumSelected = Model.Plan == UserPlan.Premium ? "selected" : "";
+                    @if (Model.Plan == UserPlan.Free)
+                    {
+                        <option value="Free" selected>Free (Varsayılan: @registeredLimit personel)</option>
+                        <option value="Premium">⭐ Premium (@premiumLimit personel)</option>
                     }
-                    <option value="Free" @freeSelected>Free (Varsayılan: @registeredLimit personel)</option>
-                    <option value="Premium" @premiumSelected>⭐ Premium (@premiumLimit personel)</option>
+                    else
+                    {
+                        <option value="Free">Free (Varsayılan: @registeredLimit personel)</option>
+                        <option value="Premium" selected>⭐ Premium (@premiumLimit personel)</option>
+                    }
                 </select>
             </div>
             

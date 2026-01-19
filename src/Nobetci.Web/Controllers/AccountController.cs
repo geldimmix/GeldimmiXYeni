@@ -133,7 +133,7 @@ public class AccountController : Controller
             UserName = model.Email,
             Email = model.Email,
             FullName = model.FullName,
-            Plan = UserPlan.Freemium,
+            Plan = UserPlan.Free,
             Language = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName
         };
 
@@ -274,7 +274,7 @@ public class AccountController : Controller
                 Email = email,
                 EmailConfirmed = true, // Google email is verified
                 FullName = name ?? email.Split('@')[0],
-                Plan = UserPlan.Freemium,
+                Plan = UserPlan.Free,
                 Language = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName
             };
 
