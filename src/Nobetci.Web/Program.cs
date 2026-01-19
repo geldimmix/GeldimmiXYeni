@@ -383,19 +383,32 @@ using (var scope = app.Services.CreateScope())
         }
         catch { /* Columns may already exist */ }
         
-        await context.Database.MigrateAsync();
+        // Run migrations - but don't let failures prevent seeding
+        try
+        {
+            await context.Database.MigrateAsync();
+        }
+        catch (Exception migrationEx)
+        {
+            var logger = services.GetRequiredService<ILogger<Program>>();
+            logger.LogWarning(migrationEx, "Migration warning (tables may already exist).");
+        }
         
-        // Seed system settings
-        await SeedSystemSettings(context);
+        // Seed system settings (run regardless of migration status)
+        try { await SeedSystemSettings(context); }
+        catch (Exception ex) { Console.WriteLine($"SeedSystemSettings warning: {ex.Message}"); }
         
-        // Seed admin users
-        await SeedAdminUsers(context);
+        // Seed admin users (run regardless of migration status)  
+        try { await SeedAdminUsers(context); }
+        catch (Exception ex) { Console.WriteLine($"SeedAdminUsers warning: {ex.Message}"); }
         
         // Seed leave types
-        await SeedLeaveTypes(context);
+        try { await SeedLeaveTypes(context); }
+        catch (Exception ex) { Console.WriteLine($"SeedLeaveTypes warning: {ex.Message}"); }
         
         // Seed initial content pages
-        await SeedContentPages(context);
+        try { await SeedContentPages(context); }
+        catch (Exception ex) { Console.WriteLine($"SeedContentPages warning: {ex.Message}"); }
     }
     catch (Exception ex)
     {
