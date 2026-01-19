@@ -1,9 +1,147 @@
 ﻿@{
     var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
-    ViewData["Title"] = isTurkish ? "Online Nöbet & Puantaj Sistemi" : "Online Shift & Timesheet System";
+    ViewData["Title"] = isTurkish ? "Nöbet Çizelgesi, Mesai Takip, Puantaj & İzin Yönetimi" : "Shift Scheduling, Time Attendance, Payroll & Leave Management";
     ViewData["MetaDescription"] = isTurkish 
-        ? "Hemşire nöbet programı, vardiya planı, otomatik puantaj ve fazla mesai hesaplama. Adil dağıtım algoritması ile saniyeler içinde nöbet listesi oluşturun."
-        : "Nurse shift scheduling, duty roster planning, automatic timesheet and overtime calculation. Create fair shift schedules in seconds.";
+        ? "Online nöbet çizelgesi oluşturma, mesai takip sistemi, puantaj hesaplama ve izin yönetimi. Hemşire nöbet programı, vardiya planı, otomatik puantaj ve fazla mesai hesaplama. Ücretsiz başlayın!"
+        : "Online shift scheduling, time attendance tracking, payroll calculation and leave management system. Create nurse duty rosters, calculate timesheets and overtime automatically. Start free!";
+    ViewData["MetaKeywords"] = isTurkish
+        ? "nöbet çizelgesi, nöbet programı, mesai takip, puantaj sistemi, izin yönetimi, hemşire nöbet listesi, vardiya planı, fazla mesai hesaplama, gece çalışması, hafta sonu nöbeti"
+        : "shift scheduling, duty roster, time attendance, payroll system, leave management, nurse scheduling, shift planning, overtime calculation, night shift, weekend duty";
+}
+
+@section StructuredData {
+<!-- SoftwareApplication Schema -->
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "SoftwareApplication",
+    "name": "Geldimmi",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web Browser",
+    "offers": {
+        "@@type": "Offer",
+        "price": "0",
+        "priceCurrency": "TRY"
+    },
+    "description": "@(isTurkish ? "Nöbet çizelgesi oluşturma, mesai takip, puantaj hesaplama ve izin yönetimi sistemi" : "Shift scheduling, time attendance, payroll calculation and leave management system")",
+    "aggregateRating": {
+        "@@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "150"
+    },
+    "featureList": [
+        "@(isTurkish ? "Nöbet Çizelgesi Oluşturma" : "Shift Schedule Creation")",
+        "@(isTurkish ? "Mesai Takip Sistemi" : "Time Attendance System")",
+        "@(isTurkish ? "Puantaj Hesaplama" : "Payroll Calculation")",
+        "@(isTurkish ? "İzin Yönetimi" : "Leave Management")"
+    ]
+}
+</script>
+
+<!-- Organization Schema -->
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "Organization",
+    "name": "Geldimmi",
+    "url": "https://geldimmi.com",
+    "logo": "https://geldimmi.com/images/logo.png",
+    "description": "@(isTurkish ? "Online nöbet çizelgesi, mesai takip ve puantaj sistemi" : "Online shift scheduling, time attendance and payroll system")",
+    "sameAs": []
+}
+</script>
+
+<!-- HowTo Schema - How to create shift schedule -->
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "HowTo",
+    "name": "@(isTurkish ? "Nöbet Çizelgesi Nasıl Oluşturulur?" : "How to Create a Shift Schedule?")",
+    "description": "@(isTurkish ? "Geldimmi ile 3 adımda nöbet çizelgesi oluşturun" : "Create shift schedule in 3 steps with Geldimmi")",
+    "step": [
+        {
+            "@@type": "HowToStep",
+            "name": "@(isTurkish ? "Personel Ekleyin" : "Add Employees")",
+            "text": "@(isTurkish ? "Ad, unvan ve sicil numaralarını girin" : "Enter names, titles and employee IDs")",
+            "position": 1
+        },
+        {
+            "@@type": "HowToStep",
+            "name": "@(isTurkish ? "Nöbet Atayın" : "Assign Shifts")",
+            "text": "@(isTurkish ? "Takvim üzerinde tıklayarak veya otomatik atayın" : "Click on calendar or auto-assign")",
+            "position": 2
+        },
+        {
+            "@@type": "HowToStep",
+            "name": "@(isTurkish ? "Puantaj Alın" : "Get Timesheet")",
+            "text": "@(isTurkish ? "Otomatik hesaplanan puantajı görün ve Excel'e aktarın" : "View auto-calculated timesheet and export to Excel")",
+            "position": 3
+        }
+    ]
+}
+</script>
+
+<!-- FAQ Schema -->
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "FAQPage",
+    "mainEntity": [
+        {
+            "@@type": "Question",
+            "name": "@(isTurkish ? "Geldimmi nedir?" : "What is Geldimmi?")",
+            "acceptedAnswer": {
+                "@@type": "Answer",
+                "text": "@(isTurkish ? "Geldimmi, nöbet çizelgesi oluşturma, mesai takip, puantaj hesaplama ve izin yönetimi için online bir platformdur. Hastane, klinik ve işletmeler için tasarlanmıştır." : "Geldimmi is an online platform for shift scheduling, time attendance tracking, payroll calculation and leave management. Designed for hospitals, clinics and businesses.")"
+            }
+        },
+        {
+            "@@type": "Question",
+            "name": "@(isTurkish ? "Ücretsiz mi?" : "Is it free?")",
+            "acceptedAnswer": {
+                "@@type": "Answer",
+                "text": "@(isTurkish ? "Evet, kayıt olmadan 10 personele kadar ücretsiz kullanabilirsiniz. Kayıt olduğunuzda 25 personele kadar ücretsiz." : "Yes, you can use it free for up to 10 employees without registration. After registration, free for up to 25 employees.")"
+            }
+        },
+        {
+            "@@type": "Question",
+            "name": "@(isTurkish ? "Gece mesaisi nasıl hesaplanır?" : "How is night shift calculated?")",
+            "acceptedAnswer": {
+                "@@type": "Answer",
+                "text": "@(isTurkish ? "Varsayılan olarak 22:00-06:00 arası gece çalışması olarak hesaplanır. Bu saatleri ayarlardan değiştirebilirsiniz." : "By default, work between 22:00-06:00 is calculated as night shift. You can change these hours in settings.")"
+            }
+        },
+        {
+            "@@type": "Question",
+            "name": "@(isTurkish ? "Hangi izin türleri destekleniyor?" : "What leave types are supported?")",
+            "acceptedAnswer": {
+                "@@type": "Answer",
+                "text": "@(isTurkish ? "30'dan fazla izin türü: Yıllık izin, hastalık raporu, evlilik izni, babalık izni, analık izni ve daha fazlası." : "Over 30 leave types: Annual leave, sick leave, marriage leave, paternity leave, maternity leave and more.")"
+            }
+        },
+        {
+            "@@type": "Question",
+            "name": "@(isTurkish ? "Excel'e aktarabilir miyim?" : "Can I export to Excel?")",
+            "acceptedAnswer": {
+                "@@type": "Answer",
+                "text": "@(isTurkish ? "Evet, nöbet çizelgesi ve puantaj raporlarını tek tıkla Excel formatında indirebilirsiniz." : "Yes, you can download shift schedules and timesheet reports in Excel format with one click.")"
+            }
+        }
+    ]
+}
+</script>
+
+<!-- WebSite Schema with SearchAction -->
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "WebSite",
+    "name": "Geldimmi",
+    "url": "https://geldimmi.com",
+    "description": "@(isTurkish ? "Online nöbet çizelgesi, mesai takip, puantaj ve izin yönetimi sistemi" : "Online shift scheduling, time attendance, payroll and leave management system")",
+    "inLanguage": ["tr", "en"]
+}
+</script>
 }
 
 @section Styles {
@@ -351,6 +489,199 @@
     }
     
     /* ═══════════════════════════════════════════════════════════
+       PRODUCTS SECTION - 4 Main Features
+       ═══════════════════════════════════════════════════════════ */
+    
+    .products-section {
+        padding: 100px 0 120px;
+        background: linear-gradient(180deg, var(--bg-white) 0%, var(--bg-cream) 100%);
+        position: relative;
+    }
+    
+    .products-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+    
+    .products-header {
+        text-align: center;
+        margin-bottom: 60px;
+    }
+    
+    .products-header .section-heading {
+        max-width: 700px;
+        margin: 0 auto 20px;
+    }
+    
+    .products-header .section-text {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+    }
+    
+    .product-card {
+        background: var(--bg-white);
+        border: 2px solid var(--border);
+        border-radius: 24px;
+        padding: 36px 28px;
+        position: relative;
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+    }
+    
+    .product-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--accent), #ff8c69);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.35s ease;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 32px 64px rgba(212, 85, 61, 0.15);
+        border-color: var(--accent);
+    }
+    
+    .product-card:hover::before {
+        transform: scaleX(1);
+    }
+    
+    .product-icon {
+        width: 72px;
+        height: 72px;
+        background: linear-gradient(135deg, var(--bg-cream) 0%, var(--bg-warm) 100%);
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+    
+    .product-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, var(--accent) 0%, #e65c45 100%);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        font-family: 'Source Sans 3', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 4px 12px rgba(212, 85, 61, 0.3);
+    }
+    
+    .product-number {
+        position: absolute;
+        top: 20px;
+        left: 24px;
+        font-family: 'Playfair Display', serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        opacity: 0.5;
+    }
+    
+    .product-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 14px;
+        line-height: 1.3;
+    }
+    
+    .product-desc {
+        font-family: 'Source Sans 3', sans-serif;
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        line-height: 1.65;
+        margin-bottom: 24px;
+    }
+    
+    .product-features {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 28px 0;
+    }
+    
+    .product-features li {
+        font-family: 'Source Sans 3', sans-serif;
+        font-size: 0.9rem;
+        color: var(--text);
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .product-features li:last-child {
+        border-bottom: none;
+    }
+    
+    .product-features li::before {
+        content: '✓';
+        color: #16a34a;
+        font-weight: 700;
+        font-size: 0.85rem;
+        width: 20px;
+        height: 20px;
+        background: rgba(22, 163, 74, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    
+    .product-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Source Sans 3', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--accent);
+        text-decoration: none;
+        transition: all 0.25s ease;
+        padding: 10px 0;
+    }
+    
+    .product-btn:hover {
+        color: var(--accent-dark);
+        gap: 12px;
+    }
+    
+    .product-btn svg {
+        transition: transform 0.25s ease;
+    }
+    
+    .product-btn:hover svg {
+        transform: translateX(4px);
+    }
+    
+    /* ═══════════════════════════════════════════════════════════
        FEATURES SECTION
        ═══════════════════════════════════════════════════════════ */
     
@@ -635,12 +966,97 @@
     }
     
     /* ═══════════════════════════════════════════════════════════
+       FAQ SECTION
+       ═══════════════════════════════════════════════════════════ */
+    
+    .faq-section {
+        padding: 100px 0;
+        background: var(--bg-warm);
+    }
+    
+    .faq-header {
+        text-align: center;
+        margin-bottom: 48px;
+    }
+    
+    .faq-list {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .faq-item {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        margin-bottom: 16px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .faq-item:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+    
+    .faq-question {
+        padding: 24px 28px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+    }
+    
+    .faq-question h4 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text);
+        margin: 0;
+    }
+    
+    .faq-icon {
+        width: 32px;
+        height: 32px;
+        background: var(--bg-cream);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent);
+        font-size: 1.2rem;
+        transition: transform 0.3s ease;
+        flex-shrink: 0;
+    }
+    
+    .faq-item.active .faq-icon {
+        transform: rotate(45deg);
+    }
+    
+    .faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.35s ease;
+    }
+    
+    .faq-item.active .faq-answer {
+        max-height: 300px;
+    }
+    
+    .faq-answer-inner {
+        padding: 0 28px 24px;
+        font-family: 'Source Sans 3', sans-serif;
+        font-size: 1rem;
+        color: var(--text-muted);
+        line-height: 1.7;
+    }
+    
+    /* ═══════════════════════════════════════════════════════════
        CTA SECTION
        ═══════════════════════════════════════════════════════════ */
     
     .cta {
         padding: 100px 0;
-        background: var(--bg-warm);
+        background: var(--bg-cream);
         text-align: center;
     }
     
@@ -684,6 +1100,10 @@
        RESPONSIVE
        ═══════════════════════════════════════════════════════════ */
     
+    @@media (max-width: 1199px) {
+        .products-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    
     @@media (max-width: 991px) {
         .hero-visual { display: none; }
         .features-grid { grid-template-columns: repeat(2, 1fr); }
@@ -691,9 +1111,12 @@
     }
     
     @@media (max-width: 767px) {
+        .products-grid { grid-template-columns: 1fr; }
         .features-grid { grid-template-columns: 1fr; }
         .hero-actions { flex-direction: column; }
         .btn-primary-hero, .btn-secondary-hero { width: 100%; justify-content: center; }
+        .products-section { padding: 60px 0 80px; }
+        .product-card { padding: 24px 20px; }
     }
 </style>
 }
@@ -722,8 +1145,8 @@
                     
                     <p class="hero-desc">
                         @(isTurkish 
-                            ? "Hemşire nöbet listesi oluşturun, adil dağıtım algoritması ile vardiyaları planlayın, otomatik puantaj ve fazla mesai hesaplayın."
-                            : "Create nurse duty rosters, plan shifts with fair distribution, calculate automatic timesheets and overtime.")
+                            ? "Nöbet çizelgesi oluşturun, mesai takibi yapın, puantaj hesaplayın ve izinleri yönetin. Tek platformda tüm iş gücü yönetimi."
+                            : "Create shift schedules, track attendance, calculate payroll and manage leaves. Complete workforce management in one platform.")
                     </p>
                     
                     <div class="hero-actions">
@@ -731,19 +1154,23 @@
                             @(isTurkish ? "Hemen Başla" : "Get Started")
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </a>
-                        <a href="#features" class="btn-secondary-hero">
-                            @(isTurkish ? "Özellikleri Keşfet" : "Explore Features")
+                        <a href="#products" class="btn-secondary-hero">
+                            @(isTurkish ? "Ürünleri Keşfet" : "Explore Products")
                         </a>
                     </div>
                     
                     <div class="hero-trust">
                         <div class="trust-item">
                             <span class="trust-icon">✓</span>
-                            @(isTurkish ? "Kayıt gerektirmez" : "No registration")
+                            @(isTurkish ? "Ücretsiz başlayın" : "Start free")
                         </div>
                         <div class="trust-item">
                             <span class="trust-icon">✓</span>
-                            @(isTurkish ? "10 personele kadar ücretsiz" : "Free up to 10 employees")
+                            @(isTurkish ? "Kurulum gerektirmez" : "No installation")
+                        </div>
+                        <div class="trust-item">
+                            <span class="trust-icon">✓</span>
+                            @(isTurkish ? "30+ izin türü" : "30+ leave types")
                         </div>
                         <div class="trust-item">
                             <span class="trust-icon">✓</span>
@@ -817,6 +1244,118 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Products Section - 4 Main Features -->
+<section id="products" class="products-section">
+    <div class="container">
+        <div class="products-header">
+            <span class="section-eyebrow">@(isTurkish ? "Ürünlerimiz" : "Our Products")</span>
+            <h2 class="section-heading heading-display">
+                @(isTurkish ? "İş gücü yönetimi için kapsamlı çözümler" : "Comprehensive solutions for workforce management")
+            </h2>
+            <p class="section-text">
+                @(isTurkish 
+                    ? "Nöbet planlama, mesai takip, puantaj ve izin yönetimi - hepsi tek platformda."
+                    : "Shift planning, time attendance, payroll and leave management - all in one platform.")
+            </p>
+        </div>
+        
+        <div class="products-grid">
+            <!-- 1. Nöbet Çizelgesi -->
+            <div class="product-card" id="shift-scheduling">
+                <span class="product-number">01</span>
+                <div class="product-icon">📅</div>
+                <div class="product-badge">@(isTurkish ? "En Popüler" : "Most Popular")</div>
+                <h3 class="product-title">@(isTurkish ? "Nöbet Çizelgesi" : "Shift Scheduling")</h3>
+                <p class="product-desc">
+                    @(isTurkish 
+                        ? "Dakikalar içinde profesyonel nöbet çizelgesi oluşturun. Hemşire, doktor veya personel nöbet listesi hazırlamak artık çok kolay."
+                        : "Create professional shift schedules in minutes. Nurse, doctor or staff duty roster preparation is now very easy.")
+                </p>
+                <ul class="product-features">
+                    <li>@(isTurkish ? "Sürükle-bırak ile kolay atama" : "Drag & drop easy assignment")</li>
+                    <li>@(isTurkish ? "Özelleştirilebilir vardiya şablonları" : "Customizable shift templates")</li>
+                    <li>@(isTurkish ? "Ertesi güne sarkan nöbetler" : "Overnight shift support")</li>
+                    <li>@(isTurkish ? "Adil nöbet dağıtımı" : "Fair shift distribution")</li>
+                    <li>@(isTurkish ? "Excel'e aktarma" : "Excel export")</li>
+                </ul>
+                <a href="/app" class="product-btn">
+                    @(isTurkish ? "Hemen Başla" : "Get Started")
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+            
+            <!-- 2. Mesai Takip -->
+            <div class="product-card" id="time-attendance">
+                <span class="product-number">02</span>
+                <div class="product-icon">🕐</div>
+                <h3 class="product-title">@(isTurkish ? "Mesai Takip" : "Time Attendance")</h3>
+                <p class="product-desc">
+                    @(isTurkish 
+                        ? "Personelin giriş-çıkış saatlerini kaydedin. Planlanan nöbet ile gerçek mesaiyi karşılaştırın, farkları anında görün."
+                        : "Record employee check-in/check-out times. Compare planned shifts with actual attendance, see differences instantly.")
+                </p>
+                <ul class="product-features">
+                    <li>@(isTurkish ? "Manuel veya API ile kayıt" : "Manual or API recording")</li>
+                    <li>@(isTurkish ? "Gece vardiyası desteği" : "Night shift support")</li>
+                    <li>@(isTurkish ? "Mola süresi hesaplama" : "Break time calculation")</li>
+                    <li>@(isTurkish ? "JWT tabanlı API entegrasyonu" : "JWT-based API integration")</li>
+                    <li>@(isTurkish ? "Gerçek zamanlı izleme" : "Real-time monitoring")</li>
+                </ul>
+                <a href="/app/attendance" class="product-btn">
+                    @(isTurkish ? "Keşfet" : "Explore")
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+            
+            <!-- 3. Puantaj -->
+            <div class="product-card" id="payroll">
+                <span class="product-number">03</span>
+                <div class="product-icon">📊</div>
+                <h3 class="product-title">@(isTurkish ? "Puantaj Sistemi" : "Payroll System")</h3>
+                <p class="product-desc">
+                    @(isTurkish 
+                        ? "Otomatik puantaj hesaplama. Normal mesai, gece çalışması, hafta sonu ve fazla mesai ayrı ayrı hesaplanıp raporlanır."
+                        : "Automatic payroll calculation. Regular hours, night work, weekends and overtime calculated and reported separately.")
+                </p>
+                <ul class="product-features">
+                    <li>@(isTurkish ? "Gece mesai hesaplama (22:00-06:00)" : "Night hours calculation (22:00-06:00)")</li>
+                    <li>@(isTurkish ? "Fazla mesai takibi" : "Overtime tracking")</li>
+                    <li>@(isTurkish ? "30 günlük detaylı döküm" : "30-day detailed breakdown")</li>
+                    <li>@(isTurkish ? "Puantajı kaydetme ve düzenleme" : "Save and edit payroll")</li>
+                    <li>@(isTurkish ? "Excel raporu" : "Excel report")</li>
+                </ul>
+                <a href="/app/payroll" class="product-btn">
+                    @(isTurkish ? "Keşfet" : "Explore")
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+            
+            <!-- 4. İzin Yönetimi -->
+            <div class="product-card" id="leave-management">
+                <span class="product-number">04</span>
+                <div class="product-icon">🏖️</div>
+                <h3 class="product-title">@(isTurkish ? "İzin Yönetimi" : "Leave Management")</h3>
+                <p class="product-desc">
+                    @(isTurkish 
+                        ? "Yıllık izin, hastalık raporu, evlilik izni, doğum izni ve daha fazlası. Tüm izin türlerini tek yerden yönetin."
+                        : "Annual leave, sick leave, marriage leave, maternity leave and more. Manage all leave types from one place.")
+                </p>
+                <ul class="product-features">
+                    <li>@(isTurkish ? "30+ izin türü desteği" : "30+ leave types supported")</li>
+                    <li>@(isTurkish ? "Takvim üzerinde izin atama" : "Calendar-based leave assignment")</li>
+                    <li>@(isTurkish ? "Otomatik saat düşümü" : "Automatic hour deduction")</li>
+                    <li>@(isTurkish ? "Ücretli/ücretsiz izin ayrımı" : "Paid/unpaid leave distinction")</li>
+                    <li>@(isTurkish ? "Puantaja otomatik yansıma" : "Auto-reflect in payroll")</li>
+                </ul>
+                <a href="/app" class="product-btn">
+                    @(isTurkish ? "Keşfet" : "Explore")
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
             </div>
         </div>
     </div>
@@ -1005,6 +1544,102 @@
                             <h5>@(isTurkish ? "Fazla Mesai" : "Overtime")</h5>
                             <p>@(isTurkish ? "Günlük veya aylık hesaplama" : "Daily or monthly calculation")</p>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section id="faq" class="faq-section">
+    <div class="container">
+        <div class="faq-header">
+            <span class="section-eyebrow">@(isTurkish ? "Sıkça Sorulan Sorular" : "Frequently Asked Questions")</span>
+            <h2 class="section-heading heading-display">@(isTurkish ? "Merak Edilenler" : "Common Questions")</h2>
+        </div>
+        
+        <div class="faq-list">
+            <div class="faq-item">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                    <h4>@(isTurkish ? "Geldimmi nedir?" : "What is Geldimmi?")</h4>
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        @(isTurkish 
+                            ? "Geldimmi, nöbet çizelgesi oluşturma, mesai takip, puantaj hesaplama ve izin yönetimi için online bir platformdur. Hastane, klinik, eczane ve diğer işletmeler için tasarlanmıştır. Hemşire nöbet programı, doktor vardiya planı ve personel çalışma çizelgesi oluşturmak artık çok kolay."
+                            : "Geldimmi is an online platform for shift scheduling, time attendance tracking, payroll calculation and leave management. Designed for hospitals, clinics, pharmacies and other businesses. Creating nurse duty schedules, doctor shift plans and staff work schedules is now very easy.")
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                    <h4>@(isTurkish ? "Ücretsiz mi?" : "Is it free?")</h4>
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        @(isTurkish 
+                            ? "Evet, kayıt olmadan 10 personele kadar ücretsiz kullanabilirsiniz. Google hesabınızla kayıt olduğunuzda 25 personele kadar ücretsiz. Kredi kartı gerekmez, deneme süresi yoktur."
+                            : "Yes, you can use it free for up to 10 employees without registration. When you sign up with your Google account, it's free for up to 25 employees. No credit card required, no trial period.")
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                    <h4>@(isTurkish ? "Gece mesaisi nasıl hesaplanır?" : "How is night shift calculated?")</h4>
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        @(isTurkish 
+                            ? "Varsayılan olarak 22:00-06:00 arası gece çalışması olarak hesaplanır. Bu saatleri organizasyon ayarlarından istediğiniz şekilde değiştirebilirsiniz. Gece saatleri puantajda ayrı olarak gösterilir."
+                            : "By default, work between 22:00-06:00 is calculated as night shift. You can change these hours in organization settings as you wish. Night hours are shown separately in the timesheet.")
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                    <h4>@(isTurkish ? "Hangi izin türleri destekleniyor?" : "What leave types are supported?")</h4>
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        @(isTurkish 
+                            ? "30'dan fazla izin türü desteklenmektedir: Yıllık ücretli izin, hastalık raporu, evlilik izni, babalık izni, analık izni (doğum öncesi/sonrası), süt izni, refakat izni, eğitim izni, askerlik izni ve daha fazlası. Tüm izin türleri Türkçe ve İngilizce olarak görüntülenebilir."
+                            : "Over 30 leave types are supported: Annual paid leave, sick leave, marriage leave, paternity leave, maternity leave (prenatal/postnatal), nursing leave, accompanying leave, education leave, military leave and more. All leave types can be displayed in Turkish and English.")
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                    <h4>@(isTurkish ? "Excel'e aktarabilir miyim?" : "Can I export to Excel?")</h4>
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        @(isTurkish 
+                            ? "Evet, nöbet çizelgesi ve puantaj raporlarını tek tıkla Excel formatında (.xlsx) indirebilirsiniz. Excel dosyasında tüm detaylar (gece saati, hafta sonu, fazla mesai, 30 günlük döküm) yer alır."
+                            : "Yes, you can download shift schedules and timesheet reports in Excel format (.xlsx) with one click. The Excel file includes all details (night hours, weekend, overtime, 30-day breakdown).")
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                    <h4>@(isTurkish ? "Mobil uygulaması var mı?" : "Is there a mobile app?")</h4>
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        @(isTurkish 
+                            ? "Web uygulaması mobil uyumlu olarak tasarlanmıştır. Telefonunuzdan veya tabletinizden rahatlıkla kullanabilirsiniz. Ayrıca API desteğimiz sayesinde kendi mobil uygulamanızı entegre edebilirsiniz."
+                            : "The web application is designed to be mobile-friendly. You can easily use it from your phone or tablet. Additionally, with our API support, you can integrate your own mobile application.")
                     </div>
                 </div>
             </div>

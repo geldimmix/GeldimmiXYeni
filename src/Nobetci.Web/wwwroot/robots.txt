@@ -1,0 +1,25 @@
+# Robots.txt for Geldimmi
+# https://geldimmi.com
+
+User-agent: *
+Allow: /
+Allow: /app
+Allow: /app/attendance
+Allow: /app/payroll
+Disallow: /api/
+Disallow: /api/*
+
+# Sitemap
+Sitemap: https://geldimmi.com/sitemap.xml
+
+# Crawl-delay for responsible crawling
+Crawl-delay: 1
+
+# Google specific
+User-agent: Googlebot
+Allow: /
+
+# Bing specific
+User-agent: Bingbot
+Allow: /
+

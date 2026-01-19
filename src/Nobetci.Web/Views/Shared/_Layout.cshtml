@@ -17,14 +17,47 @@
     {
         <meta name="keywords" content="@ViewData["MetaKeywords"]" />
     }
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="author" content="Geldimmi" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="bingbot" content="index, follow" />
+    <meta name="theme-color" content="#d4553d" />
+    <meta name="application-name" content="Geldimmi" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Geldimmi" />
+    <link rel="canonical" href="https://geldimmi.com@Context.Request.Path" />
     
-    <!-- Open Graph -->
+    <!-- Language Alternates (hreflang) -->
+    <link rel="alternate" hreflang="tr" href="https://geldimmi.com@Context.Request.Path?culture=tr-TR" />
+    <link rel="alternate" hreflang="en" href="https://geldimmi.com@Context.Request.Path?culture=en-US" />
+    <link rel="alternate" hreflang="x-default" href="https://geldimmi.com@Context.Request.Path" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:site_name" content="Geldimmi" />
     <meta property="og:title" content="@ViewData["Title"] - Geldimmi" />
+    <meta property="og:description" content="@(ViewData["MetaDescription"] ?? (isTurkish ? "Online nöbet çizelgesi, mesai takip ve puantaj sistemi" : "Online shift scheduling, time attendance and payroll system"))" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://geldimmi.com" />
+    <meta property="og:url" content="https://geldimmi.com@Context.Request.Path" />
+    <meta property="og:image" content="https://geldimmi.com/images/og-image.png" />
+    <meta property="og:locale" content="@(isTurkish ? "tr_TR" : "en_US")" />
     
-    <!-- Favicon -->
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@ViewData["Title"] - Geldimmi" />
+    <meta name="twitter:description" content="@(ViewData["MetaDescription"] ?? (isTurkish ? "Online nöbet çizelgesi, mesai takip ve puantaj sistemi" : "Online shift scheduling, time attendance and payroll system"))" />
+    <meta name="twitter:image" content="https://geldimmi.com/images/og-image.png" />
+    
+    <!-- Structured Data (JSON-LD) -->
+    @await RenderSectionAsync("StructuredData", required: false)
+    
+    <!-- Favicon & App Icons -->
     <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="~/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="~/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="~/apple-touch-icon.png" />
+    <link rel="manifest" href="~/site.webmanifest" />
     
     <!-- Bootstrap 5 -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
@@ -72,20 +105,20 @@
                         </a>
                     </li>
                     
-                    <!-- SEO Pages Dropdown -->
+                    <!-- Products Dropdown -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="featuresDropdown" role="button" data-bs-toggle="dropdown">
-                            @(isTurkish ? "Özellikler" : "Features")
+                            @(isTurkish ? "Ürünler" : "Products")
                         </a>
                         <ul class="dropdown-menu dropdown-menu-custom dropdown-mega">
                             <div class="dropdown-mega-inner">
                                 <div class="dropdown-column">
-                                    <div class="dropdown-header">@(isTurkish ? "Nöbet Planlama" : "Shift Scheduling")</div>
+                                    <div class="dropdown-header">📅 @(isTurkish ? "Nöbet Çizelgesi" : "Shift Scheduling")</div>
                                     <li>
                                         <a class="dropdown-item" href="@(isTurkish ? "/rehber/nobet-listesi-olusturma" : "/guide/shift-scheduling")">
                                             <span class="dropdown-text">
-                                                <strong>@(isTurkish ? "Nöbet Listesi Oluşturma" : "Shift Scheduling")</strong>
-                                                <small>@(isTurkish ? "Kolay ve hızlı nöbet planı" : "Easy and fast shift planning")</small>
+                                                <strong>@(isTurkish ? "Nöbet Çizelgesi Oluşturma" : "Create Shift Schedule")</strong>
+                                                <small>@(isTurkish ? "Dakikalar içinde profesyonel nöbet planı" : "Professional shift planning in minutes")</small>
                                             </span>
                                             <span class="dropdown-arrow">→</span>
                                         </a>
@@ -110,12 +143,33 @@
                                     </li>
                                 </div>
                                 <div class="dropdown-column">
-                                    <div class="dropdown-header">@(isTurkish ? "Puantaj & Raporlama" : "Timesheet & Reporting")</div>
+                                    <div class="dropdown-header">🕐 @(isTurkish ? "Mesai Takip" : "Time Attendance")</div>
+                                    <li>
+                                        <a class="dropdown-item" href="@(isTurkish ? "/rehber/mesai-takip-sistemi" : "/guide/time-attendance-system")">
+                                            <span class="dropdown-text">
+                                                <strong>@(isTurkish ? "Mesai Takip Sistemi" : "Time Attendance System")</strong>
+                                                <small>@(isTurkish ? "Giriş-çıkış saatlerini kaydedin" : "Record check-in/check-out times")</small>
+                                            </span>
+                                            <span class="dropdown-arrow">→</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="/app/attendance">
+                                            <span class="dropdown-text">
+                                                <strong>@(isTurkish ? "Mesai Takip Uygulaması" : "Attendance App")</strong>
+                                                <small>@(isTurkish ? "Hemen kullanmaya başla" : "Start using now")</small>
+                                            </span>
+                                            <span class="dropdown-arrow">→</span>
+                                        </a>
+                                    </li>
+                                </div>
+                                <div class="dropdown-column">
+                                    <div class="dropdown-header">📊 @(isTurkish ? "Puantaj" : "Payroll")</div>
                                     <li>
                                         <a class="dropdown-item" href="@(isTurkish ? "/rehber/puantaj-hesaplama" : "/guide/timesheet-calculation")">
                                             <span class="dropdown-text">
-                                                <strong>@(isTurkish ? "Puantaj Hesaplama" : "Timesheet Calculation")</strong>
-                                                <small>@(isTurkish ? "Otomatik mesai hesabı" : "Automatic overtime calculation")</small>
+                                                <strong>@(isTurkish ? "Puantaj Hesaplama" : "Payroll Calculation")</strong>
+                                                <small>@(isTurkish ? "Otomatik mesai hesabı" : "Automatic work hour calculation")</small>
                                             </span>
                                             <span class="dropdown-arrow">→</span>
                                         </a>
@@ -124,7 +178,28 @@
                                         <a class="dropdown-item" href="@(isTurkish ? "/rehber/fazla-mesai-hesaplama" : "/guide/overtime-calculation")">
                                             <span class="dropdown-text">
                                                 <strong>@(isTurkish ? "Fazla Mesai Hesaplama" : "Overtime Calculation")</strong>
-                                                <small>@(isTurkish ? "Günlük ve aylık modlar" : "Daily and monthly modes")</small>
+                                                <small>@(isTurkish ? "Gece, hafta sonu, tatil" : "Night, weekend, holiday")</small>
+                                            </span>
+                                            <span class="dropdown-arrow">→</span>
+                                        </a>
+                                    </li>
+                                </div>
+                                <div class="dropdown-column">
+                                    <div class="dropdown-header">🏖️ @(isTurkish ? "İzin Yönetimi" : "Leave Management")</div>
+                                    <li>
+                                        <a class="dropdown-item" href="@(isTurkish ? "/rehber/izin-yonetimi" : "/guide/leave-management")">
+                                            <span class="dropdown-text">
+                                                <strong>@(isTurkish ? "İzin Yönetim Sistemi" : "Leave Management System")</strong>
+                                                <small>@(isTurkish ? "30+ izin türü desteği" : "30+ leave type support")</small>
+                                            </span>
+                                            <span class="dropdown-arrow">→</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="@(isTurkish ? "/rehber/yillik-izin-takibi" : "/guide/annual-leave-tracking")">
+                                            <span class="dropdown-text">
+                                                <strong>@(isTurkish ? "Yıllık İzin Takibi" : "Annual Leave Tracking")</strong>
+                                                <small>@(isTurkish ? "Bakiye ve kullanım takibi" : "Balance and usage tracking")</small>
                                             </span>
                                             <span class="dropdown-arrow">→</span>
                                         </a>
@@ -384,21 +459,24 @@
         }
         
         .dropdown-mega {
-            min-width: 540px;
+            min-width: 900px;
             background: white;
+            left: 50%;
+            transform: translateX(-50%);
         }
         
         .dropdown-mega-inner {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(4, 1fr);
         }
         
         .dropdown-column {
-            padding: 24px;
+            padding: 20px;
+            border-right: 1px solid var(--nav-border);
         }
         
-        .dropdown-column:first-child {
-            border-right: 1px solid var(--nav-border);
+        .dropdown-column:last-child {
+            border-right: none;
         }
         
         .dropdown-menu-custom .dropdown-header {
@@ -524,15 +602,21 @@
                 border: none;
                 box-shadow: none;
                 margin-top: 0;
+                left: 0;
+                transform: none;
             }
             
             .dropdown-mega-inner {
                 grid-template-columns: 1fr;
             }
             
-            .dropdown-column:first-child {
+            .dropdown-column {
                 border-right: none;
                 border-bottom: 1px solid var(--nav-border);
+            }
+            
+            .dropdown-column:last-child {
+                border-bottom: none;
             }
             
             .lang-toggle,
