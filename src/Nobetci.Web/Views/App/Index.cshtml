@@ -5143,7 +5143,7 @@
                 const result = await response.json();
                 // Update UI - use correct code based on language
                 const displayCode = isTurkish ? result.leaveCode : result.leaveCodeEn;
-                updateCellWithLeave(cell, displayCode, result.leaveColor);
+                updateCellWithLeave(cell, result.id, displayCode, result.leaveColor);
                 showToast(isTurkish ? 'İzin atandı' : 'Leave assigned', 'success');
             } else {
                 const error = await response.json();
@@ -5174,7 +5174,7 @@
     }
     
     // Update cell UI with leave badge
-    function updateCellWithLeave(cell, leaveCode, leaveColor) {
+    function updateCellWithLeave(cell, leaveId, leaveCode, leaveColor) {
         // Clear existing badges (except continuation)
         const existingContinuation = cell.querySelector('.shift-continuation');
         cell.innerHTML = '';
@@ -5186,6 +5186,7 @@
         badge.className = 'leave-badge';
         badge.style.background = leaveColor;
         badge.textContent = leaveCode;
+        badge.dataset.leaveId = leaveId; // Important: Set leave ID for deletion
         
         cell.appendChild(badge);
     }
