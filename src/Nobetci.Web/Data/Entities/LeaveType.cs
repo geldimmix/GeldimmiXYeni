@@ -15,11 +15,18 @@ public class LeaveType
     public int? OrganizationId { get; set; }
     
     /// <summary>
-    /// Abbreviation code (e.g., "Yİ", "Hİ", "Eİ")
+    /// Turkish abbreviation code (e.g., "Yİ", "Hİ", "Eİ")
     /// </summary>
     [Required]
     [MaxLength(10)]
     public string Code { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// English abbreviation code (e.g., "AL", "SL", "ML")
+    /// </summary>
+    [Required]
+    [MaxLength(10)]
+    public string CodeEn { get; set; } = string.Empty;
     
     /// <summary>
     /// Turkish name

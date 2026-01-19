@@ -738,6 +738,7 @@ public class AppController : Controller
                 l.EmployeeId,
                 l.LeaveTypeId,
                 LeaveCode = l.LeaveType.Code,
+                LeaveCodeEn = l.LeaveType.CodeEn,
                 LeaveColor = l.LeaveType.Color,
                 Date = l.Date.ToString("yyyy-MM-dd"),
                 l.Notes
@@ -783,6 +784,7 @@ public class AppController : Controller
                 success = true, 
                 id = existingLeave.Id,
                 leaveCode = leaveType.Code,
+                leaveCodeEn = leaveType.CodeEn,
                 leaveColor = leaveType.Color
             });
         }
@@ -810,6 +812,7 @@ public class AppController : Controller
             success = true, 
             id = leave.Id,
             leaveCode = leaveType.Code,
+            leaveCodeEn = leaveType.CodeEn,
             leaveColor = leaveType.Color
         });
     }

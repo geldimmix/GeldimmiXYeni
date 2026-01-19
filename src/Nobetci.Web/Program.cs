@@ -282,6 +282,7 @@ using (var scope = app.Services.CreateScope())
                     ""Id"" SERIAL PRIMARY KEY,
                     ""OrganizationId"" INTEGER NULL REFERENCES ""Organizations""(""Id"") ON DELETE CASCADE,
                     ""Code"" VARCHAR(10) NOT NULL,
+                    ""CodeEn"" VARCHAR(10) NOT NULL DEFAULT '',
                     ""NameTr"" VARCHAR(100) NOT NULL,
                     ""NameEn"" VARCHAR(100) NOT NULL,
                     ""Category"" VARCHAR(30) NOT NULL DEFAULT 'other',
@@ -294,6 +295,16 @@ using (var scope = app.Services.CreateScope())
                 );
                 CREATE INDEX IF NOT EXISTS ""IX_LeaveTypes_OrganizationId"" ON ""LeaveTypes"" (""OrganizationId"");
                 CREATE INDEX IF NOT EXISTS ""IX_LeaveTypes_IsSystem"" ON ""LeaveTypes"" (""IsSystem"");
+            ");
+            
+            // Add CodeEn column if not exists (for existing databases)
+            await context.Database.ExecuteSqlRawAsync(@"
+                DO $$ 
+                BEGIN
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'LeaveTypes' AND column_name = 'CodeEn') THEN
+                        ALTER TABLE ""LeaveTypes"" ADD COLUMN ""CodeEn"" VARCHAR(10) NOT NULL DEFAULT '';
+                    END IF;
+                END $$;
             ");
             
             // Create Leaves table if not exists
@@ -333,64 +344,93 @@ app.Run();
 static async Task SeedLeaveTypes(ApplicationDbContext context)
 {
     // Check if system leave types already exist
-    var hasSystemTypes = await context.LeaveTypes.AnyAsync(lt => lt.IsSystem);
-    if (hasSystemTypes)
+    var existingSystemTypes = await context.LeaveTypes.Where(lt => lt.IsSystem).ToListAsync();
+    
+    // If leave types exist but some are missing CodeEn, update them
+    if (existingSystemTypes.Any())
+    {
+        var needsUpdate = existingSystemTypes.Where(lt => string.IsNullOrEmpty(lt.CodeEn)).ToList();
+        if (needsUpdate.Any())
+        {
+            var codeMapping = new Dictionary<string, string>
+            {
+                { "Yİ", "AL" }, { "Yol İ", "TL" }, { "DÖİ", "PRE" }, { "DSİ", "POST" },
+                { "Çİ", "MPL" }, { "Bİ", "PL" }, { "Sİ", "NL" }, { "ÜAİ", "UML" },
+                { "Eİ", "ADL" }, { "PKİ", "PCL" }, { "Rp", "SL" }, { "Rİ", "CL" },
+                { "İKİ", "WAL" }, { "MHİ", "ODL" }, { "PMİ", "MED" }, { "Evİ", "ML" },
+                { "Vİ", "BR" }, { "Mİ", "EL" }, { "Snİ", "EXM" }, { "Eğİ", "EDU" },
+                { "Aİ", "MIL" }, { "BAİ", "PMS" }, { "İİ", "ADM" }, { "RTİ", "PH" },
+                { "OHİ", "EMG" }, { "İAİ", "JSL" }, { "Üİ", "UL" }, { "Kİ", "DC" },
+                { "Sdİ", "UNL" }, { "Şİ", "WIT" }, { "Oİ", "VOT" }, { "HTİ", "MTL" },
+                { "Afİ", "DIS" }
+            };
+            
+            foreach (var lt in needsUpdate)
+            {
+                if (codeMapping.TryGetValue(lt.Code, out var codeEn))
+                {
+                    lt.CodeEn = codeEn;
+                }
+            }
+            await context.SaveChangesAsync();
+        }
         return;
+    }
 
     var leaveTypes = new List<LeaveType>
     {
         // 1. Yıllık İzinler (Annual Leaves)
-        new() { Code = "Yİ", NameTr = "Yıllık Ücretli İzin", NameEn = "Annual Paid Leave", Category = "annual", IsPaid = true, DefaultDays = 14, Color = "#22c55e", SortOrder = 1, IsSystem = true },
-        new() { Code = "Yol İ", NameTr = "Yol İzni", NameEn = "Travel Leave", Category = "annual", IsPaid = true, DefaultDays = 4, Color = "#16a34a", SortOrder = 2, IsSystem = true },
+        new() { Code = "Yİ", CodeEn = "AL", NameTr = "Yıllık Ücretli İzin", NameEn = "Annual Paid Leave", Category = "annual", IsPaid = true, DefaultDays = 14, Color = "#22c55e", SortOrder = 1, IsSystem = true },
+        new() { Code = "Yol İ", CodeEn = "TL", NameTr = "Yol İzni", NameEn = "Travel Leave", Category = "annual", IsPaid = true, DefaultDays = 4, Color = "#16a34a", SortOrder = 2, IsSystem = true },
         
         // 2. Analık/Babalık İzinleri (Maternity/Paternity)
-        new() { Code = "DÖİ", NameTr = "Doğum Öncesi İzin", NameEn = "Prenatal Leave", Category = "maternity", IsPaid = true, DefaultDays = 56, Color = "#ec4899", SortOrder = 10, IsSystem = true },
-        new() { Code = "DSİ", NameTr = "Doğum Sonrası İzin", NameEn = "Postnatal Leave", Category = "maternity", IsPaid = true, DefaultDays = 56, Color = "#db2777", SortOrder = 11, IsSystem = true },
-        new() { Code = "Çİ", NameTr = "Çoğul Gebelik Ek İzni", NameEn = "Multiple Pregnancy Extra Leave", Category = "maternity", IsPaid = true, DefaultDays = 14, Color = "#be185d", SortOrder = 12, IsSystem = true },
-        new() { Code = "Bİ", NameTr = "Babalık İzni", NameEn = "Paternity Leave", Category = "maternity", IsPaid = true, DefaultDays = 5, Color = "#3b82f6", SortOrder = 13, IsSystem = true },
-        new() { Code = "Sİ", NameTr = "Süt İzni", NameEn = "Nursing Leave", Category = "maternity", IsPaid = true, DefaultDays = 0, Color = "#f472b6", SortOrder = 14, IsSystem = true },
-        new() { Code = "ÜAİ", NameTr = "Ücretsiz Analık İzni", NameEn = "Unpaid Maternity Leave", Category = "maternity", IsPaid = false, DefaultDays = 180, Color = "#9d174d", SortOrder = 15, IsSystem = true },
-        new() { Code = "Eİ", NameTr = "Evlat Edinme İzni", NameEn = "Adoption Leave", Category = "maternity", IsPaid = true, DefaultDays = 56, Color = "#a855f7", SortOrder = 16, IsSystem = true },
-        new() { Code = "PKİ", NameTr = "Periyodik Kontrol İzni", NameEn = "Periodic Checkup Leave", Category = "maternity", IsPaid = true, DefaultDays = 0, Color = "#c084fc", SortOrder = 17, IsSystem = true },
+        new() { Code = "DÖİ", CodeEn = "PRE", NameTr = "Doğum Öncesi İzin", NameEn = "Prenatal Leave", Category = "maternity", IsPaid = true, DefaultDays = 56, Color = "#ec4899", SortOrder = 10, IsSystem = true },
+        new() { Code = "DSİ", CodeEn = "POST", NameTr = "Doğum Sonrası İzin", NameEn = "Postnatal Leave", Category = "maternity", IsPaid = true, DefaultDays = 56, Color = "#db2777", SortOrder = 11, IsSystem = true },
+        new() { Code = "Çİ", CodeEn = "MPL", NameTr = "Çoğul Gebelik Ek İzni", NameEn = "Multiple Pregnancy Extra Leave", Category = "maternity", IsPaid = true, DefaultDays = 14, Color = "#be185d", SortOrder = 12, IsSystem = true },
+        new() { Code = "Bİ", CodeEn = "PL", NameTr = "Babalık İzni", NameEn = "Paternity Leave", Category = "maternity", IsPaid = true, DefaultDays = 5, Color = "#3b82f6", SortOrder = 13, IsSystem = true },
+        new() { Code = "Sİ", CodeEn = "NL", NameTr = "Süt İzni", NameEn = "Nursing Leave", Category = "maternity", IsPaid = true, DefaultDays = 0, Color = "#f472b6", SortOrder = 14, IsSystem = true },
+        new() { Code = "ÜAİ", CodeEn = "UML", NameTr = "Ücretsiz Analık İzni", NameEn = "Unpaid Maternity Leave", Category = "maternity", IsPaid = false, DefaultDays = 180, Color = "#9d174d", SortOrder = 15, IsSystem = true },
+        new() { Code = "Eİ", CodeEn = "ADL", NameTr = "Evlat Edinme İzni", NameEn = "Adoption Leave", Category = "maternity", IsPaid = true, DefaultDays = 56, Color = "#a855f7", SortOrder = 16, IsSystem = true },
+        new() { Code = "PKİ", CodeEn = "PCL", NameTr = "Periyodik Kontrol İzni", NameEn = "Periodic Checkup Leave", Category = "maternity", IsPaid = true, DefaultDays = 0, Color = "#c084fc", SortOrder = 17, IsSystem = true },
         
         // 3. Sağlık İzinleri (Health Leaves)
-        new() { Code = "Rp", NameTr = "Rapor (Hastalık İzni)", NameEn = "Sick Leave (Medical Report)", Category = "health", IsPaid = true, DefaultDays = 0, Color = "#ef4444", SortOrder = 20, IsSystem = true },
-        new() { Code = "Rİ", NameTr = "Refakat İzni", NameEn = "Accompanying Leave", Category = "health", IsPaid = true, DefaultDays = 90, Color = "#f97316", SortOrder = 21, IsSystem = true },
-        new() { Code = "İKİ", NameTr = "İş Kazası İzni", NameEn = "Work Accident Leave", Category = "health", IsPaid = true, DefaultDays = 0, Color = "#dc2626", SortOrder = 22, IsSystem = true },
-        new() { Code = "MHİ", NameTr = "Meslek Hastalığı İzni", NameEn = "Occupational Disease Leave", Category = "health", IsPaid = true, DefaultDays = 0, Color = "#b91c1c", SortOrder = 23, IsSystem = true },
-        new() { Code = "PMİ", NameTr = "Periyodik Muayene İzni", NameEn = "Periodic Examination Leave", Category = "health", IsPaid = true, DefaultDays = 0, Color = "#fb923c", SortOrder = 24, IsSystem = true },
+        new() { Code = "Rp", CodeEn = "SL", NameTr = "Rapor (Hastalık İzni)", NameEn = "Sick Leave (Medical Report)", Category = "health", IsPaid = true, DefaultDays = 0, Color = "#ef4444", SortOrder = 20, IsSystem = true },
+        new() { Code = "Rİ", CodeEn = "CL", NameTr = "Refakat İzni", NameEn = "Compassionate Leave", Category = "health", IsPaid = true, DefaultDays = 90, Color = "#f97316", SortOrder = 21, IsSystem = true },
+        new() { Code = "İKİ", CodeEn = "WAL", NameTr = "İş Kazası İzni", NameEn = "Work Accident Leave", Category = "health", IsPaid = true, DefaultDays = 0, Color = "#dc2626", SortOrder = 22, IsSystem = true },
+        new() { Code = "MHİ", CodeEn = "ODL", NameTr = "Meslek Hastalığı İzni", NameEn = "Occupational Disease Leave", Category = "health", IsPaid = true, DefaultDays = 0, Color = "#b91c1c", SortOrder = 23, IsSystem = true },
+        new() { Code = "PMİ", CodeEn = "MED", NameTr = "Periyodik Muayene İzni", NameEn = "Medical Examination Leave", Category = "health", IsPaid = true, DefaultDays = 0, Color = "#fb923c", SortOrder = 24, IsSystem = true },
         
         // 4. Mazeret İzinleri (Excuse Leaves)
-        new() { Code = "Evİ", NameTr = "Evlilik İzni", NameEn = "Marriage Leave", Category = "excuse", IsPaid = true, DefaultDays = 3, Color = "#e11d48", SortOrder = 30, IsSystem = true },
-        new() { Code = "Vİ", NameTr = "Vefat/Ölüm İzni", NameEn = "Bereavement Leave", Category = "excuse", IsPaid = true, DefaultDays = 3, Color = "#1f2937", SortOrder = 31, IsSystem = true },
-        new() { Code = "Mİ", NameTr = "Mazeret İzni", NameEn = "Excuse Leave", Category = "excuse", IsPaid = true, DefaultDays = 0, Color = "#6b7280", SortOrder = 32, IsSystem = true },
+        new() { Code = "Evİ", CodeEn = "ML", NameTr = "Evlilik İzni", NameEn = "Marriage Leave", Category = "excuse", IsPaid = true, DefaultDays = 3, Color = "#e11d48", SortOrder = 30, IsSystem = true },
+        new() { Code = "Vİ", CodeEn = "BR", NameTr = "Vefat/Ölüm İzni", NameEn = "Bereavement Leave", Category = "excuse", IsPaid = true, DefaultDays = 3, Color = "#1f2937", SortOrder = 31, IsSystem = true },
+        new() { Code = "Mİ", CodeEn = "EL", NameTr = "Mazeret İzni", NameEn = "Excuse Leave", Category = "excuse", IsPaid = true, DefaultDays = 0, Color = "#6b7280", SortOrder = 32, IsSystem = true },
         
         // 5. Eğitim ve Sınav İzinleri (Education)
-        new() { Code = "Snİ", NameTr = "Sınav İzni", NameEn = "Exam Leave", Category = "education", IsPaid = true, DefaultDays = 0, Color = "#8b5cf6", SortOrder = 40, IsSystem = true },
-        new() { Code = "Eğİ", NameTr = "Eğitim İzni", NameEn = "Education Leave", Category = "education", IsPaid = true, DefaultDays = 0, Color = "#7c3aed", SortOrder = 41, IsSystem = true },
+        new() { Code = "Snİ", CodeEn = "EXM", NameTr = "Sınav İzni", NameEn = "Exam Leave", Category = "education", IsPaid = true, DefaultDays = 0, Color = "#8b5cf6", SortOrder = 40, IsSystem = true },
+        new() { Code = "Eğİ", CodeEn = "EDU", NameTr = "Eğitim İzni", NameEn = "Education Leave", Category = "education", IsPaid = true, DefaultDays = 0, Color = "#7c3aed", SortOrder = 41, IsSystem = true },
         
         // 6. Askerlik İzinleri (Military)
-        new() { Code = "Aİ", NameTr = "Askerlik İzni", NameEn = "Military Service Leave", Category = "military", IsPaid = false, DefaultDays = 0, Color = "#047857", SortOrder = 50, IsSystem = true },
-        new() { Code = "BAİ", NameTr = "Bedelli Askerlik İzni", NameEn = "Paid Military Service Leave", Category = "military", IsPaid = false, DefaultDays = 30, Color = "#059669", SortOrder = 51, IsSystem = true },
+        new() { Code = "Aİ", CodeEn = "MIL", NameTr = "Askerlik İzni", NameEn = "Military Service Leave", Category = "military", IsPaid = false, DefaultDays = 0, Color = "#047857", SortOrder = 50, IsSystem = true },
+        new() { Code = "BAİ", CodeEn = "PMS", NameTr = "Bedelli Askerlik İzni", NameEn = "Paid Military Service Leave", Category = "military", IsPaid = false, DefaultDays = 30, Color = "#059669", SortOrder = 51, IsSystem = true },
         
         // 7. İdari İzinler (Administrative)
-        new() { Code = "İİ", NameTr = "İdari İzin", NameEn = "Administrative Leave", Category = "administrative", IsPaid = true, DefaultDays = 0, Color = "#0ea5e9", SortOrder = 60, IsSystem = true },
-        new() { Code = "RTİ", NameTr = "Resmi Tatil İzni", NameEn = "Public Holiday Leave", Category = "administrative", IsPaid = true, DefaultDays = 0, Color = "#0284c7", SortOrder = 61, IsSystem = true },
-        new() { Code = "OHİ", NameTr = "Olağanüstü Hal İzni", NameEn = "Emergency Leave", Category = "administrative", IsPaid = true, DefaultDays = 0, Color = "#0369a1", SortOrder = 62, IsSystem = true },
+        new() { Code = "İİ", CodeEn = "ADM", NameTr = "İdari İzin", NameEn = "Administrative Leave", Category = "administrative", IsPaid = true, DefaultDays = 0, Color = "#0ea5e9", SortOrder = 60, IsSystem = true },
+        new() { Code = "RTİ", CodeEn = "PH", NameTr = "Resmi Tatil İzni", NameEn = "Public Holiday Leave", Category = "administrative", IsPaid = true, DefaultDays = 0, Color = "#0284c7", SortOrder = 61, IsSystem = true },
+        new() { Code = "OHİ", CodeEn = "EMG", NameTr = "Olağanüstü Hal İzni", NameEn = "Emergency Leave", Category = "administrative", IsPaid = true, DefaultDays = 0, Color = "#0369a1", SortOrder = 62, IsSystem = true },
         
         // 8. İş Arama İzni (Job Search)
-        new() { Code = "İAİ", NameTr = "İş Arama İzni", NameEn = "Job Search Leave", Category = "other", IsPaid = true, DefaultDays = 0, Color = "#64748b", SortOrder = 70, IsSystem = true },
+        new() { Code = "İAİ", CodeEn = "JSL", NameTr = "İş Arama İzni", NameEn = "Job Search Leave", Category = "other", IsPaid = true, DefaultDays = 0, Color = "#64748b", SortOrder = 70, IsSystem = true },
         
         // 9. Ücretsiz İzinler (Unpaid)
-        new() { Code = "Üİ", NameTr = "Ücretsiz İzin", NameEn = "Unpaid Leave", Category = "unpaid", IsPaid = false, DefaultDays = 0, Color = "#78716c", SortOrder = 80, IsSystem = true },
+        new() { Code = "Üİ", CodeEn = "UL", NameTr = "Ücretsiz İzin", NameEn = "Unpaid Leave", Category = "unpaid", IsPaid = false, DefaultDays = 0, Color = "#78716c", SortOrder = 80, IsSystem = true },
         
         // 10. Diğer İzinler (Other)
-        new() { Code = "Kİ", NameTr = "Kreş İzni", NameEn = "Daycare Leave", Category = "other", IsPaid = true, DefaultDays = 0, Color = "#f59e0b", SortOrder = 90, IsSystem = true },
-        new() { Code = "Sdİ", NameTr = "Sendika İzni", NameEn = "Union Leave", Category = "other", IsPaid = true, DefaultDays = 0, Color = "#d97706", SortOrder = 91, IsSystem = true },
-        new() { Code = "Şİ", NameTr = "Şahit/Tanıklık İzni", NameEn = "Witness Leave", Category = "other", IsPaid = true, DefaultDays = 0, Color = "#92400e", SortOrder = 92, IsSystem = true },
-        new() { Code = "Oİ", NameTr = "Oy Kullanma İzni", NameEn = "Voting Leave", Category = "other", IsPaid = true, DefaultDays = 1, Color = "#1e40af", SortOrder = 93, IsSystem = true },
-        new() { Code = "HTİ", NameTr = "Hekim/Tedavi İzni", NameEn = "Medical Treatment Leave", Category = "other", IsPaid = true, DefaultDays = 0, Color = "#dc2626", SortOrder = 94, IsSystem = true },
-        new() { Code = "Afİ", NameTr = "Afet İzni", NameEn = "Disaster Leave", Category = "other", IsPaid = true, DefaultDays = 0, Color = "#b45309", SortOrder = 95, IsSystem = true },
+        new() { Code = "Kİ", CodeEn = "DC", NameTr = "Kreş İzni", NameEn = "Daycare Leave", Category = "other", IsPaid = true, DefaultDays = 0, Color = "#f59e0b", SortOrder = 90, IsSystem = true },
+        new() { Code = "Sdİ", CodeEn = "UNL", NameTr = "Sendika İzni", NameEn = "Union Leave", Category = "other", IsPaid = true, DefaultDays = 0, Color = "#d97706", SortOrder = 91, IsSystem = true },
+        new() { Code = "Şİ", CodeEn = "WIT", NameTr = "Şahit/Tanıklık İzni", NameEn = "Witness Leave", Category = "other", IsPaid = true, DefaultDays = 0, Color = "#92400e", SortOrder = 92, IsSystem = true },
+        new() { Code = "Oİ", CodeEn = "VOT", NameTr = "Oy Kullanma İzni", NameEn = "Voting Leave", Category = "other", IsPaid = true, DefaultDays = 1, Color = "#1e40af", SortOrder = 93, IsSystem = true },
+        new() { Code = "HTİ", CodeEn = "MTL", NameTr = "Hekim/Tedavi İzni", NameEn = "Medical Treatment Leave", Category = "other", IsPaid = true, DefaultDays = 0, Color = "#dc2626", SortOrder = 94, IsSystem = true },
+        new() { Code = "Afİ", CodeEn = "DIS", NameTr = "Afet İzni", NameEn = "Disaster Leave", Category = "other", IsPaid = true, DefaultDays = 0, Color = "#b45309", SortOrder = 95, IsSystem = true },
     };
 
     context.LeaveTypes.AddRange(leaveTypes);
