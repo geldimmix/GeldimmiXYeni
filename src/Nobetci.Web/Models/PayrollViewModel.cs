@@ -10,6 +10,7 @@ public class PayrollViewModel
     public List<Shift> Shifts { get; set; } = new();
     public List<TimeAttendance> Attendances { get; set; } = new();
     public List<Shift> PreviousMonthOvernightShifts { get; set; } = new();
+    public List<Leave> Leaves { get; set; } = new();
     
     public int SelectedYear { get; set; }
     public int SelectedMonth { get; set; }
@@ -49,6 +50,23 @@ public class PayrollViewModel
     public string MonthName => new DateTime(SelectedYear, SelectedMonth, 1).ToString("MMMM yyyy");
     public DateOnly FirstDayOfMonth => new DateOnly(SelectedYear, SelectedMonth, 1);
     public DateOnly LastDayOfMonth => new DateOnly(SelectedYear, SelectedMonth, DaysInMonth);
+    
+    // Helper methods
+    public Leave? GetLeaveForEmployeeOnDate(int employeeId, DateOnly date)
+    {
+        return Leaves.FirstOrDefault(l => l.EmployeeId == employeeId && l.Date == date);
+    }
+    
+    public bool IsWeekend(DateOnly date)
+    {
+        var weekendDays = Organization.WeekendDays.Split(',').Select(int.Parse).ToList();
+        return weekendDays.Contains((int)date.DayOfWeek);
+    }
+    
+    public bool IsHoliday(DateOnly date)
+    {
+        return Holidays.Any(h => h.Date == date);
+    }
 }
 
 public class EmployeePayroll
@@ -87,6 +105,9 @@ public class ShiftDetail
     public bool IsWeekend { get; set; }
     public bool IsHoliday { get; set; }
     public bool IsDayOff { get; set; }
+    public bool IsLeave { get; set; }
+    public string? LeaveCode { get; set; }
+    public string? LeaveColor { get; set; }
     public bool SpansNextDay { get; set; }
     public string? HolidayName { get; set; }
     public string? Note { get; set; }

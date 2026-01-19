@@ -436,6 +436,18 @@
         background: #fce7f3;
         border-color: #f9a8d4;
     }
+    
+    /* Leave day */
+    .day-box.leave {
+        background: #f3f4f6;
+        border-color: #9ca3af;
+        border-width: 2px;
+    }
+    
+    .day-box .leave-text {
+        font-weight: 600;
+        font-size: 0.65rem;
+    }
 
     /* Work day with data */
     .day-box.work {
@@ -818,13 +830,19 @@
                                             detailsDict.TryGetValue(day, out var detail);
                                             var hasData = detail != null;
                                             var isDayOff = detail?.IsDayOff == true;
+                                            var isLeaveDay = detail?.IsLeave == true;
                                             var isHolidayDay = detail?.IsHoliday == true;
-                                            var cellClass = isDayOff ? "off" : (isHolidayDay ? "hol" : (isWeekendDay ? "wknd" : (hasData ? "work" : "")));
+                                            var cellClass = isLeaveDay ? "leave" : (isDayOff ? "off" : (isHolidayDay ? "hol" : (isWeekendDay ? "wknd" : (hasData ? "work" : ""))));
+                                            var leaveStyle = isLeaveDay && !string.IsNullOrEmpty(detail?.LeaveColor) ? $"border-color: {detail.LeaveColor}; background: {detail.LeaveColor}20;" : "";
                                             
-                                            <div class="day-box @cellClass" title="@date.ToString("dd.MM.yyyy") @dayNames[dow]">
+                                            <div class="day-box @cellClass" style="@leaveStyle" title="@date.ToString("dd.MM.yyyy") @dayNames[dow] @(isLeaveDay ? detail?.LeaveCode : "")">
                                                 <div class="day-num">@day</div>
                                                 <div class="day-name">@dayNames[dow]</div>
-                                                @if (isDayOff)
+                                                @if (isLeaveDay)
+                                                {
+                                                    <div class="day-hrs leave-text" style="color: @(detail?.LeaveColor ?? "#6b7280")">@(detail?.LeaveCode ?? "İ")</div>
+                                                }
+                                                else if (isDayOff)
                                                 {
                                                     <div class="day-hrs off-text">İ</div>
                                                 }
@@ -908,7 +926,7 @@
                 @:dailyEntries: [
                     @foreach (var d in payroll.ShiftDetails)
                     {
-                        @:{ date: '@d.Date.ToString("yyyy-MM-dd")', startTime: '@(d.StartTime?.ToString("HH:mm") ?? "")', endTime: '@(d.EndTime?.ToString("HH:mm") ?? "")', hours: @d.TotalHours.ToString(System.Globalization.CultureInfo.InvariantCulture), nightHours: @d.NightHours.ToString(System.Globalization.CultureInfo.InvariantCulture), isWeekend: @d.IsWeekend.ToString().ToLower(), isHoliday: @d.IsHoliday.ToString().ToLower(), isDayOff: @d.IsDayOff.ToString().ToLower(), note: '@(d.HolidayName?.Replace("'", "\\'") ?? d.Note?.Replace("'", "\\'") ?? "")' },
+                        @:{ date: '@d.Date.ToString("yyyy-MM-dd")', startTime: '@(d.StartTime?.ToString("HH:mm") ?? "")', endTime: '@(d.EndTime?.ToString("HH:mm") ?? "")', hours: @d.TotalHours.ToString(System.Globalization.CultureInfo.InvariantCulture), nightHours: @d.NightHours.ToString(System.Globalization.CultureInfo.InvariantCulture), isWeekend: @d.IsWeekend.ToString().ToLower(), isHoliday: @d.IsHoliday.ToString().ToLower(), isDayOff: @d.IsDayOff.ToString().ToLower(), isLeave: @d.IsLeave.ToString().ToLower(), leaveCode: '@(d.LeaveCode ?? "")', leaveColor: '@(d.LeaveColor ?? "")', note: '@(d.HolidayName?.Replace("'", "\\'") ?? d.Note?.Replace("'", "\\'") ?? "")' },
                     }
                 @:]
             @:},

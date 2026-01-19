@@ -1243,6 +1243,7 @@ public class AppController : Controller
             Shifts = shifts,
             Attendances = attendances,
             PreviousMonthOvernightShifts = previousMonthShifts,
+            Leaves = leaves,
             SavedPayrolls = savedPayrolls,
             SelectedYear = selectedYear,
             SelectedMonth = selectedMonth,
@@ -1390,6 +1391,32 @@ public class AppController : Controller
 
                 payroll.ShiftDetails.Add(detail);
             }
+            
+            // Add leave days to ShiftDetails
+            foreach (var leave in employeeLeaves)
+            {
+                // Skip if already have an attendance record for this date
+                if (payroll.ShiftDetails.Any(d => d.Date == leave.Date))
+                    continue;
+                    
+                var holiday = holidays.FirstOrDefault(h => h.Date == leave.Date);
+                var isWeekend = weekendDays.Contains((int)leave.Date.DayOfWeek);
+                
+                payroll.ShiftDetails.Add(new ShiftDetail
+                {
+                    Date = leave.Date,
+                    IsLeave = true,
+                    LeaveCode = leave.LeaveType?.Code,
+                    LeaveColor = leave.LeaveType?.Color,
+                    IsWeekend = isWeekend,
+                    IsHoliday = holiday != null,
+                    HolidayName = holiday?.Name,
+                    Note = leave.Notes
+                });
+            }
+            
+            // Sort ShiftDetails by date
+            payroll.ShiftDetails = payroll.ShiftDetails.OrderBy(d => d.Date).ToList();
 
             payrolls.Add(payroll);
         }
@@ -1489,6 +1516,32 @@ public class AppController : Controller
 
                 payroll.ShiftDetails.Add(detail);
             }
+            
+            // Add leave days to ShiftDetails
+            foreach (var leave in employeeLeaves)
+            {
+                // Skip if already have a shift record for this date
+                if (payroll.ShiftDetails.Any(d => d.Date == leave.Date))
+                    continue;
+                    
+                var holiday = holidays.FirstOrDefault(h => h.Date == leave.Date);
+                var isWeekend = weekendDays.Contains((int)leave.Date.DayOfWeek);
+                
+                payroll.ShiftDetails.Add(new ShiftDetail
+                {
+                    Date = leave.Date,
+                    IsLeave = true,
+                    LeaveCode = leave.LeaveType?.Code,
+                    LeaveColor = leave.LeaveType?.Color,
+                    IsWeekend = isWeekend,
+                    IsHoliday = holiday != null,
+                    HolidayName = holiday?.Name,
+                    Note = leave.Notes
+                });
+            }
+            
+            // Sort ShiftDetails by date
+            payroll.ShiftDetails = payroll.ShiftDetails.OrderBy(d => d.Date).ToList();
 
             payrolls.Add(payroll);
         }
