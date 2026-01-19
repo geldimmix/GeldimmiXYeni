@@ -10,6 +10,8 @@ public class AppViewModel
     public List<Holiday> Holidays { get; set; } = new();
     public List<Shift> Shifts { get; set; } = new();
     public List<Shift> PreviousMonthOvernightShifts { get; set; } = new();
+    public List<LeaveType> LeaveTypes { get; set; } = new();
+    public List<Leave> Leaves { get; set; } = new();
     
     public int SelectedYear { get; set; }
     public int SelectedMonth { get; set; }
@@ -62,6 +64,16 @@ public class AppViewModel
     {
         var weekendDays = Organization.WeekendDays.Split(',').Select(int.Parse).ToList();
         return weekendDays.Contains((int)date.DayOfWeek);
+    }
+    
+    public Leave? GetLeaveForEmployeeOnDate(int employeeId, DateOnly date)
+    {
+        return Leaves.FirstOrDefault(l => l.EmployeeId == employeeId && l.Date == date);
+    }
+    
+    public bool HasLeave(int employeeId, DateOnly date)
+    {
+        return Leaves.Any(l => l.EmployeeId == employeeId && l.Date == date);
     }
 }
 

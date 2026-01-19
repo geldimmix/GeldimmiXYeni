@@ -18,6 +18,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Shift> Shifts => Set<Shift>();
     public DbSet<Holiday> Holidays => Set<Holiday>();
     public DbSet<Leave> Leaves => Set<Leave>();
+    public DbSet<LeaveType> LeaveTypes => Set<LeaveType>();
     public DbSet<EmployeeAvailability> EmployeeAvailabilities => Set<EmployeeAvailability>();
     public DbSet<ContentPage> ContentPages => Set<ContentPage>();
     public DbSet<VisitorLog> VisitorLogs => Set<VisitorLog>();
@@ -116,15 +117,33 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
+        // LeaveType configuration
+        builder.Entity<LeaveType>(entity =>
+        {
+            entity.HasIndex(e => new { e.OrganizationId, e.Code });
+            entity.HasIndex(e => e.IsSystem);
+            
+            entity.HasOne(e => e.Organization)
+                .WithMany()
+                .HasForeignKey(e => e.OrganizationId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
         // Leave configuration
         builder.Entity<Leave>(entity =>
         {
-            entity.HasIndex(e => new { e.EmployeeId, e.StartDate, e.EndDate });
+            entity.HasIndex(e => new { e.EmployeeId, e.Date });
+            entity.HasIndex(e => e.Date);
             
             entity.HasOne(e => e.Employee)
-                .WithMany(emp => emp.Leaves)
+                .WithMany()
                 .HasForeignKey(e => e.EmployeeId)
                 .OnDelete(DeleteBehavior.Cascade);
+                
+            entity.HasOne(e => e.LeaveType)
+                .WithMany()
+                .HasForeignKey(e => e.LeaveTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         // EmployeeAvailability configuration

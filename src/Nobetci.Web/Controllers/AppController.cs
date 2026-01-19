@@ -75,6 +75,21 @@ public class AppController : Controller
             .Where(s => s.Employee.OrganizationId == organization.Id)
             .Where(s => s.Date == previousMonthLastDay && s.SpansNextDay)
             .ToListAsync();
+            
+        // Get leave types (system-wide + organization-specific)
+        var leaveTypes = await _context.LeaveTypes
+            .Where(lt => lt.OrganizationId == null || lt.OrganizationId == organization.Id)
+            .Where(lt => lt.IsActive)
+            .OrderBy(lt => lt.SortOrder)
+            .ToListAsync();
+            
+        // Get leaves for current month
+        var leaves = await _context.Leaves
+            .Include(l => l.LeaveType)
+            .Include(l => l.Employee)
+            .Where(l => l.Employee.OrganizationId == organization.Id)
+            .Where(l => l.Date.Year == selectedYear && l.Date.Month == selectedMonth)
+            .ToListAsync();
 
         var viewModel = new AppViewModel
         {
@@ -84,6 +99,8 @@ public class AppController : Controller
             Holidays = holidays,
             Shifts = shifts,
             PreviousMonthOvernightShifts = previousMonthShifts,
+            LeaveTypes = leaveTypes,
+            Leaves = leaves,
             SelectedYear = selectedYear,
             SelectedMonth = selectedMonth,
             EmployeeLimit = GetEmployeeLimit(),
@@ -677,6 +694,168 @@ public class AppController : Controller
 
     #endregion
 
+    #region Leave API
+
+    [HttpGet]
+    [Route("api/leave-types")]
+    public async Task<IActionResult> GetLeaveTypes()
+    {
+        var organization = await GetOrCreateOrganizationAsync();
+        var leaveTypes = await _context.LeaveTypes
+            .Where(lt => lt.OrganizationId == null || lt.OrganizationId == organization.Id)
+            .Where(lt => lt.IsActive)
+            .OrderBy(lt => lt.SortOrder)
+            .Select(lt => new
+            {
+                lt.Id,
+                lt.Code,
+                NameTr = lt.NameTr,
+                NameEn = lt.NameEn,
+                lt.Category,
+                lt.IsPaid,
+                lt.DefaultDays,
+                lt.Color,
+                lt.IsSystem
+            })
+            .ToListAsync();
+            
+        return Ok(leaveTypes);
+    }
+
+    [HttpGet]
+    [Route("api/leaves")]
+    public async Task<IActionResult> GetLeaves(int year, int month)
+    {
+        var organization = await GetOrCreateOrganizationAsync();
+        var leaves = await _context.Leaves
+            .Include(l => l.LeaveType)
+            .Include(l => l.Employee)
+            .Where(l => l.Employee.OrganizationId == organization.Id)
+            .Where(l => l.Date.Year == year && l.Date.Month == month)
+            .Select(l => new
+            {
+                l.Id,
+                l.EmployeeId,
+                l.LeaveTypeId,
+                LeaveCode = l.LeaveType.Code,
+                LeaveColor = l.LeaveType.Color,
+                Date = l.Date.ToString("yyyy-MM-dd"),
+                l.Notes
+            })
+            .ToListAsync();
+            
+        return Ok(leaves);
+    }
+
+    [HttpPost]
+    [Route("api/leaves")]
+    public async Task<IActionResult> CreateLeave([FromBody] CreateLeaveDto dto)
+    {
+        var organization = await GetOrCreateOrganizationAsync();
+        
+        // Verify employee belongs to organization
+        var employee = await _context.Employees
+            .FirstOrDefaultAsync(e => e.Id == dto.EmployeeId && e.OrganizationId == organization.Id);
+        if (employee == null)
+            return NotFound(new { error = "Personel bulunamadı" });
+            
+        // Verify leave type
+        var leaveType = await _context.LeaveTypes
+            .FirstOrDefaultAsync(lt => lt.Id == dto.LeaveTypeId && (lt.OrganizationId == null || lt.OrganizationId == organization.Id));
+        if (leaveType == null)
+            return NotFound(new { error = "İzin türü bulunamadı" });
+            
+        if (!DateOnly.TryParse(dto.Date, out var date))
+            return BadRequest(new { error = "Geçersiz tarih formatı" });
+        
+        // Check if leave already exists for this date
+        var existingLeave = await _context.Leaves
+            .FirstOrDefaultAsync(l => l.EmployeeId == dto.EmployeeId && l.Date == date);
+        
+        if (existingLeave != null)
+        {
+            // Update existing leave
+            existingLeave.LeaveTypeId = dto.LeaveTypeId;
+            existingLeave.Notes = dto.Notes;
+            await _context.SaveChangesAsync();
+            
+            return Ok(new { 
+                success = true, 
+                id = existingLeave.Id,
+                leaveCode = leaveType.Code,
+                leaveColor = leaveType.Color
+            });
+        }
+        
+        // Remove any shift on this date (leave replaces shift)
+        var existingShift = await _context.Shifts
+            .FirstOrDefaultAsync(s => s.EmployeeId == dto.EmployeeId && s.Date == date);
+        if (existingShift != null)
+        {
+            _context.Shifts.Remove(existingShift);
+        }
+        
+        var leave = new Leave
+        {
+            EmployeeId = dto.EmployeeId,
+            LeaveTypeId = dto.LeaveTypeId,
+            Date = date,
+            Notes = dto.Notes
+        };
+        
+        _context.Leaves.Add(leave);
+        await _context.SaveChangesAsync();
+        
+        return Ok(new { 
+            success = true, 
+            id = leave.Id,
+            leaveCode = leaveType.Code,
+            leaveColor = leaveType.Color
+        });
+    }
+
+    [HttpDelete]
+    [Route("api/leaves/{id}")]
+    public async Task<IActionResult> DeleteLeave(int id)
+    {
+        var organization = await GetOrCreateOrganizationAsync();
+        var leave = await _context.Leaves
+            .Include(l => l.Employee)
+            .FirstOrDefaultAsync(l => l.Id == id && l.Employee.OrganizationId == organization.Id);
+            
+        if (leave == null)
+            return NotFound(new { error = "İzin kaydı bulunamadı" });
+            
+        _context.Leaves.Remove(leave);
+        await _context.SaveChangesAsync();
+        
+        return Ok(new { success = true });
+    }
+
+    [HttpDelete]
+    [Route("api/leaves/by-employee-date")]
+    public async Task<IActionResult> DeleteLeaveByEmployeeAndDate(int employeeId, string date)
+    {
+        var organization = await GetOrCreateOrganizationAsync();
+        
+        if (!DateOnly.TryParse(date, out var parsedDate))
+            return BadRequest(new { error = "Geçersiz tarih formatı" });
+            
+        var leave = await _context.Leaves
+            .Include(l => l.Employee)
+            .FirstOrDefaultAsync(l => l.EmployeeId == employeeId && l.Date == parsedDate && l.Employee.OrganizationId == organization.Id);
+            
+        if (leave == null)
+            return NotFound(new { error = "İzin kaydı bulunamadı" });
+            
+        _context.Leaves.Remove(leave);
+        await _context.SaveChangesAsync();
+        
+        return Ok(new { success = true });
+    }
+
+    #endregion
+
     #region Saved Schedules API (Registered Users Only)
 
     [HttpGet]
@@ -1027,6 +1206,14 @@ public class AppController : Controller
             .Where(a => a.Date.Year == selectedYear && a.Date.Month == selectedMonth)
             .ToListAsync();
         
+        // Get leaves for current month
+        var leaves = await _context.Leaves
+            .Include(l => l.Employee)
+            .Include(l => l.LeaveType)
+            .Where(l => l.Employee.OrganizationId == organization.Id)
+            .Where(l => l.Date.Year == selectedYear && l.Date.Month == selectedMonth)
+            .ToListAsync();
+        
         // Get overnight shifts from previous month
         var previousMonthLastDay = new DateOnly(selectedYear, selectedMonth, 1).AddDays(-1);
         var previousMonthShifts = await _context.Shifts
@@ -1108,12 +1295,12 @@ public class AppController : Controller
             if (dataSource == "attendance")
             {
                 viewModel.EmployeePayrolls = CalculatePayrollFromAttendance(
-                    employees, attendances, holidays, organization, selectedYear, selectedMonth, nightStart, nightEnd);
+                    employees, attendances, holidays, leaves, organization, selectedYear, selectedMonth, nightStart, nightEnd);
             }
             else
             {
                 viewModel.EmployeePayrolls = CalculateEmployeePayrolls(
-                    employees, shifts, previousMonthShifts, holidays, 
+                    employees, shifts, previousMonthShifts, holidays, leaves,
                     organization, selectedYear, selectedMonth, nightStart, nightEnd);
             }
         }
@@ -1128,6 +1315,7 @@ public class AppController : Controller
         List<Employee> employees,
         List<TimeAttendance> attendances,
         List<Holiday> holidays,
+        List<Leave> leaves,
         Organization organization,
         int year, int month,
         TimeOnly nightStart, TimeOnly nightEnd)
@@ -1138,6 +1326,7 @@ public class AppController : Controller
         foreach (var employee in employees)
         {
             var employeeAttendances = attendances.Where(a => a.EmployeeId == employee.Id).ToList();
+            var employeeLeaves = leaves.Where(l => l.EmployeeId == employee.Id).ToList();
             
             var payroll = new EmployeePayroll
             {
@@ -1145,8 +1334,8 @@ public class AppController : Controller
                 ShiftDetails = new List<ShiftDetail>()
             };
 
-            // Calculate required hours for employee
-            payroll.RequiredHours = CalculateRequiredHours(employee, year, month, holidays, weekendDays);
+            // Calculate required hours for employee (leaves reduce required hours)
+            payroll.RequiredHours = CalculateRequiredHours(employee, year, month, holidays, weekendDays, employeeLeaves);
 
             foreach (var att in employeeAttendances.OrderBy(a => a.Date))
             {
@@ -1209,6 +1398,7 @@ public class AppController : Controller
         List<Shift> shifts,
         List<Shift> previousMonthShifts,
         List<Holiday> holidays,
+        List<Leave> leaves,
         Organization organization,
         int year, int month,
         TimeOnly nightStart, TimeOnly nightEnd)
@@ -1220,6 +1410,7 @@ public class AppController : Controller
         foreach (var employee in employees)
         {
             var employeeShifts = shifts.Where(s => s.EmployeeId == employee.Id).ToList();
+            var employeeLeaves = leaves.Where(l => l.EmployeeId == employee.Id).ToList();
             var prevMonthShift = previousMonthShifts.FirstOrDefault(s => s.EmployeeId == employee.Id);
             
             var payroll = new EmployeePayroll
@@ -1228,8 +1419,8 @@ public class AppController : Controller
                 ShiftDetails = new List<ShiftDetail>()
             };
 
-            // Calculate required hours for employee
-            payroll.RequiredHours = CalculateRequiredHours(employee, year, month, holidays, weekendDays);
+            // Calculate required hours for employee (leaves reduce required hours)
+            payroll.RequiredHours = CalculateRequiredHours(employee, year, month, holidays, weekendDays, employeeLeaves);
 
             // Add hours from overnight shift from previous month (if split mode)
             if (prevMonthShift != null && !prevMonthShift.IsDayOff && prevMonthShift.OvernightHoursMode == 0)
@@ -1346,7 +1537,7 @@ public class AppController : Controller
     /// <summary>
     /// Calculate required work hours for an employee
     /// </summary>
-    private decimal CalculateRequiredHours(Employee employee, int year, int month, List<Holiday> holidays, List<int> weekendDays)
+    private decimal CalculateRequiredHours(Employee employee, int year, int month, List<Holiday> holidays, List<int> weekendDays, List<Leave>? leaves = null)
     {
         var daysInMonth = DateTime.DaysInMonth(year, month);
         decimal requiredHours = 0;
@@ -1357,6 +1548,10 @@ public class AppController : Controller
             var dayOfWeek = date.DayOfWeek;
             var isSaturday = dayOfWeek == DayOfWeek.Saturday;
             var isWeekend = weekendDays.Contains((int)dayOfWeek);
+            
+            // Skip if employee has leave on this date
+            if (leaves != null && leaves.Any(l => l.Date == date))
+                continue;
             
             var holiday = holidays.FirstOrDefault(h => h.Date == date);
             
@@ -1396,7 +1591,8 @@ public class AppController : Controller
             }
         }
 
-        return requiredHours;
+        // Ensure required hours never goes below zero
+        return Math.Max(0, requiredHours);
     }
 
     /// <summary>
@@ -2293,5 +2489,13 @@ public class ManualAttendanceDto
     public bool ClearCheckOut { get; set; }
     public string? Notes { get; set; }
     public AttendanceType Type { get; set; } = AttendanceType.Normal;
+}
+
+public class CreateLeaveDto
+{
+    public int EmployeeId { get; set; }
+    public int LeaveTypeId { get; set; }
+    public string Date { get; set; } = string.Empty;
+    public string? Notes { get; set; }
 }
 

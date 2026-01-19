@@ -274,10 +274,47 @@ using (var scope = app.Services.CreateScope())
                 CREATE INDEX IF NOT EXISTS ""IX_SavedPayrolls_OrganizationId"" ON ""SavedPayrolls"" (""OrganizationId"");
                 CREATE INDEX IF NOT EXISTS ""IX_SavedPayrolls_OrgYearMonth"" ON ""SavedPayrolls"" (""OrganizationId"", ""Year"", ""Month"");
             ");
+            
+            // Create LeaveTypes table if not exists
+            await context.Database.ExecuteSqlRawAsync(@"
+                CREATE TABLE IF NOT EXISTS ""LeaveTypes"" (
+                    ""Id"" SERIAL PRIMARY KEY,
+                    ""OrganizationId"" INTEGER NULL REFERENCES ""Organizations""(""Id"") ON DELETE CASCADE,
+                    ""Code"" VARCHAR(10) NOT NULL,
+                    ""NameTr"" VARCHAR(100) NOT NULL,
+                    ""NameEn"" VARCHAR(100) NOT NULL,
+                    ""Category"" VARCHAR(30) NOT NULL DEFAULT 'other',
+                    ""IsPaid"" BOOLEAN NOT NULL DEFAULT TRUE,
+                    ""DefaultDays"" INTEGER NOT NULL DEFAULT 0,
+                    ""Color"" VARCHAR(10) NOT NULL DEFAULT '#9333ea',
+                    ""SortOrder"" INTEGER NOT NULL DEFAULT 0,
+                    ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
+                    ""IsSystem"" BOOLEAN NOT NULL DEFAULT FALSE
+                );
+                CREATE INDEX IF NOT EXISTS ""IX_LeaveTypes_OrganizationId"" ON ""LeaveTypes"" (""OrganizationId"");
+                CREATE INDEX IF NOT EXISTS ""IX_LeaveTypes_IsSystem"" ON ""LeaveTypes"" (""IsSystem"");
+            ");
+            
+            // Create Leaves table if not exists
+            await context.Database.ExecuteSqlRawAsync(@"
+                CREATE TABLE IF NOT EXISTS ""Leaves"" (
+                    ""Id"" SERIAL PRIMARY KEY,
+                    ""EmployeeId"" INTEGER NOT NULL REFERENCES ""Employees""(""Id"") ON DELETE CASCADE,
+                    ""LeaveTypeId"" INTEGER NOT NULL REFERENCES ""LeaveTypes""(""Id"") ON DELETE RESTRICT,
+                    ""Date"" DATE NOT NULL,
+                    ""Notes"" VARCHAR(500) NULL,
+                    ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+                );
+                CREATE INDEX IF NOT EXISTS ""IX_Leaves_EmployeeId_Date"" ON ""Leaves"" (""EmployeeId"", ""Date"");
+                CREATE INDEX IF NOT EXISTS ""IX_Leaves_Date"" ON ""Leaves"" (""Date"");
+            ");
         }
         catch { /* Columns may already exist */ }
         
         await context.Database.MigrateAsync();
+        
+        // Seed leave types
+        await SeedLeaveTypes(context);
         
         // Seed initial content pages
         await SeedContentPages(context);
@@ -290,6 +327,74 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+// Seed method for leave types
+static async Task SeedLeaveTypes(ApplicationDbContext context)
+{
+    // Check if system leave types already exist
+    var hasSystemTypes = await context.LeaveTypes.AnyAsync(lt => lt.IsSystem);
+    if (hasSystemTypes)
+        return;
+
+    var leaveTypes = new List<LeaveType>
+    {
+        // 1. Yıllık İzinler (Annual Leaves)
+        new() { Code = "Yİ", NameTr = "Yıllık Ücretli İzin", NameEn = "Annual Paid Leave", Category = "annual", IsPaid = true, DefaultDays = 14, Color = "#22c55e", SortOrder = 1, IsSystem = true },
+        new() { Code = "Yol İ", NameTr = "Yol İzni", NameEn = "Travel Leave", Category = "annual", IsPaid = true, DefaultDays = 4, Color = "#16a34a", SortOrder = 2, IsSystem = true },
+        
+        // 2. Analık/Babalık İzinleri (Maternity/Paternity)
+        new() { Code = "DÖİ", NameTr = "Doğum Öncesi İzin", NameEn = "Prenatal Leave", Category = "maternity", IsPaid = true, DefaultDays = 56, Color = "#ec4899", SortOrder = 10, IsSystem = true },
+        new() { Code = "DSİ", NameTr = "Doğum Sonrası İzin", NameEn = "Postnatal Leave", Category = "maternity", IsPaid = true, DefaultDays = 56, Color = "#db2777", SortOrder = 11, IsSystem = true },
+        new() { Code = "Çİ", NameTr = "Çoğul Gebelik Ek İzni", NameEn = "Multiple Pregnancy Extra Leave", Category = "maternity", IsPaid = true, DefaultDays = 14, Color = "#be185d", SortOrder = 12, IsSystem = true },
+        new() { Code = "Bİ", NameTr = "Babalık İzni", NameEn = "Paternity Leave", Category = "maternity", IsPaid = true, DefaultDays = 5, Color = "#3b82f6", SortOrder = 13, IsSystem = true },
+        new() { Code = "Sİ", NameTr = "Süt İzni", NameEn = "Nursing Leave", Category = "maternity", IsPaid = true, DefaultDays = 0, Color = "#f472b6", SortOrder = 14, IsSystem = true },
+        new() { Code = "ÜAİ", NameTr = "Ücretsiz Analık İzni", NameEn = "Unpaid Maternity Leave", Category = "maternity", IsPaid = false, DefaultDays = 180, Color = "#9d174d", SortOrder = 15, IsSystem = true },
+        new() { Code = "Eİ", NameTr = "Evlat Edinme İzni", NameEn = "Adoption Leave", Category = "maternity", IsPaid = true, DefaultDays = 56, Color = "#a855f7", SortOrder = 16, IsSystem = true },
+        new() { Code = "PKİ", NameTr = "Periyodik Kontrol İzni", NameEn = "Periodic Checkup Leave", Category = "maternity", IsPaid = true, DefaultDays = 0, Color = "#c084fc", SortOrder = 17, IsSystem = true },
+        
+        // 3. Sağlık İzinleri (Health Leaves)
+        new() { Code = "Rp", NameTr = "Rapor (Hastalık İzni)", NameEn = "Sick Leave (Medical Report)", Category = "health", IsPaid = true, DefaultDays = 0, Color = "#ef4444", SortOrder = 20, IsSystem = true },
+        new() { Code = "Rİ", NameTr = "Refakat İzni", NameEn = "Accompanying Leave", Category = "health", IsPaid = true, DefaultDays = 90, Color = "#f97316", SortOrder = 21, IsSystem = true },
+        new() { Code = "İKİ", NameTr = "İş Kazası İzni", NameEn = "Work Accident Leave", Category = "health", IsPaid = true, DefaultDays = 0, Color = "#dc2626", SortOrder = 22, IsSystem = true },
+        new() { Code = "MHİ", NameTr = "Meslek Hastalığı İzni", NameEn = "Occupational Disease Leave", Category = "health", IsPaid = true, DefaultDays = 0, Color = "#b91c1c", SortOrder = 23, IsSystem = true },
+        new() { Code = "PMİ", NameTr = "Periyodik Muayene İzni", NameEn = "Periodic Examination Leave", Category = "health", IsPaid = true, DefaultDays = 0, Color = "#fb923c", SortOrder = 24, IsSystem = true },
+        
+        // 4. Mazeret İzinleri (Excuse Leaves)
+        new() { Code = "Evİ", NameTr = "Evlilik İzni", NameEn = "Marriage Leave", Category = "excuse", IsPaid = true, DefaultDays = 3, Color = "#e11d48", SortOrder = 30, IsSystem = true },
+        new() { Code = "Vİ", NameTr = "Vefat/Ölüm İzni", NameEn = "Bereavement Leave", Category = "excuse", IsPaid = true, DefaultDays = 3, Color = "#1f2937", SortOrder = 31, IsSystem = true },
+        new() { Code = "Mİ", NameTr = "Mazeret İzni", NameEn = "Excuse Leave", Category = "excuse", IsPaid = true, DefaultDays = 0, Color = "#6b7280", SortOrder = 32, IsSystem = true },
+        
+        // 5. Eğitim ve Sınav İzinleri (Education)
+        new() { Code = "Snİ", NameTr = "Sınav İzni", NameEn = "Exam Leave", Category = "education", IsPaid = true, DefaultDays = 0, Color = "#8b5cf6", SortOrder = 40, IsSystem = true },
+        new() { Code = "Eğİ", NameTr = "Eğitim İzni", NameEn = "Education Leave", Category = "education", IsPaid = true, DefaultDays = 0, Color = "#7c3aed", SortOrder = 41, IsSystem = true },
+        
+        // 6. Askerlik İzinleri (Military)
+        new() { Code = "Aİ", NameTr = "Askerlik İzni", NameEn = "Military Service Leave", Category = "military", IsPaid = false, DefaultDays = 0, Color = "#047857", SortOrder = 50, IsSystem = true },
+        new() { Code = "BAİ", NameTr = "Bedelli Askerlik İzni", NameEn = "Paid Military Service Leave", Category = "military", IsPaid = false, DefaultDays = 30, Color = "#059669", SortOrder = 51, IsSystem = true },
+        
+        // 7. İdari İzinler (Administrative)
+        new() { Code = "İİ", NameTr = "İdari İzin", NameEn = "Administrative Leave", Category = "administrative", IsPaid = true, DefaultDays = 0, Color = "#0ea5e9", SortOrder = 60, IsSystem = true },
+        new() { Code = "RTİ", NameTr = "Resmi Tatil İzni", NameEn = "Public Holiday Leave", Category = "administrative", IsPaid = true, DefaultDays = 0, Color = "#0284c7", SortOrder = 61, IsSystem = true },
+        new() { Code = "OHİ", NameTr = "Olağanüstü Hal İzni", NameEn = "Emergency Leave", Category = "administrative", IsPaid = true, DefaultDays = 0, Color = "#0369a1", SortOrder = 62, IsSystem = true },
+        
+        // 8. İş Arama İzni (Job Search)
+        new() { Code = "İAİ", NameTr = "İş Arama İzni", NameEn = "Job Search Leave", Category = "other", IsPaid = true, DefaultDays = 0, Color = "#64748b", SortOrder = 70, IsSystem = true },
+        
+        // 9. Ücretsiz İzinler (Unpaid)
+        new() { Code = "Üİ", NameTr = "Ücretsiz İzin", NameEn = "Unpaid Leave", Category = "unpaid", IsPaid = false, DefaultDays = 0, Color = "#78716c", SortOrder = 80, IsSystem = true },
+        
+        // 10. Diğer İzinler (Other)
+        new() { Code = "Kİ", NameTr = "Kreş İzni", NameEn = "Daycare Leave", Category = "other", IsPaid = true, DefaultDays = 0, Color = "#f59e0b", SortOrder = 90, IsSystem = true },
+        new() { Code = "Sdİ", NameTr = "Sendika İzni", NameEn = "Union Leave", Category = "other", IsPaid = true, DefaultDays = 0, Color = "#d97706", SortOrder = 91, IsSystem = true },
+        new() { Code = "Şİ", NameTr = "Şahit/Tanıklık İzni", NameEn = "Witness Leave", Category = "other", IsPaid = true, DefaultDays = 0, Color = "#92400e", SortOrder = 92, IsSystem = true },
+        new() { Code = "Oİ", NameTr = "Oy Kullanma İzni", NameEn = "Voting Leave", Category = "other", IsPaid = true, DefaultDays = 1, Color = "#1e40af", SortOrder = 93, IsSystem = true },
+        new() { Code = "HTİ", NameTr = "Hekim/Tedavi İzni", NameEn = "Medical Treatment Leave", Category = "other", IsPaid = true, DefaultDays = 0, Color = "#dc2626", SortOrder = 94, IsSystem = true },
+        new() { Code = "Afİ", NameTr = "Afet İzni", NameEn = "Disaster Leave", Category = "other", IsPaid = true, DefaultDays = 0, Color = "#b45309", SortOrder = 95, IsSystem = true },
+    };
+
+    context.LeaveTypes.AddRange(leaveTypes);
+    await context.SaveChangesAsync();
+}
 
 // Seed method for content pages
 static async Task SeedContentPages(ApplicationDbContext context)

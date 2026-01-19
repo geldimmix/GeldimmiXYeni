@@ -87,6 +87,42 @@
             </div>
         </div>
         
+        <!-- Leave Types - Collapsible -->
+        <div class="templates-compact leaves-section">
+            <div class="templates-header leave-header" onclick="toggleLeaveSection()">
+                <span>📋 @(isTurkish ? "İzinler" : "Leaves")</span>
+                <span class="leave-toggle-icon" id="leaveToggleIcon">▼</span>
+            </div>
+            
+            <div class="leave-list" id="leaveList" style="display: none;">
+                @foreach (var category in Model.LeaveTypes.GroupBy(lt => lt.Category).OrderBy(g => g.First().SortOrder))
+                {
+                    var categoryName = category.Key switch
+                    {
+                        "annual" => isTurkish ? "Yıllık İzinler" : "Annual Leaves",
+                        "maternity" => isTurkish ? "Analık/Babalık" : "Maternity/Paternity",
+                        "health" => isTurkish ? "Sağlık İzinleri" : "Health Leaves",
+                        "excuse" => isTurkish ? "Mazeret İzinleri" : "Excuse Leaves",
+                        "education" => isTurkish ? "Eğitim/Sınav" : "Education",
+                        "military" => isTurkish ? "Askerlik" : "Military",
+                        "administrative" => isTurkish ? "İdari İzinler" : "Administrative",
+                        "unpaid" => isTurkish ? "Ücretsiz İzin" : "Unpaid Leave",
+                        _ => isTurkish ? "Diğer" : "Other"
+                    };
+                    <div class="leave-category">
+                        <div class="leave-category-name">@categoryName</div>
+                        @foreach (var leaveType in category.OrderBy(lt => lt.SortOrder))
+                        {
+                            <button class="leave-btn" data-leave-id="@leaveType.Id" data-leave-code="@leaveType.Code" data-leave-color="@leaveType.Color" title="@(isTurkish ? leaveType.NameTr : leaveType.NameEn)">
+                                <span class="leave-color" style="background:@leaveType.Color"></span>
+                                <span class="leave-code">@leaveType.Code</span>
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+        
         <!-- Multi-select Toggle -->
         <div class="multi-toggle">
             <label>
@@ -319,13 +355,14 @@
                             {
                                 var date = new DateOnly(Model.SelectedYear, Model.SelectedMonth, day);
                                 var shift = Model.GetShiftForEmployeeOnDate(employee.Id, date);
+                                var leave = Model.GetLeaveForEmployeeOnDate(employee.Id, date);
                                 var isWeekend = Model.IsWeekend(date);
                                 var isHoliday = Model.IsHoliday(date);
                                 // For day 1, check previous month's overnight shifts; for other days, check previous day
                                 var prevDayShift = day == 1 
                                     ? Model.GetPreviousMonthOvernightShift(employee.Id) 
                                     : Model.GetShiftForEmployeeOnDate(employee.Id, date.AddDays(-1));
-                                var showContinuation = prevDayShift?.SpansNextDay == true;
+                                var showContinuation = prevDayShift?.SpansNextDay == true && leave == null;
                                 
                                 <td class="shift-cell @(isWeekend ? "weekend" : "") @(isHoliday ? "holiday" : "")"
                                     data-date="@date.ToString("yyyy-MM-dd")"
@@ -339,7 +376,17 @@
                                         </div>
                                     }
                                     
-                                    @if (shift != null)
+                                    @if (leave != null)
+                                    {
+                                        <!-- Leave badge (priority over shift) -->
+                                        <div class="leave-badge" 
+                                             style="background: @leave.LeaveType.Color"
+                                             data-leave-id="@leave.Id"
+                                             title="@(isTurkish ? leave.LeaveType.NameTr : leave.LeaveType.NameEn)">
+                                            @leave.LeaveType.Code
+                                        </div>
+                                    }
+                                    else if (shift != null)
                                     {
                                         @if (shift.IsDayOff)
                                         {
@@ -1229,6 +1276,128 @@
         height: 1px;
         background: #e5e7eb;
         margin: 8px 0;
+    }
+    
+    /* Leave Section Styles */
+    .leaves-section {
+        margin-top: 12px;
+        border-top: 1px solid #e5e7eb;
+        padding-top: 12px;
+    }
+    
+    .leave-header {
+        cursor: pointer;
+        user-select: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .leave-header::before {
+        display: none;
+    }
+    
+    .leave-toggle-icon {
+        font-size: 0.7rem;
+        color: #9ca3af;
+        transition: transform 0.2s;
+    }
+    
+    .leave-toggle-icon.open {
+        transform: rotate(180deg);
+    }
+    
+    .leave-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 10px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .leave-category {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        align-items: flex-start;
+    }
+    
+    .leave-category-name {
+        width: 100%;
+        font-size: 0.65rem;
+        color: #6b7280;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 2px;
+    }
+    
+    .leave-btn {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 8px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.7rem;
+        transition: all 0.15s;
+    }
+    
+    .leave-btn:hover {
+        border-color: #d1d5db;
+        background: #f9fafb;
+    }
+    
+    .leave-btn.active {
+        border-color: var(--leave-color, #9333ea);
+        background: color-mix(in srgb, var(--leave-color, #9333ea) 10%, white);
+        box-shadow: 0 0 0 1px var(--leave-color, #9333ea);
+    }
+    
+    .leave-color {
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        flex-shrink: 0;
+    }
+    
+    .leave-code {
+        font-weight: 600;
+        color: #374151;
+    }
+    
+    /* Leave Badge on Calendar */
+    .leave-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4px 6px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #fff;
+        text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+        cursor: pointer;
+        position: relative;
+    }
+    
+    .leave-badge:hover::after {
+        content: '×';
+        position: absolute;
+        right: -6px;
+        top: -6px;
+        width: 14px;
+        height: 14px;
+        background: #ef4444;
+        border-radius: 50%;
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
     }
     
     /* Template Manager Modal */
@@ -3987,6 +4156,7 @@
     // App State
     const state = {
         selectedTemplate: null,
+        selectedLeave: null, // { id, code, color }
         selectedCells: new Set(),
         multiSelectMode: false,
         bulkAssignEmployeeId: null,
@@ -3996,6 +4166,7 @@
     
     document.addEventListener('DOMContentLoaded', function() {
         initTemplates();
+        initLeaves();
         initCells();
         initMultiSelect();
         initModals();
@@ -4045,7 +4216,13 @@
         const selectedTimeEl = document.getElementById('selectedTime');
         if (!indicator) return;
         
-        if (template && !template.isDayOff) {
+        if (template && template.isLeave) {
+            // Leave selected
+            indicator.style.display = 'flex';
+            const colorEl = indicator.querySelector('.indicator-color');
+            if (colorEl) colorEl.style.background = template.color || '#9333ea';
+            if (selectedTimeEl) selectedTimeEl.textContent = `📋 ${template.leaveCode}`;
+        } else if (template && !template.isDayOff) {
             indicator.style.display = 'flex';
             const colorEl = indicator.querySelector('.indicator-color');
             if (colorEl) colorEl.style.background = template.color || '#3b82f6';
@@ -4542,6 +4719,10 @@
         document.querySelectorAll('.tpl-btn-row:not(.custom)').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.tpl-btn-row').forEach(b => b.classList.remove('active'));
+                // Deselect any selected leave
+                document.querySelectorAll('.leave-btn').forEach(b => b.classList.remove('active'));
+                state.selectedLeave = null;
+                
                 this.classList.add('active');
                 
                 state.selectedTemplate = {
@@ -4665,14 +4846,67 @@
         }
     }
     
+    // Initialize Leaves
+    function initLeaves() {
+        // Toggle leave section
+        window.toggleLeaveSection = function() {
+            const leaveList = document.getElementById('leaveList');
+            const icon = document.getElementById('leaveToggleIcon');
+            if (leaveList.style.display === 'none') {
+                leaveList.style.display = 'flex';
+                icon.classList.add('open');
+            } else {
+                leaveList.style.display = 'none';
+                icon.classList.remove('open');
+            }
+        };
+        
+        // Leave button click
+        document.querySelectorAll('.leave-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Deselect any selected template
+                document.querySelectorAll('.tpl-btn-row').forEach(b => b.classList.remove('active'));
+                state.selectedTemplate = null;
+                
+                // Toggle leave selection
+                const isAlreadySelected = this.classList.contains('active');
+                document.querySelectorAll('.leave-btn').forEach(b => b.classList.remove('active'));
+                
+                if (isAlreadySelected) {
+                    state.selectedLeave = null;
+                    updateSelectedIndicator(null);
+                } else {
+                    this.classList.add('active');
+                    this.style.setProperty('--leave-color', this.dataset.leaveColor);
+                    state.selectedLeave = {
+                        id: parseInt(this.dataset.leaveId),
+                        code: this.dataset.leaveCode,
+                        color: this.dataset.leaveColor
+                    };
+                    updateSelectedIndicator({ isLeave: true, leaveCode: state.selectedLeave.code, color: state.selectedLeave.color });
+                }
+            });
+        });
+    }
+    
     // Cell Click
     function initCells() {
         document.querySelectorAll('.shift-cell').forEach(cell => {
             cell.addEventListener('click', async function(e) {
-                const badge = e.target.closest('.shift-badge');
+                const shiftBadge = e.target.closest('.shift-badge');
+                const leaveBadge = e.target.closest('.leave-badge');
                 
-                // Delete shift if clicking on badge
-                if (badge) {
+                // Delete leave if clicking on leave badge
+                if (leaveBadge) {
+                    if (confirm(isTurkish ? 'İzni silmek istediğinize emin misiniz?' : 'Are you sure you want to delete this leave?')) {
+                        const leaveId = leaveBadge.dataset.leaveId;
+                        await deleteLeave(leaveId, this);
+                    }
+                    return;
+                }
+                
+                // Delete shift if clicking on shift badge
+                if (shiftBadge) {
                     if (confirm(texts.confirmDeleteShift)) {
                         const employeeId = this.dataset.employeeId;
                         const date = this.dataset.date;
@@ -4694,13 +4928,16 @@
                     return;
                 }
                 
-                // Single click - create shift
-                if (!state.selectedTemplate) {
-                    alert(texts.selectTemplate);
-                    return;
+                // Single click - create leave or shift
+                if (state.selectedLeave) {
+                    // Create leave
+                    await createLeave(this.dataset.employeeId, this.dataset.date, this);
+                } else if (state.selectedTemplate) {
+                    // Create shift
+                    await createShift(this.dataset.employeeId, this.dataset.date, this);
+                } else {
+                    alert(isTurkish ? 'Lütfen bir vardiya şablonu veya izin türü seçin' : 'Please select a shift template or leave type');
                 }
-                
-                await createShift(this.dataset.employeeId, this.dataset.date, this);
             });
         });
         
@@ -4884,6 +5121,79 @@
         } catch (error) {
             console.error('Error deleting shift:', error);
             showToast(texts.errorOccurred, 'error');
+        }
+    }
+    
+    // Create Leave
+    async function createLeave(employeeId, date, cell) {
+        if (!state.selectedLeave) return;
+        
+        try {
+            const response = await fetch('/api/leaves', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    employeeId: parseInt(employeeId),
+                    leaveTypeId: state.selectedLeave.id,
+                    date: date
+                })
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                // Update UI
+                updateCellWithLeave(cell, result.leaveCode, result.leaveColor);
+                showToast(isTurkish ? 'İzin atandı' : 'Leave assigned', 'success');
+            } else {
+                const error = await response.json();
+                showToast(error.error || texts.errorOccurred, 'error');
+            }
+        } catch (error) {
+            console.error('Error creating leave:', error);
+            showToast(texts.errorOccurred, 'error');
+        }
+    }
+    
+    // Delete Leave
+    async function deleteLeave(leaveId, cell) {
+        try {
+            const response = await fetch(`/api/leaves/${leaveId}`, {
+                method: 'DELETE'
+            });
+            
+            if (response.ok) {
+                // Clear cell content
+                clearCellLeave(cell);
+                showToast(isTurkish ? 'İzin silindi' : 'Leave deleted', 'info');
+            }
+        } catch (error) {
+            console.error('Error deleting leave:', error);
+            showToast(texts.errorOccurred, 'error');
+        }
+    }
+    
+    // Update cell UI with leave badge
+    function updateCellWithLeave(cell, leaveCode, leaveColor) {
+        // Clear existing badges (except continuation)
+        const existingContinuation = cell.querySelector('.shift-continuation');
+        cell.innerHTML = '';
+        if (existingContinuation) {
+            cell.appendChild(existingContinuation);
+        }
+        
+        const badge = document.createElement('div');
+        badge.className = 'leave-badge';
+        badge.style.background = leaveColor;
+        badge.textContent = leaveCode;
+        
+        cell.appendChild(badge);
+    }
+    
+    // Clear leave from cell
+    function clearCellLeave(cell) {
+        const leaveBadge = cell.querySelector('.leave-badge');
+        if (leaveBadge) {
+            leaveBadge.remove();
         }
     }
     
