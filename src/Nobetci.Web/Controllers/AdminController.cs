@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Nobetci.Web.Data;
 using Nobetci.Web.Data.Entities;
+using Nobetci.Web.Services;
 
 namespace Nobetci.Web.Controllers;
 
@@ -11,20 +12,37 @@ public class AdminController : Controller
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IConfiguration _configuration;
-    private const string AdminUsername = "Geldimmix";
-    private const string AdminPassword = "Liberemall423445";
+    private readonly ISystemSettingsService _settingsService;
     private const string AdminSessionKey = "IsAdmin";
+    private const string AdminUserIdKey = "AdminUserId";
+    private const string AdminRoleKey = "AdminRole";
 
-    public AdminController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IConfiguration configuration)
+    public AdminController(
+        ApplicationDbContext context, 
+        UserManager<ApplicationUser> userManager, 
+        IConfiguration configuration,
+        ISystemSettingsService settingsService)
     {
         _context = context;
         _userManager = userManager;
         _configuration = configuration;
+        _settingsService = settingsService;
     }
 
     private bool IsAdminLoggedIn()
     {
         return HttpContext.Session.GetString(AdminSessionKey) == "true";
+    }
+    
+    private bool IsSuperAdmin()
+    {
+        return HttpContext.Session.GetString(AdminRoleKey) == AdminRoles.SuperAdmin;
+    }
+    
+    private int? GetCurrentAdminId()
+    {
+        var idStr = HttpContext.Session.GetString(AdminUserIdKey);
+        return int.TryParse(idStr, out var id) ? id : null;
     }
 
     // GET: /admin
@@ -33,6 +51,7 @@ public class AdminController : Controller
         if (!IsAdminLoggedIn())
             return RedirectToAction(nameof(Login));
 
+        ViewBag.IsSuperAdmin = IsSuperAdmin();
         return View();
     }
 
@@ -47,11 +66,21 @@ public class AdminController : Controller
 
     // POST: /admin/login
     [HttpPost]
-    public IActionResult Login(string username, string password)
+    public async Task<IActionResult> Login(string username, string password)
     {
-        if (username == AdminUsername && password == AdminPassword)
+        var adminUser = await _context.AdminUsers
+            .FirstOrDefaultAsync(a => a.Username == username && a.IsActive);
+        
+        if (adminUser != null && adminUser.VerifyPassword(password))
         {
+            // Update last login
+            adminUser.LastLoginAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+            
             HttpContext.Session.SetString(AdminSessionKey, "true");
+            HttpContext.Session.SetString(AdminUserIdKey, adminUser.Id.ToString());
+            HttpContext.Session.SetString(AdminRoleKey, adminUser.Role);
+            
             return RedirectToAction(nameof(Index));
         }
 
@@ -63,6 +92,8 @@ public class AdminController : Controller
     public IActionResult Logout()
     {
         HttpContext.Session.Remove(AdminSessionKey);
+        HttpContext.Session.Remove(AdminUserIdKey);
+        HttpContext.Session.Remove(AdminRoleKey);
         return RedirectToAction(nameof(Login));
     }
 
@@ -320,10 +351,10 @@ public class AdminController : Controller
             })
             .ToListAsync();
 
-        // Get default limits from config
-        var guestLimit = _configuration.GetValue<int>("AppSettings:GuestEmployeeLimit", 5);
-        var registeredLimit = _configuration.GetValue<int>("AppSettings:RegisteredEmployeeLimit", 10);
-        var premiumLimit = _configuration.GetValue<int>("AppSettings:PremiumEmployeeLimit", 100);
+        // Get default limits from database
+        var guestLimit = await _settingsService.GetGuestEmployeeLimitAsync();
+        var registeredLimit = await _settingsService.GetRegisteredEmployeeLimitAsync();
+        var premiumLimit = await _settingsService.GetPremiumEmployeeLimitAsync();
 
         ViewBag.CurrentPage = page;
         ViewBag.TotalPages = totalPages;
@@ -332,6 +363,7 @@ public class AdminController : Controller
         ViewBag.GuestLimit = guestLimit;
         ViewBag.RegisteredLimit = registeredLimit;
         ViewBag.PremiumLimit = premiumLimit;
+        ViewBag.IsSuperAdmin = IsSuperAdmin();
 
         return View(users);
     }
@@ -370,10 +402,10 @@ public class AdminController : Controller
             }).ToList()
         };
         
-        // Get default limits from config
-        ViewBag.GuestLimit = _configuration.GetValue<int>("AppSettings:GuestEmployeeLimit", 5);
-        ViewBag.RegisteredLimit = _configuration.GetValue<int>("AppSettings:RegisteredEmployeeLimit", 10);
-        ViewBag.PremiumLimit = _configuration.GetValue<int>("AppSettings:PremiumEmployeeLimit", 100);
+        // Get default limits from database
+        ViewBag.GuestLimit = await _settingsService.GetGuestEmployeeLimitAsync();
+        ViewBag.RegisteredLimit = await _settingsService.GetRegisteredEmployeeLimitAsync();
+        ViewBag.PremiumLimit = await _settingsService.GetPremiumEmployeeLimitAsync();
 
         return View(viewModel);
     }
@@ -446,6 +478,238 @@ public class AdminController : Controller
         var result = await _userManager.UpdateAsync(user);
         
         return Json(new { success = result.Succeeded });
+    }
+    
+    #endregion
+    
+    #region System Settings
+    
+    // GET: /admin/settings
+    public async Task<IActionResult> Settings()
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction(nameof(Login));
+        
+        if (!IsSuperAdmin())
+        {
+            TempData["Error"] = "Bu sayfaya erişim yetkiniz yok.";
+            return RedirectToAction(nameof(Index));
+        }
+        
+        var settings = await _context.SystemSettings.ToListAsync();
+        
+        var viewModel = new SystemSettingsViewModel
+        {
+            GuestEmployeeLimit = int.Parse(settings.FirstOrDefault(s => s.Key == SystemSettings.Keys.GuestEmployeeLimit)?.Value ?? "5"),
+            RegisteredEmployeeLimit = int.Parse(settings.FirstOrDefault(s => s.Key == SystemSettings.Keys.RegisteredEmployeeLimit)?.Value ?? "10"),
+            PremiumEmployeeLimit = int.Parse(settings.FirstOrDefault(s => s.Key == SystemSettings.Keys.PremiumEmployeeLimit)?.Value ?? "100"),
+            SiteName = settings.FirstOrDefault(s => s.Key == SystemSettings.Keys.SiteName)?.Value ?? "Geldimmi",
+            MaintenanceMode = bool.Parse(settings.FirstOrDefault(s => s.Key == SystemSettings.Keys.MaintenanceMode)?.Value ?? "false")
+        };
+        
+        return View(viewModel);
+    }
+    
+    // POST: /admin/settings
+    [HttpPost]
+    public async Task<IActionResult> Settings(SystemSettingsViewModel model)
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction(nameof(Login));
+        
+        if (!IsSuperAdmin())
+        {
+            TempData["Error"] = "Bu işlemi yapmaya yetkiniz yok.";
+            return RedirectToAction(nameof(Index));
+        }
+        
+        await _settingsService.SetSettingAsync(SystemSettings.Keys.GuestEmployeeLimit, model.GuestEmployeeLimit.ToString());
+        await _settingsService.SetSettingAsync(SystemSettings.Keys.RegisteredEmployeeLimit, model.RegisteredEmployeeLimit.ToString());
+        await _settingsService.SetSettingAsync(SystemSettings.Keys.PremiumEmployeeLimit, model.PremiumEmployeeLimit.ToString());
+        await _settingsService.SetSettingAsync(SystemSettings.Keys.SiteName, model.SiteName ?? "Geldimmi");
+        await _settingsService.SetSettingAsync(SystemSettings.Keys.MaintenanceMode, model.MaintenanceMode.ToString().ToLower());
+        
+        _settingsService.ClearCache();
+        
+        TempData["Success"] = "Ayarlar kaydedildi.";
+        return RedirectToAction(nameof(Settings));
+    }
+    
+    #endregion
+    
+    #region Admin User Management
+    
+    // GET: /admin/admins
+    public async Task<IActionResult> Admins()
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction(nameof(Login));
+        
+        if (!IsSuperAdmin())
+        {
+            TempData["Error"] = "Bu sayfaya erişim yetkiniz yok.";
+            return RedirectToAction(nameof(Index));
+        }
+        
+        var admins = await _context.AdminUsers
+            .OrderByDescending(a => a.CreatedAt)
+            .ToListAsync();
+        
+        return View(admins);
+    }
+    
+    // GET: /admin/admins/create
+    public IActionResult CreateAdmin()
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction(nameof(Login));
+        
+        if (!IsSuperAdmin())
+        {
+            TempData["Error"] = "Bu işlemi yapmaya yetkiniz yok.";
+            return RedirectToAction(nameof(Index));
+        }
+        
+        return View(new AdminUserViewModel());
+    }
+    
+    // POST: /admin/admins/create
+    [HttpPost]
+    public async Task<IActionResult> CreateAdmin(AdminUserViewModel model)
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction(nameof(Login));
+        
+        if (!IsSuperAdmin())
+        {
+            TempData["Error"] = "Bu işlemi yapmaya yetkiniz yok.";
+            return RedirectToAction(nameof(Index));
+        }
+        
+        // Check if username already exists
+        if (await _context.AdminUsers.AnyAsync(a => a.Username == model.Username))
+        {
+            ModelState.AddModelError("Username", "Bu kullanıcı adı zaten kullanılıyor.");
+            return View(model);
+        }
+        
+        if (string.IsNullOrEmpty(model.Password))
+        {
+            ModelState.AddModelError("Password", "Şifre gereklidir.");
+            return View(model);
+        }
+        
+        var admin = new AdminUser
+        {
+            Username = model.Username,
+            PasswordHash = AdminUser.HashPassword(model.Password),
+            FullName = model.FullName,
+            Email = model.Email,
+            Role = model.Role,
+            IsActive = model.IsActive,
+            CreatedAt = DateTime.UtcNow
+        };
+        
+        _context.AdminUsers.Add(admin);
+        await _context.SaveChangesAsync();
+        
+        TempData["Success"] = "Admin kullanıcı oluşturuldu.";
+        return RedirectToAction(nameof(Admins));
+    }
+    
+    // GET: /admin/admins/edit/{id}
+    public async Task<IActionResult> EditAdmin(int id)
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction(nameof(Login));
+        
+        if (!IsSuperAdmin())
+        {
+            TempData["Error"] = "Bu işlemi yapmaya yetkiniz yok.";
+            return RedirectToAction(nameof(Index));
+        }
+        
+        var admin = await _context.AdminUsers.FindAsync(id);
+        if (admin == null)
+            return NotFound();
+        
+        var viewModel = new AdminUserViewModel
+        {
+            Id = admin.Id,
+            Username = admin.Username,
+            FullName = admin.FullName,
+            Email = admin.Email,
+            Role = admin.Role,
+            IsActive = admin.IsActive
+        };
+        
+        return View(viewModel);
+    }
+    
+    // POST: /admin/admins/edit/{id}
+    [HttpPost]
+    public async Task<IActionResult> EditAdmin(int id, AdminUserViewModel model)
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction(nameof(Login));
+        
+        if (!IsSuperAdmin())
+        {
+            TempData["Error"] = "Bu işlemi yapmaya yetkiniz yok.";
+            return RedirectToAction(nameof(Index));
+        }
+        
+        var admin = await _context.AdminUsers.FindAsync(id);
+        if (admin == null)
+            return NotFound();
+        
+        // Check if username already exists (for another user)
+        if (await _context.AdminUsers.AnyAsync(a => a.Username == model.Username && a.Id != id))
+        {
+            ModelState.AddModelError("Username", "Bu kullanıcı adı zaten kullanılıyor.");
+            return View(model);
+        }
+        
+        admin.Username = model.Username;
+        admin.FullName = model.FullName;
+        admin.Email = model.Email;
+        admin.Role = model.Role;
+        admin.IsActive = model.IsActive;
+        
+        // Update password if provided
+        if (!string.IsNullOrEmpty(model.Password))
+        {
+            admin.PasswordHash = AdminUser.HashPassword(model.Password);
+        }
+        
+        await _context.SaveChangesAsync();
+        
+        TempData["Success"] = "Admin kullanıcı güncellendi.";
+        return RedirectToAction(nameof(Admins));
+    }
+    
+    // POST: /admin/admins/delete/{id}
+    [HttpPost]
+    public async Task<IActionResult> DeleteAdmin(int id)
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction(nameof(Login));
+        
+        if (!IsSuperAdmin())
+            return Json(new { success = false, error = "Yetkiniz yok." });
+        
+        var currentAdminId = GetCurrentAdminId();
+        if (currentAdminId == id)
+            return Json(new { success = false, error = "Kendi hesabınızı silemezsiniz." });
+        
+        var admin = await _context.AdminUsers.FindAsync(id);
+        if (admin == null)
+            return Json(new { success = false, error = "Admin bulunamadı." });
+        
+        _context.AdminUsers.Remove(admin);
+        await _context.SaveChangesAsync();
+        
+        return Json(new { success = true });
     }
     
     #endregion
@@ -533,6 +797,26 @@ public class OrganizationSummary
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public int EmployeeCount { get; set; }
+}
+
+public class SystemSettingsViewModel
+{
+    public int GuestEmployeeLimit { get; set; } = 5;
+    public int RegisteredEmployeeLimit { get; set; } = 10;
+    public int PremiumEmployeeLimit { get; set; } = 100;
+    public string? SiteName { get; set; } = "Geldimmi";
+    public bool MaintenanceMode { get; set; } = false;
+}
+
+public class AdminUserViewModel
+{
+    public int Id { get; set; }
+    public string Username { get; set; } = string.Empty;
+    public string? Password { get; set; }
+    public string? FullName { get; set; }
+    public string? Email { get; set; }
+    public string Role { get; set; } = AdminRoles.Admin;
+    public bool IsActive { get; set; } = true;
 }
 
 public class QuickUpdateUserDto

@@ -1,0 +1,74 @@
+@model AdminUserViewModel
+@{
+    ViewData["Title"] = "Admin Düzenle";
+}
+
+<div class="admin-header">
+    <h2>✏️ Admin Düzenle</h2>
+    <div class="header-actions">
+        <a href="/admin/admins" class="btn btn-secondary">← Geri</a>
+    </div>
+</div>
+
+<div class="card" style="max-width: 600px;">
+    <form method="post" action="/admin/admins/edit/@Model.Id">
+        <input type="hidden" name="Id" value="@Model.Id" />
+        
+        <div class="form-group">
+            <label class="form-label">Kullanıcı Adı <span style="color: red;">*</span></label>
+            <input type="text" name="Username" class="form-control" 
+                   value="@Model.Username" required maxlength="50">
+            @if (ViewContext.ModelState["Username"]?.Errors.Any() == true)
+            {
+                <span style="color: red; font-size: 0.85rem;">@ViewContext.ModelState["Username"]!.Errors.First().ErrorMessage</span>
+            }
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Yeni Şifre</label>
+            <input type="password" name="Password" class="form-control" 
+                   minlength="6" placeholder="Değiştirmek için doldurun">
+            <small style="color: #64748b;">Boş bırakırsanız mevcut şifre korunur.</small>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">İsim</label>
+            <input type="text" name="FullName" class="form-control" 
+                   value="@Model.FullName" maxlength="100">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" name="Email" class="form-control" 
+                   value="@Model.Email" maxlength="100">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Rol</label>
+            <select name="Role" class="form-control">
+                <option value="@Nobetci.Web.Data.Entities.AdminRoles.Admin" @(Model.Role == Nobetci.Web.Data.Entities.AdminRoles.Admin ? "selected" : "")>
+                    Admin - Tam erişim (admin yönetimi hariç)
+                </option>
+                <option value="@Nobetci.Web.Data.Entities.AdminRoles.SuperAdmin" @(Model.Role == Nobetci.Web.Data.Entities.AdminRoles.SuperAdmin ? "selected" : "")>
+                    ⭐ SuperAdmin - Tüm yetkilere sahip
+                </option>
+                <option value="@Nobetci.Web.Data.Entities.AdminRoles.Viewer" @(Model.Role == Nobetci.Web.Data.Entities.AdminRoles.Viewer ? "selected" : "")>
+                    Viewer - Sadece görüntüleme
+                </option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-check" style="cursor: pointer;">
+                <input type="checkbox" name="IsActive" value="true" @(Model.IsActive ? "checked" : "")>
+                <span>Aktif</span>
+            </label>
+        </div>
+        
+        <div style="display: flex; gap: 12px; margin-top: 24px;">
+            <button type="submit" class="btn btn-primary">💾 Kaydet</button>
+            <a href="/admin/admins" class="btn btn-secondary">İptal</a>
+        </div>
+    </form>
+</div>
+

@@ -26,6 +26,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<TimeAttendance> TimeAttendances => Set<TimeAttendance>();
     public DbSet<ApiKey> ApiKeys => Set<ApiKey>();
     public DbSet<SavedPayroll> SavedPayrolls => Set<SavedPayroll>();
+    public DbSet<SystemSettings> SystemSettings => Set<SystemSettings>();
+    public DbSet<AdminUser> AdminUsers => Set<AdminUser>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -220,6 +222,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .WithMany()
                 .HasForeignKey(e => e.OrganizationId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // SystemSettings configuration
+        builder.Entity<SystemSettings>(entity =>
+        {
+            entity.HasIndex(e => e.Key).IsUnique();
+        });
+
+        // AdminUser configuration
+        builder.Entity<AdminUser>(entity =>
+        {
+            entity.HasIndex(e => e.Username).IsUnique();
         });
 
         // Seed global shift templates

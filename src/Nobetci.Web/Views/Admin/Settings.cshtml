@@ -1,0 +1,107 @@
+@model SystemSettingsViewModel
+@{
+    ViewData["Title"] = "Sistem Ayarları";
+}
+
+<div class="admin-header">
+    <h2>⚙️ Sistem Ayarları</h2>
+    <div class="header-actions">
+        <a href="/admin" class="btn btn-secondary">← Ana Sayfa</a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="grid-2">
+    <!-- Sol: Limit Ayarları -->
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">📊 Personel Limitleri</span>
+        </div>
+        
+        <form method="post" action="/admin/settings">
+            <div class="form-group">
+                <label class="form-label">Kayıtsız Kullanıcı Limiti (Misafir)</label>
+                <input type="number" name="GuestEmployeeLimit" class="form-control" 
+                       value="@Model.GuestEmployeeLimit" min="1" max="100" required>
+                <small style="color: #64748b;">Kayıt olmadan kullanıcıların yönetebileceği maksimum personel sayısı. Mesai ve Puantaj erişimi yok.</small>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Kayıtlı Kullanıcı Limiti (Free)</label>
+                <input type="number" name="RegisteredEmployeeLimit" class="form-control" 
+                       value="@Model.RegisteredEmployeeLimit" min="1" max="500" required>
+                <small style="color: #64748b;">Ücretsiz kayıtlı kullanıcıların yönetebileceği maksimum personel sayısı. Mesai ve Puantaj erişimi var.</small>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Premium Kullanıcı Limiti</label>
+                <input type="number" name="PremiumEmployeeLimit" class="form-control" 
+                       value="@Model.PremiumEmployeeLimit" min="1" max="10000" required>
+                <small style="color: #64748b;">Premium kullanıcıların yönetebileceği maksimum personel sayısı.</small>
+            </div>
+            
+            <hr style="margin: 24px 0; border: none; border-top: 1px solid #e2e8f0;">
+            
+            <div class="form-group">
+                <label class="form-label">Site Adı</label>
+                <input type="text" name="SiteName" class="form-control" 
+                       value="@Model.SiteName" maxlength="50">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-check" style="cursor: pointer;">
+                    <input type="checkbox" name="MaintenanceMode" value="true" 
+                           @(Model.MaintenanceMode ? "checked" : "")>
+                    <span>🔧 Bakım Modu</span>
+                </label>
+                <small style="color: #64748b;">Aktif olduğunda site kullanıcılara kapatılır.</small>
+            </div>
+            
+            <div style="margin-top: 24px;">
+                <button type="submit" class="btn btn-primary">💾 Ayarları Kaydet</button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Sağ: Bilgi -->
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">ℹ️ Bilgi</span>
+            </div>
+            
+            <div style="color: #64748b; line-height: 1.8;">
+                <p><strong>Personel Limitleri:</strong></p>
+                <ul style="margin-left: 20px;">
+                    <li><strong>Misafir:</strong> Kayıt olmayan kullanıcılar. Sadece nöbet çizelgesi oluşturabilir.</li>
+                    <li><strong>Free:</strong> Kayıtlı kullanıcılar. Mesai Takip ve Puantaj erişimi var.</li>
+                    <li><strong>Premium:</strong> Ücretli kullanıcılar. Tüm özelliklere erişim.</li>
+                </ul>
+                
+                <p style="margin-top: 16px;"><strong>Not:</strong></p>
+                <p>Her kullanıcıya özel limit atanabilir. Kullanıcı düzenleme sayfasından "Özel Personel Limiti" alanını kullanabilirsiniz.</p>
+            </div>
+        </div>
+        
+        <div class="card" style="background: #fef3c7; border-color: #f59e0b;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 1.5rem;">⚠️</span>
+                <div>
+                    <div style="font-weight: 600; color: #92400e;">Dikkat</div>
+                    <div style="font-size: 0.9rem; color: #a16207;">
+                        Limit değişiklikleri anında uygulanır. Mevcut kullanıcıların personelleri silinmez, sadece yeni ekleme engellenir.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

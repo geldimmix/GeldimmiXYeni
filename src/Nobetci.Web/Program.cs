@@ -90,6 +90,7 @@ builder.Services.AddHttpClient<ITranslationService, TranslationService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IVisitorLogService, VisitorLogService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<ISystemSettingsService, SystemSettingsService>();
 
 // Session for guest users
 builder.Services.AddDistributedMemoryCache();
@@ -351,10 +352,44 @@ using (var scope = app.Services.CreateScope())
                     END IF;
                 END $$;
             ");
+            
+            // Create SystemSettings table if not exists
+            await context.Database.ExecuteSqlRawAsync(@"
+                CREATE TABLE IF NOT EXISTS ""SystemSettings"" (
+                    ""Id"" SERIAL PRIMARY KEY,
+                    ""Key"" VARCHAR(100) NOT NULL UNIQUE,
+                    ""Value"" TEXT NOT NULL,
+                    ""Description"" VARCHAR(500) NULL,
+                    ""UpdatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+                );
+                CREATE INDEX IF NOT EXISTS ""IX_SystemSettings_Key"" ON ""SystemSettings"" (""Key"");
+            ");
+            
+            // Create AdminUsers table if not exists
+            await context.Database.ExecuteSqlRawAsync(@"
+                CREATE TABLE IF NOT EXISTS ""AdminUsers"" (
+                    ""Id"" SERIAL PRIMARY KEY,
+                    ""Username"" VARCHAR(50) NOT NULL UNIQUE,
+                    ""PasswordHash"" VARCHAR(200) NOT NULL,
+                    ""FullName"" VARCHAR(100) NULL,
+                    ""Email"" VARCHAR(100) NULL,
+                    ""Role"" VARCHAR(20) NOT NULL DEFAULT 'Admin',
+                    ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
+                    ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                    ""LastLoginAt"" TIMESTAMP WITH TIME ZONE NULL
+                );
+                CREATE INDEX IF NOT EXISTS ""IX_AdminUsers_Username"" ON ""AdminUsers"" (""Username"");
+            ");
         }
         catch { /* Columns may already exist */ }
         
         await context.Database.MigrateAsync();
+        
+        // Seed system settings
+        await SeedSystemSettings(context);
+        
+        // Seed admin users
+        await SeedAdminUsers(context);
         
         // Seed leave types
         await SeedLeaveTypes(context);
@@ -370,6 +405,57 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+// Seed method for system settings (limits, etc.)
+static async Task SeedSystemSettings(ApplicationDbContext context)
+{
+    var existingSettings = await context.SystemSettings.ToListAsync();
+    
+    void AddSettingIfNotExists(string key, string value, string? description)
+    {
+        if (!existingSettings.Any(s => s.Key == key))
+        {
+            context.SystemSettings.Add(new SystemSettings
+            {
+                Key = key,
+                Value = value,
+                Description = description,
+                UpdatedAt = DateTime.UtcNow
+            });
+        }
+    }
+    
+    // Employee limits
+    AddSettingIfNotExists(SystemSettings.Keys.GuestEmployeeLimit, "5", "Kayıtsız kullanıcılar için personel limiti");
+    AddSettingIfNotExists(SystemSettings.Keys.RegisteredEmployeeLimit, "10", "Kayıtlı kullanıcılar için personel limiti");
+    AddSettingIfNotExists(SystemSettings.Keys.PremiumEmployeeLimit, "100", "Premium kullanıcılar için personel limiti");
+    AddSettingIfNotExists(SystemSettings.Keys.SiteName, "Geldimmi", "Site adı");
+    AddSettingIfNotExists(SystemSettings.Keys.MaintenanceMode, "false", "Bakım modu aktif mi?");
+    
+    await context.SaveChangesAsync();
+}
+
+// Seed method for admin users
+static async Task SeedAdminUsers(ApplicationDbContext context)
+{
+    var existingAdmins = await context.AdminUsers.ToListAsync();
+    
+    // Create default SuperAdmin if no admin exists
+    if (!existingAdmins.Any())
+    {
+        context.AdminUsers.Add(new AdminUser
+        {
+            Username = "GeldimmiX",
+            PasswordHash = AdminUser.HashPassword("Liberemall423445"),
+            FullName = "Super Admin",
+            Role = AdminRoles.SuperAdmin,
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow
+        });
+        
+        await context.SaveChangesAsync();
+    }
+}
 
 // Seed method for leave types
 static async Task SeedLeaveTypes(ApplicationDbContext context)

@@ -6,6 +6,7 @@ using Nobetci.Web.Data;
 using Nobetci.Web.Data.Entities;
 using Nobetci.Web.Models;
 using Nobetci.Web.Resources;
+using Nobetci.Web.Services;
 
 namespace Nobetci.Web.Controllers;
 
@@ -19,19 +20,22 @@ public class AppController : Controller
     private readonly IStringLocalizer<SharedResource> _localizer;
     private readonly IConfiguration _configuration;
     private readonly ILogger<AppController> _logger;
+    private readonly ISystemSettingsService _settingsService;
 
     public AppController(
         ApplicationDbContext context,
         UserManager<ApplicationUser> userManager,
         IStringLocalizer<SharedResource> localizer,
         IConfiguration configuration,
-        ILogger<AppController> logger)
+        ILogger<AppController> logger,
+        ISystemSettingsService settingsService)
     {
         _context = context;
         _userManager = userManager;
         _localizer = localizer;
         _configuration = configuration;
         _logger = logger;
+        _settingsService = settingsService;
     }
 
     /// <summary>
@@ -2399,13 +2403,13 @@ public class AppController : Controller
             var user = await _userManager.GetUserAsync(User);
             if (user != null)
             {
-                var defaultLimit = _configuration.GetValue<int>("AppSettings:RegisteredEmployeeLimit", 10);
-                var premiumLimit = _configuration.GetValue<int>("AppSettings:PremiumEmployeeLimit", 100);
+                var defaultLimit = await _settingsService.GetRegisteredEmployeeLimitAsync();
+                var premiumLimit = await _settingsService.GetPremiumEmployeeLimitAsync();
                 return user.GetEffectiveEmployeeLimit(defaultLimit, premiumLimit);
             }
         }
         
-        return _configuration.GetValue<int>("AppSettings:GuestEmployeeLimit", 5);
+        return await _settingsService.GetGuestEmployeeLimitAsync();
     }
     
     private async Task<(bool CanAccessAttendance, bool CanAccessPayroll)> GetFeatureAccessAsync()

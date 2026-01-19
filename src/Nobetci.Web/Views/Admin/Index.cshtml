@@ -1,10 +1,15 @@
 @{
     ViewData["Title"] = "Dashboard";
     Layout = "_AdminLayout";
+    var isSuperAdmin = ViewBag.IsSuperAdmin == true;
 }
 
 <div class="admin-header">
     <h2>👋 Hoş Geldin, Admin</h2>
+    @if (isSuperAdmin)
+    {
+        <span class="badge badge-warning" style="margin-left: 12px;">⭐ SuperAdmin</span>
+    }
 </div>
 
 <div class="stats-grid">
@@ -12,6 +17,14 @@
         <div class="stat-card">
             <span class="stat-icon">📄</span>
             <div class="stat-label">Sayfalar</div>
+            <div class="stat-value">Yönet →</div>
+        </div>
+    </a>
+    
+    <a href="/admin/users" style="text-decoration: none;">
+        <div class="stat-card">
+            <span class="stat-icon">👥</span>
+            <div class="stat-label">Kullanıcılar</div>
             <div class="stat-value">Yönet →</div>
         </div>
     </a>
@@ -31,25 +44,66 @@
             <div class="stat-value">Detaylar →</div>
         </div>
     </a>
-    
-    <a href="/" target="_blank" style="text-decoration: none;">
-        <div class="stat-card">
-            <span class="stat-icon">🌐</span>
-            <div class="stat-label">Siteyi Görüntüle</div>
-            <div class="stat-value">Aç →</div>
-        </div>
-    </a>
 </div>
 
-<div class="grid-2">
+@if (isSuperAdmin)
+{
+    <div class="stats-grid" style="margin-top: 20px;">
+        <a href="/admin/settings" style="text-decoration: none;">
+            <div class="stat-card" style="background: #fef3c7; border-color: #f59e0b;">
+                <span class="stat-icon">⚙️</span>
+                <div class="stat-label">Sistem Ayarları</div>
+                <div class="stat-value">Limitler →</div>
+            </div>
+        </a>
+        
+        <a href="/admin/admins" style="text-decoration: none;">
+            <div class="stat-card" style="background: #fef3c7; border-color: #f59e0b;">
+                <span class="stat-icon">🔐</span>
+                <div class="stat-label">Admin Yönetimi</div>
+                <div class="stat-value">Kullanıcılar →</div>
+            </div>
+        </a>
+        
+        <a href="/" target="_blank" style="text-decoration: none;">
+            <div class="stat-card">
+                <span class="stat-icon">🌐</span>
+                <div class="stat-label">Siteyi Görüntüle</div>
+                <div class="stat-value">Aç →</div>
+            </div>
+        </a>
+        
+        <a href="/app" target="_blank" style="text-decoration: none;">
+            <div class="stat-card">
+                <span class="stat-icon">📅</span>
+                <div class="stat-label">Nöbet Uygulaması</div>
+                <div class="stat-value">Aç →</div>
+            </div>
+        </a>
+    </div>
+}
+else
+{
+    <div class="stats-grid" style="margin-top: 20px;">
+        <a href="/" target="_blank" style="text-decoration: none;">
+            <div class="stat-card">
+                <span class="stat-icon">🌐</span>
+                <div class="stat-label">Siteyi Görüntüle</div>
+                <div class="stat-value">Aç →</div>
+            </div>
+        </a>
+    </div>
+}
+
+<div class="grid-2" style="margin-top: 20px;">
     <div class="card">
         <div class="card-header">
             <span class="card-title">⚡ Hızlı İşlemler</span>
         </div>
         <div style="display: flex; flex-direction: column; gap: 10px;">
             <a href="/admin/pages/create" class="btn btn-primary">+ Yeni Sayfa Oluştur</a>
+            <a href="/admin/users" class="btn btn-secondary">Kullanıcıları Görüntüle</a>
             <a href="/admin/logs?dateFrom=@DateTime.UtcNow.ToString("yyyy-MM-dd")" class="btn btn-secondary">Bugünün Logları</a>
-            <a href="/app" target="_blank" class="btn btn-secondary">Nöbet Uygulaması</a>
         </div>
     </div>
     
@@ -59,8 +113,12 @@
         </div>
         <ul style="padding-left: 20px; color: #64748b; font-size: 0.9rem; line-height: 1.8;">
             <li>Sayfalar bölümünden SEO içeriklerini düzenleyebilirsiniz</li>
+            <li>Kullanıcılar bölümünden kayıtlı kullanıcıları ve limitlerini yönetebilirsiniz</li>
             <li>Loglar bölümünden ziyaretçi aktivitelerini izleyebilirsiniz</li>
-            <li>İstatistikler bölümünden site performansını görebilirsiniz</li>
+            @if (isSuperAdmin)
+            {
+                <li><strong>⭐ SuperAdmin:</strong> Sistem Ayarları ve Admin Yönetimi sayfalarına erişebilirsiniz</li>
+            }
         </ul>
     </div>
 </div>

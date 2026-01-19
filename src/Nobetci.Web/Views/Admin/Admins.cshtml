@@ -1,0 +1,123 @@
+@model List<Nobetci.Web.Data.Entities.AdminUser>
+@{
+    ViewData["Title"] = "Admin Kullanıcıları";
+}
+
+<div class="admin-header">
+    <h2>👥 Admin Kullanıcıları</h2>
+    <div class="header-actions">
+        <a href="/admin/admins/create" class="btn btn-primary">➕ Yeni Admin</a>
+        <a href="/admin" class="btn btn-secondary">← Ana Sayfa</a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="card">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Kullanıcı Adı</th>
+                <th>İsim</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Durum</th>
+                <th>Son Giriş</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var admin in Model)
+            {
+                <tr>
+                    <td>@admin.Id</td>
+                    <td><strong>@admin.Username</strong></td>
+                    <td>@(admin.FullName ?? "-")</td>
+                    <td>@(admin.Email ?? "-")</td>
+                    <td>
+                        @if (admin.Role == Nobetci.Web.Data.Entities.AdminRoles.SuperAdmin)
+                        {
+                            <span class="badge badge-warning">⭐ SuperAdmin</span>
+                        }
+                        else if (admin.Role == Nobetci.Web.Data.Entities.AdminRoles.Admin)
+                        {
+                            <span class="badge badge-primary">Admin</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-secondary">Viewer</span>
+                        }
+                    </td>
+                    <td>
+                        @if (admin.IsActive)
+                        {
+                            <span class="badge badge-success">✓ Aktif</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-danger">✗ Pasif</span>
+                        }
+                    </td>
+                    <td>
+                        @if (admin.LastLoginAt.HasValue)
+                        {
+                            <span title="@admin.LastLoginAt.Value.ToString("dd.MM.yyyy HH:mm")">
+                                @admin.LastLoginAt.Value.ToString("dd.MM.yyyy HH:mm")
+                            </span>
+                        }
+                        else
+                        {
+                            <span style="color: #94a3b8;">-</span>
+                        }
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 8px;">
+                            <a href="/admin/admins/edit/@admin.Id" class="btn btn-sm btn-primary">✏️ Düzenle</a>
+                            <button class="btn btn-sm btn-danger" onclick="deleteAdmin(@admin.Id, '@admin.Username')">🗑️ Sil</button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    
+    @if (!Model.Any())
+    {
+        <div style="text-align: center; padding: 40px; color: #64748b;">
+            Henüz admin kullanıcı yok.
+        </div>
+    }
+</div>
+
+<script>
+function deleteAdmin(id, username) {
+    if (confirm('Admin kullanıcı "' + username + '" silinecek. Emin misiniz?')) {
+        fetch('/admin/admins/delete/' + id, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.error || 'Silme işlemi başarısız.');
+            }
+        })
+        .catch(err => {
+            alert('Bir hata oluştu.');
+        });
+    }
+}
+</script>
+
