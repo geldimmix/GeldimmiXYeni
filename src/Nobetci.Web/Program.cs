@@ -162,226 +162,229 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
         
-        // Apply pending column additions manually before migration
-        try
+        // Helper to safely execute SQL (catches and logs errors but continues)
+        async Task SafeExecuteSql(string sql, string description)
         {
-            await context.Database.ExecuteSqlRawAsync(@"
-                DO $$ 
-                BEGIN 
-                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Employees' AND column_name='SaturdayWorkHours') THEN
-                        ALTER TABLE ""Employees"" ADD COLUMN ""SaturdayWorkHours"" DECIMAL NULL;
-                    END IF;
-                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Employees' AND column_name='WeekendWorkMode') THEN
-                        ALTER TABLE ""Employees"" ADD COLUMN ""WeekendWorkMode"" INTEGER DEFAULT 0 NOT NULL;
-                    END IF;
-                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Employees' AND column_name='PositionType') THEN
-                        ALTER TABLE ""Employees"" ADD COLUMN ""PositionType"" VARCHAR(20) NULL;
-                    END IF;
-                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Employees' AND column_name='AcademicTitle') THEN
-                        ALTER TABLE ""Employees"" ADD COLUMN ""AcademicTitle"" VARCHAR(50) NULL;
-                    END IF;
-                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Employees' AND column_name='ShiftScore') THEN
-                        ALTER TABLE ""Employees"" ADD COLUMN ""ShiftScore"" INTEGER DEFAULT 100 NOT NULL;
-                    END IF;
-                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Employees' AND column_name='IsNonHealthServices') THEN
-                        ALTER TABLE ""Employees"" ADD COLUMN ""IsNonHealthServices"" BOOLEAN DEFAULT FALSE NOT NULL;
-                    END IF;
-                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Shifts' AND column_name='IsDayOff') THEN
-                        ALTER TABLE ""Shifts"" ADD COLUMN ""IsDayOff"" BOOLEAN DEFAULT FALSE NOT NULL;
-                    END IF;
-                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Shifts' AND column_name='OvernightHoursMode') THEN
-                        ALTER TABLE ""Shifts"" ADD COLUMN ""OvernightHoursMode"" INTEGER DEFAULT 0 NOT NULL;
-                    END IF;
-                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Organizations' AND column_name='DefaultTemplatesInitialized') THEN
-                        ALTER TABLE ""Organizations"" ADD COLUMN ""DefaultTemplatesInitialized"" BOOLEAN DEFAULT FALSE NOT NULL;
-                    END IF;
-                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Holidays' AND column_name='HalfDayStartTime') THEN
-                        ALTER TABLE ""Holidays"" DROP COLUMN ""HalfDayStartTime"";
-                    END IF;
-                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Holidays' AND column_name='HalfDayWorkHours') THEN
-                        ALTER TABLE ""Holidays"" ADD COLUMN ""HalfDayWorkHours"" DECIMAL NULL;
-                    END IF;
-                END $$;
-            ");
-            
-            // Create VisitorLogs table if not exists
-            await context.Database.ExecuteSqlRawAsync(@"
-                CREATE TABLE IF NOT EXISTS ""VisitorLogs"" (
-                    ""Id"" SERIAL PRIMARY KEY,
-                    ""IpAddress"" VARCHAR(45) NULL,
-                    ""UserAgent"" VARCHAR(500) NULL,
-                    ""Path"" VARCHAR(500) NULL,
-                    ""Referer"" VARCHAR(500) NULL,
-                    ""Country"" VARCHAR(100) NULL,
-                    ""City"" VARCHAR(100) NULL,
-                    ""SessionId"" VARCHAR(100) NULL,
-                    ""UserId"" VARCHAR(450) NULL,
-                    ""VisitedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-                    ""Duration"" INTEGER NULL,
-                    ""IsBot"" BOOLEAN NOT NULL DEFAULT FALSE
-                );
-                CREATE INDEX IF NOT EXISTS ""IX_VisitorLogs_VisitedAt"" ON ""VisitorLogs"" (""VisitedAt"");
-                CREATE INDEX IF NOT EXISTS ""IX_VisitorLogs_SessionId"" ON ""VisitorLogs"" (""SessionId"");
-            ");
-            
-            // Create TimeAttendances table if not exists
-            await context.Database.ExecuteSqlRawAsync(@"
-                CREATE TABLE IF NOT EXISTS ""TimeAttendances"" (
-                    ""Id"" SERIAL PRIMARY KEY,
-                    ""EmployeeId"" INTEGER NOT NULL REFERENCES ""Employees""(""Id"") ON DELETE CASCADE,
-                    ""Date"" DATE NOT NULL,
-                    ""CheckInTime"" TIME NULL,
-                    ""CheckOutTime"" TIME NULL,
-                    ""CheckInFromPreviousDay"" BOOLEAN NOT NULL DEFAULT FALSE,
-                    ""CheckOutToNextDay"" BOOLEAN NOT NULL DEFAULT FALSE,
-                    ""Type"" INTEGER NOT NULL DEFAULT 0,
-                    ""Source"" INTEGER NOT NULL DEFAULT 0,
-                    ""SourceIdentifier"" VARCHAR(100) NULL,
-                    ""Notes"" VARCHAR(500) NULL,
-                    ""CheckInLocation"" VARCHAR(50) NULL,
-                    ""CheckOutLocation"" VARCHAR(50) NULL,
-                    ""WorkedHours"" DECIMAL NULL,
-                    ""IsApproved"" BOOLEAN NOT NULL DEFAULT TRUE,
-                    ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-                    ""UpdatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
-                );
-                CREATE INDEX IF NOT EXISTS ""IX_TimeAttendances_EmployeeId_Date"" ON ""TimeAttendances"" (""EmployeeId"", ""Date"");
-                CREATE INDEX IF NOT EXISTS ""IX_TimeAttendances_Date"" ON ""TimeAttendances"" (""Date"");
-            ");
-            
-            // Create ApiKeys table if not exists
-            await context.Database.ExecuteSqlRawAsync(@"
-                CREATE TABLE IF NOT EXISTS ""ApiKeys"" (
-                    ""Id"" SERIAL PRIMARY KEY,
-                    ""OrganizationId"" INTEGER NOT NULL REFERENCES ""Organizations""(""Id"") ON DELETE CASCADE,
-                    ""KeyHash"" VARCHAR(64) NOT NULL,
-                    ""KeyPrefix"" VARCHAR(12) NOT NULL,
-                    ""Name"" VARCHAR(100) NOT NULL,
-                    ""Description"" VARCHAR(500) NULL,
-                    ""Permissions"" VARCHAR(500) NOT NULL,
-                    ""IpWhitelist"" VARCHAR(500) NULL,
-                    ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
-                    ""ExpiresAt"" TIMESTAMP WITH TIME ZONE NULL,
-                    ""LastUsedAt"" TIMESTAMP WITH TIME ZONE NULL,
-                    ""UsageCount"" INTEGER NOT NULL DEFAULT 0,
-                    ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
-                );
-                CREATE UNIQUE INDEX IF NOT EXISTS ""IX_ApiKeys_KeyHash"" ON ""ApiKeys"" (""KeyHash"");
-                CREATE INDEX IF NOT EXISTS ""IX_ApiKeys_OrganizationId"" ON ""ApiKeys"" (""OrganizationId"");
-            ");
-            
-            // Create SavedPayrolls table if not exists
-            await context.Database.ExecuteSqlRawAsync(@"
-                CREATE TABLE IF NOT EXISTS ""SavedPayrolls"" (
-                    ""Id"" SERIAL PRIMARY KEY,
-                    ""OrganizationId"" INTEGER NOT NULL REFERENCES ""Organizations""(""Id"") ON DELETE CASCADE,
-                    ""Name"" VARCHAR(100) NOT NULL,
-                    ""Year"" INTEGER NOT NULL,
-                    ""Month"" INTEGER NOT NULL,
-                    ""DataSource"" VARCHAR(20) NOT NULL DEFAULT 'shift',
-                    ""NightStartHour"" INTEGER NOT NULL DEFAULT 22,
-                    ""NightEndHour"" INTEGER NOT NULL DEFAULT 6,
-                    ""PayrollDataJson"" TEXT NOT NULL DEFAULT '[]',
-                    ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-                    ""UpdatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
-                );
-                CREATE INDEX IF NOT EXISTS ""IX_SavedPayrolls_OrganizationId"" ON ""SavedPayrolls"" (""OrganizationId"");
-                CREATE INDEX IF NOT EXISTS ""IX_SavedPayrolls_OrgYearMonth"" ON ""SavedPayrolls"" (""OrganizationId"", ""Year"", ""Month"");
-            ");
-            
-            // Create LeaveTypes table if not exists
-            await context.Database.ExecuteSqlRawAsync(@"
-                CREATE TABLE IF NOT EXISTS ""LeaveTypes"" (
-                    ""Id"" SERIAL PRIMARY KEY,
-                    ""OrganizationId"" INTEGER NULL REFERENCES ""Organizations""(""Id"") ON DELETE CASCADE,
-                    ""Code"" VARCHAR(10) NOT NULL,
-                    ""CodeEn"" VARCHAR(10) NOT NULL DEFAULT '',
-                    ""NameTr"" VARCHAR(100) NOT NULL,
-                    ""NameEn"" VARCHAR(100) NOT NULL,
-                    ""Category"" VARCHAR(30) NOT NULL DEFAULT 'other',
-                    ""IsPaid"" BOOLEAN NOT NULL DEFAULT TRUE,
-                    ""DefaultDays"" INTEGER NOT NULL DEFAULT 0,
-                    ""Color"" VARCHAR(10) NOT NULL DEFAULT '#9333ea',
-                    ""SortOrder"" INTEGER NOT NULL DEFAULT 0,
-                    ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
-                    ""IsSystem"" BOOLEAN NOT NULL DEFAULT FALSE
-                );
-                CREATE INDEX IF NOT EXISTS ""IX_LeaveTypes_OrganizationId"" ON ""LeaveTypes"" (""OrganizationId"");
-                CREATE INDEX IF NOT EXISTS ""IX_LeaveTypes_IsSystem"" ON ""LeaveTypes"" (""IsSystem"");
-            ");
-            
-            // Add CodeEn column if not exists (for existing databases)
-            await context.Database.ExecuteSqlRawAsync(@"
-                DO $$ 
-                BEGIN
-                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'LeaveTypes' AND column_name = 'CodeEn') THEN
-                        ALTER TABLE ""LeaveTypes"" ADD COLUMN ""CodeEn"" VARCHAR(10) NOT NULL DEFAULT '';
-                    END IF;
-                END $$;
-            ");
-            
-            // Create Leaves table if not exists
-            await context.Database.ExecuteSqlRawAsync(@"
-                CREATE TABLE IF NOT EXISTS ""Leaves"" (
-                    ""Id"" SERIAL PRIMARY KEY,
-                    ""EmployeeId"" INTEGER NOT NULL REFERENCES ""Employees""(""Id"") ON DELETE CASCADE,
-                    ""LeaveTypeId"" INTEGER NOT NULL REFERENCES ""LeaveTypes""(""Id"") ON DELETE RESTRICT,
-                    ""Date"" DATE NOT NULL,
-                    ""Notes"" VARCHAR(500) NULL,
-                    ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
-                );
-                CREATE INDEX IF NOT EXISTS ""IX_Leaves_EmployeeId_Date"" ON ""Leaves"" (""EmployeeId"", ""Date"");
-                CREATE INDEX IF NOT EXISTS ""IX_Leaves_Date"" ON ""Leaves"" (""Date"");
-            ");
-            
-            // Add new columns to AspNetUsers for user management
-            await context.Database.ExecuteSqlRawAsync(@"
-                DO $$
-                BEGIN
-                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'AspNetUsers' AND column_name = 'CustomEmployeeLimit') THEN
-                        ALTER TABLE ""AspNetUsers"" ADD COLUMN ""CustomEmployeeLimit"" INTEGER NULL;
-                    END IF;
-                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'AspNetUsers' AND column_name = 'CanAccessAttendance') THEN
-                        ALTER TABLE ""AspNetUsers"" ADD COLUMN ""CanAccessAttendance"" BOOLEAN DEFAULT TRUE NOT NULL;
-                    END IF;
-                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'AspNetUsers' AND column_name = 'CanAccessPayroll') THEN
-                        ALTER TABLE ""AspNetUsers"" ADD COLUMN ""CanAccessPayroll"" BOOLEAN DEFAULT TRUE NOT NULL;
-                    END IF;
-                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'AspNetUsers' AND column_name = 'AdminNotes') THEN
-                        ALTER TABLE ""AspNetUsers"" ADD COLUMN ""AdminNotes"" VARCHAR(1000) NULL;
-                    END IF;
-                END $$;
-            ");
-            
-            // Create SystemSettings table if not exists
-            await context.Database.ExecuteSqlRawAsync(@"
-                CREATE TABLE IF NOT EXISTS ""SystemSettings"" (
-                    ""Id"" SERIAL PRIMARY KEY,
-                    ""Key"" VARCHAR(100) NOT NULL UNIQUE,
-                    ""Value"" TEXT NOT NULL,
-                    ""Description"" VARCHAR(500) NULL,
-                    ""UpdatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
-                );
-                CREATE INDEX IF NOT EXISTS ""IX_SystemSettings_Key"" ON ""SystemSettings"" (""Key"");
-            ");
-            
-            // Create AdminUsers table if not exists
-            await context.Database.ExecuteSqlRawAsync(@"
-                CREATE TABLE IF NOT EXISTS ""AdminUsers"" (
-                    ""Id"" SERIAL PRIMARY KEY,
-                    ""Username"" VARCHAR(50) NOT NULL UNIQUE,
-                    ""PasswordHash"" VARCHAR(200) NOT NULL,
-                    ""FullName"" VARCHAR(100) NULL,
-                    ""Email"" VARCHAR(100) NULL,
-                    ""Role"" VARCHAR(20) NOT NULL DEFAULT 'Admin',
-                    ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
-                    ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-                    ""LastLoginAt"" TIMESTAMP WITH TIME ZONE NULL
-                );
-                CREATE INDEX IF NOT EXISTS ""IX_AdminUsers_Username"" ON ""AdminUsers"" (""Username"");
-            ");
+            try { await context.Database.ExecuteSqlRawAsync(sql); }
+            catch (Exception ex) { Console.WriteLine($"SQL [{description}]: {ex.Message}"); }
         }
-        catch { /* Columns may already exist */ }
+        
+        // Apply pending column additions manually before migration
+        await SafeExecuteSql(@"
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Employees' AND column_name='SaturdayWorkHours') THEN
+                    ALTER TABLE ""Employees"" ADD COLUMN ""SaturdayWorkHours"" DECIMAL NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Employees' AND column_name='WeekendWorkMode') THEN
+                    ALTER TABLE ""Employees"" ADD COLUMN ""WeekendWorkMode"" INTEGER DEFAULT 0 NOT NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Employees' AND column_name='PositionType') THEN
+                    ALTER TABLE ""Employees"" ADD COLUMN ""PositionType"" VARCHAR(20) NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Employees' AND column_name='AcademicTitle') THEN
+                    ALTER TABLE ""Employees"" ADD COLUMN ""AcademicTitle"" VARCHAR(50) NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Employees' AND column_name='ShiftScore') THEN
+                    ALTER TABLE ""Employees"" ADD COLUMN ""ShiftScore"" INTEGER DEFAULT 100 NOT NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Employees' AND column_name='IsNonHealthServices') THEN
+                    ALTER TABLE ""Employees"" ADD COLUMN ""IsNonHealthServices"" BOOLEAN DEFAULT FALSE NOT NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Shifts' AND column_name='IsDayOff') THEN
+                    ALTER TABLE ""Shifts"" ADD COLUMN ""IsDayOff"" BOOLEAN DEFAULT FALSE NOT NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Shifts' AND column_name='OvernightHoursMode') THEN
+                    ALTER TABLE ""Shifts"" ADD COLUMN ""OvernightHoursMode"" INTEGER DEFAULT 0 NOT NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Organizations' AND column_name='DefaultTemplatesInitialized') THEN
+                    ALTER TABLE ""Organizations"" ADD COLUMN ""DefaultTemplatesInitialized"" BOOLEAN DEFAULT FALSE NOT NULL;
+                END IF;
+                IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Holidays' AND column_name='HalfDayStartTime') THEN
+                    ALTER TABLE ""Holidays"" DROP COLUMN ""HalfDayStartTime"";
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Holidays' AND column_name='HalfDayWorkHours') THEN
+                    ALTER TABLE ""Holidays"" ADD COLUMN ""HalfDayWorkHours"" DECIMAL NULL;
+                END IF;
+            END $$;
+        ", "AddEmployeeColumns");
+        
+        // Create SystemSettings table FIRST (most critical)
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""SystemSettings"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""Key"" VARCHAR(100) NOT NULL UNIQUE,
+                ""Value"" TEXT NOT NULL,
+                ""Description"" VARCHAR(500) NULL,
+                ""UpdatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_SystemSettings_Key"" ON ""SystemSettings"" (""Key"");
+        ", "SystemSettings");
+        
+        // Create AdminUsers table SECOND (critical)
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""AdminUsers"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""Username"" VARCHAR(50) NOT NULL UNIQUE,
+                ""PasswordHash"" VARCHAR(200) NOT NULL,
+                ""FullName"" VARCHAR(100) NULL,
+                ""Email"" VARCHAR(100) NULL,
+                ""Role"" VARCHAR(20) NOT NULL DEFAULT 'Admin',
+                ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                ""LastLoginAt"" TIMESTAMP WITH TIME ZONE NULL
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_AdminUsers_Username"" ON ""AdminUsers"" (""Username"");
+        ", "AdminUsers");
+        
+        // Create VisitorLogs table
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""VisitorLogs"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""IpAddress"" VARCHAR(45) NULL,
+                ""UserAgent"" VARCHAR(500) NULL,
+                ""Path"" VARCHAR(500) NULL,
+                ""Referer"" VARCHAR(500) NULL,
+                ""Country"" VARCHAR(100) NULL,
+                ""City"" VARCHAR(100) NULL,
+                ""SessionId"" VARCHAR(100) NULL,
+                ""UserId"" VARCHAR(450) NULL,
+                ""VisitedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                ""Duration"" INTEGER NULL,
+                ""IsBot"" BOOLEAN NOT NULL DEFAULT FALSE
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_VisitorLogs_VisitedAt"" ON ""VisitorLogs"" (""VisitedAt"");
+            CREATE INDEX IF NOT EXISTS ""IX_VisitorLogs_SessionId"" ON ""VisitorLogs"" (""SessionId"");
+        ", "VisitorLogs");
+        
+        // Create TimeAttendances table
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""TimeAttendances"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""EmployeeId"" INTEGER NOT NULL REFERENCES ""Employees""(""Id"") ON DELETE CASCADE,
+                ""Date"" DATE NOT NULL,
+                ""CheckInTime"" TIME NULL,
+                ""CheckOutTime"" TIME NULL,
+                ""CheckInFromPreviousDay"" BOOLEAN NOT NULL DEFAULT FALSE,
+                ""CheckOutToNextDay"" BOOLEAN NOT NULL DEFAULT FALSE,
+                ""Type"" INTEGER NOT NULL DEFAULT 0,
+                ""Source"" INTEGER NOT NULL DEFAULT 0,
+                ""SourceIdentifier"" VARCHAR(100) NULL,
+                ""Notes"" VARCHAR(500) NULL,
+                ""CheckInLocation"" VARCHAR(50) NULL,
+                ""CheckOutLocation"" VARCHAR(50) NULL,
+                ""WorkedHours"" DECIMAL NULL,
+                ""IsApproved"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                ""UpdatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_TimeAttendances_EmployeeId_Date"" ON ""TimeAttendances"" (""EmployeeId"", ""Date"");
+            CREATE INDEX IF NOT EXISTS ""IX_TimeAttendances_Date"" ON ""TimeAttendances"" (""Date"");
+        ", "TimeAttendances");
+        
+        // Create ApiKeys table
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""ApiKeys"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""OrganizationId"" INTEGER NOT NULL REFERENCES ""Organizations""(""Id"") ON DELETE CASCADE,
+                ""KeyHash"" VARCHAR(64) NOT NULL,
+                ""KeyPrefix"" VARCHAR(12) NOT NULL,
+                ""Name"" VARCHAR(100) NOT NULL,
+                ""Description"" VARCHAR(500) NULL,
+                ""Permissions"" VARCHAR(500) NOT NULL,
+                ""IpWhitelist"" VARCHAR(500) NULL,
+                ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""ExpiresAt"" TIMESTAMP WITH TIME ZONE NULL,
+                ""LastUsedAt"" TIMESTAMP WITH TIME ZONE NULL,
+                ""UsageCount"" INTEGER NOT NULL DEFAULT 0,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+            );
+            CREATE UNIQUE INDEX IF NOT EXISTS ""IX_ApiKeys_KeyHash"" ON ""ApiKeys"" (""KeyHash"");
+            CREATE INDEX IF NOT EXISTS ""IX_ApiKeys_OrganizationId"" ON ""ApiKeys"" (""OrganizationId"");
+        ", "ApiKeys");
+        
+        // Create SavedPayrolls table
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""SavedPayrolls"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""OrganizationId"" INTEGER NOT NULL REFERENCES ""Organizations""(""Id"") ON DELETE CASCADE,
+                ""Name"" VARCHAR(100) NOT NULL,
+                ""Year"" INTEGER NOT NULL,
+                ""Month"" INTEGER NOT NULL,
+                ""DataSource"" VARCHAR(20) NOT NULL DEFAULT 'shift',
+                ""NightStartHour"" INTEGER NOT NULL DEFAULT 22,
+                ""NightEndHour"" INTEGER NOT NULL DEFAULT 6,
+                ""PayrollDataJson"" TEXT NOT NULL DEFAULT '[]',
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                ""UpdatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_SavedPayrolls_OrganizationId"" ON ""SavedPayrolls"" (""OrganizationId"");
+            CREATE INDEX IF NOT EXISTS ""IX_SavedPayrolls_OrgYearMonth"" ON ""SavedPayrolls"" (""OrganizationId"", ""Year"", ""Month"");
+        ", "SavedPayrolls");
+        
+        // Create LeaveTypes table
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""LeaveTypes"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""OrganizationId"" INTEGER NULL REFERENCES ""Organizations""(""Id"") ON DELETE CASCADE,
+                ""Code"" VARCHAR(10) NOT NULL,
+                ""CodeEn"" VARCHAR(10) NOT NULL DEFAULT '',
+                ""NameTr"" VARCHAR(100) NOT NULL,
+                ""NameEn"" VARCHAR(100) NOT NULL,
+                ""Category"" VARCHAR(30) NOT NULL DEFAULT 'other',
+                ""IsPaid"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""DefaultDays"" INTEGER NOT NULL DEFAULT 0,
+                ""Color"" VARCHAR(10) NOT NULL DEFAULT '#9333ea',
+                ""SortOrder"" INTEGER NOT NULL DEFAULT 0,
+                ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""IsSystem"" BOOLEAN NOT NULL DEFAULT FALSE
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_LeaveTypes_OrganizationId"" ON ""LeaveTypes"" (""OrganizationId"");
+            CREATE INDEX IF NOT EXISTS ""IX_LeaveTypes_IsSystem"" ON ""LeaveTypes"" (""IsSystem"");
+        ", "LeaveTypes");
+        
+        // Add CodeEn column if not exists
+        await SafeExecuteSql(@"
+            DO $$ 
+            BEGIN
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'LeaveTypes' AND column_name = 'CodeEn') THEN
+                    ALTER TABLE ""LeaveTypes"" ADD COLUMN ""CodeEn"" VARCHAR(10) NOT NULL DEFAULT '';
+                END IF;
+            END $$;
+        ", "LeaveTypesCodeEn");
+        
+        // Create Leaves table
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""Leaves"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""EmployeeId"" INTEGER NOT NULL REFERENCES ""Employees""(""Id"") ON DELETE CASCADE,
+                ""LeaveTypeId"" INTEGER NOT NULL REFERENCES ""LeaveTypes""(""Id"") ON DELETE RESTRICT,
+                ""Date"" DATE NOT NULL,
+                ""Notes"" VARCHAR(500) NULL,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_Leaves_EmployeeId_Date"" ON ""Leaves"" (""EmployeeId"", ""Date"");
+            CREATE INDEX IF NOT EXISTS ""IX_Leaves_Date"" ON ""Leaves"" (""Date"");
+        ", "Leaves");
+        
+        // Add new columns to AspNetUsers
+        await SafeExecuteSql(@"
+            DO $$
+            BEGIN
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'AspNetUsers' AND column_name = 'CustomEmployeeLimit') THEN
+                    ALTER TABLE ""AspNetUsers"" ADD COLUMN ""CustomEmployeeLimit"" INTEGER NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'AspNetUsers' AND column_name = 'CanAccessAttendance') THEN
+                    ALTER TABLE ""AspNetUsers"" ADD COLUMN ""CanAccessAttendance"" BOOLEAN DEFAULT TRUE NOT NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'AspNetUsers' AND column_name = 'CanAccessPayroll') THEN
+                    ALTER TABLE ""AspNetUsers"" ADD COLUMN ""CanAccessPayroll"" BOOLEAN DEFAULT TRUE NOT NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'AspNetUsers' AND column_name = 'AdminNotes') THEN
+                    ALTER TABLE ""AspNetUsers"" ADD COLUMN ""AdminNotes"" VARCHAR(1000) NULL;
+                END IF;
+            END $$;
+        ", "AspNetUsersColumns");
         
         // Run migrations - but don't let failures prevent seeding
         try
