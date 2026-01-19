@@ -297,17 +297,41 @@
                         
                         var dayOffCount = employeeShifts.Count(s => s.IsDayOff);
                         
-                        // Calculate required hours (excluding holidays, weekends based on settings, and day offs)
+                        // Calculate required hours (excluding holidays, weekends based on settings, day offs, and leaves)
                         var workDays = 0;
                         var saturdayHours = 0m;
+                        var halfDayHours = 0m; // Track half-day holiday hours separately
+                        var leaveCount = Model.Leaves.Count(l => l.EmployeeId == employee.Id);
+                        
                         for (int d = 1; d <= Model.DaysInMonth; d++)
                         {
                             var checkDate = new DateOnly(Model.SelectedYear, Model.SelectedMonth, d);
                             var dayOfWeek = checkDate.DayOfWeek;
                             var isWeekendDay = dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.Sunday;
-                            var isHolidayDay = Model.IsHoliday(checkDate);
+                            var holiday = Model.GetHoliday(checkDate);
+                            var hasLeave = Model.GetLeaveForEmployeeOnDate(employee.Id, checkDate) != null;
                             
-                            if (isHolidayDay) continue; // Skip holidays
+                            // Skip if employee has leave on this date
+                            if (hasLeave) continue;
+                            
+                            // Handle holidays
+                            if (holiday != null)
+                            {
+                                // Full holiday - skip entirely
+                                if (!holiday.IsHalfDay)
+                                    continue;
+                                
+                                // Half-day holiday - add the specified work hours
+                                if (holiday.IsHalfDay && holiday.HalfDayWorkHours.HasValue)
+                                {
+                                    // Only add if employee works on this day (check weekend mode)
+                                    if (!isWeekendDay || employee.WeekendWorkMode > 0)
+                                    {
+                                        halfDayHours += holiday.HalfDayWorkHours.Value;
+                                    }
+                                    continue;
+                                }
+                            }
                             
                             if (isWeekendDay)
                             {
@@ -334,7 +358,7 @@
                         
                         // Subtract day off days from work days (each day off reduces required by daily hours)
                         workDays = Math.Max(0, workDays - dayOffCount);
-                        var requiredHours = (workDays * employee.DailyWorkHours) + saturdayHours;
+                        var requiredHours = (workDays * employee.DailyWorkHours) + saturdayHours + halfDayHours;
                         var isOvertime = totalWorkedHours > requiredHours;
                         var isUndertime = totalWorkedHours < requiredHours;
                         
