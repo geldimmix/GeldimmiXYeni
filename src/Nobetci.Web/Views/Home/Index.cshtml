@@ -100,7 +100,7 @@
             "name": "@(isTurkish ? "Ücretsiz mi?" : "Is it free?")",
             "acceptedAnswer": {
                 "@@type": "Answer",
-                "text": "@(isTurkish ? "Evet, kayıt olmadan 10 personele kadar ücretsiz kullanabilirsiniz. Kayıt olduğunuzda 25 personele kadar ücretsiz." : "Yes, you can use it free for up to 10 employees without registration. After registration, free for up to 25 employees.")"
+                "text": "@(isTurkish ? "Evet, kayıt olmadan 5 personele kadar ücretsiz kullanabilirsiniz. Kayıt olduğunuzda 10 personele kadar ücretsiz, mesai takip ve puantaj özelliklerini de kullanabilirsiniz." : "Yes, you can use it free for up to 5 employees without registration. After registration, free for up to 10 employees with full access to attendance tracking and payroll features.")"
             }
         },
         {
@@ -1582,8 +1582,8 @@
                 <div class="faq-answer">
                     <div class="faq-answer-inner">
                         @(isTurkish 
-                            ? "Evet, kayıt olmadan 10 personele kadar ücretsiz kullanabilirsiniz. Google hesabınızla kayıt olduğunuzda 25 personele kadar ücretsiz. Kredi kartı gerekmez, deneme süresi yoktur."
-                            : "Yes, you can use it free for up to 10 employees without registration. When you sign up with your Google account, it's free for up to 25 employees. No credit card required, no trial period.")
+                            ? "Evet, kayıt olmadan 5 personele kadar ücretsiz kullanabilirsiniz. Google hesabınızla kayıt olduğunuzda 10 personele kadar ücretsiz ve mesai takip, puantaj özelliklerini de kullanabilirsiniz. Kredi kartı gerekmez, deneme süresi yoktur."
+                            : "Yes, you can use it free for up to 5 employees without registration. When you sign up with your Google account, it's free for up to 10 employees with full access to attendance tracking and payroll features. No credit card required, no trial period.")
                     </div>
                 </div>
             </div>
@@ -1651,7 +1651,7 @@
 <section class="cta">
     <div class="container">
         <h2 class="cta-heading heading-display">@(isTurkish ? "Hemen ücretsiz başlayın" : "Start free today")</h2>
-        <p class="cta-text">@(isTurkish ? "Kayıt olmadan 10 personele kadar ücretsiz. Kredi kartı gerekmez." : "Free for up to 10 employees without registration. No credit card required.")</p>
+        <p class="cta-text">@(isTurkish ? "Kayıt olmadan 5 personele kadar, kayıtlı kullanıcılara 10 personele kadar ücretsiz. Kredi kartı gerekmez." : "Free for up to 5 employees without registration, 10 employees for registered users. No credit card required.")</p>
         <a href="/app" class="btn-cta">
             @(isTurkish ? "Hemen Başla" : "Get Started")
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>

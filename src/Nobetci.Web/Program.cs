@@ -332,6 +332,25 @@ using (var scope = app.Services.CreateScope())
                 CREATE INDEX IF NOT EXISTS ""IX_Leaves_EmployeeId_Date"" ON ""Leaves"" (""EmployeeId"", ""Date"");
                 CREATE INDEX IF NOT EXISTS ""IX_Leaves_Date"" ON ""Leaves"" (""Date"");
             ");
+            
+            // Add new columns to AspNetUsers for user management
+            await context.Database.ExecuteSqlRawAsync(@"
+                DO $$
+                BEGIN
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'AspNetUsers' AND column_name = 'CustomEmployeeLimit') THEN
+                        ALTER TABLE ""AspNetUsers"" ADD COLUMN ""CustomEmployeeLimit"" INTEGER NULL;
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'AspNetUsers' AND column_name = 'CanAccessAttendance') THEN
+                        ALTER TABLE ""AspNetUsers"" ADD COLUMN ""CanAccessAttendance"" BOOLEAN DEFAULT TRUE NOT NULL;
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'AspNetUsers' AND column_name = 'CanAccessPayroll') THEN
+                        ALTER TABLE ""AspNetUsers"" ADD COLUMN ""CanAccessPayroll"" BOOLEAN DEFAULT TRUE NOT NULL;
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'AspNetUsers' AND column_name = 'AdminNotes') THEN
+                        ALTER TABLE ""AspNetUsers"" ADD COLUMN ""AdminNotes"" VARCHAR(1000) NULL;
+                    END IF;
+                END $$;
+            ");
         }
         catch { /* Columns may already exist */ }
         

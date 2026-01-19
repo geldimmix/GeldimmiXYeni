@@ -22,17 +22,11 @@
                 <span class="action-badge">@Model.Holidays.Count</span>
             </button>
             
-            @if (Model.IsRegistered)
+            @if (Model.CanAccessPayroll)
             {
                 <a href="@Url.Action("Payroll", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="action-btn payroll-btn">
                     <span class="action-icon">📊</span>
                     <span class="action-label">@(isTurkish ? "Puantaj" : "Payroll")</span>
-                    <span class="action-badge">✓</span>
-                </a>
-                
-                <a href="@Url.Action("Attendance", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="action-btn attendance-btn">
-                    <span class="action-icon">🕐</span>
-                    <span class="action-label">@(isTurkish ? "Mesai Takip" : "Attendance")</span>
                     <span class="action-badge">✓</span>
                 </a>
             }
@@ -43,7 +37,18 @@
                     <span class="action-label">@(isTurkish ? "Puantaj" : "Payroll")</span>
                     <span class="action-badge">🔒</span>
                 </button>
-                
+            }
+            
+            @if (Model.CanAccessAttendance)
+            {
+                <a href="@Url.Action("Attendance", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="action-btn attendance-btn">
+                    <span class="action-icon">🕐</span>
+                    <span class="action-label">@(isTurkish ? "Mesai Takip" : "Attendance")</span>
+                    <span class="action-badge">✓</span>
+                </a>
+            }
+            else
+            {
                 <button class="action-btn attendance-btn disabled" title="@(isTurkish ? "Kayıtlı kullanıcılara özel" : "For registered users only")" disabled>
                     <span class="action-icon">🕐</span>
                     <span class="action-label">@(isTurkish ? "Mesai Takip" : "Attendance")</span>
@@ -882,7 +887,7 @@
         </div>
         <div class="premium-modal-body">
             <ul class="premium-features">
-                <li>@(isTurkish ? "10 personele kadar yönetim (şu an 5)" : "Manage up to 10 employees (currently 5)")</li>
+                <li>@(isTurkish ? "10 personele kadar yönetim" : "Manage up to 10 employees")</li>
                 <li>@(isTurkish ? "Akıllı nöbet planlaması" : "Smart shift scheduling")</li>
                 <li>@(isTurkish ? "Puantaj ve mesai hesaplama" : "Timesheet and overtime calculation")</li>
                 <li>@(isTurkish ? "Excel export" : "Excel export")</li>
@@ -6167,7 +6172,7 @@
                     </div>
                     <div class="invite-feature">
                         <span class="feature-check">✓</span>
-                        <span class="feature-text">@(isTurkish ? "25 personele kadar ekleyin" : "Add up to 25 employees")</span>
+                        <span class="feature-text">@(isTurkish ? "10 personele kadar ekleyin" : "Add up to 10 employees")</span>
                     </div>
                     <div class="invite-feature">
                         <span class="feature-check">✓</span>

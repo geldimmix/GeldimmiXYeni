@@ -456,6 +456,13 @@
             </li>
             <li class="divider"></li>
             <li>
+                <a href="/admin/users" class="@(ViewContext.RouteData.Values["action"]?.ToString()?.Contains("User") == true ? "active" : "")">
+                    <span class="nav-icon">👥</span>
+                    <span>Kullanıcılar</span>
+                </a>
+            </li>
+            <li class="divider"></li>
+            <li>
                 <a href="/" target="_blank">
                     <span class="nav-icon">🌐</span>
                     <span>Siteyi Görüntüle</span>

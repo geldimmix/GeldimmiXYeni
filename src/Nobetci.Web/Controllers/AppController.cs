@@ -91,6 +91,10 @@ public class AppController : Controller
             .Where(l => l.Date.Year == selectedYear && l.Date.Month == selectedMonth)
             .ToListAsync();
 
+        var employeeLimit = await GetEmployeeLimitAsync();
+        var (canAccessAttendance, canAccessPayroll) = await GetFeatureAccessAsync();
+        var isRegistered = User.Identity?.IsAuthenticated == true;
+        
         var viewModel = new AppViewModel
         {
             Organization = organization,
@@ -103,12 +107,14 @@ public class AppController : Controller
             Leaves = leaves,
             SelectedYear = selectedYear,
             SelectedMonth = selectedMonth,
-            EmployeeLimit = GetEmployeeLimit(),
-            IsRegistered = User.Identity?.IsAuthenticated == true,
-            // Premium features only for registered users
-            CanUseSmartScheduling = User.Identity?.IsAuthenticated == true,
-            CanUseTimesheet = User.Identity?.IsAuthenticated == true,
-            CanExportExcel = User.Identity?.IsAuthenticated == true
+            EmployeeLimit = employeeLimit,
+            IsRegistered = isRegistered,
+            // Feature access based on registration and admin settings
+            CanUseSmartScheduling = isRegistered,
+            CanUseTimesheet = isRegistered,
+            CanExportExcel = isRegistered,
+            CanAccessAttendance = canAccessAttendance,
+            CanAccessPayroll = canAccessPayroll
         };
 
         return View(viewModel);
@@ -148,7 +154,7 @@ public class AppController : Controller
         // Check employee limit
         var currentCount = await _context.Employees
             .CountAsync(e => e.OrganizationId == organization.Id && e.IsActive);
-        var limit = GetEmployeeLimit();
+        var limit = await GetEmployeeLimitAsync();
         
         if (currentCount >= limit)
         {
@@ -1174,6 +1180,14 @@ public class AppController : Controller
         {
             return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("Payroll") });
         }
+        
+        // Check if user has payroll access
+        var (_, canAccessPayroll) = await GetFeatureAccessAsync();
+        if (!canAccessPayroll)
+        {
+            TempData["Error"] = "Puantaj özelliğine erişim yetkiniz bulunmamaktadır.";
+            return RedirectToAction("Index");
+        }
 
         var selectedYear = year ?? DateTime.Now.Year;
         var selectedMonth = month ?? DateTime.Now.Month;
@@ -1841,7 +1855,7 @@ public class AppController : Controller
     #region Attendance (Mesai Takip)
 
     /// <summary>
-    /// Attendance tracking page - only for registered users
+    /// Attendance tracking page - only for registered users with access
     /// </summary>
     [HttpGet]
     public async Task<IActionResult> Attendance(int? year, int? month)
@@ -1850,6 +1864,14 @@ public class AppController : Controller
         if (User.Identity?.IsAuthenticated != true)
         {
             return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("Attendance") });
+        }
+        
+        // Check if user has attendance access
+        var (canAccessAttendance, _) = await GetFeatureAccessAsync();
+        if (!canAccessAttendance)
+        {
+            TempData["Error"] = "Mesai takip özelliğine erişim yetkiniz bulunmamaktadır.";
+            return RedirectToAction("Index");
         }
 
         var selectedYear = year ?? DateTime.Now.Year;
@@ -2370,15 +2392,38 @@ public class AppController : Controller
         await _context.SaveChangesAsync();
     }
 
-    private int GetEmployeeLimit()
+    private async Task<int> GetEmployeeLimitAsync()
     {
         if (User.Identity?.IsAuthenticated == true)
         {
-            // TODO: Check user plan for premium
-            return _configuration.GetValue<int>("AppSettings:RegisteredEmployeeLimit", 10);
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null)
+            {
+                var defaultLimit = _configuration.GetValue<int>("AppSettings:RegisteredEmployeeLimit", 10);
+                var premiumLimit = _configuration.GetValue<int>("AppSettings:PremiumEmployeeLimit", 100);
+                return user.GetEffectiveEmployeeLimit(defaultLimit, premiumLimit);
+            }
         }
         
         return _configuration.GetValue<int>("AppSettings:GuestEmployeeLimit", 5);
+    }
+    
+    private async Task<(bool CanAccessAttendance, bool CanAccessPayroll)> GetFeatureAccessAsync()
+    {
+        if (User.Identity?.IsAuthenticated != true)
+        {
+            // Unregistered users cannot access attendance or payroll
+            return (false, false);
+        }
+        
+        var user = await _userManager.GetUserAsync(User);
+        if (user != null)
+        {
+            return (user.CanAccessAttendance, user.CanAccessPayroll);
+        }
+        
+        // Default for registered users
+        return (true, true);
     }
 
     private void CalculateShiftHours(Shift shift, Organization org)

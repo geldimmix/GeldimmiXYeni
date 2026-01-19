@@ -1,0 +1,160 @@
+@model List<UserListItem>
+@{
+    ViewData["Title"] = "Kullanıcı Yönetimi";
+    var guestLimit = (int)ViewBag.GuestLimit;
+    var registeredLimit = (int)ViewBag.RegisteredLimit;
+    var premiumLimit = (int)ViewBag.PremiumLimit;
+}
+
+<div class="admin-header">
+    <h2>👥 Kullanıcı Yönetimi</h2>
+    <div class="header-actions">
+        <span class="badge badge-info">Toplam: @ViewBag.TotalItems kullanıcı</span>
+    </div>
+</div>
+
+<!-- Limit Bilgisi -->
+<div class="card" style="margin-bottom: 20px;">
+    <div class="stats-grid" style="margin-bottom: 0;">
+        <div class="stat-card" style="background: #fee2e2;">
+            <div class="stat-icon">🚫</div>
+            <div class="stat-label">Kayıtsız Kullanıcı Limiti</div>
+            <div class="stat-value">@guestLimit</div>
+            <small style="color: #64748b;">Mesai Takip: ❌ | Puantaj: ❌</small>
+        </div>
+        <div class="stat-card" style="background: #dbeafe;">
+            <div class="stat-icon">✓</div>
+            <div class="stat-label">Kayıtlı Kullanıcı Limiti</div>
+            <div class="stat-value">@registeredLimit</div>
+            <small style="color: #64748b;">Mesai Takip: ✅ | Puantaj: ✅</small>
+        </div>
+        <div class="stat-card" style="background: #fef3c7;">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-label">Premium Limiti</div>
+            <div class="stat-value">@premiumLimit</div>
+            <small style="color: #64748b;">Tüm Özellikler</small>
+        </div>
+    </div>
+</div>
+
+<!-- Filtreler -->
+<div class="card">
+    <form method="get" class="filter-bar">
+        <div class="filter-group">
+            <label>Ara (Email / İsim)</label>
+            <input type="text" name="search" value="@ViewBag.Search" placeholder="Email veya isim...">
+        </div>
+        <button type="submit" class="btn btn-primary">🔍 Filtrele</button>
+        <a href="/admin/users" class="btn btn-secondary">Temizle</a>
+    </form>
+    
+    <!-- Tablo -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Kullanıcı</th>
+                <th>Plan</th>
+                <th>Limit</th>
+                <th>Erişim</th>
+                <th>Personel</th>
+                <th>Kayıt Tarihi</th>
+                <th>Son Giriş</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                var effectiveLimit = user.GetEffectiveLimit(registeredLimit, premiumLimit);
+                var isOverLimit = user.EmployeeCount > effectiveLimit;
+                <tr>
+                    <td>
+                        <div style="font-weight: 600;">@(string.IsNullOrEmpty(user.FullName) ? "-" : user.FullName)</div>
+                        <div style="font-size: 0.8rem; color: #64748b;">@user.Email</div>
+                        @if (!string.IsNullOrEmpty(user.AdminNotes))
+                        {
+                            <div style="font-size: 0.75rem; color: #f59e0b;">📝 @user.AdminNotes</div>
+                        }
+                    </td>
+                    <td>
+                        @if (user.Plan == UserPlan.Premium)
+                        {
+                            <span class="badge badge-warning">⭐ Premium</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-info">Free</span>
+                        }
+                    </td>
+                    <td>
+                        @if (user.CustomEmployeeLimit.HasValue)
+                        {
+                            <span class="badge badge-warning" title="Özel limit">@user.CustomEmployeeLimit</span>
+                        }
+                        else
+                        {
+                            <span>@effectiveLimit</span>
+                        }
+                    </td>
+                    <td>
+                        <span style="color: @(user.CanAccessAttendance ? "#16a34a" : "#dc2626")">
+                            @(user.CanAccessAttendance ? "✅" : "❌") Mesai
+                        </span>
+                        <br>
+                        <span style="color: @(user.CanAccessPayroll ? "#16a34a" : "#dc2626")">
+                            @(user.CanAccessPayroll ? "✅" : "❌") Puantaj
+                        </span>
+                    </td>
+                    <td>
+                        <span class="@(isOverLimit ? "badge badge-danger" : "")">
+                            @user.EmployeeCount / @effectiveLimit
+                        </span>
+                        @if (user.OrganizationCount > 0)
+                        {
+                            <div style="font-size: 0.75rem; color: #64748b;">@user.OrganizationCount org.</div>
+                        }
+                    </td>
+                    <td>
+                        <span title="@user.CreatedAt.ToString("dd.MM.yyyy HH:mm")">
+                            @user.CreatedAt.ToString("dd.MM.yyyy")
+                        </span>
+                    </td>
+                    <td>
+                        @if (user.LastLoginAt.HasValue)
+                        {
+                            <span title="@user.LastLoginAt.Value.ToString("dd.MM.yyyy HH:mm")">
+                                @user.LastLoginAt.Value.ToString("dd.MM.yyyy")
+                            </span>
+                        }
+                        else
+                        {
+                            <span style="color: #94a3b8;">-</span>
+                        }
+                    </td>
+                    <td>
+                        <a href="/admin/users/edit/@user.Id" class="btn btn-sm btn-primary">✏️ Düzenle</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    
+    <!-- Sayfalama -->
+    @if ((int)ViewBag.TotalPages > 1)
+    {
+        <div class="pagination">
+            @for (int i = 1; i <= (int)ViewBag.TotalPages; i++)
+            {
+                var searchParam = !string.IsNullOrEmpty((string)ViewBag.Search) ? $"&search={ViewBag.Search}" : "";
+                <a href="/admin/users?page=@i@searchParam" class="page-link @(i == (int)ViewBag.CurrentPage ? "active" : "")">@i</a>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .table td {
+        vertical-align: middle;
+    }
+</style>
+

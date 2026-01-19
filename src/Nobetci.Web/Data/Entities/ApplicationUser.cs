@@ -15,27 +15,64 @@ public class ApplicationUser : IdentityUser
     public string Language { get; set; } = "tr";
     
     /// <summary>
-    /// User plan type: Free (10 employees), Freemium (25 employees), Premium (unlimited)
+    /// User plan type: Free (10 employees), Premium (unlimited)
     /// </summary>
     public UserPlan Plan { get; set; } = UserPlan.Free;
     
     /// <summary>
-    /// When the premium subscription expires (null for free/freemium)
+    /// Custom employee limit (overrides plan default if set)
+    /// Null means use the plan's default limit
+    /// </summary>
+    public int? CustomEmployeeLimit { get; set; }
+    
+    /// <summary>
+    /// Whether user can access Attendance module (default: true for registered)
+    /// </summary>
+    public bool CanAccessAttendance { get; set; } = true;
+    
+    /// <summary>
+    /// Whether user can access Payroll module (default: true for registered)
+    /// </summary>
+    public bool CanAccessPayroll { get; set; } = true;
+    
+    /// <summary>
+    /// When the premium subscription expires (null for free)
     /// </summary>
     public DateTime? PremiumExpiresAt { get; set; }
+    
+    /// <summary>
+    /// Admin notes about the user
+    /// </summary>
+    public string? AdminNotes { get; set; }
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? LastLoginAt { get; set; }
     
     // Navigation properties
     public virtual ICollection<Organization> Organizations { get; set; } = new List<Organization>();
+    
+    /// <summary>
+    /// Get the effective employee limit for this user
+    /// </summary>
+    public int GetEffectiveEmployeeLimit(int defaultFreeLimit = 10, int premiumLimit = 100)
+    {
+        // Custom limit overrides everything
+        if (CustomEmployeeLimit.HasValue)
+            return CustomEmployeeLimit.Value;
+        
+        // Otherwise use plan default
+        return Plan switch
+        {
+            UserPlan.Premium => premiumLimit,
+            _ => defaultFreeLimit
+        };
+    }
 }
 
 public enum UserPlan
 {
-    Free = 0,      // 10 employees, no timesheet
-    Freemium = 1,  // 25 employees, with timesheet
-    Premium = 2    // Unlimited employees
+    Free = 0,      // 10 employees (default), attendance & payroll allowed
+    Premium = 1    // Unlimited employees
 }
 
 

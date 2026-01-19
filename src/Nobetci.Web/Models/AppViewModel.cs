@@ -19,10 +19,12 @@ public class AppViewModel
     public int EmployeeLimit { get; set; }
     public bool IsRegistered { get; set; }
     
-    // Premium features - only for registered users
+    // Feature access - based on registration and admin settings
     public bool CanUseSmartScheduling { get; set; }
     public bool CanUseTimesheet { get; set; }
     public bool CanExportExcel { get; set; }
+    public bool CanAccessAttendance { get; set; }
+    public bool CanAccessPayroll { get; set; }
     
     // Helper properties
     public int EmployeeCount => Employees.Count;

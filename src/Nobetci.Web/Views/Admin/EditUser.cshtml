@@ -1,0 +1,169 @@
+@model EditUserViewModel
+@{
+    ViewData["Title"] = "Kullanıcı Düzenle";
+    var guestLimit = (int)ViewBag.GuestLimit;
+    var registeredLimit = (int)ViewBag.RegisteredLimit;
+    var premiumLimit = (int)ViewBag.PremiumLimit;
+}
+
+<div class="admin-header">
+    <h2>✏️ Kullanıcı Düzenle</h2>
+    <div class="header-actions">
+        <a href="/admin/users" class="btn btn-secondary">← Geri</a>
+    </div>
+</div>
+
+<div class="grid-2">
+    <!-- Sol: Kullanıcı Formu -->
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Kullanıcı Ayarları</span>
+        </div>
+        
+        <form method="post" action="/admin/users/edit/@Model.Id">
+            <input type="hidden" name="Id" value="@Model.Id" />
+            <input type="hidden" name="Email" value="@Model.Email" />
+            <input type="hidden" name="FullName" value="@Model.FullName" />
+            <input type="hidden" name="CreatedAt" value="@Model.CreatedAt.ToString("o")" />
+            @if (Model.LastLoginAt.HasValue)
+            {
+                <input type="hidden" name="LastLoginAt" value="@Model.LastLoginAt.Value.ToString("o")" />
+            }
+            
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="text" class="form-control" value="@Model.Email" disabled style="background: #f1f5f9;">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">İsim</label>
+                <input type="text" class="form-control" value="@(Model.FullName ?? "-")" disabled style="background: #f1f5f9;">
+            </div>
+            
+            <hr style="margin: 24px 0; border: none; border-top: 1px solid #e2e8f0;">
+            
+            <div class="form-group">
+                <label class="form-label">Plan</label>
+                <select name="Plan" class="form-control">
+                    <option value="Free" @(Model.Plan == UserPlan.Free ? "selected" : "")>
+                        Free (Varsayılan: @registeredLimit personel)
+                    </option>
+                    <option value="Premium" @(Model.Plan == UserPlan.Premium ? "selected" : "")>
+                        ⭐ Premium (@premiumLimit personel)
+                    </option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Özel Personel Limiti</label>
+                <input type="number" name="CustomEmployeeLimit" class="form-control" 
+                       value="@Model.CustomEmployeeLimit" 
+                       placeholder="Boş bırakırsanız plan varsayılanı kullanılır" 
+                       min="1" max="1000">
+                <small style="color: #64748b;">Boş bırakırsanız plana göre limit uygulanır (Free: @registeredLimit, Premium: @premiumLimit)</small>
+            </div>
+            
+            <hr style="margin: 24px 0; border: none; border-top: 1px solid #e2e8f0;">
+            
+            <div class="form-group">
+                <label class="form-label">Özellik Erişimi</label>
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
+                    <label class="form-check" style="cursor: pointer;">
+                        <input type="checkbox" name="CanAccessAttendance" value="true" 
+                               @(Model.CanAccessAttendance ? "checked" : "")>
+                        <span>🕐 Mesai Takip Erişimi</span>
+                    </label>
+                    <label class="form-check" style="cursor: pointer;">
+                        <input type="checkbox" name="CanAccessPayroll" value="true"
+                               @(Model.CanAccessPayroll ? "checked" : "")>
+                        <span>📊 Puantaj Erişimi</span>
+                    </label>
+                </div>
+            </div>
+            
+            <hr style="margin: 24px 0; border: none; border-top: 1px solid #e2e8f0;">
+            
+            <div class="form-group">
+                <label class="form-label">Admin Notları</label>
+                <textarea name="AdminNotes" class="form-control" rows="3" 
+                          placeholder="Bu kullanıcı hakkında notlar...">@Model.AdminNotes</textarea>
+            </div>
+            
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button type="submit" class="btn btn-primary">💾 Kaydet</button>
+                <a href="/admin/users" class="btn btn-secondary">İptal</a>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Sağ: Kullanıcı Bilgileri -->
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Kullanıcı Bilgileri</span>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                    <div style="font-size: 0.8rem; color: #64748b;">Kayıt Tarihi</div>
+                    <div style="font-weight: 600;">@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.8rem; color: #64748b;">Son Giriş</div>
+                    <div style="font-weight: 600;">
+                        @if (Model.LastLoginAt.HasValue)
+                        {
+                            @Model.LastLoginAt.Value.ToString("dd.MM.yyyy HH:mm")
+                        }
+                        else
+                        {
+                            <span style="color: #94a3b8;">Henüz giriş yapmamış</span>
+                        }
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size: 0.8rem; color: #64748b;">User ID</div>
+                    <div style="font-weight: 400; font-size: 0.85rem; font-family: monospace; word-break: break-all;">@Model.Id</div>
+                </div>
+            </div>
+        </div>
+        
+        @if (Model.Organizations.Any())
+        {
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Organizasyonlar (@Model.Organizations.Count)</span>
+                </div>
+                
+                <table class="table" style="margin: 0;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>İsim</th>
+                            <th>Personel</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var org in Model.Organizations)
+                        {
+                            <tr>
+                                <td>@org.Id</td>
+                                <td>@org.Name</td>
+                                <td>@org.EmployeeCount</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="card">
+                <div style="text-align: center; color: #94a3b8; padding: 20px;">
+                    Henüz organizasyon oluşturmamış
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
