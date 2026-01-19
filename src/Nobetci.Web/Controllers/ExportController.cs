@@ -693,6 +693,145 @@ public class ExportController : Controller
         dataRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
         dataRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
 
+        // ========== ADD DAILY BREAKDOWN SHEET ==========
+        var dailySheetName = isTurkish ? "Günlük Döküm" : "Daily Breakdown";
+        var dailySheet = workbook.Worksheets.Add(dailySheetName);
+        
+        // Day names for header
+        var dayNames = isTurkish 
+            ? new[] { "Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt" }
+            : new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+
+        // Header row: Employee name + 31 days
+        dailySheet.Cell(1, 1).Value = isTurkish ? "Personel" : "Employee";
+        dailySheet.Cell(1, 1).Style.Font.Bold = true;
+        dailySheet.Cell(1, 1).Style.Fill.BackgroundColor = XLColor.LightGray;
+        
+        for (int day = 1; day <= daysInMonth; day++)
+        {
+            var date = new DateOnly(year, month, day);
+            var dow = (int)date.DayOfWeek;
+            var isWeekend = weekendDays.Contains(dow);
+            var isHoliday = holidays.Any(h => h.Date == date);
+            
+            var cell = dailySheet.Cell(1, day + 1);
+            cell.Value = $"{day}\n{dayNames[dow]}";
+            cell.Style.Font.Bold = true;
+            cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            cell.Style.Alignment.WrapText = true;
+            
+            if (isHoliday)
+                cell.Style.Fill.BackgroundColor = XLColor.LightYellow;
+            else if (isWeekend)
+                cell.Style.Fill.BackgroundColor = XLColor.LightPink;
+            else
+                cell.Style.Fill.BackgroundColor = XLColor.LightGray;
+        }
+        
+        // Total column
+        dailySheet.Cell(1, daysInMonth + 2).Value = isTurkish ? "Toplam" : "Total";
+        dailySheet.Cell(1, daysInMonth + 2).Style.Font.Bold = true;
+        dailySheet.Cell(1, daysInMonth + 2).Style.Fill.BackgroundColor = XLColor.LightBlue;
+        dailySheet.Cell(1, daysInMonth + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+        // Employee rows with daily hours
+        int dailyRow = 2;
+        foreach (var employee in employees)
+        {
+            dailySheet.Cell(dailyRow, 1).Value = employee.FullName;
+            decimal totalHours = 0;
+            
+            for (int day = 1; day <= daysInMonth; day++)
+            {
+                var date = new DateOnly(year, month, day);
+                var dow = (int)date.DayOfWeek;
+                var isWeekend = weekendDays.Contains(dow);
+                var isHoliday = holidays.Any(h => h.Date == date);
+                
+                decimal dayHours = 0;
+                bool isDayOff = false;
+                
+                if (source == "attendance")
+                {
+                    var att = attendances.FirstOrDefault(a => a.EmployeeId == employee.Id && a.Date == date);
+                    if (att != null)
+                    {
+                        if (att.Type == AttendanceType.DayOff)
+                            isDayOff = true;
+                        else
+                            dayHours = att.WorkedHours ?? 0;
+                    }
+                }
+                else
+                {
+                    var shift = shifts.FirstOrDefault(s => s.EmployeeId == employee.Id && s.Date == date);
+                    if (shift != null)
+                    {
+                        if (shift.IsDayOff)
+                            isDayOff = true;
+                        else
+                            dayHours = shift.TotalHours;
+                    }
+                }
+                
+                var dayCell = dailySheet.Cell(dailyRow, day + 1);
+                
+                if (isDayOff)
+                {
+                    dayCell.Value = isTurkish ? "İ" : "O";
+                    dayCell.Style.Font.FontColor = XLColor.DeepPink;
+                    dayCell.Style.Fill.BackgroundColor = XLColor.LavenderBlush;
+                }
+                else if (dayHours > 0)
+                {
+                    dayCell.Value = (double)dayHours;
+                    dayCell.Style.NumberFormat.Format = "0.#";
+                    totalHours += dayHours;
+                    
+                    if (isHoliday)
+                        dayCell.Style.Fill.BackgroundColor = XLColor.LightYellow;
+                    else if (isWeekend)
+                        dayCell.Style.Fill.BackgroundColor = XLColor.LightPink;
+                    else
+                        dayCell.Style.Fill.BackgroundColor = XLColor.LightGreen;
+                }
+                else
+                {
+                    dayCell.Value = "-";
+                    dayCell.Style.Font.FontColor = XLColor.LightGray;
+                    
+                    if (isHoliday)
+                        dayCell.Style.Fill.BackgroundColor = XLColor.LightYellow;
+                    else if (isWeekend)
+                        dayCell.Style.Fill.BackgroundColor = XLColor.MistyRose;
+                }
+                
+                dayCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+            
+            // Total hours column
+            var totalCell = dailySheet.Cell(dailyRow, daysInMonth + 2);
+            totalCell.Value = (double)totalHours;
+            totalCell.Style.NumberFormat.Format = "0.0";
+            totalCell.Style.Font.Bold = true;
+            totalCell.Style.Fill.BackgroundColor = XLColor.LightCyan;
+            totalCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            
+            dailyRow++;
+        }
+        
+        // Set column widths for daily sheet
+        dailySheet.Column(1).Width = 25; // Employee name
+        for (int col = 2; col <= daysInMonth + 2; col++)
+        {
+            dailySheet.Column(col).Width = 5;
+        }
+        
+        // Add borders to daily sheet
+        var dailyDataRange = dailySheet.Range(1, 1, dailyRow - 1, daysInMonth + 2);
+        dailyDataRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+        dailyDataRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
         // Generate file
         using var stream = new MemoryStream();
         workbook.SaveAs(stream);
@@ -819,84 +958,137 @@ public class ExportController : Controller
             dataRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
         }
 
-        // ========== DAILY DETAIL SHEET ==========
-        var detailSheet = workbook.Worksheets.Add(detailSheetName);
-        
-        var detailHeaders = isTurkish
-            ? new[] { "Personel", "Tarih", "Gün", "Giriş", "Çıkış", "Saat", "Gece", "H.Sonu", "Tatil", "İzin", "Not" }
-            : new[] { "Employee", "Date", "Day", "In", "Out", "Hours", "Night", "Wknd", "Hol", "Off", "Note" };
+        // ========== HORIZONTAL DAILY BREAKDOWN SHEET ==========
+        var dailySheetName = isTurkish ? "Günlük Döküm" : "Daily Breakdown";
+        var dailySheet = workbook.Worksheets.Add(dailySheetName);
         
         var dayNames = isTurkish 
             ? new[] { "Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt" }
             : new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
-
-        // Detail header row
-        for (int i = 0; i < detailHeaders.Length; i++)
+        
+        var daysInMonth = DateTime.DaysInMonth(savedPayroll.Year, savedPayroll.Month);
+        
+        // Header row: Employee name + days
+        dailySheet.Cell(1, 1).Value = isTurkish ? "Personel" : "Employee";
+        dailySheet.Cell(1, 1).Style.Font.Bold = true;
+        dailySheet.Cell(1, 1).Style.Fill.BackgroundColor = XLColor.LightGray;
+        
+        for (int day = 1; day <= daysInMonth; day++)
         {
-            var cell = detailSheet.Cell(1, i + 1);
-            cell.Value = detailHeaders[i];
+            var date = new DateOnly(savedPayroll.Year, savedPayroll.Month, day);
+            var dow = (int)date.DayOfWeek;
+            var isWeekend = dow == 0 || dow == 6;
+            
+            var cell = dailySheet.Cell(1, day + 1);
+            cell.Value = $"{day}\n{dayNames[dow]}";
             cell.Style.Font.Bold = true;
-            cell.Style.Fill.BackgroundColor = XLColor.LightGray;
             cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            cell.Style.Alignment.WrapText = true;
+            
+            if (isWeekend)
+                cell.Style.Fill.BackgroundColor = XLColor.LightPink;
+            else
+                cell.Style.Fill.BackgroundColor = XLColor.LightGray;
         }
+        
+        // Total column
+        dailySheet.Cell(1, daysInMonth + 2).Value = isTurkish ? "Toplam" : "Total";
+        dailySheet.Cell(1, daysInMonth + 2).Style.Font.Bold = true;
+        dailySheet.Cell(1, daysInMonth + 2).Style.Fill.BackgroundColor = XLColor.LightBlue;
+        dailySheet.Cell(1, daysInMonth + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-        int detailRow = 2;
+        // Employee rows with daily hours
+        int dailyRow = 2;
         foreach (var entry in entries.OrderBy(e => e.EmployeeName))
         {
-            if (entry.DailyEntries == null || !entry.DailyEntries.Any())
-                continue;
-
-            foreach (var daily in entry.DailyEntries.OrderBy(d => d.Date))
+            dailySheet.Cell(dailyRow, 1).Value = entry.EmployeeName;
+            decimal totalHours = 0;
+            
+            // Create a dictionary from daily entries
+            var dailyDict = new Dictionary<int, DailyEntry>();
+            if (entry.DailyEntries != null)
             {
-                DateOnly.TryParse(daily.Date, out var date);
-                var dayOfWeek = date != default ? (int)date.DayOfWeek : 0;
-                
-                detailSheet.Cell(detailRow, 1).Value = entry.EmployeeName;
-                detailSheet.Cell(detailRow, 2).Value = daily.Date;
-                detailSheet.Cell(detailRow, 3).Value = dayNames[dayOfWeek];
-                detailSheet.Cell(detailRow, 4).Value = daily.StartTime ?? "-";
-                detailSheet.Cell(detailRow, 5).Value = daily.EndTime ?? "-";
-                detailSheet.Cell(detailRow, 6).Value = daily.IsDayOff ? "-" : (double)daily.Hours;
-                detailSheet.Cell(detailRow, 7).Value = daily.NightHours > 0 ? (double)daily.NightHours : 0;
-                detailSheet.Cell(detailRow, 8).Value = daily.IsWeekend ? "✓" : "";
-                detailSheet.Cell(detailRow, 9).Value = daily.IsHoliday ? "✓" : "";
-                detailSheet.Cell(detailRow, 10).Value = daily.IsDayOff ? "✓" : "";
-                detailSheet.Cell(detailRow, 11).Value = daily.Note ?? "";
-
-                // Highlight weekends and holidays
-                if (daily.IsWeekend)
+                foreach (var d in entry.DailyEntries)
                 {
-                    detailSheet.Range(detailRow, 1, detailRow, detailHeaders.Length).Style.Fill.BackgroundColor = XLColor.LightYellow;
+                    if (DateOnly.TryParse(d.Date, out var parsedDate))
+                    {
+                        dailyDict[parsedDate.Day] = d;
+                    }
                 }
-                if (daily.IsHoliday)
-                {
-                    detailSheet.Range(detailRow, 1, detailRow, detailHeaders.Length).Style.Fill.BackgroundColor = XLColor.LightGreen;
-                }
-                if (daily.IsDayOff)
-                {
-                    detailSheet.Range(detailRow, 1, detailRow, detailHeaders.Length).Style.Fill.BackgroundColor = XLColor.LightPink;
-                }
-
-                // Format numbers
-                if (!daily.IsDayOff)
-                {
-                    detailSheet.Cell(detailRow, 6).Style.NumberFormat.Format = "0.0";
-                }
-                detailSheet.Cell(detailRow, 7).Style.NumberFormat.Format = "0.0";
-
-                detailRow++;
             }
+            
+            for (int day = 1; day <= daysInMonth; day++)
+            {
+                var date = new DateOnly(savedPayroll.Year, savedPayroll.Month, day);
+                var dow = (int)date.DayOfWeek;
+                var isWeekend = dow == 0 || dow == 6;
+                
+                var dayCell = dailySheet.Cell(dailyRow, day + 1);
+                
+                if (dailyDict.TryGetValue(day, out var daily))
+                {
+                    if (daily.IsDayOff)
+                    {
+                        dayCell.Value = isTurkish ? "İ" : "O";
+                        dayCell.Style.Font.FontColor = XLColor.DeepPink;
+                        dayCell.Style.Fill.BackgroundColor = XLColor.LavenderBlush;
+                    }
+                    else if (daily.Hours > 0)
+                    {
+                        dayCell.Value = (double)daily.Hours;
+                        dayCell.Style.NumberFormat.Format = "0.#";
+                        totalHours += daily.Hours;
+                        
+                        if (daily.IsHoliday)
+                            dayCell.Style.Fill.BackgroundColor = XLColor.LightYellow;
+                        else if (isWeekend)
+                            dayCell.Style.Fill.BackgroundColor = XLColor.LightPink;
+                        else
+                            dayCell.Style.Fill.BackgroundColor = XLColor.LightGreen;
+                    }
+                    else
+                    {
+                        dayCell.Value = "-";
+                        dayCell.Style.Font.FontColor = XLColor.LightGray;
+                        if (isWeekend)
+                            dayCell.Style.Fill.BackgroundColor = XLColor.MistyRose;
+                    }
+                }
+                else
+                {
+                    dayCell.Value = "-";
+                    dayCell.Style.Font.FontColor = XLColor.LightGray;
+                    if (isWeekend)
+                        dayCell.Style.Fill.BackgroundColor = XLColor.MistyRose;
+                }
+                
+                dayCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+            
+            // Total hours column
+            var totalCell = dailySheet.Cell(dailyRow, daysInMonth + 2);
+            totalCell.Value = (double)totalHours;
+            totalCell.Style.NumberFormat.Format = "0.0";
+            totalCell.Style.Font.Bold = true;
+            totalCell.Style.Fill.BackgroundColor = XLColor.LightCyan;
+            totalCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            
+            dailyRow++;
         }
-
-        // Auto-fit detail columns
-        detailSheet.Columns().AdjustToContents();
-
-        // Add borders to detail sheet
-        if (detailRow > 2)
+        
+        // Set column widths for daily sheet
+        dailySheet.Column(1).Width = 25; // Employee name
+        for (int col = 2; col <= daysInMonth + 2; col++)
         {
-            var detailRange = detailSheet.Range(1, 1, detailRow - 1, detailHeaders.Length);
-            detailRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-            detailRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+            dailySheet.Column(col).Width = 5;
+        }
+        
+        // Add borders to daily sheet
+        if (dailyRow > 2)
+        {
+            var dailyDataRange = dailySheet.Range(1, 1, dailyRow - 1, daysInMonth + 2);
+            dailyDataRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            dailyDataRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
         }
 
         // Generate file
