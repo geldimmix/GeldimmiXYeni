@@ -5128,6 +5128,24 @@
     async function createLeave(employeeId, date, cell) {
         if (!state.selectedLeave) return;
         
+        // Check existing content before creating leave
+        const existingLeave = cell.querySelector('.leave-badge');
+        const existingShift = cell.querySelector('.shift-badge:not(.day-off)');
+        const existingDayOff = cell.querySelector('.shift-badge.day-off');
+        const hadLeave = existingLeave !== null;
+        const hadShift = existingShift !== null;
+        const hadDayOff = existingDayOff !== null;
+        
+        // Get shift hours if there was a shift (to subtract from worked)
+        let shiftHours = 0;
+        if (hadShift) {
+            const hoursEl = existingShift.querySelector('.hours');
+            if (hoursEl) {
+                const hoursText = hoursEl.textContent.replace('s', '').replace('h', '').trim();
+                shiftHours = parseFloat(hoursText) || 0;
+            }
+        }
+        
         try {
             const response = await fetch('/api/leaves', {
                 method: 'POST',
@@ -5144,6 +5162,18 @@
                 // Update UI - use correct code based on language
                 const displayCode = isTurkish ? result.leaveCode : result.leaveCodeEn;
                 updateCellWithLeave(cell, result.id, displayCode, result.leaveColor);
+                
+                // Update hours based on what was replaced
+                if (hadShift && shiftHours > 0) {
+                    // Had a normal shift - remove worked hours and reduce required
+                    updateEmployeeTotalHours(employeeId, shiftHours, false, false); // Remove worked hours
+                    updateEmployeeTotalHours(employeeId, { isDayOff: true }, true); // Reduce required
+                } else if (!hadLeave && !hadDayOff) {
+                    // Empty cell or no day off - just reduce required hours
+                    updateEmployeeTotalHours(employeeId, { isDayOff: true }, true);
+                }
+                // If hadLeave or hadDayOff, required hours were already reduced
+                
                 showToast(isTurkish ? 'İzin atandı' : 'Leave assigned', 'success');
             } else {
                 const error = await response.json();
@@ -5157,6 +5187,9 @@
     
     // Delete Leave
     async function deleteLeave(leaveId, cell) {
+        // Get employeeId before deleting
+        const employeeId = cell.dataset.employeeId;
+        
         try {
             const response = await fetch(`/api/leaves/${leaveId}`, {
                 method: 'DELETE'
@@ -5165,6 +5198,10 @@
             if (response.ok) {
                 // Clear cell content
                 clearCellLeave(cell);
+                
+                // Add back required hours (like removing a day off)
+                updateEmployeeTotalHours(employeeId, null, false, true); // wasDayOff = true
+                
                 showToast(isTurkish ? 'İzin silindi' : 'Leave deleted', 'info');
             }
         } catch (error) {
