@@ -54,6 +54,29 @@ public class Employee
     [MaxLength(7)]
     public string? Color { get; set; }
     
+    /// <summary>
+    /// Position type: 4A (Memur), 4B (Sözleşmeli), 4D (696 KHK), Academic
+    /// </summary>
+    [MaxLength(20)]
+    public string? PositionType { get; set; }
+    
+    /// <summary>
+    /// Academic title (only when PositionType is "Academic")
+    /// Prof, Doçent, Dr. Öğretim Üyesi, Araştırma Görevlisi, Araştırma Görevlisi (Dr.)
+    /// </summary>
+    [MaxLength(50)]
+    public string? AcademicTitle { get; set; }
+    
+    /// <summary>
+    /// Shift score for fair distribution (default 100)
+    /// </summary>
+    public int ShiftScore { get; set; } = 100;
+    
+    /// <summary>
+    /// Non-Health Services class (SH Dışı)
+    /// </summary>
+    public bool IsNonHealthServices { get; set; } = false;
+    
     public bool IsActive { get; set; } = true;
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

@@ -173,6 +173,18 @@ using (var scope = app.Services.CreateScope())
                     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Employees' AND column_name='WeekendWorkMode') THEN
                         ALTER TABLE ""Employees"" ADD COLUMN ""WeekendWorkMode"" INTEGER DEFAULT 0 NOT NULL;
                     END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Employees' AND column_name='PositionType') THEN
+                        ALTER TABLE ""Employees"" ADD COLUMN ""PositionType"" VARCHAR(20) NULL;
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Employees' AND column_name='AcademicTitle') THEN
+                        ALTER TABLE ""Employees"" ADD COLUMN ""AcademicTitle"" VARCHAR(50) NULL;
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Employees' AND column_name='ShiftScore') THEN
+                        ALTER TABLE ""Employees"" ADD COLUMN ""ShiftScore"" INTEGER DEFAULT 100 NOT NULL;
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Employees' AND column_name='IsNonHealthServices') THEN
+                        ALTER TABLE ""Employees"" ADD COLUMN ""IsNonHealthServices"" BOOLEAN DEFAULT FALSE NOT NULL;
+                    END IF;
                     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Shifts' AND column_name='IsDayOff') THEN
                         ALTER TABLE ""Shifts"" ADD COLUMN ""IsDayOff"" BOOLEAN DEFAULT FALSE NOT NULL;
                     END IF;

@@ -164,7 +164,11 @@ public class AppController : Controller
             Color = dto.Color ?? GetRandomColor(),
             DailyWorkHours = dto.DailyWorkHours > 0 ? dto.DailyWorkHours : 8,
             WeekendWorkMode = dto.WeekendWorkMode,
-            SaturdayWorkHours = dto.SaturdayWorkHours
+            SaturdayWorkHours = dto.SaturdayWorkHours,
+            PositionType = dto.PositionType,
+            AcademicTitle = dto.PositionType == "Academic" ? dto.AcademicTitle : null,
+            ShiftScore = dto.ShiftScore > 0 ? dto.ShiftScore : 100,
+            IsNonHealthServices = dto.IsNonHealthServices
         };
         
         _context.Employees.Add(employee);
@@ -2417,6 +2421,10 @@ public class EmployeeDto
     public decimal DailyWorkHours { get; set; } = 8;
     public int WeekendWorkMode { get; set; } = 0; // 0=No weekend, 1=Both days, 2=Saturday only, 3=Saturday specific hours
     public decimal? SaturdayWorkHours { get; set; }
+    public string? PositionType { get; set; } // 4A, 4B, 4D, Academic
+    public string? AcademicTitle { get; set; } // Prof, Doçent, etc. (only when PositionType is Academic)
+    public int ShiftScore { get; set; } = 100; // Default 100
+    public bool IsNonHealthServices { get; set; } = false; // SH Dışı
 }
 
 public class ShiftDto

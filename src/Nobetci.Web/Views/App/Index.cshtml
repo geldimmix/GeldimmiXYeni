@@ -572,6 +572,55 @@
                 
                 <div class="form-section">
                     <div class="section-title">
+                        <span class="section-icon">🏛️</span>
+                        @(isTurkish ? "Kadro Bilgileri" : "Position Information")
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating-custom">
+                                <select class="form-input" id="employeePositionType" onchange="toggleAcademicTitle()">
+                                    <option value="">@(isTurkish ? "Seçiniz..." : "Select...")</option>
+                                    <option value="4A">4A (@(isTurkish ? "Memur" : "Civil Servant"))</option>
+                                    <option value="4B">4B (@(isTurkish ? "Sözleşmeli" : "Contracted"))</option>
+                                    <option value="4D">4D (696 KHK)</option>
+                                    <option value="Academic">@(isTurkish ? "Akademik" : "Academic")</option>
+                                </select>
+                                <label>@(isTurkish ? "Kadro Tipi" : "Position Type")</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6" id="academicTitleGroup" style="display: none;">
+                            <div class="form-floating-custom">
+                                <select class="form-input" id="employeeAcademicTitle">
+                                    <option value="">@(isTurkish ? "Seçiniz..." : "Select...")</option>
+                                    <option value="Prof">@(isTurkish ? "Profesör" : "Professor")</option>
+                                    <option value="Doçent">@(isTurkish ? "Doçent" : "Associate Prof.")</option>
+                                    <option value="Dr. Öğretim Üyesi">@(isTurkish ? "Dr. Öğretim Üyesi" : "Assistant Prof.")</option>
+                                    <option value="Araştırma Görevlisi">@(isTurkish ? "Araştırma Görevlisi" : "Research Asst.")</option>
+                                    <option value="Araştırma Görevlisi (Dr.)">@(isTurkish ? "Araştırma Görevlisi (Dr.)" : "Research Asst. (PhD)")</option>
+                                </select>
+                                <label>@(isTurkish ? "Akademik Unvan" : "Academic Title")</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating-custom">
+                                <input type="number" class="form-input" id="employeeShiftScore" value="100" min="0" max="1000" step="1" placeholder=" ">
+                                <label>@(isTurkish ? "Nöbet Puanı" : "Shift Score")</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="checkbox-wrapper">
+                                <label class="custom-checkbox">
+                                    <input type="checkbox" id="employeeIsNonHealthServices">
+                                    <span class="checkmark"></span>
+                                    <span class="checkbox-label">@(isTurkish ? "SH Dışı (Sağlık Hizmetleri Sınıfı Dışı)" : "Non-Health Services Class")</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <div class="section-title">
                         <span class="section-icon">📅</span>
                         @(isTurkish ? "Hafta Sonu Ayarları" : "Weekend Settings")
                     </div>
@@ -2889,6 +2938,59 @@
         font-size: 1.1rem;
     }
     
+    /* Custom Checkbox */
+    .checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        min-height: 42px;
+    }
+    
+    .custom-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        user-select: none;
+    }
+    
+    .custom-checkbox input {
+        display: none;
+    }
+    
+    .custom-checkbox .checkmark {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #d1d5db;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+        background: #fff;
+        flex-shrink: 0;
+    }
+    
+    .custom-checkbox input:checked + .checkmark {
+        background: #2563eb;
+        border-color: #2563eb;
+    }
+    
+    .custom-checkbox input:checked + .checkmark::after {
+        content: '✓';
+        color: #fff;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    
+    .custom-checkbox:hover .checkmark {
+        border-color: #9ca3af;
+    }
+    
+    .checkbox-label {
+        font-size: 0.85rem;
+        color: #374151;
+    }
+    
     .option-text {
         font-size: 0.7rem;
         color: #6b7280;
@@ -4149,6 +4251,20 @@
             closePremiumModal();
         }
     });
+    
+    // Toggle academic title dropdown based on position type
+    function toggleAcademicTitle() {
+        const positionType = document.getElementById('employeePositionType')?.value;
+        const academicTitleGroup = document.getElementById('academicTitleGroup');
+        if (academicTitleGroup) {
+            academicTitleGroup.style.display = positionType === 'Academic' ? 'block' : 'none';
+            // Clear academic title if not academic
+            if (positionType !== 'Academic') {
+                const academicTitleSelect = document.getElementById('employeeAcademicTitle');
+                if (academicTitleSelect) academicTitleSelect.value = '';
+            }
+        }
+    }
     
     // LocalStorage key for template
     const TEMPLATE_STORAGE_KEY = 'geldimmi_selected_template';
@@ -5602,13 +5718,18 @@
                 this.innerHTML = '<span class="btn-icon">⏳</span> ' + (isTurkish ? 'Ekleniyor...' : 'Adding...');
                 
                 try {
+                    const positionType = document.getElementById('employeePositionType')?.value || '';
                     const data = {
                         fullName: fullName,
                         title: document.getElementById('employeeTitle')?.value?.trim() || '',
                         identityNo: document.getElementById('employeeIdentityNo')?.value?.trim() || '',
                         dailyWorkHours: parseFloat(document.getElementById('employeeDailyHours')?.value) || 8,
                         weekendWorkMode: parseInt(document.getElementById('employeeWeekendMode')?.value) || 0,
-                        saturdayWorkHours: parseFloat(document.getElementById('employeeSaturdayHours')?.value) || null
+                        saturdayWorkHours: parseFloat(document.getElementById('employeeSaturdayHours')?.value) || null,
+                        positionType: positionType || null,
+                        academicTitle: positionType === 'Academic' ? (document.getElementById('employeeAcademicTitle')?.value || null) : null,
+                        shiftScore: parseInt(document.getElementById('employeeShiftScore')?.value) || 100,
+                        isNonHealthServices: document.getElementById('employeeIsNonHealthServices')?.checked || false
                     };
                     
                     const response = await fetch('/api/employees', {
