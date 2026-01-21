@@ -367,6 +367,50 @@ using (var scope = app.Services.CreateScope())
             CREATE INDEX IF NOT EXISTS ""IX_Leaves_Date"" ON ""Leaves"" (""Date"");
         ", "Leaves");
         
+        // Migrate Leaves table from old structure (Type column) to new structure (LeaveTypeId)
+        await SafeExecuteSql(@"
+            DO $$ 
+            BEGIN
+                -- Check if old Type column exists and LeaveTypeId doesn't
+                IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Leaves' AND column_name = 'Type')
+                   AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Leaves' AND column_name = 'LeaveTypeId') THEN
+                    -- Add LeaveTypeId column
+                    ALTER TABLE ""Leaves"" ADD COLUMN ""LeaveTypeId"" INTEGER NULL;
+                    
+                    -- Migrate data: Type -> LeaveTypeId (assuming Type was an integer that maps to LeaveTypeId)
+                    -- If Type was 0 or null, set to a default LeaveTypeId (first system leave type)
+                    UPDATE ""Leaves"" SET ""LeaveTypeId"" = (
+                        SELECT ""Id"" FROM ""LeaveTypes"" WHERE ""IsSystem"" = true ORDER BY ""SortOrder"" LIMIT 1
+                    ) WHERE ""LeaveTypeId"" IS NULL;
+                    
+                    -- Make LeaveTypeId NOT NULL after migration
+                    ALTER TABLE ""Leaves"" ALTER COLUMN ""LeaveTypeId"" SET NOT NULL;
+                    
+                    -- Add foreign key constraint
+                    ALTER TABLE ""Leaves"" ADD CONSTRAINT ""FK_Leaves_LeaveTypes_LeaveTypeId"" 
+                        FOREIGN KEY (""LeaveTypeId"") REFERENCES ""LeaveTypes""(""Id"") ON DELETE RESTRICT;
+                    
+                    -- Drop old Type column
+                    ALTER TABLE ""Leaves"" DROP COLUMN ""Type"";
+                END IF;
+                
+                -- Ensure LeaveTypeId column exists (for new installations)
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Leaves' AND column_name = 'LeaveTypeId') THEN
+                    ALTER TABLE ""Leaves"" ADD COLUMN ""LeaveTypeId"" INTEGER NOT NULL REFERENCES ""LeaveTypes""(""Id"") ON DELETE RESTRICT;
+                END IF;
+                
+                -- Migrate from StartDate/EndDate to Date if needed
+                IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Leaves' AND column_name = 'StartDate')
+                   AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Leaves' AND column_name = 'Date') THEN
+                    ALTER TABLE ""Leaves"" ADD COLUMN ""Date"" DATE NULL;
+                    UPDATE ""Leaves"" SET ""Date"" = ""StartDate"" WHERE ""Date"" IS NULL;
+                    ALTER TABLE ""Leaves"" ALTER COLUMN ""Date"" SET NOT NULL;
+                    ALTER TABLE ""Leaves"" DROP COLUMN ""StartDate"";
+                    ALTER TABLE ""Leaves"" DROP COLUMN IF EXISTS ""EndDate"";
+                END IF;
+            END $$;
+        ", "LeavesMigration");
+        
         // Add new columns to AspNetUsers
         await SafeExecuteSql(@"
             DO $$
@@ -1107,6 +1151,6 @@ static async Task SeedContentPages(ApplicationDbContext context)
     if (pagesToAdd.Any())
     {
         await context.ContentPages.AddRangeAsync(pagesToAdd);
-        await context.SaveChangesAsync();
+    await context.SaveChangesAsync();
     }
 }

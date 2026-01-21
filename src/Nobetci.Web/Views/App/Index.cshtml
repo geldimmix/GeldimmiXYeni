@@ -57,76 +57,19 @@
             }
         </div>
         
-        <!-- Shift Templates - Compact Grid -->
-        <div class="templates-compact">
-            <div class="templates-header">
-                <span>@(isTurkish ? "Vardiya Şablonları" : "Shift Templates")</span>
-                @if (Model.IsRegistered)
-                {
-                    <button class="tpl-manage-btn" data-bs-toggle="modal" data-bs-target="#manageTemplatesModal" title="@(isTurkish ? "Şablonları Yönet" : "Manage Templates")">
-                        ⚙️
-                    </button>
-                }
-            </div>
-            
-            <div class="template-list" id="templateList">
-                <!-- Templates loaded from API -->
-                <div id="templatesContainer">
-                    <div class="template-loading">@(isTurkish ? "Yükleniyor..." : "Loading...")</div>
-                </div>
-                
-                <!-- Separator and special buttons -->
-                <div class="tpl-divider"></div>
-                <button class="tpl-btn-row day-off" data-start="00:00" data-end="00:00" data-spans="false" data-break="0" data-color="#94a3b8" data-day-off="true">
-                    <span class="tpl-color" style="background:#94a3b8"></span>
-                    <span class="tpl-info">
-                        <span class="tpl-time">🚫 @(isTurkish ? "Boş Gün" : "Day Off")</span>
-                    </span>
-                </button>
-                <button class="tpl-btn-row custom" id="customTimeBtn" data-color="#64748B">
-                    <span class="tpl-color" style="background:#64748B"></span>
-                    <span class="tpl-info">
-                        <span class="tpl-time">⏱️ @(isTurkish ? "Özel Saat" : "Custom Time")</span>
-                    </span>
-                </button>
-            </div>
-        </div>
+        <!-- Templates Button -->
+        <button class="action-btn templates-btn" data-bs-toggle="modal" data-bs-target="#templatesModal">
+            <span class="action-icon">⏰</span>
+            <span class="action-label">@(isTurkish ? "Vardiya Şablonları" : "Shift Templates")</span>
+            <span class="action-badge">✓</span>
+        </button>
         
-        <!-- Leave Types - Collapsible -->
-        <div class="templates-compact leaves-section">
-            <div class="templates-header leave-header" onclick="toggleLeaveSection()">
-                <span>📋 @(isTurkish ? "İzinler" : "Leaves")</span>
-                <span class="leave-toggle-icon" id="leaveToggleIcon">▼</span>
-            </div>
-            
-            <div class="leave-list" id="leaveList" style="display: none;">
-                @foreach (var category in Model.LeaveTypes.GroupBy(lt => lt.Category).OrderBy(g => g.First().SortOrder))
-                {
-                    var categoryName = category.Key switch
-                    {
-                        "annual" => isTurkish ? "Yıllık İzinler" : "Annual Leaves",
-                        "maternity" => isTurkish ? "Analık/Babalık" : "Maternity/Paternity",
-                        "health" => isTurkish ? "Sağlık İzinleri" : "Health Leaves",
-                        "excuse" => isTurkish ? "Mazeret İzinleri" : "Excuse Leaves",
-                        "education" => isTurkish ? "Eğitim/Sınav" : "Education",
-                        "military" => isTurkish ? "Askerlik" : "Military",
-                        "administrative" => isTurkish ? "İdari İzinler" : "Administrative",
-                        "unpaid" => isTurkish ? "Ücretsiz İzin" : "Unpaid Leave",
-                        _ => isTurkish ? "Diğer" : "Other"
-                    };
-                    <div class="leave-category">
-                        <div class="leave-category-name">@categoryName</div>
-                        @foreach (var leaveType in category.OrderBy(lt => lt.SortOrder))
-                        {
-                            <button class="leave-btn" data-leave-id="@leaveType.Id" data-leave-code="@(isTurkish ? leaveType.Code : leaveType.CodeEn)" data-leave-color="@leaveType.Color" title="@(isTurkish ? leaveType.NameTr : leaveType.NameEn)">
-                                <span class="leave-color" style="background:@leaveType.Color"></span>
-                                <span class="leave-code">@(isTurkish ? leaveType.Code : leaveType.CodeEn)</span>
-                            </button>
-                        }
-                    </div>
-                }
-            </div>
-        </div>
+        <!-- Leaves Button -->
+        <button class="action-btn leaves-btn" data-bs-toggle="modal" data-bs-target="#leavesModal">
+            <span class="action-icon">📋</span>
+            <span class="action-label">@(isTurkish ? "İzinler" : "Leaves")</span>
+            <span class="action-badge">✓</span>
+        </button>
         
         <!-- Multi-select Toggle -->
         <div class="multi-toggle">
@@ -784,6 +727,109 @@
 </div>
 }
 
+<!-- Templates Selection Modal -->
+<div class="modal fade" id="templatesModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content custom-modal">
+            <div class="modal-header-custom templates-modal-header">
+                <div class="modal-icon">⏰</div>
+                <div class="modal-title-group">
+                    <h5 class="modal-title">@(isTurkish ? "Vardiya Şablonları" : "Shift Templates")</h5>
+                    <p class="modal-subtitle">@(isTurkish ? "Bir vardiya şablonu seçin" : "Select a shift template")</p>
+                </div>
+                <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body-custom">
+                <div class="template-list-modal" id="templateListModal">
+                    <div id="templatesContainerModal">
+                        <div class="template-loading">@(isTurkish ? "Yükleniyor..." : "Loading...")</div>
+                    </div>
+                    
+                    <!-- Separator and special buttons -->
+                    <div class="tpl-divider"></div>
+                    <button class="tpl-btn-row day-off" data-start="00:00" data-end="00:00" data-spans="false" data-break="0" data-color="#94a3b8" data-day-off="true">
+                        <span class="tpl-color" style="background:#94a3b8"></span>
+                        <span class="tpl-info">
+                            <span class="tpl-time">🚫 @(isTurkish ? "Boş Gün" : "Day Off")</span>
+                        </span>
+                    </button>
+                    <button class="tpl-btn-row custom" id="customTimeBtnModal" data-color="#64748B">
+                        <span class="tpl-color" style="background:#64748B"></span>
+                        <span class="tpl-info">
+                            <span class="tpl-time">⏱️ @(isTurkish ? "Özel Saat" : "Custom Time")</span>
+                        </span>
+                    </button>
+                </div>
+                @if (Model.IsRegistered)
+                {
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+                        <button class="action-btn" data-bs-toggle="modal" data-bs-target="#manageTemplatesModal" data-bs-dismiss="modal" style="width: 100%; justify-content: center;">
+                            <span class="action-icon">⚙️</span>
+                            <span class="action-label">@(isTurkish ? "Şablonları Yönet" : "Manage Templates")</span>
+                        </button>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer-custom">
+                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">@(isTurkish ? "Kapat" : "Close")</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Leaves Selection Modal -->
+<div class="modal fade" id="leavesModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content custom-modal">
+            <div class="modal-header-custom">
+                <div class="modal-icon">📋</div>
+                <div class="modal-title-group">
+                    <h5 class="modal-title">@(isTurkish ? "İzinler" : "Leaves")</h5>
+                    <p class="modal-subtitle">@(isTurkish ? "Bir izin tipi seçin" : "Select a leave type")</p>
+                </div>
+                <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body-custom">
+                <div class="leave-list-modal" id="leaveListModal" style="max-height: 500px; overflow-y: auto;">
+                    @foreach (var category in Model.LeaveTypes.GroupBy(lt => lt.Category).OrderBy(g => g.First().SortOrder))
+                    {
+                        var categoryName = category.Key switch
+                        {
+                            "annual" => isTurkish ? "Yıllık İzinler" : "Annual Leaves",
+                            "maternity" => isTurkish ? "Analık/Babalık" : "Maternity/Paternity",
+                            "health" => isTurkish ? "Sağlık İzinleri" : "Health Leaves",
+                            "excuse" => isTurkish ? "Mazeret İzinleri" : "Excuse Leaves",
+                            "education" => isTurkish ? "Eğitim/Sınav" : "Education",
+                            "military" => isTurkish ? "Askerlik" : "Military",
+                            "administrative" => isTurkish ? "İdari İzinler" : "Administrative",
+                            "unpaid" => isTurkish ? "Ücretsiz İzin" : "Unpaid Leave",
+                            _ => isTurkish ? "Diğer" : "Other"
+                        };
+                        <div class="leave-category-modal">
+                            <div class="leave-category-name-modal">@categoryName</div>
+                            <div class="leave-buttons-grid">
+                                @foreach (var leaveType in category.OrderBy(lt => lt.SortOrder))
+                                {
+                                    <button class="leave-btn-modal" data-leave-id="@leaveType.Id" data-leave-code="@(isTurkish ? leaveType.Code : leaveType.CodeEn)" data-leave-color="@leaveType.Color">
+                                        <span class="leave-color-modal" style="background:@leaveType.Color"></span>
+                                        <div class="leave-content-modal">
+                                            <span class="leave-code-modal">@(isTurkish ? leaveType.Code : leaveType.CodeEn)</span>
+                                            <span class="leave-name-modal">@(isTurkish ? leaveType.NameTr : leaveType.NameEn)</span>
+                                        </div>
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer-custom">
+                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">@(isTurkish ? "Kapat" : "Close")</button>
+            </div>
+        </div>
+    </div>
+</div>
+ 
 <!-- Add Holiday Modal -->
 <div class="modal fade" id="addHolidayModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -1088,11 +1134,15 @@
                 <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
             </div>
             <div class="modal-body-custom">
-                <div class="info-box" style="margin-bottom: 16px;">
-                    <span class="info-icon">ℹ️</span>
+                <div class="info-box template-highlight-box" style="margin-bottom: 16px;" id="bulkAssignTemplateBox">
+                    <span class="info-icon" id="bulkAssignTemplateIcon">ℹ️</span>
                     <div class="info-content">
                         <strong>@(isTurkish ? "Seçili Şablon" : "Selected Template")</strong>
                         <p id="bulkAssignTemplateInfo">@(isTurkish ? "Lütfen önce bir vardiya şablonu seçin" : "Please select a shift template first")</p>
+                    </div>
+                    <div class="template-preview-badge" id="bulkAssignTemplateBadge" style="display: none;">
+                        <span class="template-preview-color" id="bulkAssignTemplateColor"></span>
+                        <span class="template-preview-time" id="bulkAssignTemplateTime"></span>
                     </div>
                 </div>
                 
@@ -1187,50 +1237,53 @@
         background: #f1f5f9;
     }
     
-    /* Sidebar - Clean & Minimal */
+    /* Sidebar - Modern & Enhanced */
     .app-sidebar {
         width: 248px;
         min-width: 248px;
         max-height: calc(100vh - 60px);
-        background: #ffffff;
+        background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
         border-right: 1px solid #e5e7eb;
         display: flex;
         flex-direction: column;
         padding: 16px;
-        gap: 14px;
+        gap: 12px;
         overflow-y: auto;
         overflow-x: hidden;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.02);
     }
     
     .app-sidebar::-webkit-scrollbar {
-        width: 6px;
+        width: 8px;
     }
     
     .app-sidebar::-webkit-scrollbar-track {
-        background: transparent;
+        background: #f1f5f9;
+        border-radius: 4px;
     }
     
     .app-sidebar::-webkit-scrollbar-thumb {
-        background: #d1d5db;
-        border-radius: 3px;
+        background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+        border-radius: 4px;
     }
     
     .app-sidebar::-webkit-scrollbar-thumb:hover {
-        background: #9ca3af;
+        background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
     }
     
-    /* Sidebar Actions */
+    /* Sidebar Actions - Enhanced */
     .sidebar-actions {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 6px;
+        margin-bottom: 4px;
     }
     
     .action-btn {
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 11px 14px;
+        gap: 8px;
+        padding: 9px 12px;
         background: #f9fafb;
         border: 1px solid #e5e7eb;
         border-radius: 8px;
@@ -1238,6 +1291,24 @@
         transition: background 0.15s, border-color 0.15s;
         width: 100%;
         text-align: left;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+    
+    .action-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        transition: left 0.5s;
+    }
+    
+    .action-btn:hover::before {
+        left: 100%;
     }
     
     .action-btn:hover {
@@ -1255,13 +1326,14 @@
     
     .action-label {
         flex: 1;
-        font-size: 0.8rem;
-        font-weight: 500;
-        color: #374151;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #1e293b;
+        letter-spacing: -0.01em;
     }
     
     .action-badge {
-        background: #3b82f6;
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
         color: white;
         font-size: 0.65rem;
         font-weight: 600;
@@ -1307,25 +1379,43 @@
         background: #9ca3af;
     }
     
+    .action-btn.templates-btn .action-badge {
+        background: #f59e0b;
+    }
+    
+    .action-btn.leaves-btn .action-badge {
+        background: #8b5cf6;
+    }
+    
     /* Templates */
     .templates-compact {
-        background: #f9fafb;
-        border-radius: 8px;
-        border: 1px solid #e5e7eb;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
         padding: 12px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+        transition: all 0.2s ease;
+        margin-bottom: 0;
+    }
+    
+    .templates-compact:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        border-color: #cbd5e1;
     }
     
     .templates-header {
-        font-size: 0.65rem;
-        font-weight: 600;
-        color: #6b7280;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #475569;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.8px;
         margin-bottom: 10px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 6px;
+        gap: 8px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #e2e8f0;
     }
     
     .templates-header > span {
@@ -1335,8 +1425,8 @@
     }
     
     .tpl-manage-btn {
-        background: none;
-        border: none;
+        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        border: 1px solid #cbd5e1;
         cursor: pointer;
         font-size: 0.85rem;
         padding: 4px 6px;
@@ -1347,7 +1437,13 @@
     
     .tpl-manage-btn:hover {
         opacity: 1;
-        background: #e5e7eb;
+        background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+        transform: scale(1.05);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+    
+    .tpl-manage-btn:active {
+        transform: scale(0.98);
     }
     
     .tpl-divider {
@@ -1358,9 +1454,9 @@
     
     /* Leave Section Styles */
     .leaves-section {
-        margin-top: 12px;
-        border-top: 1px solid #e5e7eb;
-        padding-top: 12px;
+        margin-top: 0;
+        border-top: none;
+        padding-top: 0;
     }
     
     .leave-header {
@@ -1445,6 +1541,99 @@
     .leave-code {
         font-weight: 600;
         color: #374151;
+    }
+    
+    /* Modal Styles for Templates and Leaves */
+    .template-list-modal {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 500px;
+        overflow-y: auto;
+        padding: 4px;
+    }
+    
+    .leave-list-modal {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .leave-category-modal {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .leave-category-name-modal {
+        font-size: 0.75rem;
+        color: #6b7280;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+    
+    .leave-buttons-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .leave-btn-modal {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s;
+        min-width: 200px;
+        text-align: left;
+    }
+    
+    .leave-btn-modal:hover {
+        border-color: #d1d5db;
+        background: #f9fafb;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+    
+    .leave-btn-modal.active {
+        border-color: var(--leave-color, #9333ea);
+        background: color-mix(in srgb, var(--leave-color, #9333ea) 10%, white);
+        box-shadow: 0 0 0 2px var(--leave-color, #9333ea);
+    }
+    
+    .leave-color-modal {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        flex-shrink: 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+    
+    .leave-content-modal {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        flex: 1;
+    }
+    
+    .leave-code-modal {
+        font-weight: 700;
+        color: #1f2937;
+        font-size: 0.85rem;
+        letter-spacing: 0.3px;
+    }
+    
+    .leave-name-modal {
+        font-weight: 400;
+        color: #6b7280;
+        font-size: 0.75rem;
+        line-height: 1.3;
     }
     
     /* Leave Badge on Calendar */
@@ -1639,22 +1828,24 @@
         }
     }
     
-    .templates-header::before {
+    .templates-header > span::before {
         content: '⏰';
-        font-size: 0.8rem;
+        font-size: 0.85rem;
+        margin-right: 6px;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
     }
     
     .template-list {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 5px;
     }
     
     .tpl-btn-row {
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 10px 12px;
+        gap: 8px;
+        padding: 8px 10px;
         background: #ffffff;
         border: 1px solid #e5e7eb;
         border-radius: 6px;
@@ -1663,11 +1854,31 @@
         width: 100%;
         text-align: left;
         position: relative;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+    
+    .tpl-btn-row::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 10px;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
+        opacity: 0;
+        transition: opacity 0.25s;
     }
     
     .tpl-btn-row:hover {
-        background: #f9fafb;
-        border-color: #d1d5db;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-color: #cbd5e1;
+        transform: translateX(4px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .tpl-btn-row:hover::after {
+        opacity: 1;
     }
     
     .tpl-btn-row.active {
@@ -1693,6 +1904,18 @@
         height: 26px;
         border-radius: 2px;
         flex-shrink: 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        transition: all 0.25s;
+    }
+    
+    .tpl-btn-row:hover .tpl-color {
+        width: 6px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    }
+    
+    .tpl-btn-row.active .tpl-color {
+        width: 6px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
     }
     
     .tpl-info {
@@ -1726,9 +1949,17 @@
     /* Multi Toggle */
     .multi-toggle {
         padding: 10px 12px;
-        background: #f9fafb;
-        border: 1px solid #e5e7eb;
-        border-radius: 6px;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+        transition: all 0.2s ease;
+        margin-top: 4px;
+    }
+    
+    .multi-toggle:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        border-color: #cbd5e1;
     }
     
     .multi-toggle label {
@@ -1739,19 +1970,19 @@
     }
     
     .multi-toggle .toggle-track {
-        width: 36px;
-        height: 20px;
-        background: #d1d5db;
-        border-radius: 10px;
+        width: 44px;
+        height: 24px;
+        background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+        border-radius: 12px;
         position: relative;
         transition: background 0.2s;
     }
     
     .multi-toggle .toggle-thumb {
         position: absolute;
-        width: 16px;
-        height: 16px;
-        background: white;
+        width: 20px;
+        height: 20px;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
         border-radius: 50%;
         top: 2px;
         left: 2px;
@@ -1760,11 +1991,13 @@
     }
     
     .multi-toggle input:checked + .toggle-track {
-        background: #10b981;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
     }
     
     .multi-toggle input:checked + .toggle-track .toggle-thumb {
-        left: 18px;
+        left: 22px;
+        box-shadow: 0 3px 8px rgba(16, 185, 129, 0.4);
     }
     
     .multi-toggle input {
@@ -1783,38 +2016,73 @@
         align-items: center;
         gap: 10px;
         padding: 10px 12px;
-        background: #eff6ff;
-        border: 1px solid #bfdbfe;
-        border-radius: 6px;
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        border: 1.5px solid #3b82f6;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+        animation: slideIn 0.3s ease-out;
+        position: relative;
+        overflow: hidden;
+        margin-top: 4px;
+    }
+    
+    .selected-indicator::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        animation: shimmer 2s infinite;
+    }
+    
+    @@keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @@keyframes shimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
     }
     
     .indicator-color {
-        width: 24px;
-        height: 24px;
-        border-radius: 4px;
-        background: #3b82f6;
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
         flex-shrink: 0;
+        box-shadow: 0 3px 8px rgba(59, 130, 246, 0.4);
+        border: 2px solid rgba(255, 255, 255, 0.3);
     }
     
     .indicator-text {
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 1px;
+        gap: 2px;
     }
     
     .indicator-label {
-        font-size: 0.6rem;
-        color: #6b7280;
+        font-size: 0.65rem;
+        color: #64748b;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-weight: 500;
+        letter-spacing: 0.8px;
+        font-weight: 700;
     }
     
     .indicator-time {
-        font-size: 0.85rem;
-        font-weight: 600;
+        font-size: 0.9rem;
+        font-weight: 700;
         color: #1e40af;
+        letter-spacing: -0.01em;
     }
     
     .sidebar-section {
@@ -3433,6 +3701,37 @@
         border: 1px solid #bae6fd;
         border-radius: 6px;
         padding: 12px;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    
+    .template-highlight-box {
+        align-items: center;
+    }
+    
+    .template-preview-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: auto;
+        padding: 6px 12px;
+        background: white;
+        border-radius: 6px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .template-preview-color {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        flex-shrink: 0;
+    }
+    
+    .template-preview-time {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #1f2937;
     }
     
     .info-icon {
@@ -4408,9 +4707,9 @@
         }
     }
     
-    // Render all templates in sidebar
-    function renderTemplatesInSidebar(templates) {
-        const container = document.getElementById('templatesContainer');
+    // Render all templates in modal
+    function renderTemplatesInModal(templates) {
+        const container = document.getElementById('templatesContainerModal');
         if (!container) return;
         
         if (templates.length === 0) {
@@ -4443,7 +4742,7 @@
             
             // Add click handler for selection
             btn.addEventListener('click', function() {
-                document.querySelectorAll('.tpl-btn-row').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('#templateListModal .tpl-btn-row').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 
                 state.selectedTemplate = {
@@ -4459,10 +4758,33 @@
                 
                 updateSelectedIndicator(state.selectedTemplate);
                 saveSelectedTemplate();
+                
+                // Close modal after selection
+                const modal = bootstrap.Modal.getInstance(document.getElementById('templatesModal'));
+                if (modal) modal.hide();
             });
             
             container.appendChild(btn);
         });
+    }
+    
+    // Load templates for modal
+    async function loadTemplatesForModal() {
+        const container = document.getElementById('templatesContainerModal');
+        if (!container) return;
+        
+        container.innerHTML = '<div class="template-loading">' + (isTurkish ? 'Yükleniyor...' : 'Loading...') + '</div>';
+        
+        try {
+            const response = await fetch('/api/shift-templates');
+            if (response.ok) {
+                const templates = await response.json();
+                renderTemplatesInModal(templates);
+            }
+        } catch (error) {
+            console.error('Error loading templates:', error);
+            container.innerHTML = '<div class="template-loading">' + (isTurkish ? 'Hata oluştu' : 'Error occurred') + '</div>';
+        }
     }
     
     // Initialize template manager modal
@@ -4861,57 +5183,99 @@
     
     // Template Selection
     function initTemplates() {
-        document.querySelectorAll('.tpl-btn-row:not(.custom)').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.tpl-btn-row').forEach(b => b.classList.remove('active'));
+        // Initialize templates modal
+        const templatesModal = document.getElementById('templatesModal');
+        if (templatesModal) {
+            templatesModal.addEventListener('show.bs.modal', loadTemplatesForModal);
+        }
+        
+        // Template selection in modal
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('#templateListModal .tpl-btn-row:not(.custom)')) {
+                const btn = e.target.closest('.tpl-btn-row');
+                document.querySelectorAll('#templateListModal .tpl-btn-row').forEach(b => b.classList.remove('active'));
                 // Deselect any selected leave
-                document.querySelectorAll('.leave-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.leave-btn-modal').forEach(b => b.classList.remove('active'));
                 state.selectedLeave = null;
                 
-                this.classList.add('active');
+                btn.classList.add('active');
                 
                 state.selectedTemplate = {
-                    start: this.dataset.start,
-                    end: this.dataset.end,
-                    spans: this.dataset.spans === 'true',
-                    breakMinutes: parseInt(this.dataset.break) || 0,
-                    color: this.dataset.color || '#3B82F6',
+                    id: btn.dataset.id ? parseInt(btn.dataset.id) : null,
+                    start: btn.dataset.start,
+                    end: btn.dataset.end,
+                    spans: btn.dataset.spans === 'true',
+                    breakMinutes: parseInt(btn.dataset.break) || 0,
+                    color: btn.dataset.color || '#3B82F6',
                     isCustom: false,
-                    isDayOff: this.dataset.dayOff === 'true'
+                    isDayOff: btn.dataset.dayOff === 'true'
                 };
                 
                 saveSelectedTemplate();
                 updateSelectedIndicator(state.selectedTemplate);
-            });
+                
+                // Close modal after selection
+                const modal = bootstrap.Modal.getInstance(templatesModal);
+                if (modal) modal.hide();
+            }
         });
         
-        const customTimeBtn = document.getElementById('customTimeBtn');
-        const customTimeModal = document.getElementById('customTimeModal');
+        // Day off button in modal
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('#templateListModal .tpl-btn-row.day-off')) {
+                const btn = e.target.closest('.tpl-btn-row');
+                document.querySelectorAll('#templateListModal .tpl-btn-row').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.leave-btn-modal').forEach(b => b.classList.remove('active'));
+                state.selectedLeave = null;
+                
+                btn.classList.add('active');
+                
+                state.selectedTemplate = {
+                    start: btn.dataset.start,
+                    end: btn.dataset.end,
+                    spans: btn.dataset.spans === 'true',
+                    breakMinutes: parseInt(btn.dataset.break) || 0,
+                    color: btn.dataset.color || '#94a3b8',
+                    isCustom: false,
+                    isDayOff: true
+                };
+                
+                saveSelectedTemplate();
+                updateSelectedIndicator(state.selectedTemplate);
+                
+                const modal = bootstrap.Modal.getInstance(templatesModal);
+                if (modal) modal.hide();
+            }
+        });
         
-        if (customTimeBtn && customTimeModal) {
-            // Reset modal when it opens
-            customTimeModal.addEventListener('show.bs.modal', function() {
-                // Reset all values to defaults
-                const startInput = document.getElementById('customStartTime');
-                const endInput = document.getElementById('customEndTime');
-                const breakInput = document.getElementById('customBreak');
-                const spansCheckbox = document.getElementById('customSpansNextDay');
-                
-                if (startInput) startInput.value = '08:00';
-                if (endInput) endInput.value = '17:00';
-                if (breakInput) breakInput.value = '0';
-                if (spansCheckbox) spansCheckbox.checked = false;
-                
-                // Reset break buttons - set 0 dk as active
-                document.querySelectorAll('.break-btn[data-break]').forEach(b => b.classList.remove('active'));
-                const zeroBreakBtn = document.querySelector('.break-btn[data-break="0"]');
-                if (zeroBreakBtn) zeroBreakBtn.classList.add('active');
-            });
-            
-            customTimeBtn.addEventListener('click', function() {
-                new bootstrap.Modal(customTimeModal).show();
-            });
-        }
+        // Custom time button in modal
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('#customTimeBtnModal')) {
+                const customTimeModal = document.getElementById('customTimeModal');
+                if (customTimeModal) {
+                    // Reset modal when it opens
+                    const resetModal = () => {
+                        const startInput = document.getElementById('customStartTime');
+                        const endInput = document.getElementById('customEndTime');
+                        const breakInput = document.getElementById('customBreak');
+                        const spansCheckbox = document.getElementById('customSpansNextDay');
+                        
+                        if (startInput) startInput.value = '08:00';
+                        if (endInput) endInput.value = '17:00';
+                        if (breakInput) breakInput.value = '0';
+                        if (spansCheckbox) spansCheckbox.checked = false;
+                        
+                        // Reset break buttons - set 0 dk as active
+                        document.querySelectorAll('.break-btn[data-break]').forEach(b => b.classList.remove('active'));
+                        const zeroBreakBtn = document.querySelector('.break-btn[data-break="0"]');
+                        if (zeroBreakBtn) zeroBreakBtn.classList.add('active');
+                    };
+                    
+                    customTimeModal.addEventListener('show.bs.modal', resetModal, { once: true });
+                    new bootstrap.Modal(customTimeModal).show();
+                }
+            }
+        });
         
         const applyCustomTimeBtn = document.getElementById('applyCustomTimeBtn');
         if (applyCustomTimeBtn) {
@@ -4925,13 +5289,18 @@
                     isCustom: true
                 };
                 
-                document.querySelectorAll('.tpl-btn-row').forEach(b => b.classList.remove('active'));
-                const customBtn = document.getElementById('customTimeBtn');
+                document.querySelectorAll('#templateListModal .tpl-btn-row').forEach(b => b.classList.remove('active'));
+                const customBtn = document.getElementById('customTimeBtnModal');
                 if (customBtn) customBtn.classList.add('active');
                 
                 saveSelectedTemplate();
                 updateSelectedIndicator(state.selectedTemplate);
-                bootstrap.Modal.getInstance(document.getElementById('customTimeModal')).hide();
+                const customModal = bootstrap.Modal.getInstance(document.getElementById('customTimeModal'));
+                if (customModal) customModal.hide();
+                
+                // Close templates modal after custom time selection
+                const templatesModal = bootstrap.Modal.getInstance(document.getElementById('templatesModal'));
+                if (templatesModal) templatesModal.hide();
             });
         }
         
@@ -4993,44 +5362,37 @@
     
     // Initialize Leaves
     function initLeaves() {
-        // Toggle leave section
-        window.toggleLeaveSection = function() {
-            const leaveList = document.getElementById('leaveList');
-            const icon = document.getElementById('leaveToggleIcon');
-            if (leaveList.style.display === 'none') {
-                leaveList.style.display = 'flex';
-                icon.classList.add('open');
-            } else {
-                leaveList.style.display = 'none';
-                icon.classList.remove('open');
-            }
-        };
-        
-        // Leave button click
-        document.querySelectorAll('.leave-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
+        // Leave button click in modal
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.leave-btn-modal')) {
+                const btn = e.target.closest('.leave-btn-modal');
+                
                 // Deselect any selected template
-                document.querySelectorAll('.tpl-btn-row').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('#templateListModal .tpl-btn-row').forEach(b => b.classList.remove('active'));
                 state.selectedTemplate = null;
                 
                 // Toggle leave selection
-                const isAlreadySelected = this.classList.contains('active');
-                document.querySelectorAll('.leave-btn').forEach(b => b.classList.remove('active'));
+                const isAlreadySelected = btn.classList.contains('active');
+                document.querySelectorAll('.leave-btn-modal').forEach(b => b.classList.remove('active'));
                 
                 if (isAlreadySelected) {
                     state.selectedLeave = null;
                     updateSelectedIndicator(null);
                 } else {
-                    this.classList.add('active');
-                    this.style.setProperty('--leave-color', this.dataset.leaveColor);
+                    btn.classList.add('active');
+                    btn.style.setProperty('--leave-color', btn.dataset.leaveColor);
                     state.selectedLeave = {
-                        id: parseInt(this.dataset.leaveId),
-                        code: this.dataset.leaveCode,
-                        color: this.dataset.leaveColor
+                        id: parseInt(btn.dataset.leaveId),
+                        code: btn.dataset.leaveCode,
+                        color: btn.dataset.leaveColor
                     };
                     updateSelectedIndicator({ isLeave: true, leaveCode: state.selectedLeave.code, color: state.selectedLeave.color });
+                    
+                    // Close modal after selection
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('leavesModal'));
+                    if (modal) modal.hide();
                 }
-            });
+            }
         });
     }
     
@@ -5063,7 +5425,8 @@
                 // Multi-select mode
                 if (state.multiSelectMode) {
                     this.classList.toggle('selected');
-                    const key = `${this.dataset.employeeId}-${this.dataset.date}`;
+                    // Use pipe separator to avoid conflicts with date format (YYYY-MM-DD)
+                    const key = `${this.dataset.employeeId}|${this.dataset.date}`;
                     if (this.classList.contains('selected')) {
                         state.selectedCells.add(key);
                     } else {
@@ -5104,11 +5467,60 @@
                 // Set modal title
                 document.getElementById('bulkAssignEmployeeName').textContent = employeeName;
                 
-                // Set template info
+                // Set template info with visual highlighting
                 const templateInfo = state.selectedTemplate.isDayOff 
                     ? (isTurkish ? '🚫 Boş Gün' : '🚫 Day Off')
                     : `${state.selectedTemplate.start} - ${state.selectedTemplate.end}`;
                 document.getElementById('bulkAssignTemplateInfo').textContent = templateInfo;
+                
+                // Visual highlight for selected template
+                const templateBox = document.getElementById('bulkAssignTemplateBox');
+                const templateBadge = document.getElementById('bulkAssignTemplateBadge');
+                const templateColor = document.getElementById('bulkAssignTemplateColor');
+                const templateTime = document.getElementById('bulkAssignTemplateTime');
+                const templateIcon = document.getElementById('bulkAssignTemplateIcon');
+                
+                if (templateBox && templateBadge && templateColor && templateTime) {
+                    // Highlight the box
+                    templateBox.style.border = `2px solid ${state.selectedTemplate.color || '#3b82f6'}`;
+                    templateBox.style.backgroundColor = `${state.selectedTemplate.color || '#3b82f6'}15`;
+                    
+                    // Show badge with template preview
+                    templateBadge.style.display = 'flex';
+                    templateColor.style.background = state.selectedTemplate.color || '#3b82f6';
+                    templateTime.textContent = templateInfo;
+                    
+                    // Update icon
+                    if (templateIcon) {
+                        templateIcon.textContent = state.selectedTemplate.isDayOff ? '🚫' : '⏰';
+                    }
+                }
+                
+                // Also highlight the selected template in the sidebar
+                document.querySelectorAll('.tpl-btn-row').forEach(btn => {
+                    btn.classList.remove('active');
+                    const btnId = btn.dataset.id;
+                    const btnStart = btn.dataset.start;
+                    const btnEnd = btn.dataset.end;
+                    const btnDayOff = btn.dataset.dayOff === 'true';
+                    
+                    // Match by ID if available (for loaded templates)
+                    if (state.selectedTemplate.id && btnId && parseInt(btnId) === state.selectedTemplate.id) {
+                        btn.classList.add('active');
+                    } 
+                    // Match by time and day off status (for default templates)
+                    else if (state.selectedTemplate.isDayOff && btnDayOff) {
+                        btn.classList.add('active');
+                    } else if (!state.selectedTemplate.isDayOff && !btnDayOff && 
+                               btnStart === state.selectedTemplate.start && 
+                               btnEnd === state.selectedTemplate.end) {
+                        btn.classList.add('active');
+                    }
+                    // Match custom template
+                    else if (state.selectedTemplate.isCustom && btn.classList.contains('custom')) {
+                        btn.classList.add('active');
+                    }
+                });
                 
                 // Store current employee in state
                 state.bulkAssignEmployeeId = employeeId;
@@ -5148,8 +5560,13 @@
             
             const promises = [];
             for (const key of state.selectedCells) {
-                const [employeeId, date] = key.split('-');
+                // Use pipe separator to split employeeId and date (date format is YYYY-MM-DD)
+                const [employeeId, date] = key.split('|');
                 const cell = document.querySelector(`.shift-cell[data-employee-id="${employeeId}"][data-date="${date}"]`);
+                if (!cell) {
+                    console.error(`Cell not found for employeeId: ${employeeId}, date: ${date}`);
+                    continue;
+                }
                 promises.push(createShift(employeeId, date, cell, true));
             }
             
@@ -5170,10 +5587,15 @@
     
     function updateToolbarButtons() {
         const hasSelection = state.selectedCells.size > 0;
+        const isMultiSelectMode = state.multiSelectMode;
         const clearBtn = document.getElementById('clearSelectionBtn');
         const applyBtn = document.getElementById('applyToSelectedBtn');
-        if (clearBtn) clearBtn.style.display = hasSelection ? 'block' : 'none';
-        if (applyBtn) applyBtn.style.display = hasSelection ? 'block' : 'none';
+        
+        // Only show buttons if multi-select mode is active AND there are selected cells
+        const shouldShow = isMultiSelectMode && hasSelection;
+        
+        if (clearBtn) clearBtn.style.display = shouldShow ? 'block' : 'none';
+        if (applyBtn) applyBtn.style.display = shouldShow ? 'block' : 'none';
     }
     
     // Check if date is last day of month
@@ -5980,17 +6402,22 @@
                         }
                     }
                     
-                    // Step 2: Create new shifts in batches with progress
-                    const batchSize = 5;
-                    for (let i = 0; i < datesToAssign.length; i += batchSize) {
-                        const batch = datesToAssign.slice(i, i + batchSize);
-                        const batchPromises = batch.map(item => createShift(employeeId, item.date, item.cell, true));
-                        await Promise.all(batchPromises);
-                        
-                        // Update progress
-                        const completed = Math.min(i + batchSize, datesToAssign.length);
-                        if (bulkProgress) bulkProgress.textContent = `${completed} / ${datesToAssign.length}`;
-                    }
+                    // Step 2: Create new shifts in parallel with progress tracking
+                    let completedCount = 0;
+                    const totalCount = datesToAssign.length;
+                    
+                    // Create all promises with progress tracking
+                    const shiftPromises = datesToAssign.map((item, index) => {
+                        return createShift(employeeId, item.date, item.cell, true).then(() => {
+                            completedCount++;
+                            if (bulkProgress) {
+                                bulkProgress.textContent = `${completedCount} / ${totalCount}`;
+                            }
+                        });
+                    });
+                    
+                    // Execute all in parallel
+                    await Promise.all(shiftPromises);
                     
                     // Close modal
                     setTimeout(() => {
@@ -6083,6 +6510,19 @@
                 document.querySelectorAll('.bulk-option-btn').forEach(b => b.disabled = false);
                 const deleteBtn = document.getElementById('bulkDeleteAllBtn');
                 if (deleteBtn) deleteBtn.disabled = false;
+                
+                // Reset template highlight if no template selected
+                if (!state.selectedTemplate) {
+                    const templateBox = document.getElementById('bulkAssignTemplateBox');
+                    const templateBadge = document.getElementById('bulkAssignTemplateBadge');
+                    if (templateBox) {
+                        templateBox.style.border = '';
+                        templateBox.style.backgroundColor = '';
+                    }
+                    if (templateBadge) {
+                        templateBadge.style.display = 'none';
+                    }
+                }
             });
         }
     }

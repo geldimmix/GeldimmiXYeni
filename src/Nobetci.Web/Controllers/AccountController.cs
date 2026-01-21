@@ -37,6 +37,12 @@ public class AccountController : Controller
     [HttpGet]
     public IActionResult Login(string? returnUrl = null)
     {
+        // If user is already logged in, redirect to dashboard
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            return LocalRedirect(returnUrl ?? "/app");
+        }
+        
         ViewData["ReturnUrl"] = returnUrl;
         ViewData["RecaptchaSiteKey"] = _configuration["ReCaptcha:SiteKey"] ?? "";
         return View();
@@ -115,6 +121,12 @@ public class AccountController : Controller
     [HttpGet]
     public IActionResult Register(string? returnUrl = null)
     {
+        // If user is already logged in, redirect to dashboard
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            return LocalRedirect(returnUrl ?? "/app");
+        }
+        
         ViewData["ReturnUrl"] = returnUrl;
         return View();
     }
