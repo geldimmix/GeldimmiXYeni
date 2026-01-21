@@ -398,6 +398,7 @@ public class AdminController : Controller
         ViewBag.GuestLimit = await _settingsService.GetGuestEmployeeLimitAsync();
         ViewBag.RegisteredLimit = await _settingsService.GetRegisteredEmployeeLimitAsync();
         ViewBag.PremiumLimit = await _settingsService.GetPremiumEmployeeLimitAsync();
+        ViewBag.IsSuperAdmin = IsSuperAdmin();
 
         return View(viewModel);
     }
@@ -432,6 +433,12 @@ public class AdminController : Controller
         {
             ModelState.AddModelError("", error.Description);
         }
+        
+        // For re-rendering the view on error
+        ViewBag.IsSuperAdmin = IsSuperAdmin();
+        ViewBag.GuestLimit = await _settingsService.GetGuestEmployeeLimitAsync();
+        ViewBag.RegisteredLimit = await _settingsService.GetRegisteredEmployeeLimitAsync();
+        ViewBag.PremiumLimit = await _settingsService.GetPremiumEmployeeLimitAsync();
         
         return View(model);
     }
