@@ -5,98 +5,120 @@
 }
 
 <div class="admin-header">
-    <h2>📄 Sayfalar</h2>
+    <h2>
+        <span>📄</span>
+        Sayfalar
+    </h2>
     <div class="header-actions">
-        <a href="/admin/pages/create" class="btn btn-primary">+ Yeni Sayfa</a>
+        <a href="/admin/pages/create" class="btn btn-primary">
+            <span>➕</span>
+            Yeni Sayfa
+        </a>
     </div>
 </div>
 
-<div class="card">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Başlık</th>
-                <th>Slug</th>
-                <th>Dil</th>
-                <th>Tür</th>
-                <th>Durum</th>
-                <th>Güncelleme</th>
-                <th>İşlemler</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (!Model.Any())
-            {
+<div class="card" style="padding: 0; overflow: hidden;">
+    <div style="overflow-x: auto;">
+        <table class="table" style="margin: 0;">
+            <thead>
                 <tr>
-                    <td colspan="7" style="text-align: center; color: #94a3b8; padding: 40px;">
-                        Henüz sayfa eklenmemiş
-                    </td>
+                    <th style="padding-left: 20px;">Başlık</th>
+                    <th>Slug</th>
+                    <th style="text-align: center;">Dil</th>
+                    <th style="text-align: center;">Tür</th>
+                    <th style="text-align: center;">Durum</th>
+                    <th>Güncelleme</th>
+                    <th style="text-align: center; padding-right: 20px;">İşlemler</th>
                 </tr>
-            }
-            @foreach (var p in Model)
-            {
-                <tr>
-                    <td>
-                        <strong>@p.Title</strong>
-                        @if (!string.IsNullOrEmpty(p.MetaDescription))
-                        {
-                            <div class="truncate" style="font-size: 0.75rem; color: #94a3b8;">
-                                @p.MetaDescription
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state" style="padding: 60px 20px;">
+                                <div class="icon">📄</div>
+                                <div class="title">Henüz sayfa eklenmemiş</div>
+                                <a href="/admin/pages/create" class="btn btn-primary" style="margin-top: 16px;">
+                                    <span>➕</span>
+                                    İlk Sayfayı Oluştur
+                                </a>
                             </div>
-                        }
-                    </td>
-                    <td>
-                        <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">
-                            /@(p.Language == "tr" ? "rehber" : "guide")/@p.Slug
-                        </code>
-                    </td>
-                    <td>
-                        <span class="badge @(p.Language == "tr" ? "badge-info" : "badge-warning")">
-                            @p.Language.ToUpper()
-                        </span>
-                    </td>
-                    <td>
-                        @switch (p.PageType)
-                        {
-                            case Nobetci.Web.Data.Entities.PageType.Landing:
-                                <span>🏠 Landing</span>
-                                break;
-                            case Nobetci.Web.Data.Entities.PageType.Feature:
-                                <span>⭐ Özellik</span>
-                                break;
-                            case Nobetci.Web.Data.Entities.PageType.Blog:
-                                <span>📝 Blog</span>
-                                break;
-                            case Nobetci.Web.Data.Entities.PageType.Legal:
-                                <span>📜 Yasal</span>
-                                break;
-                        }
-                    </td>
-                    <td>
-                        @if (p.IsPublished)
-                        {
-                            <span class="badge badge-success">Yayında</span>
-                        }
-                        else
-                        {
-                            <span class="badge badge-danger">Taslak</span>
-                        }
-                    </td>
-                    <td style="font-size: 0.8rem; color: #64748b;">
-                        @p.UpdatedAt.ToString("dd.MM.yyyy HH:mm")
-                    </td>
-                    <td>
-                        <div style="display: flex; gap: 6px;">
-                            <a href="/admin/pages/edit/@p.Id" class="btn btn-secondary btn-sm">Düzenle</a>
-                            <a href="/@(p.Language == "tr" ? "rehber" : "guide")/@p.Slug" target="_blank" class="btn btn-secondary btn-sm">👁</a>
-                            <form method="post" action="/admin/pages/delete/@p.Id" style="display: inline;" onsubmit="return confirm('Bu sayfayı silmek istediğinize emin misiniz?')">
-                                <button type="submit" class="btn btn-danger btn-sm">Sil</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                        </td>
+                    </tr>
+                }
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td style="padding-left: 20px;">
+                            <div style="font-weight: 700; color: var(--text-primary);">@p.Title</div>
+                            @if (!string.IsNullOrEmpty(p.MetaDescription))
+                            {
+                                <div class="truncate" style="font-size: 0.75rem; color: var(--text-muted); max-width: 300px; margin-top: 4px;">
+                                    @p.MetaDescription
+                                </div>
+                            }
+                        </td>
+                        <td>
+                            <code style="background: var(--bg-main); padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.8rem; font-family: 'SF Mono', Monaco, monospace;">
+                                /@(p.Language == "tr" ? "rehber" : "guide")/@p.Slug
+                            </code>
+                        </td>
+                        <td style="text-align: center;">
+                            <span class="badge @(p.Language == "tr" ? "badge-info" : "badge-warning")">
+                                @(p.Language == "tr" ? "🇹🇷" : "🇬🇧") @p.Language.ToUpper()
+                            </span>
+                        </td>
+                        <td style="text-align: center;">
+                            @switch (p.PageType)
+                            {
+                                case Nobetci.Web.Data.Entities.PageType.Landing:
+                                    <span title="Landing">🏠</span>
+                                    break;
+                                case Nobetci.Web.Data.Entities.PageType.Feature:
+                                    <span title="Özellik">⭐</span>
+                                    break;
+                                case Nobetci.Web.Data.Entities.PageType.Blog:
+                                    <span title="Blog">📝</span>
+                                    break;
+                                case Nobetci.Web.Data.Entities.PageType.Legal:
+                                    <span title="Yasal">📜</span>
+                                    break;
+                            }
+                        </td>
+                        <td style="text-align: center;">
+                            @if (p.IsPublished)
+                            {
+                                <span class="badge badge-success">Yayında</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-danger">Taslak</span>
+                            }
+                        </td>
+                        <td>
+                            <div style="font-size: 0.85rem; font-weight: 500;">@p.UpdatedAt.ToString("dd.MM.yyyy")</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted);">@p.UpdatedAt.ToString("HH:mm")</div>
+                        </td>
+                        <td style="text-align: center; padding-right: 20px;">
+                            <div style="display: flex; gap: 6px; justify-content: center;">
+                                <a href="/admin/pages/edit/@p.Id" class="btn btn-secondary btn-sm">
+                                    <span>✏️</span>
+                                    Düzenle
+                                </a>
+                                <a href="/@(p.Language == "tr" ? "rehber" : "guide")/@p.Slug" target="_blank" class="btn btn-secondary btn-sm" title="Önizle">
+                                    👁️
+                                </a>
+                                <form method="post" action="/admin/pages/delete/@p.Id" style="display: inline;" onsubmit="return confirm('Bu sayfayı silmek istediğinize emin misiniz?')">
+                                    <button type="submit" class="btn btn-danger btn-sm" title="Sil">
+                                        🗑️
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
-

@@ -9,154 +9,177 @@
 }
 
 <div class="admin-header">
-    <h2>👥 Kullanıcı Yönetimi</h2>
+    <h2>
+        <span>👥</span>
+        Kullanıcı Yönetimi
+    </h2>
     <div class="header-actions">
-        <span class="badge badge-info">Toplam: @ViewBag.TotalItems kullanıcı</span>
+        <span class="badge badge-info" style="font-size: 0.8rem; padding: 8px 14px;">
+            Toplam: @ViewBag.TotalItems kullanıcı
+        </span>
     </div>
 </div>
 
 <!-- Limit Bilgisi -->
-<div class="card" style="margin-bottom: 20px;">
-    <div class="stats-grid" style="margin-bottom: 0;">
-        <div class="stat-card" style="background: #fee2e2;">
-            <div class="stat-icon">🚫</div>
-            <div class="stat-label">Kayıtsız Kullanıcı Limiti</div>
-            <div class="stat-value">@guestLimit</div>
-            <small style="color: #64748b;">Mesai Takip: ❌ | Puantaj: ❌</small>
-        </div>
-        <div class="stat-card" style="background: #dbeafe;">
-            <div class="stat-icon">✓</div>
-            <div class="stat-label">Kayıtlı Kullanıcı Limiti</div>
-            <div class="stat-value">@registeredLimit</div>
-            <small style="color: #64748b;">Mesai Takip: ✅ | Puantaj: ✅</small>
-        </div>
-        <div class="stat-card" style="background: #fef3c7;">
-            <div class="stat-icon">⭐</div>
-            <div class="stat-label">Premium Limiti</div>
-            <div class="stat-value">@premiumLimit</div>
-            <small style="color: #64748b;">Tüm Özellikler</small>
-        </div>
+<div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
+    <div class="stat-card" style="background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border-color: #f87171;">
+        <span class="stat-icon">🚫</span>
+        <div class="stat-label" style="color: #991b1b;">Kayıtsız Kullanıcı Limiti</div>
+        <div class="stat-value" style="color: #7f1d1d;">@guestLimit</div>
+        <div style="font-size: 0.75rem; color: #b91c1c; margin-top: 8px;">Mesai Takip: ❌ | Puantaj: ❌</div>
+    </div>
+    <div class="stat-card" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-color: #60a5fa;">
+        <span class="stat-icon">✓</span>
+        <div class="stat-label" style="color: #1e40af;">Kayıtlı Kullanıcı Limiti</div>
+        <div class="stat-value" style="color: #1e3a8a;">@registeredLimit</div>
+        <div style="font-size: 0.75rem; color: #3b82f6; margin-top: 8px;">Mesai Takip: ✅ | Puantaj: ✅</div>
+    </div>
+    <div class="stat-card" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-color: #fbbf24;">
+        <span class="stat-icon">⭐</span>
+        <div class="stat-label" style="color: #92400e;">Premium Limiti</div>
+        <div class="stat-value" style="color: #78350f;">@premiumLimit</div>
+        <div style="font-size: 0.75rem; color: #d97706; margin-top: 8px;">Tüm Özellikler</div>
     </div>
 </div>
 
 <!-- Filtreler -->
 <div class="card">
     <form method="get" class="filter-bar">
-        <div class="filter-group">
+        <div class="filter-group" style="flex: 1; min-width: 250px;">
             <label>Ara (Email / İsim)</label>
             <input type="text" name="search" value="@ViewBag.Search" placeholder="Email veya isim...">
         </div>
-        <button type="submit" class="btn btn-primary">🔍 Filtrele</button>
+        <button type="submit" class="btn btn-primary">
+            <span>🔍</span>
+            Filtrele
+        </button>
         <a href="/admin/users" class="btn btn-secondary">Temizle</a>
     </form>
-    
+</div>
+
+<div class="card" style="padding: 0; overflow: hidden;">
     <!-- Tablo -->
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Kullanıcı</th>
-                <th>Plan</th>
-                <th>Limit</th>
-                <th>Erişim</th>
-                <th>Personel</th>
-                <th>Kayıt Tarihi</th>
-                <th>Son Giriş</th>
-                <th>İşlemler</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var user in Model)
-            {
-                var effectiveLimit = user.GetEffectiveLimit(registeredLimit, premiumLimit);
-                var isOverLimit = user.EmployeeCount > effectiveLimit;
+    <div style="overflow-x: auto;">
+        <table class="table" style="margin: 0;">
+            <thead>
                 <tr>
-                    <td>
-                        <div style="font-weight: 600;">@(string.IsNullOrEmpty(user.FullName) ? "-" : user.FullName)</div>
-                        <div style="font-size: 0.8rem; color: #64748b;">@user.Email</div>
-                        @if (!string.IsNullOrEmpty(user.AdminNotes))
-                        {
-                            <div style="font-size: 0.75rem; color: #f59e0b;">📝 @user.AdminNotes</div>
-                        }
-                    </td>
-                    <td>
-                        @if (user.Plan == UserPlan.Premium)
-                        {
-                            <span class="badge badge-warning">⭐ Premium</span>
-                        }
-                        else
-                        {
-                            <span class="badge badge-info">Free</span>
-                        }
-                    </td>
-                    <td>
-                        @if (user.CustomEmployeeLimit.HasValue)
-                        {
-                            <span class="badge badge-warning" title="Özel limit">@user.CustomEmployeeLimit</span>
-                        }
-                        else
-                        {
-                            <span>@effectiveLimit</span>
-                        }
-                    </td>
-                    <td>
-                        <span style="color: @(user.CanAccessAttendance ? "#16a34a" : "#dc2626")">
-                            @(user.CanAccessAttendance ? "✅" : "❌") Mesai
-                        </span>
-                        <br>
-                        <span style="color: @(user.CanAccessPayroll ? "#16a34a" : "#dc2626")">
-                            @(user.CanAccessPayroll ? "✅" : "❌") Puantaj
-                        </span>
-                    </td>
-                    <td>
-                        <span class="@(isOverLimit ? "badge badge-danger" : "")">
-                            @user.EmployeeCount / @effectiveLimit
-                        </span>
-                        @if (user.OrganizationCount > 0)
-                        {
-                            <div style="font-size: 0.75rem; color: #64748b;">@user.OrganizationCount org.</div>
-                        }
-                    </td>
-                    <td>
-                        <span title="@user.CreatedAt.ToString("dd.MM.yyyy HH:mm")">
-                            @user.CreatedAt.ToString("dd.MM.yyyy")
-                        </span>
-                    </td>
-                    <td>
-                        @if (user.LastLoginAt.HasValue)
-                        {
-                            <span title="@user.LastLoginAt.Value.ToString("dd.MM.yyyy HH:mm")">
-                                @user.LastLoginAt.Value.ToString("dd.MM.yyyy")
-                            </span>
-                        }
-                        else
-                        {
-                            <span style="color: #94a3b8;">-</span>
-                        }
-                    </td>
-                    <td>
-                        <a href="/admin/users/edit/@user.Id" class="btn btn-sm btn-primary">✏️ Düzenle</a>
-                    </td>
+                    <th style="padding-left: 20px;">Kullanıcı</th>
+                    <th style="text-align: center;">Plan</th>
+                    <th style="text-align: center;">Limit</th>
+                    <th style="text-align: center;">Erişim</th>
+                    <th style="text-align: center;">Personel</th>
+                    <th>Kayıt Tarihi</th>
+                    <th>Son Giriş</th>
+                    <th style="text-align: center; padding-right: 20px;">İşlemler</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="8">
+                            <div class="empty-state" style="padding: 60px 20px;">
+                                <div class="icon">👥</div>
+                                <div class="title">Kullanıcı bulunamadı</div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @foreach (var user in Model)
+                {
+                    var effectiveLimit = user.GetEffectiveLimit(registeredLimit, premiumLimit);
+                    var isOverLimit = user.EmployeeCount > effectiveLimit;
+                    <tr>
+                        <td style="padding-left: 20px;">
+                            <div style="font-weight: 700; color: var(--text-primary);">@(string.IsNullOrEmpty(user.FullName) ? "—" : user.FullName)</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">@user.Email</div>
+                            @if (!string.IsNullOrEmpty(user.AdminNotes))
+                            {
+                                <div style="font-size: 0.75rem; color: #f59e0b; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                                    <span>📝</span>
+                                    <span class="truncate" style="max-width: 200px;">@user.AdminNotes</span>
+                                </div>
+                            }
+                        </td>
+                        <td style="text-align: center;">
+                            @if (user.Plan == UserPlan.Premium)
+                            {
+                                <span class="badge badge-warning">⭐ Premium</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-info">Free</span>
+                            }
+                        </td>
+                        <td style="text-align: center;">
+                            @if (user.CustomEmployeeLimit.HasValue)
+                            {
+                                <span class="badge badge-purple" title="Özel limit">@user.CustomEmployeeLimit</span>
+                            }
+                            else
+                            {
+                                <span style="color: var(--text-secondary); font-weight: 500;">@effectiveLimit</span>
+                            }
+                        </td>
+                        <td style="text-align: center;">
+                            <div style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
+                                <span style="font-size: 0.75rem; display: flex; align-items: center; gap: 4px; color: @(user.CanAccessAttendance ? "#10b981" : "#ef4444")">
+                                    @(user.CanAccessAttendance ? "✅" : "❌") Mesai
+                                </span>
+                                <span style="font-size: 0.75rem; display: flex; align-items: center; gap: 4px; color: @(user.CanAccessPayroll ? "#10b981" : "#ef4444")">
+                                    @(user.CanAccessPayroll ? "✅" : "❌") Puantaj
+                                </span>
+                            </div>
+                        </td>
+                        <td style="text-align: center;">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                                <span class="@(isOverLimit ? "badge badge-danger" : "")" style="@(!isOverLimit ? "font-weight: 600; font-size: 0.95rem;" : "")">
+                                    @user.EmployeeCount / @effectiveLimit
+                                </span>
+                                @if (user.OrganizationCount > 0)
+                                {
+                                    <span style="font-size: 0.7rem; color: var(--text-muted);">@user.OrganizationCount org.</span>
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            <div style="font-weight: 500; font-size: 0.85rem;">@user.CreatedAt.ToString("dd.MM.yyyy")</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted);">@user.CreatedAt.ToString("HH:mm")</div>
+                        </td>
+                        <td>
+                            @if (user.LastLoginAt.HasValue)
+                            {
+                                <div style="font-weight: 500; font-size: 0.85rem;">@user.LastLoginAt.Value.ToString("dd.MM.yyyy")</div>
+                                <div style="font-size: 0.7rem; color: var(--text-muted);">@user.LastLoginAt.Value.ToString("HH:mm")</div>
+                            }
+                            else
+                            {
+                                <span style="color: var(--text-muted); font-size: 0.85rem;">—</span>
+                            }
+                        </td>
+                        <td style="text-align: center; padding-right: 20px;">
+                            <a href="/admin/users/edit/@user.Id" class="btn btn-sm btn-primary">
+                                <span>✏️</span>
+                                Düzenle
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
     
     <!-- Sayfalama -->
     @if ((int)ViewBag.TotalPages > 1)
     {
-        <div class="pagination">
-            @for (int i = 1; i <= (int)ViewBag.TotalPages; i++)
-            {
-                var searchParam = !string.IsNullOrEmpty((string)ViewBag.Search) ? $"&search={ViewBag.Search}" : "";
-                <a href="/admin/users?page=@i@searchParam" class="page-link @(i == (int)ViewBag.CurrentPage ? "active" : "")">@i</a>
-            }
+        <div style="padding: 20px; border-top: 1px solid var(--border-color);">
+            <div class="pagination">
+                @for (int i = 1; i <= (int)ViewBag.TotalPages; i++)
+                {
+                    var searchParam = !string.IsNullOrEmpty((string)ViewBag.Search) ? $"&search={ViewBag.Search}" : "";
+                    <a href="/admin/users?page=@i@searchParam" class="page-link @(i == (int)ViewBag.CurrentPage ? "active" : "")">@i</a>
+                }
+            </div>
         </div>
     }
 </div>
-
-<style>
-    .table td {
-        vertical-align: middle;
-    }
-</style>
-

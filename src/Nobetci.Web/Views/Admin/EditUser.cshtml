@@ -9,9 +9,15 @@
 }
 
 <div class="admin-header">
-    <h2>✏️ Kullanıcı Düzenle</h2>
+    <h2>
+        <span>✏️</span>
+        Kullanıcı Düzenle
+    </h2>
     <div class="header-actions">
-        <a href="/admin/users" class="btn btn-secondary">← Geri</a>
+        <a href="/admin/users" class="btn btn-secondary">
+            <span>←</span>
+            Geri Dön
+        </a>
     </div>
 </div>
 
@@ -19,7 +25,10 @@
     <!-- Sol: Kullanıcı Formu -->
     <div class="card">
         <div class="card-header">
-            <span class="card-title">Kullanıcı Ayarları</span>
+            <span class="card-title">
+                <span>⚙️</span>
+                Kullanıcı Ayarları
+            </span>
         </div>
         
         <form method="post" action="/admin/users/edit/@Model.Id">
@@ -34,15 +43,15 @@
             
             <div class="form-group">
                 <label class="form-label">Email</label>
-                <input type="text" class="form-control" value="@Model.Email" disabled style="background: #f1f5f9;">
+                <input type="text" class="form-control" value="@Model.Email" disabled style="background: var(--bg-main); cursor: not-allowed;">
             </div>
             
             <div class="form-group">
                 <label class="form-label">İsim</label>
-                <input type="text" class="form-control" value="@(Model.FullName ?? "-")" disabled style="background: #f1f5f9;">
+                <input type="text" class="form-control" value="@(Model.FullName ?? "—")" disabled style="background: var(--bg-main); cursor: not-allowed;">
             </div>
             
-            <hr style="margin: 24px 0; border: none; border-top: 1px solid #e2e8f0;">
+            <hr style="margin: 28px 0; border: none; border-top: 2px solid var(--border-color);">
             
             <div class="form-group">
                 <label class="form-label">Plan</label>
@@ -66,38 +75,45 @@
                        value="@Model.CustomEmployeeLimit" 
                        placeholder="Boş bırakırsanız plan varsayılanı kullanılır" 
                        min="1" max="1000">
-                <small style="color: #64748b;">Boş bırakırsanız plana göre limit uygulanır (Free: @registeredLimit, Premium: @premiumLimit)</small>
+                <small style="color: var(--text-muted); font-size: 0.8rem; margin-top: 6px; display: block;">
+                    💡 Boş bırakırsanız plana göre limit uygulanır (Free: @registeredLimit, Premium: @premiumLimit)
+                </small>
             </div>
             
-            <hr style="margin: 24px 0; border: none; border-top: 1px solid #e2e8f0;">
+            <hr style="margin: 28px 0; border: none; border-top: 2px solid var(--border-color);">
             
             <div class="form-group">
                 <label class="form-label">Özellik Erişimi</label>
-                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
-                    <label class="form-check" style="cursor: pointer;">
+                <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 12px;">
+                    <label class="form-check" style="cursor: pointer; padding: 12px 16px; border-radius: var(--radius-md); border: 2px solid var(--border-color); transition: all 0.2s;">
                         <input type="checkbox" name="CanAccessAttendance" value="true" 
-                               @(Model.CanAccessAttendance ? "checked" : "")>
-                        <span>🕐 Mesai Takip Erişimi</span>
+                               @(Model.CanAccessAttendance ? "checked" : "")
+                               style="width: 20px; height: 20px; accent-color: var(--primary);">
+                        <span style="font-weight: 500;">🕐 Mesai Takip Erişimi</span>
                     </label>
-                    <label class="form-check" style="cursor: pointer;">
+                    <label class="form-check" style="cursor: pointer; padding: 12px 16px; border-radius: var(--radius-md); border: 2px solid var(--border-color); transition: all 0.2s;">
                         <input type="checkbox" name="CanAccessPayroll" value="true"
-                               @(Model.CanAccessPayroll ? "checked" : "")>
-                        <span>📊 Puantaj Erişimi</span>
+                               @(Model.CanAccessPayroll ? "checked" : "")
+                               style="width: 20px; height: 20px; accent-color: var(--primary);">
+                        <span style="font-weight: 500;">📊 Puantaj Erişimi</span>
                     </label>
                 </div>
             </div>
             
-            <hr style="margin: 24px 0; border: none; border-top: 1px solid #e2e8f0;">
+            <hr style="margin: 28px 0; border: none; border-top: 2px solid var(--border-color);">
             
             <div class="form-group">
                 <label class="form-label">Admin Notları</label>
-                <textarea name="AdminNotes" class="form-control" rows="3" 
+                <textarea name="AdminNotes" class="form-control" rows="4" 
                           placeholder="Bu kullanıcı hakkında notlar...">@Model.AdminNotes</textarea>
             </div>
             
-            <div style="display: flex; gap: 12px; margin-top: 24px;">
-                <button type="submit" class="btn btn-primary">💾 Kaydet</button>
-                <a href="/admin/users" class="btn btn-secondary">İptal</a>
+            <div style="display: flex; gap: 12px; margin-top: 28px;">
+                <button type="submit" class="btn btn-primary btn-lg" style="flex: 1;">
+                    <span>💾</span>
+                    Kaydet
+                </button>
+                <a href="/admin/users" class="btn btn-secondary btn-lg">İptal</a>
             </div>
         </form>
     </div>
@@ -106,30 +122,31 @@
     <div>
         <div class="card">
             <div class="card-header">
-                <span class="card-title">Kullanıcı Bilgileri</span>
+                <span class="card-title">
+                    <span>📋</span>
+                    Kullanıcı Bilgileri
+                </span>
             </div>
             
-            <div style="display: flex; flex-direction: column; gap: 16px;">
-                <div>
-                    <div style="font-size: 0.8rem; color: #64748b;">Kayıt Tarihi</div>
-                    <div style="font-weight: 600;">@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</div>
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--bg-main); border-radius: var(--radius-md);">
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Kayıt Tarihi</span>
+                    <span style="font-weight: 700;">@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span>
                 </div>
-                <div>
-                    <div style="font-size: 0.8rem; color: #64748b;">Son Giriş</div>
-                    <div style="font-weight: 600;">
-                        @if (Model.LastLoginAt.HasValue)
-                        {
-                            @Model.LastLoginAt.Value.ToString("dd.MM.yyyy HH:mm")
-                        }
-                        else
-                        {
-                            <span style="color: #94a3b8;">Henüz giriş yapmamış</span>
-                        }
-                    </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--bg-main); border-radius: var(--radius-md);">
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Son Giriş</span>
+                    @if (Model.LastLoginAt.HasValue)
+                    {
+                        <span style="font-weight: 700;">@Model.LastLoginAt.Value.ToString("dd.MM.yyyy HH:mm")</span>
+                    }
+                    else
+                    {
+                        <span style="color: var(--text-muted);">Henüz giriş yapmamış</span>
+                    }
                 </div>
-                <div>
-                    <div style="font-size: 0.8rem; color: #64748b;">User ID</div>
-                    <div style="font-weight: 400; font-size: 0.85rem; font-family: monospace; word-break: break-all;">@Model.Id</div>
+                <div style="padding: 12px 16px; background: var(--bg-main); border-radius: var(--radius-md);">
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px;">User ID</div>
+                    <code style="font-size: 0.75rem; font-family: 'SF Mono', Monaco, monospace; word-break: break-all; color: var(--text-primary);">@Model.Id</code>
                 </div>
             </div>
         </div>
@@ -138,38 +155,56 @@
         {
             <div class="card">
                 <div class="card-header">
-                    <span class="card-title">Organizasyonlar (@Model.Organizations.Count)</span>
+                    <span class="card-title">
+                        <span>🏢</span>
+                        Organizasyonlar
+                    </span>
+                    <span class="badge badge-info">@Model.Organizations.Count</span>
                 </div>
                 
-                <table class="table" style="margin: 0;">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>İsim</th>
-                            <th>Personel</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var org in Model.Organizations)
-                        {
+                <div style="overflow-x: auto;">
+                    <table class="table" style="margin: 0;">
+                        <thead>
                             <tr>
-                                <td>@org.Id</td>
-                                <td>@org.Name</td>
-                                <td>@org.EmployeeCount</td>
+                                <th>ID</th>
+                                <th>İsim</th>
+                                <th style="text-align: right;">Personel</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach (var org in Model.Organizations)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge badge-info">#@org.Id</span>
+                                    </td>
+                                    <td style="font-weight: 600;">@org.Name</td>
+                                    <td style="text-align: right;">
+                                        <span style="font-weight: 700; color: var(--primary);">@org.EmployeeCount</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         }
         else
         {
             <div class="card">
-                <div style="text-align: center; color: #94a3b8; padding: 20px;">
-                    Henüz organizasyon oluşturmamış
+                <div class="empty-state" style="padding: 40px 20px;">
+                    <div class="icon">🏢</div>
+                    <div class="title">Organizasyon Yok</div>
+                    <p style="color: var(--text-muted); margin-top: 8px;">Henüz organizasyon oluşturmamış</p>
                 </div>
             </div>
         }
     </div>
 </div>
 
+<style>
+    .form-check:has(input:checked) {
+        border-color: var(--primary) !important;
+        background: rgba(99, 102, 241, 0.05);
+    }
+</style>
