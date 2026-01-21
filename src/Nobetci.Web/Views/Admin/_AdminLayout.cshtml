@@ -8,120 +8,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
     <title>@ViewData["Title"] - Geldimmi Admin</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        :root {
-            --bg-body: #f8fafc;
-            --bg-card: #ffffff;
-            --bg-sidebar: #1e293b;
-            --bg-sidebar-hover: #334155;
-            --accent: #3b82f6;
-            --accent-light: #dbeafe;
-            --accent-dark: #2563eb;
-            --text-primary: #1e293b;
-            --text-secondary: #475569;
-            --text-muted: #94a3b8;
-            --text-sidebar: #94a3b8;
-            --text-sidebar-active: #ffffff;
-            --border: #e2e8f0;
-            --success: #22c55e;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-        }
-        
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--bg-body);
+            font-family: 'Inter', sans-serif;
+            background: #f1f5f9;
             min-height: 100vh;
             display: flex;
-            color: var(--text-primary);
         }
         
-        /* ═══════════════════════════════════════════════════════════════
-           SIDEBAR - Dark
-           ═══════════════════════════════════════════════════════════════ */
-        
+        /* Sidebar */
         .admin-sidebar {
-            width: 250px;
-            background: var(--bg-sidebar);
+            width: 240px;
+            background: #1e293b;
             min-height: 100vh;
             position: fixed;
             left: 0;
             top: 0;
-            display: flex;
-            flex-direction: column;
+            padding: 20px 0;
         }
         
         .admin-logo {
-            padding: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #334155;
+            margin-bottom: 20px;
         }
         
-        .admin-logo a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-        }
-        
-        .logo-icon {
-            width: 36px;
-            height: 36px;
-            background: var(--accent);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: 700;
+        .admin-logo h1 {
+            font-size: 1.2rem;
             color: white;
-        }
-        
-        .logo-text h1 {
-            font-size: 1.1rem;
             font-weight: 700;
-            color: white;
         }
         
-        .logo-text span {
-            font-size: 0.65rem;
-            font-weight: 600;
-            color: var(--text-sidebar);
+        .admin-logo span {
+            font-size: 0.7rem;
+            color: #94a3b8;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
         
         .admin-nav {
             list-style: none;
-            padding: 16px 12px;
-            flex: 1;
         }
         
         .admin-nav a {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 14px;
-            color: var(--text-sidebar);
+            gap: 12px;
+            padding: 12px 20px;
+            color: #94a3b8;
             text-decoration: none;
-            font-size: 0.875rem;
-            font-weight: 500;
-            border-radius: 8px;
+            font-size: 0.9rem;
             transition: all 0.15s;
-            margin-bottom: 2px;
         }
         
         .admin-nav a:hover {
-            background: var(--bg-sidebar-hover);
+            background: #334155;
             color: white;
         }
         
         .admin-nav a.active {
-            background: var(--accent);
+            background: #3b82f6;
             color: white;
         }
         
@@ -132,42 +81,15 @@
         
         .admin-nav .divider {
             height: 1px;
-            background: rgba(255,255,255,0.1);
-            margin: 12px 8px;
+            background: #334155;
+            margin: 15px 20px;
         }
         
-        .sidebar-footer {
-            padding: 12px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .sidebar-footer a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 14px;
-            color: var(--text-sidebar);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            border-radius: 8px;
-            transition: all 0.15s;
-        }
-        
-        .sidebar-footer a:hover {
-            background: var(--bg-sidebar-hover);
-            color: white;
-        }
-        
-        /* ═══════════════════════════════════════════════════════════════
-           MAIN CONTENT - Light
-           ═══════════════════════════════════════════════════════════════ */
-        
+        /* Main Content */
         .admin-main {
             flex: 1;
-            margin-left: 250px;
+            margin-left: 240px;
             padding: 24px;
-            min-height: 100vh;
         }
         
         .admin-header {
@@ -179,8 +101,8 @@
         
         .admin-header h2 {
             font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-primary);
+            color: #1e293b;
+            font-weight: 600;
         }
         
         .header-actions {
@@ -188,17 +110,13 @@
             gap: 10px;
         }
         
-        /* ═══════════════════════════════════════════════════════════════
-           CARDS
-           ═══════════════════════════════════════════════════════════════ */
-        
+        /* Cards */
         .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+            background: white;
             border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         
         .card-header {
@@ -207,57 +125,50 @@
             align-items: center;
             margin-bottom: 16px;
             padding-bottom: 16px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid #e2e8f0;
         }
         
         .card-title {
             font-size: 1rem;
             font-weight: 600;
-            color: var(--text-primary);
+            color: #1e293b;
         }
         
-        /* ═══════════════════════════════════════════════════════════════
-           BUTTONS
-           ═══════════════════════════════════════════════════════════════ */
-        
+        /* Buttons */
         .btn {
             display: inline-flex;
             align-items: center;
             gap: 6px;
             padding: 8px 16px;
             border: none;
-            border-radius: 8px;
-            font-size: 0.875rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
             font-weight: 500;
-            font-family: inherit;
             cursor: pointer;
             text-decoration: none;
             transition: all 0.15s;
         }
         
         .btn-primary {
-            background: var(--accent);
+            background: #3b82f6;
             color: white;
         }
         
         .btn-primary:hover {
-            background: var(--accent-dark);
-            color: white;
+            background: #2563eb;
         }
         
         .btn-secondary {
-            background: var(--bg-body);
-            color: var(--text-secondary);
-            border: 1px solid var(--border);
+            background: #e2e8f0;
+            color: #475569;
         }
         
         .btn-secondary:hover {
-            background: var(--border);
-            color: var(--text-primary);
+            background: #cbd5e1;
         }
         
         .btn-danger {
-            background: var(--danger);
+            background: #ef4444;
             color: white;
         }
         
@@ -270,10 +181,7 @@
             font-size: 0.8rem;
         }
         
-        /* ═══════════════════════════════════════════════════════════════
-           TABLE
-           ═══════════════════════════════════════════════════════════════ */
-        
+        /* Table */
         .table {
             width: 100%;
             border-collapse: collapse;
@@ -281,38 +189,34 @@
         
         .table th,
         .table td {
-            padding: 12px 14px;
+            padding: 12px;
             text-align: left;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid #e2e8f0;
         }
         
         .table th {
             font-size: 0.75rem;
             font-weight: 600;
-            color: var(--text-muted);
+            color: #64748b;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            background: var(--bg-body);
+            background: #f8fafc;
         }
         
         .table td {
             font-size: 0.875rem;
-            color: var(--text-secondary);
+            color: #334155;
         }
         
-        .table tr:hover td {
-            background: var(--bg-body);
+        .table tr:hover {
+            background: #f8fafc;
         }
         
-        /* ═══════════════════════════════════════════════════════════════
-           BADGES
-           ═══════════════════════════════════════════════════════════════ */
-        
+        /* Badge */
         .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 3px 8px;
-            border-radius: 6px;
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
             font-size: 0.7rem;
             font-weight: 600;
         }
@@ -322,10 +226,7 @@
         .badge-danger { background: #fee2e2; color: #991b1b; }
         .badge-info { background: #dbeafe; color: #1e40af; }
         
-        /* ═══════════════════════════════════════════════════════════════
-           FORMS
-           ═══════════════════════════════════════════════════════════════ */
-        
+        /* Form */
         .form-group {
             margin-bottom: 16px;
         }
@@ -334,31 +235,23 @@
             display: block;
             font-size: 0.85rem;
             font-weight: 500;
-            color: var(--text-primary);
+            color: #374151;
             margin-bottom: 6px;
         }
         
         .form-control {
             width: 100%;
             padding: 10px 12px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
             font-size: 0.9rem;
-            font-family: inherit;
-            color: var(--text-primary);
-            transition: all 0.15s;
+            transition: border-color 0.15s;
         }
         
         .form-control:focus {
             outline: none;
-            border-color: var(--accent);
+            border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        
-        .form-control:disabled {
-            background: var(--bg-body);
-            color: var(--text-muted);
         }
         
         textarea.form-control {
@@ -375,19 +268,14 @@
         .form-check input[type="checkbox"] {
             width: 18px;
             height: 18px;
-            accent-color: var(--accent);
         }
         
-        /* ═══════════════════════════════════════════════════════════════
-           ALERTS
-           ═══════════════════════════════════════════════════════════════ */
-        
+        /* Alert */
         .alert {
             padding: 12px 16px;
             border-radius: 8px;
             margin-bottom: 16px;
-            font-size: 0.875rem;
-            font-weight: 500;
+            font-size: 0.9rem;
         }
         
         .alert-success {
@@ -402,10 +290,7 @@
             border: 1px solid #fecaca;
         }
         
-        /* ═══════════════════════════════════════════════════════════════
-           PAGINATION
-           ═══════════════════════════════════════════════════════════════ */
-        
+        /* Pagination */
         .pagination {
             display: flex;
             gap: 4px;
@@ -415,29 +300,30 @@
         
         .page-link {
             padding: 8px 12px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+            border: 1px solid #e2e8f0;
             border-radius: 6px;
-            color: var(--text-secondary);
+            color: #475569;
             text-decoration: none;
             font-size: 0.85rem;
             transition: all 0.15s;
         }
         
         .page-link:hover {
-            background: var(--bg-body);
+            background: #f1f5f9;
         }
         
         .page-link.active {
-            background: var(--accent);
+            background: #3b82f6;
             color: white;
-            border-color: var(--accent);
+            border-color: #3b82f6;
         }
         
-        /* ═══════════════════════════════════════════════════════════════
-           STATS GRID
-           ═══════════════════════════════════════════════════════════════ */
+        .page-link.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
         
+        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -446,39 +332,31 @@
         }
         
         .stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+            background: white;
             border-radius: 12px;
             padding: 20px;
-            transition: all 0.2s;
-        }
-        
-        .stat-card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            transform: translateY(-2px);
-        }
-        
-        .stat-card .stat-icon {
-            font-size: 2rem;
-            margin-bottom: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         
         .stat-card .stat-label {
             font-size: 0.8rem;
-            color: var(--text-muted);
+            color: #64748b;
             margin-bottom: 4px;
         }
         
         .stat-card .stat-value {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: 700;
-            color: var(--text-primary);
+            color: #1e293b;
         }
         
-        /* ═══════════════════════════════════════════════════════════════
-           FILTER BAR
-           ═══════════════════════════════════════════════════════════════ */
+        .stat-card .stat-icon {
+            float: right;
+            font-size: 2rem;
+            opacity: 0.5;
+        }
         
+        /* Filter Bar */
         .filter-bar {
             display: flex;
             gap: 12px;
@@ -495,96 +373,59 @@
         
         .filter-group label {
             font-size: 0.75rem;
-            color: var(--text-muted);
-            font-weight: 500;
+            color: #64748b;
         }
         
         .filter-group input,
         .filter-group select {
             padding: 8px 12px;
-            border: 1px solid var(--border);
+            border: 1px solid #d1d5db;
             border-radius: 6px;
-            font-size: 0.875rem;
-            font-family: inherit;
+            font-size: 0.85rem;
         }
         
-        /* ═══════════════════════════════════════════════════════════════
-           GRID
-           ═══════════════════════════════════════════════════════════════ */
+        /* Truncate */
+        .truncate {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
         
+        /* Grid 2 cols */
         .grid-2 {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
         }
         
-        /* ═══════════════════════════════════════════════════════════════
-           RESPONSIVE
-           ═══════════════════════════════════════════════════════════════ */
-        
-        @@media (max-width: 1024px) {
-            .grid-2 {
-                grid-template-columns: 1fr;
-            }
-        }
-        
         @@media (max-width: 768px) {
             .admin-sidebar {
                 width: 60px;
+                padding: 10px 0;
             }
             
-            .admin-sidebar .logo-text,
-            .admin-nav span:not(.nav-icon),
-            .sidebar-footer span {
+            .admin-sidebar .admin-logo h1,
+            .admin-sidebar .admin-logo span,
+            .admin-nav span:not(.nav-icon) {
                 display: none;
-            }
-            
-            .admin-logo {
-                padding: 12px;
-                justify-content: center;
-            }
-            
-            .admin-nav a {
-                justify-content: center;
-                padding: 12px;
-            }
-            
-            .sidebar-footer a {
-                justify-content: center;
             }
             
             .admin-main {
                 margin-left: 60px;
-                padding: 16px;
             }
-        }
-        
-        /* ═══════════════════════════════════════════════════════════════
-           MISC
-           ═══════════════════════════════════════════════════════════════ */
-        
-        hr {
-            border: none;
-            border-top: 1px solid var(--border);
-            margin: 20px 0;
-        }
-        
-        small {
-            color: var(--text-muted);
-            font-size: 0.8rem;
+            
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <aside class="admin-sidebar">
         <div class="admin-logo">
-            <a href="/admin">
-                <div class="logo-icon">G</div>
-                <div class="logo-text">
-                    <h1>Geldimmi</h1>
-                    <span>Admin Panel</span>
-                </div>
-            </a>
+            <h1>Geldimmi</h1>
+            <span>Admin Panel</span>
         </div>
         
         <ul class="admin-nav">
@@ -600,7 +441,7 @@
                     <span>İstatistikler</span>
                 </a>
             </li>
-            <div class="divider"></div>
+            <li class="divider"></li>
             <li>
                 <a href="/admin/pages" class="@(ViewContext.RouteData.Values["action"]?.ToString()?.Contains("Page") == true ? "active" : "")">
                     <span class="nav-icon">📄</span>
@@ -613,41 +454,27 @@
                     <span>Loglar</span>
                 </a>
             </li>
-            <div class="divider"></div>
+            <li class="divider"></li>
             <li>
                 <a href="/admin/users" class="@(ViewContext.RouteData.Values["action"]?.ToString()?.Contains("User") == true ? "active" : "")">
                     <span class="nav-icon">👥</span>
                     <span>Kullanıcılar</span>
                 </a>
             </li>
-            @if (ViewBag.IsSuperAdmin == true)
-            {
-                <div class="divider"></div>
-                <li>
-                    <a href="/admin/settings" class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Settings" ? "active" : "")">
-                        <span class="nav-icon">⚙️</span>
-                        <span>Sistem Ayarları</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/admin/admins" class="@(ViewContext.RouteData.Values["action"]?.ToString()?.Contains("Admin") == true ? "active" : "")">
-                        <span class="nav-icon">🔐</span>
-                        <span>Admin Yönetimi</span>
-                    </a>
-                </li>
-            }
+            <li class="divider"></li>
+            <li>
+                <a href="/" target="_blank">
+                    <span class="nav-icon">🌐</span>
+                    <span>Siteyi Görüntüle</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/logout">
+                    <span class="nav-icon">🚪</span>
+                    <span>Çıkış</span>
+                </a>
+            </li>
         </ul>
-        
-        <div class="sidebar-footer">
-            <a href="/" target="_blank">
-                <span class="nav-icon">🌐</span>
-                <span>Siteyi Gör</span>
-            </a>
-            <a href="/admin/logout">
-                <span class="nav-icon">🚪</span>
-                <span>Çıkış</span>
-            </a>
-        </div>
     </aside>
     
     <main class="admin-main">
@@ -664,3 +491,5 @@
     </main>
 </body>
 </html>
+
+

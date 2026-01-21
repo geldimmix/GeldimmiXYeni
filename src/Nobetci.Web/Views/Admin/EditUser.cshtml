@@ -3,10 +3,9 @@
 @model EditUserViewModel
 @{
     ViewData["Title"] = "Kullanıcı Düzenle";
-    Layout = "_AdminLayout";
-    var guestLimit = ViewBag.GuestLimit != null ? (int)ViewBag.GuestLimit : 5;
-    var registeredLimit = ViewBag.RegisteredLimit != null ? (int)ViewBag.RegisteredLimit : 10;
-    var premiumLimit = ViewBag.PremiumLimit != null ? (int)ViewBag.PremiumLimit : 100;
+    var guestLimit = (int)ViewBag.GuestLimit;
+    var registeredLimit = (int)ViewBag.RegisteredLimit;
+    var premiumLimit = (int)ViewBag.PremiumLimit;
 }
 
 <div class="admin-header">
