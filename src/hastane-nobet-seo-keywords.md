@@ -73,7 +73,7 @@
 
 ---
 
-### 5. 2024 Hastane Nöbet Kuralları ve Yasal Düzenlemeler
+### 5. 2026 Hastane Nöbet Kuralları ve Yasal Düzenlemeler
 **Anahtar Kelimeler:**
 1. Hastane nöbet kuralları
 2. Nöbet yasal düzenleme
@@ -81,7 +81,7 @@
 4. Nöbet mevzuatı
 5. Nöbet süresi sınırı
 
-**English: 2024 Hospital Shift Rules and Legal Regulations**
+**English: 2026 Hospital Shift Rules and Legal Regulations**
 1. Hospital shift rules
 2. Duty legal regulations
 3. Healthcare shift policy
@@ -179,16 +179,16 @@
 
 ## 3. HEMŞİRE NÖBET VE ÜCRET
 
-### 11. Hemşire Nöbet Ücreti 2024: Güncel Rakamlar
+### 11. Hemşire Nöbet Ücreti 2026: Güncel Rakamlar
 **Anahtar Kelimeler:**
-1. Hemşire nöbet ücreti 2024
+1. Hemşire nöbet ücreti 2026
 2. Hemşire gece nöbet parası
 3. Hemşire ek ödeme
 4. Hemşire nöbet maaşı
 5. Hemşire icap ücreti
 
-**English: Nurse Shift Payment 2024: Current Rates**
-1. Nurse shift payment 2024
+**English: Nurse Shift Payment 2026: Current Rates**
+1. Nurse shift payment 2026
 2. Nurse night duty pay
 3. Nurse additional payment
 4. Nurse duty salary
@@ -266,16 +266,16 @@
 
 ## 4. ASİSTAN DOKTOR NÖBET VE ÜCRET
 
-### 16. Asistan Doktor Nöbet Parası 2024 Hesaplama
+### 16. Asistan Doktor Nöbet Parası 2026 Hesaplama
 **Anahtar Kelimeler:**
-1. Asistan nöbet parası 2024
+1. Asistan nöbet parası 2026
 2. Asistan doktor nöbet ücreti
 3. Tıpta uzmanlık nöbet parası
 4. Asistan maaş hesaplama
 5. Araştırma görevlisi nöbet ücreti
 
-**English: Resident Doctor Shift Payment 2024 Calculation**
-1. Resident shift pay 2024
+**English: Resident Doctor Shift Payment 2026 Calculation**
+1. Resident shift pay 2026
 2. Resident doctor duty fee
 3. Medical residency shift pay
 4. Resident salary calculation
@@ -373,14 +373,14 @@
 ### 22. İcap Nöbet Parası Nasıl Hesaplanır?
 **Anahtar Kelimeler:**
 1. İcap nöbet parası hesaplama
-2. İcap ücreti 2024
+2. İcap ücreti 2026
 3. İcap nöbeti ek ödeme
 4. İcap nöbet ücreti hesaplama
 5. Evde nöbet ücreti
 
 **English: How to Calculate On-Call Duty Payment?**
 1. On-call pay calculation
-2. On-call fee 2024
+2. On-call fee 2026
 3. On-call additional payment
 4. On-call duty payment
 5. Standby duty pay
@@ -614,7 +614,7 @@
 
 ## 8. TEKNOLOJİ VE YAZILIM
 
-### 36. En İyi Nöbet Planlama Yazılımları 2024
+### 36. En İyi Nöbet Planlama Yazılımları 2026
 **Anahtar Kelimeler:**
 1. Nöbet planlama yazılımı
 2. En iyi nöbet programı
@@ -622,7 +622,7 @@
 4. Nöbet yönetim sistemi
 5. Shift planning software
 
-**English: Best Shift Planning Software 2024**
+**English: Best Shift Planning Software 2026**
 1. Shift planning software
 2. Best scheduling program
 3. Hospital roster software
@@ -908,7 +908,7 @@
 5. Medical staff scheduling
 
 ### Long-tail Anahtar Kelime Örnekleri:
-- "2024 hemşire gece nöbet ücreti ne kadar"
+- "2026 hemşire gece nöbet ücreti ne kadar"
 - "ücretsiz nöbet çizelgesi excel şablonu indir"
 - "asistan doktor aylık kaç nöbet tutar"
 - "icap nöbeti aktif nöbete dönünce ne olur"
