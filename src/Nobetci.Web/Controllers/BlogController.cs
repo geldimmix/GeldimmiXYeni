@@ -841,6 +841,1098 @@ namespace Nobetci.Web.Controllers
                     "SEO phrases: nurse shift planner app, fair nurse roster generator, nurse overtime tracking tool, nurse shift swap platform, mobile nurse shift scheduler. Target weekend-focused searches with these terms."
                 ),
                 PublishedAt = new DateTime(2026, 1, 31)
+            },
+            // ============ HEMŞİRE NÖBET VE ÜCRET (11-15) ============
+            new BlogPost
+            {
+                Slug = "hemsire-nobet-ucreti-2026",
+                TitleTr = "Hemşire Nöbet Ücreti 2026: Güncel Rakamlar",
+                TitleEn = "Nurse Shift Payment 2026: Current Rates",
+                ExcerptTr = "Hemşire nöbet ücreti 2026 yılı güncel hesaplamaları. Gece nöbet parası, ek ödeme ve icap ücreti detayları.",
+                ExcerptEn = "Nurse shift payment 2026 current calculations. Night duty pay, additional payment, and on-call fee details.",
+                KeywordsTr = new[] { "Hemşire nöbet ücreti 2026", "Hemşire gece nöbet parası", "Hemşire ek ödeme", "Hemşire nöbet maaşı", "Hemşire icap ücreti" },
+                KeywordsEn = new[] { "Nurse shift payment 2026", "Nurse night duty pay", "Nurse additional payment", "Nurse duty salary", "Nurse on-call fee" },
+                ContentTr = Combine(
+                    "Hemşire nöbet ücreti 2026 yılında önemli güncellemeler yaşadı. Sağlık personelinin en çok merak ettiği konulardan biri olan hemşire gece nöbet parası, çalışma koşullarına göre farklılık göstermektedir. Bu rehberde, güncel ücret hesaplamalarını, ek ödeme sistemini ve icap nöbeti ücretlerini detaylı olarak inceleyeceğiz.",
+                    "Hemşire ek ödeme sistemi, döner sermaye üzerinden hesaplanmaktadır. Nöbet tutulan her saat için belirlenen birim ücreti, çalışılan saat sayısıyla çarpılarak brüt tutar elde edilir. Hemşire nöbet maaşı, temel maaşa ek olarak bu tutarın eklenmesiyle oluşur. 2026 yılı için birim ücretler güncellenerek personel lehine iyileştirmeler yapılmıştır.",
+                    "Hemşire gece nöbet parası, gündüz nöbetine göre daha yüksek katsayıyla hesaplanır. Gece çalışması için genellikle %25-50 arası ek ödeme yapılmaktadır. Hafta sonu ve resmi tatillerde tutulan nöbetler ise ayrıca değerlendirilir. Bu karmaşık hesaplamaları manuel yapmak hata riskini artırır.",
+                    "Hemşire icap ücreti, evde beklemeli nöbetler için ödenen tutardır. İcap nöbetinde çağrı alınıp hastaneye gidildiğinde aktif nöbet ücretine dönüşür. 2026 güncellemelerine göre icap ücreti de revize edilmiştir. Bu ücretlerin doğru takibi, personel memnuniyeti için kritiktir.",
+                    "Geldimmi'nin puantaj modülü, hemşire nöbet ücreti hesaplamalarını otomatik yapar. Sistem, gece, gündüz, hafta sonu ve tatil nöbetlerini ayrı ayrı takip eder. Böylece hemşire ek ödeme tutarları doğru şekilde hesaplanır ve bordro sürecine entegre edilir.",
+                    "Hemşire nöbet maaşı hesaplamasında dikkat edilmesi gerekenler: Vardiya tipinin doğru kaydedilmesi, mola sürelerinin düşülmesi, yarım gün tatillerin hesaba katılması ve yasal sınırların aşılmaması. Geldimmi, tüm bu kontrolleri otomatik yaparak hata riskini minimize eder.",
+                    "2026 yılı hemşire gece nöbet parası ve ek ödeme oranları kurumdan kuruma değişebilir. Kamu hastaneleri, üniversite hastaneleri ve özel sağlık kuruluşlarında farklı uygulamalar mevcuttur. Güncel mevzuatı takip etmek ve sisteminizi buna göre ayarlamak önemlidir.",
+                    "Sonuç olarak, hemşire nöbet ücreti 2026 düzenlemeleri personel haklarını korumaya yönelik iyileştirmeler içermektedir. Doğru hesaplama ve şeffaf takip için Geldimmi gibi dijital çözümler kullanın. Hemşire icap ücreti ve ek ödemelerinizi güvenle yönetin."
+                ),
+                ContentEn = Combine(
+                    "Nurse shift payment 2026 has seen significant updates. Nurse night duty pay, one of the topics healthcare staff are most curious about, varies according to working conditions. In this guide, we will examine current payment calculations, the additional payment system, and on-call duty fees in detail.",
+                    "The nurse additional payment system is calculated through revolving funds. The unit fee determined for each hour of duty is multiplied by the number of hours worked to obtain the gross amount. Nurse duty salary consists of adding this amount to the base salary. Unit fees for 2026 have been updated with improvements in favor of staff.",
+                    "Nurse night duty pay is calculated with a higher coefficient than day shifts. Generally, an additional payment of 25-50% is made for night work. Shifts on weekends and public holidays are evaluated separately. Making these complex calculations manually increases the risk of errors.",
+                    "Nurse on-call fee is the amount paid for home standby duties. When a call is received during on-call duty and the nurse goes to the hospital, it converts to active duty pay. According to 2026 updates, on-call fees have also been revised. Accurate tracking of these fees is critical for staff satisfaction.",
+                    "Geldimmi's timesheet module automatically calculates nurse shift payment. The system tracks night, day, weekend, and holiday shifts separately. Thus, nurse additional payment amounts are calculated correctly and integrated into the payroll process.",
+                    "Things to consider in nurse duty salary calculation: Correct recording of shift type, deduction of break times, accounting for half-day holidays, and not exceeding legal limits. Geldimmi minimizes error risk by performing all these checks automatically.",
+                    "2026 nurse night duty pay and additional payment rates may vary from institution to institution. Different practices exist in public hospitals, university hospitals, and private healthcare facilities. It's important to follow current regulations and adjust your system accordingly.",
+                    "In conclusion, nurse shift payment 2026 regulations contain improvements to protect staff rights. Use digital solutions like Geldimmi for accurate calculation and transparent tracking. Manage your nurse on-call fee and additional payments with confidence."
+                ),
+                PublishedAt = new DateTime(2026, 2, 1)
+            },
+            new BlogPost
+            {
+                Slug = "hemsire-nobet-parasi-nasil-hesaplanir",
+                TitleTr = "Hemşire Nöbet Parası Nasıl Hesaplanır?",
+                TitleEn = "How to Calculate Nurse Shift Payment?",
+                ExcerptTr = "Hemşire nöbet parası hesaplama formülleri ve yöntemleri. Aktif nöbet ücreti ve hesaplama araçları rehberi.",
+                ExcerptEn = "Nurse shift pay calculation formulas and methods. Active duty payment and calculator tools guide.",
+                KeywordsTr = new[] { "Hemşire nöbet parası hesaplama", "Hemşire nöbet ücreti hesaplama", "Hemşire aktif nöbet ücreti", "Nöbet parası hesaplama aracı", "Hemşire maaş hesaplama" },
+                KeywordsEn = new[] { "Nurse shift pay calculation", "Nurse duty fee calculator", "Nurse active duty payment", "Shift pay calculator tool", "Nurse salary calculation" },
+                ContentTr = Combine(
+                    "Hemşire nöbet parası hesaplama, sağlık personelinin en sık sorduğu konulardan biridir. Hemşire nöbet ücreti hesaplama yöntemi, kurumun türüne ve mevzuata göre değişiklik gösterir. Bu rehberde, hemşire aktif nöbet ücreti hesaplamasının temellerini ve pratik formülleri paylaşacağız.",
+                    "Hemşire nöbet parası hesaplama formülü genellikle şöyledir: Birim Ücret × Çalışılan Saat × Katsayı = Brüt Nöbet Parası. Katsayılar vardiya tipine göre değişir: Gündüz nöbeti 1.0, gece nöbeti 1.25-1.50, hafta sonu 1.50, resmi tatil 2.0 gibi değerler kullanılabilir.",
+                    "Hemşire aktif nöbet ücreti, fiilen hastanede bulunulan saatler için ödenir. İcap nöbetinden farklı olarak, aktif nöbette personel sürekli görev başındadır. Nöbet parası hesaplama aracı kullanmak, bu hesaplamaları hızlandırır ve hata riskini azaltır.",
+                    "Hemşire maaş hesaplama sürecinde nöbet parası önemli bir kalem oluşturur. Temel maaş + ek ödemeler + nöbet ücreti formülüyle toplam gelir elde edilir. Vergi ve SGK kesintileri brüt tutardan düşülerek net maaş belirlenir.",
+                    "Geldimmi'nin nöbet parası hesaplama aracı, tüm bu işlemleri otomatik yapar. Personel bazında nöbet saatleri takip edilir, vardiya tiplerine göre katsayılar uygulanır ve aylık toplam nöbet parası hesaplanır. Excel export ile bordro sistemlerine veri aktarımı kolaylaşır.",
+                    "Hemşire nöbet ücreti hesaplama yaparken dikkat edilmesi gerekenler: Molalar düşülmeli, gece yarısını geçen nöbetler bölünmeli, yarım gün tatiller ayrı hesaplanmalı ve yıllık fazla mesai limitleri kontrol edilmelidir. Bu detaylar, doğru hesaplama için kritiktir.",
+                    "Hemşire aktif nöbet ücreti ile icap nöbeti ücreti karıştırılmamalıdır. İcap nöbetinde evde bekleyen personel, daha düşük ücret alır. Ancak çağrı üzerine hastaneye geldiğinde aktif nöbet ücretine geçilir. Bu geçişler doğru kayıt altına alınmalıdır.",
+                    "Sonuç olarak, hemşire nöbet parası hesaplama karmaşık görünse de doğru araçlarla kolaylaşır. Geldimmi ile hemşire maaş hesaplama sürecinizi otomatikleştirin, hataları önleyin ve personel güvenini kazanın."
+                ),
+                ContentEn = Combine(
+                    "Nurse shift pay calculation is one of the most frequently asked questions by healthcare staff. The nurse duty fee calculator method varies according to institution type and regulations. In this guide, we'll share the fundamentals and practical formulas for nurse active duty payment calculation.",
+                    "The nurse shift pay calculation formula is generally: Unit Price × Hours Worked × Coefficient = Gross Shift Pay. Coefficients vary by shift type: day shift 1.0, night shift 1.25-1.50, weekend 1.50, public holiday 2.0 values may be used.",
+                    "Nurse active duty payment is paid for hours physically present at the hospital. Unlike on-call duty, staff are continuously on duty during active shifts. Using a shift pay calculator tool speeds up these calculations and reduces error risk.",
+                    "Shift pay constitutes an important item in the nurse salary calculation process. Total income is obtained with the formula: base salary + additional payments + shift pay. Net salary is determined by deducting tax and social security contributions from the gross amount.",
+                    "Geldimmi's shift pay calculator tool automates all these operations. Shift hours are tracked per staff member, coefficients are applied according to shift types, and monthly total shift pay is calculated. Excel export facilitates data transfer to payroll systems.",
+                    "Things to consider when doing nurse duty fee calculation: Breaks should be deducted, shifts crossing midnight should be split, half-day holidays should be calculated separately, and annual overtime limits should be checked. These details are critical for accurate calculation.",
+                    "Nurse active duty payment should not be confused with on-call duty payment. Staff on standby at home during on-call duty receive lower pay. However, when called to the hospital, they switch to active duty pay. These transitions must be recorded correctly.",
+                    "In conclusion, nurse shift pay calculation seems complex but becomes easier with the right tools. Automate your nurse salary calculation process with Geldimmi, prevent errors, and earn staff trust."
+                ),
+                PublishedAt = new DateTime(2026, 2, 2)
+            },
+            new BlogPost
+            {
+                Slug = "hemsire-resmi-tatil-calismasi-ucret",
+                TitleTr = "Hemşire Resmi Tatil Çalışması ve Ücretlendirme",
+                TitleEn = "Nurse Public Holiday Work and Payment",
+                ExcerptTr = "Hemşire resmi tatil çalışması kuralları ve bayram nöbeti ücreti hesaplama. Tatil çalışma hakları rehberi.",
+                ExcerptEn = "Nurse public holiday work rules and holiday shift payment calculation. Holiday work rights guide.",
+                KeywordsTr = new[] { "Hemşire resmi tatil çalışması", "Bayram nöbeti ücreti", "Resmi tatil mesai ücreti", "Hemşire tatil çalışma hakları", "Bayramda çalışma ücreti" },
+                KeywordsEn = new[] { "Nurse public holiday work", "Holiday shift payment", "Public holiday overtime pay", "Nurse holiday work rights", "Holiday duty compensation" },
+                ContentTr = Combine(
+                    "Hemşire resmi tatil çalışması, sağlık hizmetlerinin kesintisiz sürmesi için kaçınılmazdır. Bayram nöbeti ücreti ve resmi tatil mesai ücreti, normal çalışma günlerine göre daha yüksek oranlarda ödenir. Bu rehberde, hemşire tatil çalışma hakları ve ücretlendirme detaylarını açıklayacağız.",
+                    "Resmi tatil mesai ücreti genellikle normal ücretin %100-200 fazlası olarak hesaplanır. Yani bayramda çalışma ücreti, normal günün 2-3 katı olabilir. Bu oranlar kuruma ve toplu sözleşme hükümlerine göre değişiklik gösterebilir.",
+                    "Hemşire resmi tatil çalışması için dikkat edilmesi gereken kurallar: Tatil günü gönüllülük esasına göre belirlenmeli, adil rotasyon uygulanmalı, telafi izni veya ücret seçeneği sunulmalı ve kayıtlar şeffaf tutulmalıdır. Bu kurallar personel memnuniyetini artırır.",
+                    "Bayram nöbeti ücreti hesaplamasında yarım gün tatiller özel öneme sahiptir. Arife günleri genellikle yarım gün tatil sayılır ve bu günlerdeki çalışma farklı katsayıyla değerlendirilir. Geldimmi, yarım gün tatil tanımlamasını destekleyerek doğru hesaplama yapar.",
+                    "Hemşire tatil çalışma hakları mevzuatla güvence altındadır. Zorunlu olmadıkça resmi tatilde çalışmaya zorlanamaz, ancak sağlık sektöründe hizmet sürekliliği nedeniyle istisnalar mevcuttur. Çalışan haklarını bilmek ve korumak yöneticilerin sorumluluğudur.",
+                    "Bayramda çalışma ücreti takibi için dijital sistemler büyük kolaylık sağlar. Geldimmi'de resmi tatiller otomatik olarak takvime işlenir ve bu günlerdeki nöbetler ayrı katsayıyla hesaplanır. Puantaj raporlarında tatil çalışmaları net şekilde görünür.",
+                    "Resmi tatil mesai ücreti ödemelerinde gecikme veya eksiklik, personel motivasyonunu olumsuz etkiler. Şeffaf takip ve zamanında ödeme, ekip güvenini güçlendirir. Geldimmi'nin raporlama özellikleri bu süreci destekler.",
+                    "Sonuç olarak, hemşire resmi tatil çalışması hem yasal düzenlemelere hem de etik ilkelere uygun yönetilmelidir. Bayram nöbeti ücreti ve tatil çalışma haklarını Geldimmi ile takip edin, personel memnuniyetini artırın."
+                ),
+                ContentEn = Combine(
+                    "Nurse public holiday work is inevitable for uninterrupted healthcare services. Holiday shift payment and public holiday overtime pay are paid at higher rates than regular working days. In this guide, we'll explain nurse holiday work rights and payment details.",
+                    "Public holiday overtime pay is generally calculated as 100-200% above normal pay. So holiday duty compensation can be 2-3 times the regular day. These rates may vary according to institution and collective agreement provisions.",
+                    "Rules to follow for nurse public holiday work: Holiday days should be determined on a voluntary basis, fair rotation should be applied, compensatory leave or pay options should be offered, and records should be kept transparent. These rules increase staff satisfaction.",
+                    "Half-day holidays are particularly important in holiday shift payment calculation. Eve days are usually considered half-day holidays and work on these days is evaluated with a different coefficient. Geldimmi supports half-day holiday definition for accurate calculation.",
+                    "Nurse holiday work rights are guaranteed by legislation. Cannot be forced to work on public holidays unless necessary, but exceptions exist in healthcare due to service continuity. Knowing and protecting employee rights is managers' responsibility.",
+                    "Digital systems provide great convenience for holiday duty compensation tracking. In Geldimmi, public holidays are automatically entered into the calendar and shifts on these days are calculated with separate coefficients. Holiday work is clearly visible in timesheet reports.",
+                    "Delays or shortfalls in public holiday overtime pay payments negatively affect staff motivation. Transparent tracking and timely payment strengthen team trust. Geldimmi's reporting features support this process.",
+                    "In conclusion, nurse public holiday work should be managed in compliance with both legal regulations and ethical principles. Track holiday shift payment and holiday work rights with Geldimmi, increase staff satisfaction."
+                ),
+                PublishedAt = new DateTime(2026, 2, 3)
+            },
+            new BlogPost
+            {
+                Slug = "hemsire-gece-nobeti-kurallar-haklar",
+                TitleTr = "Hemşire Gece Nöbeti: Kurallar ve Haklar",
+                TitleEn = "Nurse Night Shift: Rules and Rights",
+                ExcerptTr = "Hemşire gece nöbeti düzenlemeleri, gece vardiyası kuralları ve çalışma hakları hakkında kapsamlı rehber.",
+                ExcerptEn = "Comprehensive guide on nurse night shift regulations, night duty rules, and work rights.",
+                KeywordsTr = new[] { "Hemşire gece nöbeti", "Gece vardiyası kuralları", "Gece mesaisi ücreti", "Gece çalışma hakları", "Gece nöbeti saatleri" },
+                KeywordsEn = new[] { "Nurse night shift", "Night duty rules", "Night shift payment", "Night work rights", "Night duty hours" },
+                ContentTr = Combine(
+                    "Hemşire gece nöbeti, sağlık hizmetlerinin 24 saat kesintisiz sunulması için zorunludur. Gece vardiyası kuralları, hem personel sağlığını korumak hem de hasta bakım kalitesini sürdürmek için belirlenmiştir. Bu rehberde, gece çalışma hakları ve gece nöbeti saatleri hakkında bilmeniz gerekenleri paylaşacağız.",
+                    "Gece nöbeti saatleri genellikle 20:00-08:00 veya 22:00-08:00 arasında tanımlanır. Bu saatler arasındaki çalışma, gece mesaisi olarak kabul edilir ve ek ücretlendirmeye tabidir. Gece mesaisi ücreti, gündüz çalışmasına göre %25-50 arası fazla ödenmektedir.",
+                    "Gece vardiyası kuralları kapsamında ardışık gece nöbeti sınırlamaları mevcuttur. Çoğu mevzuatta art arda maksimum 2-3 gece nöbeti öngörülür. Bu sınır, personel tükenmişliğini önlemek ve hasta güvenliğini korumak içindir.",
+                    "Hemşire gece nöbeti sonrası dinlenme hakkı yasal güvence altındadır. Gece vardiyasından sonra minimum 11-24 saat dinlenme süresi verilmelidir. Bu kural, iş kazalarını önlemek ve sağlıklı çalışma ortamı sağlamak için kritiktir.",
+                    "Gece çalışma hakları kapsamında hamile hemşireler ve emziren anneler için özel düzenlemeler vardır. Bu dönemlerde gece nöbetinden muafiyet talep edilebilir. Sağlık sorunları olan personel için de gece muafiyeti uygulanabilir.",
+                    "Geldimmi, hemşire gece nöbeti takibini otomatik yapar. Sistem, ardışık gece nöbeti sayısını kontrol eder ve sınırı aşacak atamalarda uyarı verir. Gece mesaisi ücreti ayrı katsayıyla hesaplanarak puantaja işlenir.",
+                    "Gece vardiyası kurallarına uyum, hem yasal zorunluluk hem de etik sorumluluktur. Personel sağlığını korumak, uzun vadede kurumun da yararınadır. Geldimmi ile gece nöbeti saatlerini doğru takip edin ve adil dağıtım sağlayın.",
+                    "Sonuç olarak, hemşire gece nöbeti dikkatli yönetim gerektiren bir konudur. Gece çalışma hakları ve gece mesaisi ücreti konularında şeffaf olun. Geldimmi ile yasal uyumlu ve personel dostu gece nöbeti planlaması yapın."
+                ),
+                ContentEn = Combine(
+                    "Nurse night shift is essential for providing healthcare services 24 hours uninterrupted. Night duty rules are established both to protect staff health and maintain patient care quality. In this guide, we'll share what you need to know about night work rights and night duty hours.",
+                    "Night duty hours are generally defined between 20:00-08:00 or 22:00-08:00. Work during these hours is considered night shift and is subject to additional pay. Night shift payment is paid 25-50% more than day work.",
+                    "Within night duty rules, there are consecutive night shift limitations. Most regulations stipulate a maximum of 2-3 consecutive night shifts. This limit is to prevent staff burnout and protect patient safety.",
+                    "The right to rest after nurse night shift is legally guaranteed. A minimum of 11-24 hours rest period should be given after night shift. This rule is critical to prevent work accidents and ensure a healthy working environment.",
+                    "Under night work rights, there are special regulations for pregnant nurses and nursing mothers. Exemption from night shift can be requested during these periods. Night exemption can also be applied for staff with health problems.",
+                    "Geldimmi automatically tracks nurse night shift. The system checks consecutive night shift counts and warns for assignments exceeding limits. Night shift payment is calculated with separate coefficient and recorded in timesheet.",
+                    "Compliance with night duty rules is both a legal obligation and ethical responsibility. Protecting staff health benefits the institution in the long run. Track night duty hours correctly with Geldimmi and ensure fair distribution.",
+                    "In conclusion, nurse night shift is a topic requiring careful management. Be transparent about night work rights and night shift payment. Create legally compliant and staff-friendly night shift planning with Geldimmi."
+                ),
+                PublishedAt = new DateTime(2026, 2, 4)
+            },
+            new BlogPost
+            {
+                Slug = "hemsire-hafta-sonu-nobeti-ek-odemeler",
+                TitleTr = "Hemşire Hafta Sonu Nöbeti ve Ek Ödemeler",
+                TitleEn = "Nurse Weekend Shift and Additional Payments",
+                ExcerptTr = "Hemşire hafta sonu nöbeti kuralları, cumartesi pazar nöbet ücreti ve hafta sonu çalışma hakları.",
+                ExcerptEn = "Nurse weekend shift rules, Saturday Sunday duty pay, and weekend work rights.",
+                KeywordsTr = new[] { "Hemşire hafta sonu nöbeti", "Cumartesi pazar nöbet ücreti", "Hafta sonu mesai ücreti", "Weekend nöbet hakları", "Hafta sonu çalışma bedeli" },
+                KeywordsEn = new[] { "Nurse weekend shift", "Saturday Sunday duty pay", "Weekend overtime payment", "Weekend duty rights", "Weekend work compensation" },
+                ContentTr = Combine(
+                    "Hemşire hafta sonu nöbeti, hastanelerin 7 gün 24 saat hizmet vermesi için gereklidir. Cumartesi pazar nöbet ücreti, hafta içi çalışmaya göre daha yüksek oranlarda ödenir. Bu rehberde, hafta sonu mesai ücreti hesaplaması ve weekend nöbet haklarını detaylı açıklayacağız.",
+                    "Hafta sonu çalışma bedeli genellikle normal ücretin %50-100 fazlası olarak belirlenir. Cumartesi nöbeti ve pazar nöbeti farklı katsayılarla değerlendirilebilir. Pazar günü çalışması genellikle cumartesiye göre daha yüksek ücretlendirilir.",
+                    "Hemşire hafta sonu nöbeti dağıtımında adalet kritik öneme sahiptir. Her ay aynı kişilerin hafta sonu çalışması personel memnuniyetini düşürür. Rotasyon sistemiyle tüm ekibin eşit sayıda hafta sonu nöbeti tutması sağlanmalıdır.",
+                    "Weekend nöbet hakları kapsamında, hafta sonu çalışan personele hafta içi izin verilebilir. Bu uygulama, iş-yaşam dengesini korumaya yardımcı olur. Ancak telafi izni yerine ücret tercih eden personel de olabilir; her iki seçenek sunulmalıdır.",
+                    "Cumartesi pazar nöbet ücreti hesaplamasında dikkat edilecek noktalar: Nöbetin başlangıç ve bitiş saatleri net belirlenmeli, mola süreleri düşülmeli, gece saatlerine sarkan kısımlar ayrı değerlendirilmeli ve kayıtlar doğru tutulmalıdır.",
+                    "Geldimmi, hemşire hafta sonu nöbeti takibini kolaylaştırır. Sistem, cumartesi ve pazar günlerini otomatik algılar ve bu günlerdeki nöbetlere uygun katsayıyı uygular. Hafta sonu mesai ücreti raporları tek tıkla oluşturulur.",
+                    "Hafta sonu çalışma bedeli ödemelerinin zamanında yapılması personel güvenini artırır. Geldimmi'nin bordro entegrasyonu sayesinde hesaplamalar otomatik aktarılır ve ödeme süreçleri hızlanır.",
+                    "Sonuç olarak, hemşire hafta sonu nöbeti adil dağıtım ve doğru ücretlendirme gerektirir. Cumartesi pazar nöbet ücreti takibini Geldimmi ile yapın, weekend nöbet haklarını koruyun ve ekip memnuniyetini artırın."
+                ),
+                ContentEn = Combine(
+                    "Nurse weekend shift is necessary for hospitals to provide 24/7 service. Saturday Sunday duty pay is paid at higher rates than weekday work. In this guide, we'll explain weekend overtime payment calculation and weekend duty rights in detail.",
+                    "Weekend work compensation is generally set at 50-100% above normal pay. Saturday and Sunday shifts may be evaluated with different coefficients. Sunday work is usually paid higher than Saturday.",
+                    "Fairness is critically important in nurse weekend shift distribution. The same people working every weekend lowers staff satisfaction. A rotation system should ensure all team members work equal numbers of weekend shifts.",
+                    "Under weekend duty rights, staff working weekends can be given weekday leave. This practice helps maintain work-life balance. However, some staff may prefer pay over compensatory leave; both options should be offered.",
+                    "Points to consider in Saturday Sunday duty pay calculation: Shift start and end times must be clearly defined, break times deducted, portions extending into night hours evaluated separately, and records kept accurately.",
+                    "Geldimmi simplifies nurse weekend shift tracking. The system automatically detects Saturdays and Sundays and applies appropriate coefficients to shifts on these days. Weekend overtime payment reports are generated with one click.",
+                    "Timely payment of weekend work compensation increases staff trust. With Geldimmi's payroll integration, calculations are automatically transferred and payment processes are accelerated.",
+                    "In conclusion, nurse weekend shift requires fair distribution and accurate payment. Track Saturday Sunday duty pay with Geldimmi, protect weekend duty rights, and increase team satisfaction."
+                ),
+                PublishedAt = new DateTime(2026, 2, 5)
+            },
+            // ============ ASİSTAN DOKTOR NÖBET VE ÜCRET (16-20) ============
+            new BlogPost
+            {
+                Slug = "asistan-doktor-nobet-parasi-2026",
+                TitleTr = "Asistan Doktor Nöbet Parası 2026 Hesaplama",
+                TitleEn = "Resident Doctor Shift Payment 2026 Calculation",
+                ExcerptTr = "Asistan nöbet parası 2026 güncel hesaplamaları. Tıpta uzmanlık nöbet ücreti ve araştırma görevlisi maaş rehberi.",
+                ExcerptEn = "Resident shift pay 2026 current calculations. Medical residency shift pay and research assistant salary guide.",
+                KeywordsTr = new[] { "Asistan nöbet parası 2026", "Asistan doktor nöbet ücreti", "Tıpta uzmanlık nöbet parası", "Asistan maaş hesaplama", "Araştırma görevlisi nöbet ücreti" },
+                KeywordsEn = new[] { "Resident shift pay 2026", "Resident doctor duty fee", "Medical residency shift pay", "Resident salary calculation", "Research assistant duty pay" },
+                ContentTr = Combine(
+                    "Asistan nöbet parası 2026 yılında önemli güncellemeler geçirdi. Tıpta uzmanlık öğrencileri ve araştırma görevlileri için nöbet ücretleri yeniden düzenlendi. Bu rehberde, asistan doktor nöbet ücreti hesaplama yöntemlerini ve güncel rakamları paylaşacağız.",
+                    "Asistan maaş hesaplama formülü, temel maaş + döner sermaye ek ödeme + nöbet ücreti bileşenlerinden oluşur. Tıpta uzmanlık nöbet parası, uzmanlık branşına ve kuruma göre değişiklik gösterebilir. Cerrahi branşlardaki asistanlar genellikle daha fazla nöbet tutmaktadır.",
+                    "Araştırma görevlisi nöbet ücreti, 4A veya 4B kadro durumuna göre farklılaşır. Kadrolu araştırma görevlileri ile sözleşmeliler arasında ücret farkları olabilir. 2026 düzenlemeleriyle bu farkların azaltılması hedeflenmiştir.",
+                    "Asistan doktor nöbet ücreti hesaplamasında dikkate alınan faktörler: Nöbet saati sayısı, gece/gündüz ayrımı, hafta sonu ve tatil çarpanları, branş bazlı katsayılar ve kurum politikaları. Bu karmaşık hesaplamalar için dijital araçlar büyük kolaylık sağlar.",
+                    "Geldimmi, asistan nöbet parası 2026 düzenlemelerine uygun hesaplama yapar. Tıpta uzmanlık öğrencilerinin nöbet çizelgeleri takip edilir, saat bazında kayıt tutulur ve otomatik ücret hesaplaması yapılır. Bordro entegrasyonu ile süreç hızlanır.",
+                    "Tıpta uzmanlık nöbet parası adaletli dağıtılmalıdır. Bazı asistanların aşırı nöbet yükü altında ezilmesi hem eğitim kalitesini hem de hasta güvenliğini olumsuz etkiler. Geldimmi'nin adil dağıtım motoru bu dengeyi korur.",
+                    "Araştırma görevlisi nöbet ücreti takibinde şeffaflık önemlidir. Asistanların kendi nöbet istatistiklerini ve tahakkuk eden ücretlerini görebilmesi güven oluşturur. Geldimmi'de her kullanıcı kendi verilerine erişebilir.",
+                    "Sonuç olarak, asistan maaş hesaplama doğru yapıldığında personel memnuniyeti artar. Asistan doktor nöbet ücreti ve tıpta uzmanlık nöbet parası takibini Geldimmi ile dijitalleştirin."
+                ),
+                ContentEn = Combine(
+                    "Resident shift pay 2026 has undergone significant updates. Shift fees for medical residency students and research assistants have been reorganized. In this guide, we'll share resident doctor duty fee calculation methods and current figures.",
+                    "The resident salary calculation formula consists of base salary + revolving fund additional payment + shift fee components. Medical residency shift pay may vary according to specialty branch and institution. Residents in surgical branches generally work more shifts.",
+                    "Research assistant duty pay differs according to 4A or 4B staffing status. There may be pay differences between permanent and contracted research assistants. The 2026 regulations aim to reduce these differences.",
+                    "Factors considered in resident doctor duty fee calculation: Number of shift hours, night/day distinction, weekend and holiday multipliers, branch-based coefficients, and institutional policies. Digital tools provide great convenience for these complex calculations.",
+                    "Geldimmi calculates in accordance with resident shift pay 2026 regulations. Medical residency students' shift schedules are tracked, records are kept on an hourly basis, and automatic fee calculation is performed. The process is accelerated with payroll integration.",
+                    "Medical residency shift pay should be distributed fairly. Some residents being overwhelmed with excessive shift burden negatively affects both education quality and patient safety. Geldimmi's fair distribution engine maintains this balance.",
+                    "Transparency is important in research assistant duty pay tracking. Residents being able to see their own shift statistics and accrued fees builds trust. In Geldimmi, each user can access their own data.",
+                    "In conclusion, staff satisfaction increases when resident salary calculation is done correctly. Digitize resident doctor duty fee and medical residency shift pay tracking with Geldimmi."
+                ),
+                PublishedAt = new DateTime(2026, 2, 6)
+            },
+            new BlogPost
+            {
+                Slug = "asistan-doktor-nobet-kurallari-sinirlamalar",
+                TitleTr = "Asistan Doktor Nöbet Kuralları ve Sınırlamalar",
+                TitleEn = "Resident Doctor Shift Rules and Limitations",
+                ExcerptTr = "Asistan nöbet kuralları, süre sınırları ve çalışma saatleri düzenlemeleri hakkında kapsamlı rehber.",
+                ExcerptEn = "Comprehensive guide on resident shift rules, duration limits, and working hours regulations.",
+                KeywordsTr = new[] { "Asistan nöbet kuralları", "Asistan nöbet süresi", "Asistan nöbet sayısı sınırı", "Tıpta uzmanlık nöbet düzenlemesi", "Asistan çalışma saatleri" },
+                KeywordsEn = new[] { "Resident shift rules", "Resident duty duration", "Resident shift limit", "Residency duty regulations", "Resident working hours" },
+                ContentTr = Combine(
+                    "Asistan nöbet kuralları, tıpta uzmanlık eğitiminin önemli bir parçasıdır ancak belirli sınırlamalar dahilinde uygulanmalıdır. Asistan nöbet süresi ve çalışma saatleri, hem eğitim kalitesi hem de hasta güvenliği için kritik öneme sahiptir. Bu rehberde, güncel düzenlemeleri ve sınırlamaları açıklayacağız.",
+                    "Asistan nöbet sayısı sınırı, uluslararası standartlara ve yerel mevzuata göre belirlenir. Türkiye'de aylık maksimum nöbet sayısı 10 ile sınırlandırılmış olup, bu sayı branşa göre değişebilir. Ardışık nöbet tutma yasağı da mevcuttur.",
+                    "Asistan çalışma saatleri düzenlemeleri, tükenmişlik sendromunu önlemeyi amaçlar. Bir nöbetin maksimum süresi 24-32 saat olabilir ve sonrasında zorunlu dinlenme periyodu verilmelidir. Bu kurallar, tıbbi hataları azaltmak için kritiktir.",
+                    "Tıpta uzmanlık nöbet düzenlemesi kapsamında bazı branşlar için istisnalar olabilir. Cerrahi branşlarda ameliyat süreleri nöbet saatlerini uzatabilir. Ancak bu durumlarda bile telafi izni verilmesi gerekmektedir.",
+                    "Asistan nöbet kurallarına uyum, eğitim kurumlarının akreditasyonu için de önemlidir. Denetimler sırasında nöbet kayıtları incelenir ve ihlaller ciddi yaptırımlara yol açabilir. Geldimmi, bu kayıtları otomatik ve denetlenebilir şekilde tutar.",
+                    "Asistan nöbet süresi takibinde dijital sistemler büyük avantaj sağlar. Geldimmi, ardışık nöbet kontrolü, aylık limit takibi ve dinlenme süresi hesaplamasını otomatik yapar. Kural ihlali riski olduğunda yöneticilere uyarı gönderir.",
+                    "Tıpta uzmanlık nöbet düzenlemesi değişiklikleri düzenli takip edilmelidir. Mevzuat güncellemeleri sistem kurallarına yansıtılmalıdır. Geldimmi ekibi, Türkiye'deki sağlık mevzuatını izler ve gerekli güncellemeleri yapar.",
+                    "Sonuç olarak, asistan çalışma saatleri ve nöbet kuralları hem asistan sağlığı hem de hasta güvenliği için hayatidir. Asistan nöbet sayısı sınırı ve kurallara uyumu Geldimmi ile sağlayın."
+                ),
+                ContentEn = Combine(
+                    "Resident shift rules are an important part of medical residency training but must be applied within certain limitations. Resident duty duration and working hours are critically important for both education quality and patient safety. In this guide, we'll explain current regulations and limitations.",
+                    "Resident shift limit is determined according to international standards and local legislation. In Turkey, the monthly maximum shift count is limited to 10, and this number may vary by specialty. There is also a prohibition on consecutive shifts.",
+                    "Resident working hours regulations aim to prevent burnout syndrome. The maximum duration of one shift can be 24-32 hours, and a mandatory rest period must be given afterwards. These rules are critical to reduce medical errors.",
+                    "Under residency duty regulations, there may be exceptions for some specialties. Operating times in surgical branches may extend shift hours. However, compensatory leave must be given even in these cases.",
+                    "Compliance with resident shift rules is also important for accreditation of educational institutions. Shift records are examined during audits and violations can lead to serious sanctions. Geldimmi keeps these records automatically and auditably.",
+                    "Digital systems provide great advantages in resident duty duration tracking. Geldimmi automatically performs consecutive shift control, monthly limit tracking, and rest time calculation. It sends warnings to managers when there is a rule violation risk.",
+                    "Residency duty regulations changes should be regularly monitored. Legislation updates should be reflected in system rules. The Geldimmi team monitors healthcare legislation in Turkey and makes necessary updates.",
+                    "In conclusion, resident working hours and shift rules are vital for both resident health and patient safety. Ensure compliance with resident shift limit and rules with Geldimmi."
+                ),
+                PublishedAt = new DateTime(2026, 2, 7)
+            },
+            new BlogPost
+            {
+                Slug = "asistan-aylik-nobet-sayisi",
+                TitleTr = "Asistan Doktor Aylık Nöbet Sayısı Ne Kadar Olmalı?",
+                TitleEn = "What Should Be the Monthly Shift Count for Residents?",
+                ExcerptTr = "Asistan aylık nöbet sayısı sınırları, maksimum nöbet hakkı ve ideal nöbet dağıtımı rehberi.",
+                ExcerptEn = "Resident monthly shift count limits, maximum duty rights, and ideal shift distribution guide.",
+                KeywordsTr = new[] { "Asistan aylık nöbet sayısı", "Asistan nöbet sınırı", "Maksimum nöbet sayısı", "Asistan nöbet hakkı", "Aylık nöbet limiti" },
+                KeywordsEn = new[] { "Resident monthly shift count", "Resident duty limit", "Maximum shift number", "Resident duty rights", "Monthly duty limit" },
+                ContentTr = Combine(
+                    "Asistan aylık nöbet sayısı, tıpta uzmanlık eğitiminin en çok tartışılan konularından biridir. Maksimum nöbet sayısı sınırları hem yasal düzenlemelerle hem de tıp eğitimi standartlarıyla belirlenir. Bu rehberde, ideal aylık nöbet limiti ve asistan nöbet hakkı konularını ele alacağız.",
+                    "Asistan nöbet sınırı Türkiye'de genellikle ayda 8-10 nöbet olarak uygulanmaktadır. Ancak bu sayı branşa, kuruma ve dönem ihtiyaçlarına göre değişebilir. Acil servis rotasyonlarında nöbet sayısı artabilirken, poliklinik rotasyonlarında azalabilir.",
+                    "Aylık nöbet limiti belirlenirken dikkate alınması gereken faktörler: Asistan sayısı, servis yatak kapasitesi, hasta yoğunluğu, eğitim gereksinimleri ve yasal sınırlamalar. Tüm bu değişkenler dengelenmelidir.",
+                    "Asistan nöbet hakkı kapsamında, adil dağıtım en önemli ilkedir. Bazı asistanların sürekli ağır nöbet yükü altında olması kabul edilemez. Rotasyon sistemiyle tüm asistanların eşit sayıda nöbet tutması sağlanmalıdır.",
+                    "Maksimum nöbet sayısı aşımı ciddi sonuçlar doğurabilir: Asistan tükenmişliği, eğitim kalitesinde düşüş, hasta güvenliği riskleri ve yasal sorunlar. Bu nedenle sınırlara titizlikle uyulmalıdır.",
+                    "Geldimmi, asistan aylık nöbet sayısı takibini otomatik yapar. Sistem, her asistanın nöbet sayısını izler ve limite yaklaşıldığında uyarı verir. Aylık nöbet limiti aşılmadan plan oluşturulmasını sağlar.",
+                    "Asistan nöbet sınırı takibinde geçmiş dönem verileri de önemlidir. Bir asistan önceki ay fazla nöbet tuttuysa, sonraki ay telafi edilmelidir. Geldimmi'nin raporlama modülü bu dengeyi görünür kılar.",
+                    "Sonuç olarak, asistan nöbet hakkı ve maksimum nöbet sayısı kurallarına uyum zorunludur. Aylık nöbet limiti takibini Geldimmi ile yapın, adil dağıtım sağlayın ve eğitim kalitesini koruyun."
+                ),
+                ContentEn = Combine(
+                    "Resident monthly shift count is one of the most debated topics in medical residency training. Maximum shift number limits are determined by both legal regulations and medical education standards. In this guide, we'll address ideal monthly duty limit and resident duty rights.",
+                    "Resident duty limit in Turkey is generally applied as 8-10 shifts per month. However, this number may vary according to specialty, institution, and period needs. Shift counts may increase during emergency room rotations while decreasing during outpatient clinic rotations.",
+                    "Factors to consider when determining monthly duty limit: Number of residents, ward bed capacity, patient volume, training requirements, and legal limitations. All these variables must be balanced.",
+                    "Under resident duty rights, fair distribution is the most important principle. It's unacceptable for some residents to be constantly under heavy shift burden. A rotation system should ensure all residents work equal numbers of shifts.",
+                    "Exceeding maximum shift number can have serious consequences: Resident burnout, decline in education quality, patient safety risks, and legal issues. Therefore, limits must be strictly followed.",
+                    "Geldimmi automatically tracks resident monthly shift count. The system monitors each resident's shift count and warns when approaching the limit. It ensures plans are created without exceeding monthly duty limit.",
+                    "Historical data is also important in resident duty limit tracking. If a resident worked extra shifts last month, it should be compensated the following month. Geldimmi's reporting module makes this balance visible.",
+                    "In conclusion, compliance with resident duty rights and maximum shift number rules is mandatory. Track monthly duty limit with Geldimmi, ensure fair distribution, and maintain education quality."
+                ),
+                PublishedAt = new DateTime(2026, 2, 8)
+            },
+            new BlogPost
+            {
+                Slug = "asistan-nobet-cizelgesi-olusturma",
+                TitleTr = "Asistan Nöbet Çizelgesi Oluşturma Rehberi",
+                TitleEn = "Resident Duty Roster Creation Guide",
+                ExcerptTr = "Asistan nöbet çizelgesi nasıl hazırlanır? Nöbet listesi, program ve takvim oluşturma adımları.",
+                ExcerptEn = "How to prepare resident duty roster? Steps for creating shift list, schedule, and calendar.",
+                KeywordsTr = new[] { "Asistan nöbet çizelgesi", "Asistan nöbet listesi", "Asistan nöbet programı", "Asistan vardiya planı", "Tıpta uzmanlık nöbet takvimi" },
+                KeywordsEn = new[] { "Resident duty roster", "Resident shift list", "Resident duty schedule", "Resident rotation plan", "Residency duty calendar" },
+                ContentTr = Combine(
+                    "Asistan nöbet çizelgesi oluşturmak, eğitim kurumlarında en zorlu yönetim görevlerinden biridir. Asistan nöbet listesi hazırlarken eğitim gereksinimleri, yasal sınırlamalar ve kişisel talepler dengelenmelidir. Bu rehberde, etkili bir asistan nöbet programı hazırlamanın adımlarını paylaşacağız.",
+                    "Asistan vardiya planı oluşturmanın ilk adımı, mevcut kaynakları belirlemektir. Toplam asistan sayısı, rotasyon durumları, izin talepleri ve branş gereksinimleri not edilmelidir. Tıpta uzmanlık nöbet takvimi, bu veriler üzerinden şekillendirilir.",
+                    "Asistan nöbet çizelgesi hazırlarken uyulması gereken kurallar: Aylık maksimum nöbet sayısı, ardışık nöbet yasağı, dinlenme süreleri, hafta sonu ve tatil rotasyonu, yetkinlik eşleştirmesi. Bu kuralların tamamı aynı anda sağlanmalıdır.",
+                    "Asistan nöbet listesi oluştururken adalet kritik öneme sahiptir. Senior ve junior asistanlar arasında denge sağlanmalı, gece ve gündüz nöbetleri eşit dağıtılmalı, tercihler mümkün olduğunca karşılanmalıdır. Şeffaf dağıtım, ekip uyumunu artırır.",
+                    "Tıpta uzmanlık nöbet takvimi, önceden planlanmalı ve paylaşılmalıdır. Asistanların kişisel planlarını yapabilmeleri için en az bir ay önceden nöbet programının açıklanması idealdir. Son dakika değişiklikleri minimum düzeyde tutulmalıdır.",
+                    "Geldimmi, asistan nöbet çizelgesi oluşturmayı otomatikleştirir. Sistem, tüm kuralları kontrol ederek uygun plan önerileri sunar. Asistan vardiya planı dakikalar içinde hazırlanır ve tüm ekiple paylaşılır.",
+                    "Asistan nöbet programı değişiklik talepleri için de sistem desteği önemlidir. Geldimmi'de asistanlar takas isteyebilir ve yönetici onayıyla değişiklikler yapılabilir. Tüm değişiklikler kayıt altına alınır.",
+                    "Sonuç olarak, asistan nöbet listesi hazırlamak dikkat ve deneyim gerektirir. Tıpta uzmanlık nöbet takvimi oluşturmak için Geldimmi'nin otomatik planlama özelliklerinden yararlanın ve zamandan tasarruf edin."
+                ),
+                ContentEn = Combine(
+                    "Creating a resident duty roster is one of the most challenging management tasks in educational institutions. When preparing a resident shift list, training requirements, legal limitations, and personal requests must be balanced. In this guide, we'll share the steps to prepare an effective resident duty schedule.",
+                    "The first step in creating a resident rotation plan is to identify available resources. Total resident count, rotation status, leave requests, and specialty requirements should be noted. The residency duty calendar is shaped based on this data.",
+                    "Rules to follow when preparing a resident duty roster: Monthly maximum shift count, consecutive shift prohibition, rest periods, weekend and holiday rotation, competency matching. All these rules must be met simultaneously.",
+                    "Fairness is critically important when creating a resident shift list. Balance should be maintained between senior and junior residents, night and day shifts should be distributed equally, preferences should be met when possible. Transparent distribution increases team harmony.",
+                    "The residency duty calendar should be planned and shared in advance. Ideally, the shift schedule should be announced at least one month in advance so residents can make personal plans. Last-minute changes should be kept to a minimum.",
+                    "Geldimmi automates resident duty roster creation. The system checks all rules and offers suitable plan suggestions. The resident rotation plan is prepared in minutes and shared with the entire team.",
+                    "System support is also important for resident duty schedule change requests. In Geldimmi, residents can request swaps and changes can be made with manager approval. All changes are recorded.",
+                    "In conclusion, preparing a resident shift list requires attention and experience. Use Geldimmi's automatic planning features to create your residency duty calendar and save time."
+                ),
+                PublishedAt = new DateTime(2026, 2, 9)
+            },
+            new BlogPost
+            {
+                Slug = "asistan-gece-nobeti-sonrasi-izin",
+                TitleTr = "Asistan Doktor Gece Nöbeti Sonrası İzin Hakkı",
+                TitleEn = "Resident Post-Night Shift Leave Rights",
+                ExcerptTr = "Asistan nöbet sonrası izin hakları, post-call dinlenme kuralları ve gece nöbeti ertesi düzenlemeler.",
+                ExcerptEn = "Resident post-duty leave rights, post-call rest rules, and post-night shift regulations.",
+                KeywordsTr = new[] { "Asistan nöbet sonrası izin", "Gece nöbeti izin hakkı", "Post-call izin", "Nöbet ertesi dinlenme", "Asistan izin hakları" },
+                KeywordsEn = new[] { "Resident post-duty leave", "Night shift leave right", "Post-call rest", "Post-duty recovery time", "Resident leave rights" },
+                ContentTr = Combine(
+                    "Asistan nöbet sonrası izin hakkı, tıpta uzmanlık eğitiminin en önemli konularından biridir. Gece nöbeti izin hakkı, hem asistan sağlığını hem de hasta güvenliğini korumak için yasal güvence altındadır. Bu rehberde, post-call izin kurallarını ve nöbet ertesi dinlenme haklarını detaylı açıklayacağız.",
+                    "Nöbet ertesi dinlenme süresi, genellikle minimum 24 saat olarak tanımlanır. Gece nöbeti sonrası asistanın ertesi gün polikliniğe veya servise çağrılması uygun değildir. Bu kural, yorgunluktan kaynaklanan tıbbi hataları önlemek içindir.",
+                    "Asistan izin hakları kapsamında post-call günü, çalışma günü sayılmaz. Ancak bazı kurumlarda bu kurala tam uyulmadığı görülmektedir. Asistanların haklarını bilmesi ve gerektiğinde talep etmesi önemlidir.",
+                    "Post-call izin kullanımında dikkat edilecek durumlar: Ameliyat veya acil müdahale uzarsa nöbet süresi de uzar, bu durumda dinlenme süresi de ona göre ayarlanmalıdır. Devam eden hasta bakımı için istisnai durumlar olabilir ancak bu sürekli bir uygulama olmamalıdır.",
+                    "Gece nöbeti izin hakkı takibinde dijital sistemler büyük kolaylık sağlar. Geldimmi, nöbet çizelgesinde post-call günlerini otomatik işaretler ve bu günlerde atama yapılmasını engeller. Böylece asistan nöbet sonrası izin hakkı korunur.",
+                    "Asistan izin hakları sadece dinlenme ile sınırlı değildir. Yıllık izin, mazeret izni ve sağlık izni hakları da mevcuttur. Bu izinlerin nöbet çizelgesiyle koordineli yönetilmesi gerekir. Geldimmi'nin izin modülü bu entegrasyonu sağlar.",
+                    "Nöbet ertesi dinlenme süresinin kısa tutulması uzun vadede olumsuz sonuçlar doğurur: Asistan tükenmişliği, eğitimden verim alamama, hasta bakım kalitesinde düşüş ve hukuki riskler. Bu nedenle kurallara titizlikle uyulmalıdır.",
+                    "Sonuç olarak, post-call izin hakkı asistan sağlığı ve hasta güvenliği için vazgeçilmezdir. Gece nöbeti izin hakkı ve nöbet ertesi dinlenme kurallarına Geldimmi ile uyum sağlayın."
+                ),
+                ContentEn = Combine(
+                    "Resident post-duty leave right is one of the most important topics in medical residency training. Night shift leave right is legally guaranteed to protect both resident health and patient safety. In this guide, we'll explain post-call rest rules and post-duty recovery time rights in detail.",
+                    "Post-duty recovery time is generally defined as a minimum of 24 hours. It's not appropriate for residents to be called to outpatient clinics or wards the day after night shift. This rule is to prevent medical errors caused by fatigue.",
+                    "Under resident leave rights, post-call day doesn't count as a working day. However, this rule is not fully followed in some institutions. It's important for residents to know their rights and request them when necessary.",
+                    "Situations to consider in post-call rest usage: If surgery or emergency intervention extends, shift duration also extends, and rest time should be adjusted accordingly. There may be exceptional situations for ongoing patient care, but this should not be a continuous practice.",
+                    "Digital systems provide great convenience in night shift leave right tracking. Geldimmi automatically marks post-call days in the shift schedule and prevents assignments on these days. Thus, resident post-duty leave right is protected.",
+                    "Resident leave rights are not limited to rest only. Annual leave, excuse leave, and health leave rights also exist. These leaves need to be managed in coordination with the shift schedule. Geldimmi's leave module provides this integration.",
+                    "Keeping post-duty recovery time short leads to negative consequences in the long run: Resident burnout, inability to benefit from training, decline in patient care quality, and legal risks. Therefore, rules must be strictly followed.",
+                    "In conclusion, post-call rest right is indispensable for resident health and patient safety. Ensure compliance with night shift leave right and post-duty recovery time rules with Geldimmi."
+                ),
+                PublishedAt = new DateTime(2026, 2, 10)
+            },
+            // ============ İCAP NÖBETİ (21-25) ============
+            new BlogPost
+            {
+                Slug = "icap-nobeti-nedir-rehber",
+                TitleTr = "İcap Nöbeti Nedir? Kapsamlı Rehber",
+                TitleEn = "What is On-Call Duty? Comprehensive Guide",
+                ExcerptTr = "İcap nöbeti nedir, nasıl çalışır? Evde nöbet sistemi, kuralları ve on-call nöbet hakkında bilmeniz gerekenler.",
+                ExcerptEn = "What is on-call duty and how does it work? Home standby system, rules, and what you need to know about on-call shifts.",
+                KeywordsTr = new[] { "İcap nöbeti nedir", "Evde nöbet sistemi", "İcap nöbeti kuralları", "On-call nöbet", "Çağrı üzerine nöbet" },
+                KeywordsEn = new[] { "What is on-call duty", "Home standby system", "On-call duty rules", "On-call shift", "Standby duty" },
+                ContentTr = Combine(
+                    "İcap nöbeti nedir sorusu, sağlık sektöründe sıkça karşılaşılan bir konudur. Evde nöbet sistemi olarak da bilinen icap nöbeti, personelin hastane dışında bekleyerek çağrı üzerine göreve gelmesi anlamına gelir. Bu rehberde, icap nöbeti kuralları ve on-call nöbet sisteminin detaylarını açıklayacağız.",
+                    "İcap nöbeti, aktif nöbetten farklı olarak personelin sürekli hastanede bulunmasını gerektirmez. Çağrı üzerine nöbet sisteminde personel evinde veya istediği yerde bekler, acil durum olduğunda hastaneye çağrılır. Çağrı alındığında belirlenen süre içinde hastaneye ulaşması gerekir.",
+                    "İcap nöbeti kuralları kurumdan kuruma değişebilir. Genel olarak: Çağrıya belirli sürede (genellikle 30-60 dakika) yanıt verilmeli, iletişim araçları sürekli açık tutulmalı, alkol veya ilaç kullanımı yasaklıdır ve belirlenen bölge dışına çıkılmamalıdır.",
+                    "Evde nöbet sistemi, özellikle uzman hekim ve teknik personel için yaygındır. Cerrahi branşlarda, radyolojide ve laboratuvar hizmetlerinde icap nöbeti sıklıkla uygulanır. Bu sistem, 7/24 hizmet sunumunu mümkün kılarken personel maliyetini optimize eder.",
+                    "On-call nöbet süresi genellikle 24 saat olarak planlanır. Bu süre içinde çağrı alınmazsa, icap nöbeti tamamlanmış sayılır. Çağrı alınıp hastaneye gidildiğinde ise aktif çalışma süresi ayrıca kayıt altına alınır.",
+                    "Geldimmi, icap nöbeti takibini destekler. Sistemde icap nöbeti ayrı vardiya tipi olarak tanımlanır. Çağrı üzerine nöbet aktivasyonları kayıt altına alınır ve puantaja ayrı hesaplanır. Böylece hem icap hem aktif süreler doğru takip edilir.",
+                    "İcap nöbeti nedir ve nasıl ücretlendirilir konusu personelin en çok merak ettiği konulardan biridir. İcap ücreti, aktif nöbet ücretinden düşüktür ancak çağrı alınıp hastaneye gidildiğinde aktif nöbet ücretine dönüşür. Bu geçişlerin doğru kaydı önemlidir.",
+                    "Sonuç olarak, evde nöbet sistemi sağlık hizmetlerinin etkin sunumu için önemli bir araçtır. İcap nöbeti kuralları ve on-call nöbet takibini Geldimmi ile dijitalleştirin, doğru kayıt ve ücretlendirme sağlayın."
+                ),
+                ContentEn = Combine(
+                    "What is on-call duty is a frequently encountered question in the healthcare sector. On-call duty, also known as home standby system, means personnel waiting outside the hospital and coming to duty upon call. In this guide, we'll explain on-call duty rules and the details of the on-call shift system.",
+                    "On-call duty, unlike active duty, doesn't require personnel to be continuously present at the hospital. In the standby duty system, personnel wait at home or wherever they want and are called to the hospital in emergencies. When called, they must reach the hospital within the specified time.",
+                    "On-call duty rules may vary from institution to institution. Generally: Calls must be answered within a certain time (usually 30-60 minutes), communication devices must be kept on at all times, alcohol or drug use is prohibited, and one must not leave the designated area.",
+                    "The home standby system is especially common for specialist physicians and technical staff. On-call duty is frequently applied in surgical branches, radiology, and laboratory services. This system optimizes personnel costs while enabling 24/7 service delivery.",
+                    "On-call shift duration is usually planned as 24 hours. If no call is received during this time, the on-call duty is considered complete. When a call is received and one goes to the hospital, active working time is recorded separately.",
+                    "Geldimmi supports on-call duty tracking. On-call duty is defined as a separate shift type in the system. Standby duty activations are recorded and calculated separately in timesheets. Thus, both on-call and active hours are tracked correctly.",
+                    "What is on-call duty and how is it paid is one of the topics personnel are most curious about. On-call pay is lower than active duty pay, but converts to active duty pay when called and going to the hospital. Correct recording of these transitions is important.",
+                    "In conclusion, the home standby system is an important tool for effective healthcare delivery. Digitize on-call duty rules and on-call shift tracking with Geldimmi, ensure accurate recording and payment."
+                ),
+                PublishedAt = new DateTime(2026, 2, 11)
+            },
+            new BlogPost
+            {
+                Slug = "icap-nobet-parasi-hesaplama",
+                TitleTr = "İcap Nöbet Parası Nasıl Hesaplanır?",
+                TitleEn = "How to Calculate On-Call Duty Payment?",
+                ExcerptTr = "İcap nöbet parası hesaplama yöntemleri, 2026 güncel ücretleri ve evde nöbet ücreti detayları.",
+                ExcerptEn = "On-call pay calculation methods, 2026 current rates, and standby duty pay details.",
+                KeywordsTr = new[] { "İcap nöbet parası hesaplama", "İcap ücreti 2026", "İcap nöbeti ek ödeme", "İcap nöbet ücreti hesaplama", "Evde nöbet ücreti" },
+                KeywordsEn = new[] { "On-call pay calculation", "On-call fee 2026", "On-call additional payment", "On-call duty payment", "Standby duty pay" },
+                ContentTr = Combine(
+                    "İcap nöbet parası hesaplama, sağlık personelinin en çok sorduğu konulardan biridir. İcap ücreti 2026 düzenlemeleriyle güncellenen oranlarla hesaplanmaktadır. Bu rehberde, icap nöbeti ek ödeme hesabını ve evde nöbet ücreti detaylarını açıklayacağız.",
+                    "İcap nöbet ücreti hesaplama formülü genellikle şöyledir: Birim İcap Ücreti × İcap Saati = Brüt İcap Parası. İcap birim ücreti, aktif nöbet birim ücretinin yaklaşık %40-50'si kadardır. Bu oran kuruma ve mevzuata göre değişebilir.",
+                    "Evde nöbet ücreti ile aktif nöbet ücreti ayrımı önemlidir. İcap nöbetinde çağrı alınmazsa sadece icap ücreti ödenir. Çağrı alınıp hastaneye gidildiğinde, hastanede geçirilen süre aktif nöbet ücreti olarak hesaplanır.",
+                    "İcap nöbeti ek ödeme hesabında dikkat edilecek noktalar: İcap başlangıç ve bitiş saatleri net belirlenmeli, çağrı zamanları kayıt altına alınmalı, hastanede geçirilen süre ayrı hesaplanmalı ve gece/gündüz ayrımı yapılmalıdır.",
+                    "İcap ücreti 2026 güncellemelerine göre oranlar revize edilmiştir. Döner sermaye sistemindeki değişiklikler icap nöbet parası hesaplamayı da etkilemektedir. Güncel mevzuatın takibi önemlidir.",
+                    "Geldimmi, icap nöbet ücreti hesaplamayı otomatik yapar. Sistem, icap saatlerini ve aktif çalışma sürelerini ayrı ayrı takip eder. Her iki kategori için uygun katsayıları uygulayarak doğru hesaplama yapar.",
+                    "Evde nöbet ücreti takibinde şeffaflık personel güvenini artırır. Geldimmi'de her personel kendi icap nöbeti istatistiklerini ve tahakkuk eden ücretleri görebilir. Bu şeffaflık, ücretlendirme şikayetlerini azaltır.",
+                    "Sonuç olarak, icap nöbet parası hesaplama doğru yapıldığında hem personel hem de kurum memnuniyeti artar. İcap nöbeti ek ödeme ve evde nöbet ücreti takibini Geldimmi ile otomatikleştirin."
+                ),
+                ContentEn = Combine(
+                    "On-call pay calculation is one of the most frequently asked questions by healthcare staff. On-call fee 2026 is calculated with updated rates through regulations. In this guide, we'll explain on-call additional payment calculation and standby duty pay details.",
+                    "The on-call duty payment calculation formula is generally: Unit On-Call Fee × On-Call Hours = Gross On-Call Pay. The on-call unit fee is approximately 40-50% of the active duty unit fee. This rate may vary by institution and regulations.",
+                    "The distinction between standby duty pay and active duty pay is important. If no call is received during on-call duty, only on-call pay is given. When a call is received and one goes to the hospital, the time spent at the hospital is calculated as active duty pay.",
+                    "Points to consider in on-call additional payment calculation: On-call start and end times must be clearly defined, call times must be recorded, time spent at hospital must be calculated separately, and night/day distinction must be made.",
+                    "According to on-call fee 2026 updates, rates have been revised. Changes in the revolving fund system also affect on-call pay calculation. Following current regulations is important.",
+                    "Geldimmi automatically calculates on-call duty payment. The system tracks on-call hours and active working hours separately. It makes accurate calculations by applying appropriate coefficients for both categories.",
+                    "Transparency in standby duty pay tracking increases staff trust. In Geldimmi, each staff member can see their own on-call duty statistics and accrued fees. This transparency reduces payment complaints.",
+                    "In conclusion, when on-call pay calculation is done correctly, both staff and institutional satisfaction increase. Automate on-call additional payment and standby duty pay tracking with Geldimmi."
+                ),
+                PublishedAt = new DateTime(2026, 2, 12)
+            },
+            new BlogPost
+            {
+                Slug = "icap-nobeti-cizelgesi-hazirlama",
+                TitleTr = "İcap Nöbeti Çizelgesi Nasıl Hazırlanır?",
+                TitleEn = "How to Prepare On-Call Duty Roster?",
+                ExcerptTr = "İcap nöbeti çizelgesi oluşturma adımları, icap listesi hazırlama ve on-call schedule yönetimi.",
+                ExcerptEn = "Steps to create on-call duty roster, preparing on-call list, and on-call schedule management.",
+                KeywordsTr = new[] { "İcap nöbeti çizelgesi", "İcap listesi oluşturma", "İcap nöbet programı", "İcap takvimi", "On-call schedule" },
+                KeywordsEn = new[] { "On-call duty roster", "On-call list creation", "On-call schedule", "On-call calendar", "Standby schedule" },
+                ContentTr = Combine(
+                    "İcap nöbeti çizelgesi hazırlamak, sağlık kuruluşlarında özel dikkat gerektiren bir süreçtir. İcap listesi oluşturma, aktif nöbet planlamasından farklı dinamiklere sahiptir. Bu rehberde, icap nöbet programı hazırlamanın adımlarını ve on-call schedule yönetimini açıklayacağız.",
+                    "İcap takvimi oluşturmanın ilk adımı, icap nöbeti tutacak personel havuzunu belirlemektir. Genellikle uzman hekimler ve belirli teknik personel icap nöbetine dahil edilir. Yetkinlik ve erişilebilirlik kriterleri göz önünde bulundurulmalıdır.",
+                    "İcap listesi oluşturma sırasında dikkat edilecek kurallar: Adil rotasyon sağlanmalı, hafta sonu ve tatil icapları dengeli dağıtılmalı, aynı branştan yedek belirlenebilir olmalı ve personelin ulaşılabilirlik durumu kontrol edilmelidir.",
+                    "İcap nöbet programı, aktif nöbet çizelgesiyle koordineli hazırlanmalıdır. Aynı personelin hem aktif hem icap nöbetine atanması önlenmelidir. Çakışma kontrolleri otomatik yapılmalıdır.",
+                    "On-call schedule paylaşımı zamanında yapılmalıdır. Personelin icap günlerini önceden bilmesi, kişisel planlamalarını yapabilmeleri için önemlidir. Geldimmi'de icap takvimi tüm ilgili personelle otomatik paylaşılır.",
+                    "Geldimmi, icap nöbeti çizelgesi oluşturmayı kolaylaştırır. Sistem, icap nöbetini ayrı vardiya tipi olarak destekler. İcap listesi oluşturma sırasında adil dağıtım kuralları otomatik kontrol edilir.",
+                    "İcap nöbet programı değişiklik yönetimi de kritiktir. Son dakika değişiklikleri kaçınılmaz olabilir; bu durumda tüm ilgililerin hızla bilgilendirilmesi gerekir. Geldimmi, değişiklikleri anlık bildirimlerle duyurur.",
+                    "Sonuç olarak, icap takvimi hazırlamak dikkatli planlama gerektirir. On-call schedule oluşturmak ve yönetmek için Geldimmi'nin otomatik araçlarını kullanın, adil dağıtım ve şeffaf takip sağlayın."
+                ),
+                ContentEn = Combine(
+                    "Preparing an on-call duty roster is a process requiring special attention in healthcare facilities. On-call list creation has different dynamics than active duty planning. In this guide, we'll explain the steps to prepare an on-call schedule and on-call schedule management.",
+                    "The first step in creating an on-call calendar is determining the pool of personnel who will be on-call. Usually specialist physicians and certain technical staff are included in on-call duty. Competency and accessibility criteria should be considered.",
+                    "Rules to follow during on-call list creation: Fair rotation should be ensured, weekend and holiday on-calls should be distributed evenly, backup from the same branch should be available, and personnel's availability status should be checked.",
+                    "The on-call schedule should be prepared in coordination with the active duty roster. The same personnel being assigned to both active and on-call duty should be prevented. Conflict checks should be done automatically.",
+                    "On-call schedule sharing should be done on time. It's important for personnel to know their on-call days in advance so they can make personal plans. In Geldimmi, the on-call calendar is automatically shared with all relevant personnel.",
+                    "Geldimmi simplifies on-call duty roster creation. The system supports on-call duty as a separate shift type. Fair distribution rules are automatically checked during on-call list creation.",
+                    "On-call schedule change management is also critical. Last-minute changes may be unavoidable; in this case, all stakeholders must be informed quickly. Geldimmi announces changes through instant notifications.",
+                    "In conclusion, preparing an on-call calendar requires careful planning. Use Geldimmi's automatic tools to create and manage on-call schedules, ensure fair distribution and transparent tracking."
+                ),
+                PublishedAt = new DateTime(2026, 2, 13)
+            },
+            new BlogPost
+            {
+                Slug = "aktif-nobet-icap-farklari",
+                TitleTr = "Aktif Nöbet ve İcap Nöbeti Arasındaki Farklar",
+                TitleEn = "Differences Between Active Duty and On-Call Duty",
+                ExcerptTr = "Aktif nöbet ve icap nöbeti karşılaştırması. Nöbet türleri, ücret farkları ve uygulama detayları.",
+                ExcerptEn = "Comparison of active duty and on-call duty. Duty types, pay differences, and implementation details.",
+                KeywordsTr = new[] { "Aktif nöbet icap farkı", "Nöbet türleri", "İcap nöbeti aktif nöbet", "Nöbet çeşitleri karşılaştırma", "Hastane nöbet tipleri" },
+                KeywordsEn = new[] { "Active vs on-call duty", "Duty types", "On-call active comparison", "Shift types comparison", "Hospital duty types" },
+                ContentTr = Combine(
+                    "Aktif nöbet icap farkı, sağlık çalışanlarının en çok karıştırdığı konulardan biridir. Her iki nöbet türü de 7/24 hizmet sunumu için gereklidir ancak uygulama ve ücretlendirme açısından önemli farklılıklar vardır. Bu rehberde, nöbet çeşitleri karşılaştırmasını detaylı yapacağız.",
+                    "Nöbet türleri temel olarak ikiye ayrılır: Aktif nöbet ve icap nöbeti. Aktif nöbette personel hastanede bulunur ve sürekli görev başındadır. İcap nöbeti aktif nöbetten farklı olarak, personel hastane dışında bekler ve sadece çağrı üzerine gelir.",
+                    "Hastane nöbet tipleri arasındaki ücret farkları belirgindir. Aktif nöbet tam ücretlendirilirken, icap nöbeti genellikle aktif nöbetin %40-50'si oranında ücretlendirilir. Ancak icap nöbetinde çağrı alınıp hastaneye gidildiğinde, o süre aktif nöbet olarak hesaplanır.",
+                    "Nöbet çeşitleri karşılaştırması yaparken sorumluluk düzeyi de önemlidir. Aktif nöbette personel tüm süre boyunca aktif çalışır. İcap nöbetinde ise beklemeli durumdadır, ancak çağrıya hızlı yanıt vermek zorundadır.",
+                    "İcap nöbeti aktif nöbet karşılaştırmasında çalışma koşulları da farklılaşır. Aktif nöbette dinlenme odası, yemek ve içecek hastane tarafından sağlanır. İcap nöbetinde personel kendi evindedir ancak belirli kısıtlamalara (alkol yasağı, ulaşılabilir olma vb.) tabidir.",
+                    "Geldimmi, her iki nöbet türünü de destekler. Sistemde aktif nöbet ve icap nöbeti ayrı vardiya tipleri olarak tanımlanır. Nöbet çeşitleri karşılaştırması için raporlar oluşturulabilir ve dengeli dağıtım sağlanabilir.",
+                    "Hastane nöbet tipleri planlamasında her iki türün dengeli kullanılması önemlidir. Tamamen aktif nöbete dayalı sistem personel maliyetini artırırken, tamamen icap sistemine dayalı model acil müdahale süresini uzatabilir.",
+                    "Sonuç olarak, aktif nöbet icap farkını anlamak doğru planlama için kritiktir. Nöbet türleri ve uygulama detaylarını Geldimmi ile yönetin, her iki modeli dengeli kullanarak optimum hizmet sunun."
+                ),
+                ContentEn = Combine(
+                    "The difference between active vs on-call duty is one of the topics healthcare workers confuse most. Both duty types are necessary for 24/7 service delivery but there are important differences in implementation and payment. In this guide, we'll make a detailed shift types comparison.",
+                    "Duty types are basically divided into two: Active duty and on-call duty. In active duty, personnel are at the hospital and continuously on duty. On-call active comparison shows that in on-call, personnel wait outside the hospital and only come when called.",
+                    "Pay differences between hospital duty types are significant. Active duty is fully paid, while on-call duty is usually paid at 40-50% of active duty. However, when a call is received during on-call and one goes to the hospital, that time is calculated as active duty.",
+                    "When comparing shift types, responsibility level is also important. In active duty, personnel work actively throughout. In on-call duty, they are on standby but must respond quickly to calls.",
+                    "Working conditions also differ in on-call active comparison. In active duty, rest room, food, and drinks are provided by the hospital. In on-call duty, personnel are at their own home but subject to certain restrictions (alcohol prohibition, being reachable, etc.).",
+                    "Geldimmi supports both duty types. Active duty and on-call duty are defined as separate shift types in the system. Reports can be generated for shift types comparison and balanced distribution can be ensured.",
+                    "Balanced use of both types is important in hospital duty types planning. A system based entirely on active duty increases personnel costs, while a model based entirely on on-call may extend emergency response time.",
+                    "In conclusion, understanding active vs on-call duty difference is critical for proper planning. Manage duty types and implementation details with Geldimmi, use both models in balance to provide optimum service."
+                ),
+                PublishedAt = new DateTime(2026, 2, 14)
+            },
+            new BlogPost
+            {
+                Slug = "icap-nobetinde-cagri-ne-yapilir",
+                TitleTr = "İcap Nöbetinde Çağrı Alınca Ne Yapılır?",
+                TitleEn = "What to Do When Called During On-Call Duty?",
+                ExcerptTr = "İcap nöbetinde çağrı prosedürü, aktivasyon süreci ve hastaneye gelme kuralları hakkında rehber.",
+                ExcerptEn = "Guide on on-call duty activation, call procedure, and hospital arrival rules.",
+                KeywordsTr = new[] { "İcap nöbeti çağrı", "İcap çağrı prosedürü", "İcap nöbeti aktivasyon", "Çağrı üzerine hastaneye gelme", "İcap nöbeti süreci" },
+                KeywordsEn = new[] { "On-call duty activation", "On-call procedure", "On-call response", "Called to hospital", "On-call process" },
+                ContentTr = Combine(
+                    "İcap nöbeti çağrı aldığınızda izlemeniz gereken prosedürler vardır. İcap çağrı prosedürü, hasta güvenliği ve hizmet kalitesi için kritik öneme sahiptir. Bu rehberde, icap nöbeti aktivasyon sürecini ve çağrı üzerine hastaneye gelme kurallarını açıklayacağız.",
+                    "İcap nöbeti süreci çağrı alındığında başlar. İlk adım, çağrının doğrulanması ve aciliyet düzeyinin belirlenmesidir. Çağrıyı yapan kişiden hasta bilgileri ve müdahale gereksinimi hakkında bilgi alınmalıdır.",
+                    "İcap çağrı prosedürü kapsamında yanıt süresi kritiktir. Çoğu kurumda çağrıya 15-30 dakika içinde yanıt verilmesi ve hastaneye 30-60 dakika içinde ulaşılması beklenir. Bu sürelere uyum, denetim ve performans değerlendirmelerinde önemlidir.",
+                    "Çağrı üzerine hastaneye gelme öncesinde hazırlık yapılmalıdır. İcap nöbetinde personelin her an hareket edebilecek durumda olması gerekir. Bunun için gerekli ekipman ve belgeler hazır tutulmalıdır.",
+                    "İcap nöbeti aktivasyon kaydı tutulmalıdır. Çağrı saati, hastaneye varış saati ve müdahale bitiş saati kayıt altına alınmalıdır. Bu kayıtlar hem puantaj hem de kalite takibi için gereklidir.",
+                    "Geldimmi, icap nöbeti çağrı takibini destekler. Sistemde çağrı aktivasyonları kayıt edilir ve aktif çalışma süresi otomatik hesaplanır. İcap nöbeti süreci şeffaf ve denetlenebilir şekilde yönetilir.",
+                    "İcap çağrı prosedürü sonrası raporlama da önemlidir. Müdahale detayları, kullanılan kaynaklar ve sonuç kayıt altına alınmalıdır. Bu veriler, hizmet kalitesi iyileştirmesi için değerlidir.",
+                    "Sonuç olarak, icap nöbeti aktivasyon süreci net prosedürlerle yönetilmelidir. Çağrı üzerine hastaneye gelme kurallarına uyum, hasta güvenliği için kritiktir. İcap nöbeti çağrı takibini Geldimmi ile yapın."
+                ),
+                ContentEn = Combine(
+                    "There are procedures to follow when you receive a call during on-call duty. On-call procedure is critically important for patient safety and service quality. In this guide, we'll explain the on-call duty activation process and called to hospital rules.",
+                    "The on-call process begins when a call is received. The first step is verifying the call and determining the urgency level. Patient information and intervention needs should be obtained from the caller.",
+                    "Response time is critical under on-call procedure. In most institutions, it's expected to respond to the call within 15-30 minutes and reach the hospital within 30-60 minutes. Compliance with these times is important in audits and performance evaluations.",
+                    "Preparation should be done before called to hospital. Personnel on on-call duty must be ready to move at any time. Necessary equipment and documents should be kept ready for this.",
+                    "On-call duty activation record must be kept. Call time, hospital arrival time, and intervention end time should be recorded. These records are necessary for both timesheets and quality tracking.",
+                    "Geldimmi supports on-call duty call tracking. Call activations are recorded in the system and active working time is automatically calculated. The on-call process is managed transparently and auditably.",
+                    "Reporting after on-call procedure is also important. Intervention details, resources used, and results should be recorded. This data is valuable for service quality improvement.",
+                    "In conclusion, the on-call duty activation process should be managed with clear procedures. Compliance with called to hospital rules is critical for patient safety. Track on-call duty calls with Geldimmi."
+                ),
+                PublishedAt = new DateTime(2026, 2, 15)
+            },
+            // ============ BORDRO VE MAAŞ HESAPLAMA (26-30) ============
+            new BlogPost
+            {
+                Slug = "4a-personel-nobet-parasi-hesaplama",
+                TitleTr = "4A Personel Nöbet Parası Hesaplama",
+                TitleEn = "4A Staff Shift Payment Calculation",
+                ExcerptTr = "4A nöbet parası hesaplama yöntemleri, kadrolu personel ek ödeme ve SGK 4A nöbet ücreti detayları.",
+                ExcerptEn = "4A shift pay calculation methods, permanent staff additional payment, and regular employee duty pay details.",
+                KeywordsTr = new[] { "4A nöbet parası hesaplama", "4A personel ek ödeme", "4A maaş hesaplama", "SGK 4A nöbet ücreti", "Kadrolu personel nöbet parası" },
+                KeywordsEn = new[] { "4A shift pay calculation", "4A staff additional payment", "4A salary calculation", "Permanent staff duty pay", "Regular employee shift fee" },
+                ContentTr = Combine(
+                    "4A nöbet parası hesaplama, kadrolu devlet memurları için uygulanan nöbet ücretlendirme sistemini kapsar. 4A personel ek ödeme hesabı, döner sermaye sistemi üzerinden yapılır. Bu rehberde, SGK 4A nöbet ücreti ve kadrolu personel nöbet parası hesaplama detaylarını açıklayacağız.",
+                    "4A maaş hesaplama formülü, temel maaş + yan ödemeler + döner sermaye ek ödeme + nöbet ücreti bileşenlerinden oluşur. Kadrolu personel nöbet parası, 657 sayılı Kanun ve ilgili yönetmeliklere göre belirlenir.",
+                    "4A personel ek ödeme hesabında dikkate alınan faktörler: Kadro derecesi, hizmet süresi, görev yeri, branş katsayısı ve performans puanı. Bu faktörler, döner sermaye havuzundan alınacak payı belirler.",
+                    "SGK 4A nöbet ücreti hesaplamasında vergi ve kesintiler önemlidir. Brüt nöbet parası üzerinden gelir vergisi ve SGK primi kesilir. Net ödeme, bu kesintiler sonrası kalan tutardır.",
+                    "Kadrolu personel nöbet parası, sözleşmeli personelden farklı hesaplanabilir. 4A statüsündeki personel, kadro güvencesi ve emeklilik hakları açısından avantajlıdır ancak ek ödeme oranları farklılık gösterebilir.",
+                    "Geldimmi, 4A nöbet parası hesaplamayı destekler. Sistem, personelin kadro durumuna göre uygun hesaplama kurallarını uygular. 4A personel ek ödeme takibi şeffaf ve denetlenebilir şekilde yapılır.",
+                    "4A maaş hesaplama sürecinde puantaj entegrasyonu kritiktir. Geldimmi'nin nöbet çizelgesi, puantaj verilerini otomatik oluşturur ve bordro sistemlerine aktarıma hazır hale getirir.",
+                    "Sonuç olarak, SGK 4A nöbet ücreti doğru hesaplandığında personel memnuniyeti artar. Kadrolu personel nöbet parası takibini Geldimmi ile otomatikleştirin, hesaplama hatalarını önleyin."
+                ),
+                ContentEn = Combine(
+                    "4A shift pay calculation covers the duty payment system applied to permanent civil servants. 4A staff additional payment calculation is done through the revolving fund system. In this guide, we'll explain permanent staff duty pay and regular employee shift fee calculation details.",
+                    "The 4A salary calculation formula consists of base salary + side payments + revolving fund additional payment + shift fee components. Regular employee shift fee is determined according to Law No. 657 and related regulations.",
+                    "Factors considered in 4A staff additional payment calculation: Staff grade, length of service, duty location, branch coefficient, and performance score. These factors determine the share to be received from the revolving fund pool.",
+                    "Taxes and deductions are important in permanent staff duty pay calculation. Income tax and social security premium are deducted from gross shift pay. Net payment is the remaining amount after these deductions.",
+                    "Regular employee shift fee may be calculated differently from contracted personnel. Staff with 4A status are advantageous in terms of job security and retirement rights, but additional payment rates may differ.",
+                    "Geldimmi supports 4A shift pay calculation. The system applies appropriate calculation rules according to the personnel's staff status. 4A staff additional payment tracking is done transparently and auditably.",
+                    "Timesheet integration is critical in the 4A salary calculation process. Geldimmi's shift schedule automatically generates timesheet data and prepares it for transfer to payroll systems.",
+                    "In conclusion, staff satisfaction increases when permanent staff duty pay is calculated correctly. Automate regular employee shift fee tracking with Geldimmi, prevent calculation errors."
+                ),
+                PublishedAt = new DateTime(2026, 2, 16)
+            },
+            new BlogPost
+            {
+                Slug = "4b-sozlesmeli-personel-nobet-ucreti",
+                TitleTr = "4B Sözleşmeli Personel Nöbet Ücreti Hesaplama",
+                TitleEn = "4B Contract Staff Shift Payment Calculation",
+                ExcerptTr = "4B nöbet parası hesaplama, sözleşmeli personel nöbet ücreti ve 4B ek ödeme detayları.",
+                ExcerptEn = "4B shift pay calculation, contract staff duty fee, and 4B additional payment details.",
+                KeywordsTr = new[] { "4B nöbet parası hesaplama", "Sözleşmeli personel nöbet ücreti", "4B ek ödeme hesaplama", "4B maaş hesaplama", "Sözleşmeli hemşire nöbet ücreti" },
+                KeywordsEn = new[] { "4B shift pay calculation", "Contract staff duty fee", "4B additional payment", "4B salary calculation", "Contract nurse shift pay" },
+                ContentTr = Combine(
+                    "4B nöbet parası hesaplama, sözleşmeli personel için uygulanan özel ücretlendirme sistemini kapsar. Sözleşmeli personel nöbet ücreti, 4A kadrolu personelden farklı kurallara tabidir. Bu rehberde, 4B ek ödeme hesaplama ve sözleşmeli hemşire nöbet ücreti detaylarını açıklayacağız.",
+                    "4B maaş hesaplama formülü, sözleşme ücreti + ek ödemeler + nöbet ücreti bileşenlerinden oluşur. Sözleşmeli personel nöbet ücreti, sözleşme hükümlerine ve kurumsal politikalara göre belirlenir.",
+                    "4B ek ödeme hesaplama süreci, döner sermaye sistemine bağlıdır. Sözleşmeli personelin döner sermayeden pay alma oranları, kadrolu personelden farklı olabilir. Bu farklılıkların bilinmesi önemlidir.",
+                    "Sözleşmeli hemşire nöbet ücreti, sağlık sektöründe en yaygın 4B uygulamalarından biridir. Hemşireler arasında 4A ve 4B statüsünde çalışanlar olabilir ve ücretlendirme farklılıkları söz konusudur.",
+                    "4B nöbet parası hesaplama yaparken sözleşme şartları kontrol edilmelidir. Bazı sözleşmelerde nöbet ücreti dahil edilmiş olabilirken, bazılarında ayrı ödenmektedir. Bu ayrım, doğru hesaplama için kritiktir.",
+                    "Geldimmi, 4B personel takibini destekler. Sistemde personelin kadro statüsü (4A, 4B, 4D) tanımlanır ve uygun hesaplama kuralları otomatik uygulanır. Sözleşmeli personel nöbet ücreti şeffaf şekilde takip edilir.",
+                    "4B maaş hesaplama sürecinde sosyal güvenlik kesintileri de farklılık gösterebilir. 4B personel için SGK primi hesaplaması, sözleşme türüne göre değişir. Geldimmi, bu hesaplamaları destekleyen raporlar sunar.",
+                    "Sonuç olarak, sözleşmeli hemşire nöbet ücreti ve 4B ek ödeme hesaplama doğru yapılmalıdır. 4B nöbet parası hesaplama takibini Geldimmi ile otomatikleştirin."
+                ),
+                ContentEn = Combine(
+                    "4B shift pay calculation covers the special payment system applied to contracted personnel. Contract staff duty fee is subject to different rules than 4A permanent staff. In this guide, we'll explain 4B additional payment calculation and contract nurse shift pay details.",
+                    "The 4B salary calculation formula consists of contract fee + additional payments + shift fee components. Contract staff duty fee is determined according to contract provisions and institutional policies.",
+                    "The 4B additional payment calculation process depends on the revolving fund system. Contracted personnel's rates of receiving shares from revolving funds may differ from permanent staff. Knowing these differences is important.",
+                    "Contract nurse shift pay is one of the most common 4B applications in the healthcare sector. Among nurses, there may be those working in 4A and 4B status, and there are payment differences.",
+                    "Contract terms should be checked when doing 4B shift pay calculation. In some contracts, shift pay may be included, while in others it's paid separately. This distinction is critical for accurate calculation.",
+                    "Geldimmi supports 4B personnel tracking. The personnel's staff status (4A, 4B, 4D) is defined in the system and appropriate calculation rules are automatically applied. Contract staff duty fee is tracked transparently.",
+                    "Social security deductions may also differ in the 4B salary calculation process. Social security premium calculation for 4B personnel varies according to contract type. Geldimmi offers reports supporting these calculations.",
+                    "In conclusion, contract nurse shift pay and 4B additional payment calculation must be done correctly. Automate 4B shift pay calculation tracking with Geldimmi."
+                ),
+                PublishedAt = new DateTime(2026, 2, 17)
+            },
+            new BlogPost
+            {
+                Slug = "hastane-bordro-hesaplama-kilavuz",
+                TitleTr = "Hastane Bordro Hesaplama: Eksiksiz Kılavuz",
+                TitleEn = "Hospital Payroll Calculation: Complete Guide",
+                ExcerptTr = "Hastane bordro hesaplama rehberi. Sağlık personeli maaş bordrosu, nöbet dahil bordro ve aylık hesaplama.",
+                ExcerptEn = "Hospital payroll calculation guide. Healthcare staff payroll, duty inclusive payroll, and monthly calculation.",
+                KeywordsTr = new[] { "Hastane bordro hesaplama", "Sağlık personeli maaş bordrosu", "Nöbet dahil bordro", "Aylık maaş hesaplama", "Bordro programı" },
+                KeywordsEn = new[] { "Hospital payroll calculation", "Healthcare staff payroll", "Duty inclusive payroll", "Monthly salary calculation", "Payroll software" },
+                ContentTr = Combine(
+                    "Hastane bordro hesaplama, sağlık kuruluşlarının en karmaşık idari süreçlerinden biridir. Sağlık personeli maaş bordrosu; temel maaş, ek ödemeler, nöbet ücretleri ve kesintileri içerir. Bu kılavuzda, nöbet dahil bordro hesaplamasının tüm detaylarını açıklayacağız.",
+                    "Aylık maaş hesaplama formülü: Temel Maaş + Yan Ödemeler + Döner Sermaye Ek Ödeme + Nöbet Ücreti - Vergi Kesintileri - SGK Primi = Net Maaş. Her bileşenin doğru hesaplanması, bordro doğruluğu için kritiktir.",
+                    "Sağlık personeli maaş bordrosu hazırlarken nöbet verileri temel girdidir. Puantaj kayıtları, fazla mesai saatleri, gece ve hafta sonu çalışmaları bordro hesaplamalarına aktarılmalıdır. Manuel aktarım hata riskini artırır.",
+                    "Nöbet dahil bordro hesaplamasında dikkat edilecek noktalar: Vardiya tiplerinin doğru sınıflandırılması, katsayıların güncel tutulması, yarım gün tatillerin hesaba katılması ve yasal sınırların kontrol edilmesi.",
+                    "Bordro programı seçerken hastane ihtiyaçlarına uygunluk önemlidir. 7/24 vardiyalı çalışma, farklı kadro statüleri (4A, 4B, 4D) ve döner sermaye entegrasyonu desteklenmelidir. Geldimmi, bordro sistemleriyle entegrasyon için veri aktarımı sağlar.",
+                    "Hastane bordro hesaplama sürecinde Geldimmi'nin rolü kritiktir. Nöbet çizelgesinden otomatik puantaj oluşturulur, fazla mesai hesaplanır ve bordro formatında dışa aktarılır. Bu sayede manuel veri girişi ortadan kalkar.",
+                    "Aylık maaş hesaplama hatalarını önlemek için otomasyon şarttır. Geldimmi, hesaplama kurallarını sistem içinde tanımlar ve her personel için tutarlı sonuçlar üretir. Denetim izleri sayesinde hesaplamalar şeffaftır.",
+                    "Sonuç olarak, sağlık personeli maaş bordrosu doğru hazırlandığında hem personel hem de kurum memnuniyeti artar. Nöbet dahil bordro hesaplama için Geldimmi'nin bordro entegrasyonunu kullanın."
+                ),
+                ContentEn = Combine(
+                    "Hospital payroll calculation is one of the most complex administrative processes in healthcare facilities. Healthcare staff payroll includes base salary, additional payments, shift fees, and deductions. In this guide, we'll explain all the details of duty inclusive payroll calculation.",
+                    "Monthly salary calculation formula: Base Salary + Side Payments + Revolving Fund Additional Payment + Shift Fee - Tax Deductions - Social Security Premium = Net Salary. Correct calculation of each component is critical for payroll accuracy.",
+                    "Shift data is the basic input when preparing healthcare staff payroll. Timesheet records, overtime hours, night and weekend work must be transferred to payroll calculations. Manual transfer increases error risk.",
+                    "Points to consider in duty inclusive payroll calculation: Correct classification of shift types, keeping coefficients up to date, accounting for half-day holidays, and checking legal limits.",
+                    "Suitability for hospital needs is important when choosing payroll software. 24/7 shift work, different staff statuses (4A, 4B, 4D), and revolving fund integration should be supported. Geldimmi provides data transfer for integration with payroll systems.",
+                    "Geldimmi's role is critical in the hospital payroll calculation process. Automatic timesheets are created from shift schedules, overtime is calculated, and exported in payroll format. This eliminates manual data entry.",
+                    "Automation is essential to prevent monthly salary calculation errors. Geldimmi defines calculation rules within the system and produces consistent results for each staff member. Calculations are transparent thanks to audit trails.",
+                    "In conclusion, when healthcare staff payroll is prepared correctly, both staff and institutional satisfaction increase. Use Geldimmi's payroll integration for duty inclusive payroll calculation."
+                ),
+                PublishedAt = new DateTime(2026, 2, 18)
+            },
+            new BlogPost
+            {
+                Slug = "nobet-ek-odeme-sistemi",
+                TitleTr = "Nöbet Ek Ödeme Sistemi Nasıl Çalışır?",
+                TitleEn = "How Does Shift Additional Payment System Work?",
+                ExcerptTr = "Nöbet ek ödeme sistemi açıklaması. Performans ek ödeme, döner sermaye ve nöbet primi hesaplama.",
+                ExcerptEn = "Shift bonus system explanation. Performance additional payment, revolving fund, and duty premium calculation.",
+                KeywordsTr = new[] { "Nöbet ek ödeme sistemi", "Performans ek ödeme", "Döner sermaye ek ödeme", "Nöbet primi", "Ek ödeme hesaplama" },
+                KeywordsEn = new[] { "Shift bonus system", "Performance additional payment", "Revolving fund payment", "Duty premium", "Additional payment calculation" },
+                ContentTr = Combine(
+                    "Nöbet ek ödeme sistemi, sağlık personelinin temel maaş dışında aldığı ek geliri düzenler. Performans ek ödeme ve döner sermaye ek ödeme, bu sistemin temel bileşenleridir. Bu rehberde, nöbet primi hesaplamasının nasıl çalıştığını detaylı açıklayacağız.",
+                    "Döner sermaye ek ödeme, hastanelerin elde ettiği gelirden personele dağıtılan paydır. Nöbet ek ödeme sistemi, bu havuzdan nöbet saatlerine göre pay alma mekanizmasını tanımlar. Daha fazla nöbet tutan personel, daha fazla pay alır.",
+                    "Performans ek ödeme hesabı, sadece nöbet saatine değil, yapılan işlemlere de bağlı olabilir. Poliklinik muayenesi, ameliyat, tetkik gibi faaliyetler puan olarak değerlendirilir ve ek ödemeye yansır. Nöbet primi, bu sistemin bir parçasıdır.",
+                    "Ek ödeme hesaplama formülü kurumdan kuruma değişebilir. Genel olarak: Nöbet Saati × Birim Ücret × Branş Katsayısı × Performans Çarpanı = Brüt Nöbet Ek Ödeme. Bu hesaplamanın doğruluğu, şeffaf takip gerektirir.",
+                    "Nöbet ek ödeme sistemi, adil dağıtım için kurallar içermelidir. Bazı personelin sürekli fazla nöbet tutarak ek ödeme payını artırması, diğer personel için adaletsizlik yaratır. Dengeli nöbet dağıtımı bu sorunu çözer.",
+                    "Geldimmi, nöbet primi takibini destekler. Sistem, her personelin nöbet saatlerini ve türlerini kayıt altına alır. Döner sermaye ek ödeme hesabı için gerekli verileri raporlar ve bordro entegrasyonunu kolaylaştırır.",
+                    "Performans ek ödeme sisteminde şeffaflık kritiktir. Personelin kendi puanlarını ve hesaplamalarını görebilmesi güven oluşturur. Geldimmi'de her kullanıcı kendi nöbet istatistiklerine erişebilir.",
+                    "Sonuç olarak, ek ödeme hesaplama doğru ve şeffaf yapılmalıdır. Nöbet ek ödeme sistemi takibini Geldimmi ile otomatikleştirin, adil dağıtım ve güvenilir hesaplama sağlayın."
+                ),
+                ContentEn = Combine(
+                    "The shift bonus system regulates the additional income healthcare personnel receive beyond their base salary. Performance additional payment and revolving fund payment are the basic components of this system. In this guide, we'll explain in detail how duty premium calculation works.",
+                    "Revolving fund payment is the share distributed to personnel from the revenue earned by hospitals. The shift bonus system defines the mechanism for receiving shares from this pool according to shift hours. Personnel who work more shifts receive more shares.",
+                    "Performance additional payment calculation may depend not only on shift hours but also on procedures performed. Activities like outpatient examination, surgery, and tests are evaluated as points and reflected in additional payment. Duty premium is part of this system.",
+                    "The additional payment calculation formula may vary from institution to institution. Generally: Shift Hours × Unit Price × Branch Coefficient × Performance Multiplier = Gross Shift Additional Payment. Accuracy of this calculation requires transparent tracking.",
+                    "The shift bonus system should include rules for fair distribution. Some personnel constantly working extra shifts and increasing their additional payment share creates unfairness for other personnel. Balanced shift distribution solves this problem.",
+                    "Geldimmi supports duty premium tracking. The system records each personnel's shift hours and types. It reports data necessary for revolving fund payment calculation and facilitates payroll integration.",
+                    "Transparency is critical in the performance additional payment system. Personnel being able to see their own points and calculations builds trust. In Geldimmi, each user can access their own shift statistics.",
+                    "In conclusion, additional payment calculation must be done correctly and transparently. Automate shift bonus system tracking with Geldimmi, ensure fair distribution and reliable calculation."
+                ),
+                PublishedAt = new DateTime(2026, 2, 19)
+            },
+            new BlogPost
+            {
+                Slug = "doner-sermaye-nobet-iliskisi",
+                TitleTr = "Döner Sermaye Ek Ödemesi ve Nöbet İlişkisi",
+                TitleEn = "Revolving Fund Payment and Shift Relationship",
+                ExcerptTr = "Döner sermaye ek ödemesi nasıl hesaplanır? Nöbetin döner sermayeye etkisi ve performans puanı detayları.",
+                ExcerptEn = "How is revolving fund payment calculated? Impact of shifts on revolving capital and performance score details.",
+                KeywordsTr = new[] { "Döner sermaye ek ödemesi", "Döner sermaye nöbet etkisi", "Performans puanı nöbet", "Döner sermaye hesaplama", "Ek ödeme döner sermaye" },
+                KeywordsEn = new[] { "Revolving fund payment", "Revolving capital duty effect", "Performance score shift", "Revolving fund calculation", "Additional payment fund" },
+                ContentTr = Combine(
+                    "Döner sermaye ek ödemesi, kamu sağlık kuruluşlarında personel gelirinin önemli bir bileşenidir. Nöbetin döner sermayeye etkisi, personelin toplam gelirini doğrudan etkiler. Bu rehberde, döner sermaye hesaplama yöntemlerini ve nöbet ilişkisini açıklayacağız.",
+                    "Döner sermaye nöbet etkisi, nöbet saatlerinin performans puanına yansımasıyla oluşur. Tutulan her nöbet, belirli bir puan değerine sahiptir. Gece nöbeti, gündüz nöbetinden daha yüksek puan alır; hafta sonu ve tatil nöbetleri ise ekstra puan kazandırır.",
+                    "Performans puanı nöbet hesaplamasında şu faktörler etkilidir: Nöbet saati sayısı, vardiya tipi (gündüz/gece), gün tipi (hafta içi/hafta sonu/tatil), branş katsayısı ve kurum politikaları. Bu faktörlerin tamamı hesaplamaya dahil edilir.",
+                    "Döner sermaye hesaplama formülü: Toplam Performans Puanı × Birim Puan Değeri × Dağıtım Oranı = Ek Ödeme. Nöbet puanları, toplam performans puanının önemli bir kısmını oluşturabilir.",
+                    "Ek ödeme döner sermaye ilişkisinde adalet kritiktir. Nöbet dağılımındaki adaletsizlik, ek ödeme dağılımına da yansır. Bu nedenle dengeli nöbet planlaması, döner sermaye adaleti için de gereklidir.",
+                    "Geldimmi, döner sermaye ek ödemesi hesaplamasını destekler. Sistem, nöbet saatlerini ve türlerini kayıt altına alarak performans puanı nöbet verilerini oluşturur. Bu veriler, döner sermaye hesaplama sistemlerine aktarılabilir.",
+                    "Döner sermaye nöbet etkisi takibinde geçmiş dönem karşılaştırmaları önemlidir. Geldimmi'nin raporlama modülü, aylık ve yıllık nöbet istatistiklerini sunar. Bu veriler, döner sermaye planlaması için değerlidir.",
+                    "Sonuç olarak, döner sermaye hesaplama ve nöbet ilişkisi doğru yönetilmelidir. Performans puanı nöbet takibini Geldimmi ile yapın, adil dağıtım ve şeffaf hesaplama sağlayın."
+                ),
+                ContentEn = Combine(
+                    "Revolving fund payment is an important component of personnel income in public healthcare facilities. The revolving capital duty effect directly affects personnel's total income. In this guide, we'll explain revolving fund calculation methods and the shift relationship.",
+                    "Revolving capital duty effect is formed by shift hours reflecting on performance score. Each shift worked has a certain point value. Night shifts receive higher points than day shifts; weekend and holiday shifts earn extra points.",
+                    "Factors affecting performance score shift calculation: Number of shift hours, shift type (day/night), day type (weekday/weekend/holiday), branch coefficient, and institutional policies. All these factors are included in the calculation.",
+                    "Revolving fund calculation formula: Total Performance Score × Unit Point Value × Distribution Rate = Additional Payment. Shift points can constitute a significant portion of total performance score.",
+                    "Fairness is critical in additional payment fund relationship. Unfairness in shift distribution is also reflected in additional payment distribution. Therefore, balanced shift planning is also necessary for revolving fund fairness.",
+                    "Geldimmi supports revolving fund payment calculation. The system creates performance score shift data by recording shift hours and types. This data can be transferred to revolving fund calculation systems.",
+                    "Past period comparisons are important in revolving capital duty effect tracking. Geldimmi's reporting module provides monthly and yearly shift statistics. This data is valuable for revolving fund planning.",
+                    "In conclusion, revolving fund calculation and shift relationship must be managed correctly. Track performance score shift with Geldimmi, ensure fair distribution and transparent calculation."
+                ),
+                PublishedAt = new DateTime(2026, 2, 20)
+            },
+            // ============ PERSONEL YÖNETİMİ (31-35) ============
+            new BlogPost
+            {
+                Slug = "hastane-personel-yonetim-sistemi",
+                TitleTr = "Hastane Personel Ekleme ve Yönetim Sistemi",
+                TitleEn = "Hospital Staff Addition and Management System",
+                ExcerptTr = "Hastane personel yönetimi rehberi. Sağlık personeli kayıt, çalışan yönetim programı ve takip yazılımı.",
+                ExcerptEn = "Hospital staff management guide. Healthcare personnel registration, employee management software, and tracking software.",
+                KeywordsTr = new[] { "Hastane personel yönetimi", "Sağlık personeli kayıt", "Personel ekleme sistemi", "Çalışan yönetim programı", "Personel takip yazılımı" },
+                KeywordsEn = new[] { "Hospital staff management", "Healthcare personnel registration", "Staff addition system", "Employee management software", "Personnel tracking software" },
+                ContentTr = Combine(
+                    "Hastane personel yönetimi, sağlık kuruluşlarının en temel operasyonel süreçlerinden biridir. Sağlık personeli kayıt ve takibi, nöbet planlamasının temelini oluşturur. Bu rehberde, personel ekleme sistemi kurulumu ve çalışan yönetim programı seçimini ele alacağız.",
+                    "Personel takip yazılımı seçerken dikkat edilmesi gereken özellikler: Kapsamlı personel profili, yetkinlik ve sertifika takibi, izin yönetimi, nöbet entegrasyonu ve raporlama yetenekleri. Geldimmi, tüm bu özellikleri tek platformda sunar.",
+                    "Sağlık personeli kayıt sürecinde toplanması gereken bilgiler: Kişisel bilgiler, kadro durumu (4A/4B/4D), unvan ve branş, çalışma saati tercihleri, yetkinlikler ve iletişim bilgileri. Bu verilerin eksiksiz olması, nöbet planlaması için kritiktir.",
+                    "Hastane personel yönetimi sistemlerinde organizasyon yapısı önemlidir. Departmanlar, servisler ve ekipler tanımlanmalı; her personel uygun birime atanmalıdır. Geldimmi'de çoklu organizasyon desteği mevcuttur.",
+                    "Çalışan yönetim programı ile nöbet sistemi entegrasyonu, manuel veri girişini ortadan kaldırır. Personel bilgileri bir kez girildikten sonra nöbet çizelgelerinde otomatik kullanılır. Bu entegrasyon, hata riskini azaltır.",
+                    "Personel ekleme sistemi kullanımı kolay olmalıdır. Geldimmi'de tekil personel ekleme, toplu içe aktarma (Excel) ve davetiye ile ekleme seçenekleri mevcuttur. Büyük ekipler için toplu işlemler zaman kazandırır.",
+                    "Personel takip yazılımı ile izin ve rapor yönetimi de entegre çalışmalıdır. İzin talepleri sistem üzerinden yapılabilmeli, onaylar yönetici panelinden verilebilmeli ve nöbet çizelgesi otomatik güncellenmelidir.",
+                    "Sonuç olarak, hastane personel yönetimi dijital araçlarla kolaylaşır. Sağlık personeli kayıt ve takibini Geldimmi ile yapın, nöbet planlamasının temelini güçlendirin."
+                ),
+                ContentEn = Combine(
+                    "Hospital staff management is one of the most basic operational processes of healthcare facilities. Healthcare personnel registration and tracking forms the foundation of shift planning. In this guide, we'll cover staff addition system setup and employee management software selection.",
+                    "Features to consider when choosing personnel tracking software: Comprehensive personnel profile, competency and certificate tracking, leave management, shift integration, and reporting capabilities. Geldimmi offers all these features on a single platform.",
+                    "Information to collect in healthcare personnel registration process: Personal information, staff status (4A/4B/4D), title and branch, working hour preferences, competencies, and contact information. Completeness of this data is critical for shift planning.",
+                    "Organizational structure is important in hospital staff management systems. Departments, wards, and teams should be defined; each staff member should be assigned to the appropriate unit. Geldimmi has multi-organization support.",
+                    "Integration of employee management software with shift system eliminates manual data entry. Once personnel information is entered, it's automatically used in shift schedules. This integration reduces error risk.",
+                    "Staff addition system should be easy to use. Geldimmi has options for individual staff addition, bulk import (Excel), and invitation-based addition. Bulk operations save time for large teams.",
+                    "Leave and report management should also work integrated with personnel tracking software. Leave requests should be made through the system, approvals should be given from the manager panel, and shift schedule should be automatically updated.",
+                    "In conclusion, hospital staff management becomes easier with digital tools. Use Geldimmi for healthcare personnel registration and tracking, strengthen the foundation of shift planning."
+                ),
+                PublishedAt = new DateTime(2026, 2, 21)
+            },
+            new BlogPost
+            {
+                Slug = "hemsire-kadro-planlamasi-nobet-dagilimi",
+                TitleTr = "Hemşire Kadro Planlaması ve Nöbet Dağılımı",
+                TitleEn = "Nurse Staffing Planning and Shift Distribution",
+                ExcerptTr = "Hemşire kadro planlaması nasıl yapılır? Hemşire sayısı hesaplama, kadro nöbet dağılımı ve ihtiyaç analizi.",
+                ExcerptEn = "How to do nurse staffing planning? Nurse ratio calculation, staff shift distribution, and needs analysis.",
+                KeywordsTr = new[] { "Hemşire kadro planlaması", "Hemşire sayısı hesaplama", "Kadro nöbet dağılımı", "Hemşire ihtiyaç analizi", "Personel planlama" },
+                KeywordsEn = new[] { "Nurse staffing planning", "Nurse ratio calculation", "Staff shift distribution", "Nurse needs analysis", "Personnel planning" },
+                ContentTr = Combine(
+                    "Hemşire kadro planlaması, hasta bakım kalitesi için kritik bir süreçtir. Hemşire sayısı hesaplama, yatak kapasitesi, hasta yoğunluğu ve bakım gereksinimlerine göre yapılır. Bu rehberde, kadro nöbet dağılımı ve hemşire ihtiyaç analizi yöntemlerini paylaşacağız.",
+                    "Hemşire ihtiyaç analizi için kullanılan yöntemler: Hasta/hemşire oranı, bakım saati hesaplaması, acuity sistemi ve tarihsel veri analizi. Her yöntemin avantajları ve sınırlılıkları vardır; kombinasyon kullanımı önerilir.",
+                    "Hemşire sayısı hesaplama formülü örneği: (Toplam Yatak Sayısı × Ortalama Doluluk × Günlük Bakım Saati) ÷ Hemşire Çalışma Saati = Gerekli Hemşire Sayısı. Bu hesaplama, 7/24 kapsam için vardiya sayısıyla çarpılmalıdır.",
+                    "Kadro nöbet dağılımı planlanırken yetkinlik matrisi önemlidir. Her vardiyada yeterli deneyimli hemşire bulunmalı, junior ve senior denge sağlanmalıdır. Geldimmi'de yetkinlik bazlı atama kuralları tanımlanabilir.",
+                    "Personel planlama sürecinde mevsimsel değişiklikler de dikkate alınmalıdır. Kış aylarında hasta yoğunluğu artabilir, yaz döneminde izinler yoğunlaşabilir. Esnek kadro planlaması, bu dalgalanmalara adapte olmalıdır.",
+                    "Hemşire kadro planlaması için Geldimmi değerli veriler sunar. Geçmiş dönem nöbet istatistikleri, fazla mesai oranları ve personel yeterliliği raporları, planlama kararlarını destekler.",
+                    "Kadro nöbet dağılımı adaleti, personel memnuniyetini doğrudan etkiler. Geldimmi'nin adil dağıtım motoru, tüm hemşireler arasında dengeli yük paylaşımı sağlar ve şikayetleri azaltır.",
+                    "Sonuç olarak, hemşire ihtiyaç analizi ve doğru kadro planlaması hasta güvenliği için kritiktir. Hemşire sayısı hesaplama ve kadro nöbet dağılımı için Geldimmi'nin analiz araçlarını kullanın."
+                ),
+                ContentEn = Combine(
+                    "Nurse staffing planning is a critical process for patient care quality. Nurse ratio calculation is based on bed capacity, patient volume, and care requirements. In this guide, we'll share staff shift distribution and nurse needs analysis methods.",
+                    "Methods used for nurse needs analysis: Patient/nurse ratio, care hour calculation, acuity system, and historical data analysis. Each method has advantages and limitations; combination use is recommended.",
+                    "Example nurse ratio calculation formula: (Total Bed Count × Average Occupancy × Daily Care Hours) ÷ Nurse Working Hours = Required Nurse Count. This calculation should be multiplied by number of shifts for 24/7 coverage.",
+                    "Competency matrix is important when planning staff shift distribution. Each shift should have enough experienced nurses, junior and senior balance should be maintained. Competency-based assignment rules can be defined in Geldimmi.",
+                    "Seasonal changes should also be considered in the personnel planning process. Patient volume may increase in winter months, leaves may intensify in summer. Flexible staffing planning should adapt to these fluctuations.",
+                    "Geldimmi provides valuable data for nurse staffing planning. Past period shift statistics, overtime rates, and staff adequacy reports support planning decisions.",
+                    "Fairness in staff shift distribution directly affects staff satisfaction. Geldimmi's fair distribution engine ensures balanced workload sharing among all nurses and reduces complaints.",
+                    "In conclusion, nurse needs analysis and correct staffing planning is critical for patient safety. Use Geldimmi's analysis tools for nurse ratio calculation and staff shift distribution."
+                ),
+                PublishedAt = new DateTime(2026, 2, 22)
+            },
+            new BlogPost
+            {
+                Slug = "personel-yetkinlik-nobet-atama",
+                TitleTr = "Personel Yetkinlik ve Nöbet Atama Kriterleri",
+                TitleEn = "Staff Competency and Shift Assignment Criteria",
+                ExcerptTr = "Personel yetkinlik değerlendirme ve nöbet atama kriterleri. Yetkinlik bazlı nöbet ve beceri matrisi rehberi.",
+                ExcerptEn = "Staff competency assessment and shift assignment criteria. Competency-based scheduling and skill matrix guide.",
+                KeywordsTr = new[] { "Personel yetkinlik değerlendirme", "Nöbet atama kriterleri", "Yetkinlik bazlı nöbet", "Personel beceri matrisi", "Nöbet uygunluk değerlendirme" },
+                KeywordsEn = new[] { "Staff competency assessment", "Shift assignment criteria", "Competency-based scheduling", "Staff skill matrix", "Duty eligibility evaluation" },
+                ContentTr = Combine(
+                    "Personel yetkinlik değerlendirme, kaliteli nöbet planlamasının temelini oluşturur. Nöbet atama kriterleri, sadece müsaitliğe değil, yetkinliğe de dayanmalıdır. Bu rehberde, yetkinlik bazlı nöbet planlaması ve personel beceri matrisi oluşturmayı açıklayacağız.",
+                    "Personel beceri matrisi, her çalışanın sahip olduğu yetkinlikleri görsel olarak sunar. Matris satırlarında personel isimleri, sütunlarında yetkinlik alanları bulunur. Bu araç, nöbet atamasında kimin nereye atanabileceğini netleştirir.",
+                    "Nöbet atama kriterleri tanımlanırken şu faktörler değerlendirilir: Teknik beceriler, sertifikalar, deneyim süresi, özel eğitimler ve performans değerlendirmeleri. Geldimmi'de bu kriterler personel profiline kaydedilebilir.",
+                    "Yetkinlik bazlı nöbet planlaması, hasta güvenliğini artırır. Örneğin, yoğun bakım ünitesinde deneyimsiz bir hemşirenin tek başına nöbet tutması uygun değildir. Sistem, bu tür atamaları engelleyecek kurallar içermelidir.",
+                    "Nöbet uygunluk değerlendirme süreci sürekli güncellenmeli. Yeni sertifikalar, tamamlanan eğitimler ve kazanılan deneyimler personel profiline eklenmeli. Geldimmi, yetkinlik güncellemelerini destekler.",
+                    "Personel yetkinlik değerlendirme, kariyer gelişimi için de önemlidir. Hangi alanlarda eksiklik olduğu belirlenir ve eğitim planları yapılır. Geldimmi raporları, yetkinlik boşluklarını görünür kılar.",
+                    "Yetkinlik bazlı nöbet planlamasında yedekleme de önemlidir. Kritik yetkinliklere sahip personel sayısı yeterli olmalı ve bu kişiler için yedek planları bulunmalıdır.",
+                    "Sonuç olarak, personel beceri matrisi ve nöbet atama kriterleri hasta güvenliği için kritiktir. Yetkinlik bazlı nöbet planlaması için Geldimmi'nin personel yönetimi özelliklerini kullanın."
+                ),
+                ContentEn = Combine(
+                    "Staff competency assessment forms the foundation of quality shift planning. Shift assignment criteria should be based not only on availability but also on competency. In this guide, we'll explain competency-based scheduling and creating a staff skill matrix.",
+                    "Staff skill matrix visually presents the competencies each employee possesses. Matrix rows contain personnel names, columns contain competency areas. This tool clarifies who can be assigned where in shift assignment.",
+                    "When defining shift assignment criteria, these factors are evaluated: Technical skills, certificates, length of experience, special trainings, and performance evaluations. These criteria can be recorded in personnel profiles in Geldimmi.",
+                    "Competency-based scheduling increases patient safety. For example, it's not appropriate for an inexperienced nurse to work alone in the intensive care unit. The system should include rules to prevent such assignments.",
+                    "Duty eligibility evaluation process should be continuously updated. New certificates, completed trainings, and gained experience should be added to personnel profiles. Geldimmi supports competency updates.",
+                    "Staff competency assessment is also important for career development. Areas of deficiency are identified and training plans are made. Geldimmi reports make competency gaps visible.",
+                    "Backup is also important in competency-based scheduling. The number of personnel with critical competencies should be sufficient and backup plans should exist for these people.",
+                    "In conclusion, staff skill matrix and shift assignment criteria are critical for patient safety. Use Geldimmi's personnel management features for competency-based scheduling."
+                ),
+                PublishedAt = new DateTime(2026, 2, 23)
+            },
+            new BlogPost
+            {
+                Slug = "personel-izin-yonetimi-nobet",
+                TitleTr = "Personel İzin Yönetimi ve Nöbet Planlaması",
+                TitleEn = "Staff Leave Management and Shift Planning",
+                ExcerptTr = "Personel izin yönetimi ve nöbet koordinasyonu. Yıllık izin takibi, izin takvimi entegrasyonu rehberi.",
+                ExcerptEn = "Staff leave management and shift coordination. Annual leave tracking, leave calendar integration guide.",
+                KeywordsTr = new[] { "Personel izin yönetimi", "İzin nöbet planlaması", "Yıllık izin takibi", "İzin takvimi entegrasyonu", "İzin planlama yazılımı" },
+                KeywordsEn = new[] { "Staff leave management", "Leave duty planning", "Annual leave tracking", "Leave calendar integration", "Leave planning software" },
+                ContentTr = Combine(
+                    "Personel izin yönetimi, nöbet planlamasının ayrılmaz bir parçasıdır. İzin nöbet planlaması koordinasyonu olmadan yapılan çizelgeler, sürekli değişiklik gerektirir. Bu rehberde, yıllık izin takibi ve izin takvimi entegrasyonu yöntemlerini paylaşacağız.",
+                    "İzin planlama yazılımı seçerken nöbet sistemiyle entegrasyon kritiktir. İzinli personel otomatik olarak nöbet havuzundan çıkarılmalı, izin bitiminde tekrar dahil edilmelidir. Geldimmi, bu entegrasyonu sorunsuz sağlar.",
+                    "Yıllık izin takibi kapsamında kalan haklar, kullanılan günler ve planlanan izinler görüntülenebilmelidir. Personel kendi izin bakiyesini görebilmeli, yöneticiler departman bazlı raporlar alabilmelidir.",
+                    "İzin nöbet planlaması koordinasyonunda çakışma kontrolü önemlidir. Aynı vardiyada çok sayıda izin onaylanması, nöbet açığına yol açar. Geldimmi, izin onayı öncesinde nöbet etkisini gösterir.",
+                    "İzin takvimi entegrasyonu ile personelin yıllık planı görünür olur. Yazılım, izin yoğunluğu dönemlerini (yaz tatili, bayram öncesi) vurgulayarak yöneticileri uyarır. Proaktif planlama mümkün olur.",
+                    "Personel izin yönetimi kapsamında farklı izin tipleri tanımlanmalıdır: Yıllık izin, hastalık izni, mazeret izni, doğum izni, vb. Her izin tipi nöbet planlamasında farklı şekilde değerlendirilebilir.",
+                    "İzin planlama yazılımı ile talep ve onay süreci dijitalleştirilmelidir. Personel mobil uygulama üzerinden izin talep edebilmeli, yönetici anlık bildirimle onay verebilmelidir. Kağıt formlar ortadan kalkmalıdır.",
+                    "Sonuç olarak, yıllık izin takibi ve nöbet koordinasyonu birlikte yönetilmelidir. İzin takvimi entegrasyonu için Geldimmi'nin izin modülünü kullanın, planlama sürecinizi kolaylaştırın."
+                ),
+                ContentEn = Combine(
+                    "Staff leave management is an integral part of shift planning. Schedules made without leave duty planning coordination require constant changes. In this guide, we'll share annual leave tracking and leave calendar integration methods.",
+                    "Integration with shift system is critical when choosing leave planning software. Personnel on leave should be automatically removed from the shift pool and included again when leave ends. Geldimmi provides this integration seamlessly.",
+                    "Under annual leave tracking, remaining rights, used days, and planned leaves should be viewable. Staff should be able to see their own leave balance, managers should be able to get department-based reports.",
+                    "Conflict checking is important in leave duty planning coordination. Approving too many leaves in the same shift leads to shift gaps. Geldimmi shows shift impact before leave approval.",
+                    "With leave calendar integration, personnel's annual plan becomes visible. Software highlights leave-intensive periods (summer vacation, pre-holiday) and warns managers. Proactive planning becomes possible.",
+                    "Different leave types should be defined under staff leave management: Annual leave, sick leave, excuse leave, maternity leave, etc. Each leave type can be evaluated differently in shift planning.",
+                    "Request and approval process should be digitized with leave planning software. Staff should be able to request leave through mobile app, manager should be able to approve with instant notification. Paper forms should be eliminated.",
+                    "In conclusion, annual leave tracking and shift coordination should be managed together. Use Geldimmi's leave module for leave calendar integration, simplify your planning process."
+                ),
+                PublishedAt = new DateTime(2026, 2, 24)
+            },
+            new BlogPost
+            {
+                Slug = "saglik-personeli-devamsizlik-takibi",
+                TitleTr = "Sağlık Personeli Devamsızlık Takibi",
+                TitleEn = "Healthcare Staff Absenteeism Tracking",
+                ExcerptTr = "Personel devamsızlık takibi ve yönetimi. İşe gelmeme takibi, devamsızlık raporu ve katılım oranı analizi.",
+                ExcerptEn = "Staff absenteeism tracking and management. Attendance monitoring, absence report, and attendance rate analysis.",
+                KeywordsTr = new[] { "Personel devamsızlık takibi", "İşe gelmeme takibi", "Absenteeism yönetimi", "Devamsızlık raporu", "Personel katılım oranı" },
+                KeywordsEn = new[] { "Staff absenteeism tracking", "Attendance monitoring", "Absenteeism management", "Absence report", "Staff attendance rate" },
+                ContentTr = Combine(
+                    "Personel devamsızlık takibi, sağlık kuruluşlarında operasyonel sürekliliği sağlamak için kritiktir. İşe gelmeme takibi, nöbet açıklarını önceden tespit etmeyi ve yedekleme planlarını devreye almayı mümkün kılar. Bu rehberde, devamsızlık raporu oluşturma ve analiz yöntemlerini açıklayacağız.",
+                    "Absenteeism yönetimi kapsamında devamsızlık nedenleri kategorize edilmelidir: Hastalık, mazeret, izin, rapor, devamsızlık. Her kategorinin takibi ve raporlanması ayrı yapılmalıdır. Geldimmi, bu kategorileri destekler.",
+                    "Personel katılım oranı, kurumsal performans göstergelerinden biridir. Düşük katılım oranı, nöbet planlamasını zorlaştırır ve fazla mesai maliyetini artırır. Hedef katılım oranları belirlenmeli ve takip edilmelidir.",
+                    "Devamsızlık raporu oluşturma, yönetim kararları için önemli veriler sunar. Raporlar; kişi bazlı devamsızlık oranları, departman karşılaştırmaları, trend analizleri ve maliyet hesaplamalarını içermelidir.",
+                    "İşe gelmeme takibi anlık yapılmalıdır. Personel nöbetine gelmediğinde sistem uyarı vermeli ve yedek arama süreci başlatılmalıdır. Geldimmi, nöbet onay sistemiyle bu takibi destekler.",
+                    "Personel devamsızlık takibi, sadece cezai değil, önleyici amaçla da kullanılmalıdır. Yüksek devamsızlık gösteren personelle görüşme yapılarak nedenler anlaşılmalı ve çözümler üretilmelidir.",
+                    "Absenteeism yönetimi politikaları net tanımlanmalıdır. Devamsızlık sınırları, bildirim prosedürleri ve yaptırımlar yazılı olmalıdır. Bu politikalar, adil ve tutarlı uygulamayı sağlar.",
+                    "Sonuç olarak, devamsızlık raporu ve personel katılım oranı takibi operasyonel verimlilik için gereklidir. İşe gelmeme takibi ve analizi için Geldimmi'nin raporlama özelliklerini kullanın."
+                ),
+                ContentEn = Combine(
+                    "Staff absenteeism tracking is critical for ensuring operational continuity in healthcare facilities. Attendance monitoring makes it possible to detect shift gaps in advance and activate backup plans. In this guide, we'll explain absence report creation and analysis methods.",
+                    "Absenteeism reasons should be categorized under absenteeism management: Illness, excuse, leave, report, absence. Tracking and reporting of each category should be done separately. Geldimmi supports these categories.",
+                    "Staff attendance rate is one of the institutional performance indicators. Low attendance rate makes shift planning difficult and increases overtime costs. Target attendance rates should be set and tracked.",
+                    "Creating absence report provides important data for management decisions. Reports should include: person-based absenteeism rates, department comparisons, trend analyses, and cost calculations.",
+                    "Attendance monitoring should be done instantly. When personnel doesn't show up for shift, the system should alert and backup search process should start. Geldimmi supports this tracking with shift confirmation system.",
+                    "Staff absenteeism tracking should be used not only for punitive but also preventive purposes. Interviews should be conducted with personnel showing high absenteeism to understand reasons and produce solutions.",
+                    "Absenteeism management policies should be clearly defined. Absenteeism limits, notification procedures, and sanctions should be written. These policies ensure fair and consistent application.",
+                    "In conclusion, absence report and staff attendance rate tracking is necessary for operational efficiency. Use Geldimmi's reporting features for attendance monitoring and analysis."
+                ),
+                PublishedAt = new DateTime(2026, 2, 25)
+            },
+            // ============ TEKNOLOJİ VE YAZILIM (36-40) ============
+            new BlogPost
+            {
+                Slug = "en-iyi-nobet-planlama-yazilimlari-2026",
+                TitleTr = "En İyi Nöbet Planlama Yazılımları 2026",
+                TitleEn = "Best Shift Planning Software 2026",
+                ExcerptTr = "2026 yılının en iyi nöbet planlama yazılımları karşılaştırması. Hastane vardiya yazılımı ve nöbet yönetim sistemi seçimi.",
+                ExcerptEn = "Comparison of the best shift planning software in 2026. Hospital roster software and duty management system selection.",
+                KeywordsTr = new[] { "Nöbet planlama yazılımı", "En iyi nöbet programı", "Hastane vardiya yazılımı", "Nöbet yönetim sistemi", "Shift planning software" },
+                KeywordsEn = new[] { "Shift planning software", "Best scheduling program", "Hospital roster software", "Duty management system", "Scheduling application" },
+                ContentTr = Combine(
+                    "Nöbet planlama yazılımı seçimi, sağlık kuruluşları için stratejik bir karardır. En iyi nöbet programı, kurumun özel ihtiyaçlarına uygun özelliklere sahip olmalıdır. Bu rehberde, 2026 yılının öne çıkan hastane vardiya yazılımı çözümlerini ve seçim kriterlerini paylaşacağız.",
+                    "Nöbet yönetim sistemi seçerken değerlendirilmesi gereken özellikler: Otomatik planlama algoritması, adil dağıtım motoru, mobil erişim, puantaj entegrasyonu, raporlama yetenekleri ve kullanıcı dostu arayüz.",
+                    "Shift planning software karşılaştırmasında yerli çözümler avantaj sağlar. Türkiye'deki sağlık mevzuatına uyumluluk, Türkçe destek ve yerel ödeme seçenekleri önemlidir. Geldimmi, bu kriterleri karşılayan yerli bir çözümdür.",
+                    "En iyi nöbet programı özellikleri arasında bulut tabanlı yapı öne çıkar. Kurulum gerektirmeyen, her yerden erişilebilen ve otomatik güncellenen sistemler tercih edilmelidir. Geldimmi, bulut tabanlı SaaS modeli sunar.",
+                    "Hastane vardiya yazılımı fiyatlandırması da karar sürecinde önemlidir. Kullanıcı sayısına göre fiyatlandırma, ücretsiz deneme ve esnek planlar değerlendirilmelidir. Geldimmi'nin ücretsiz başlangıç planı, risk almadan deneme imkanı sunar.",
+                    "Nöbet yönetim sistemi entegrasyon yetenekleri kontrol edilmelidir. HIS/HBYS sistemleri, bordro yazılımları ve mesaj servisleriyle entegrasyon, verimliliği artırır. API desteği olan çözümler tercih edilmelidir.",
+                    "Shift planning software güvenlik standartları da kritiktir. Sağlık verileri hassastır; şifreleme, rol tabanlı erişim ve denetim izleri olmalıdır. Geldimmi, güvenlik konusunda endüstri standartlarını karşılar.",
+                    "Sonuç olarak, en iyi nöbet programı kurumunuzun ihtiyaçlarına uygun olanıdır. Nöbet planlama yazılımı seçiminde Geldimmi'yi değerlendirin, ücretsiz deneyerek karar verin."
+                ),
+                ContentEn = Combine(
+                    "Shift planning software selection is a strategic decision for healthcare facilities. The best scheduling program should have features suitable for the institution's specific needs. In this guide, we'll share the prominent hospital roster software solutions of 2026 and selection criteria.",
+                    "Features to evaluate when choosing a duty management system: Automatic planning algorithm, fair distribution engine, mobile access, timesheet integration, reporting capabilities, and user-friendly interface.",
+                    "Local solutions provide advantages in shift planning software comparison. Compliance with healthcare regulations in Turkey, Turkish support, and local payment options are important. Geldimmi is a local solution that meets these criteria.",
+                    "Cloud-based structure stands out among the best scheduling program features. Systems that don't require installation, are accessible from anywhere, and are automatically updated should be preferred. Geldimmi offers a cloud-based SaaS model.",
+                    "Hospital roster software pricing is also important in the decision process. Pricing by number of users, free trial, and flexible plans should be evaluated. Geldimmi's free starter plan offers the opportunity to try without risk.",
+                    "Duty management system integration capabilities should be checked. Integration with HIS/HMS systems, payroll software, and messaging services increases efficiency. Solutions with API support should be preferred.",
+                    "Shift planning software security standards are also critical. Healthcare data is sensitive; there should be encryption, role-based access, and audit trails. Geldimmi meets industry standards in security.",
+                    "In conclusion, the best scheduling program is the one that fits your institution's needs. Consider Geldimmi in your shift planning software selection, try it free and decide."
+                ),
+                PublishedAt = new DateTime(2026, 2, 26)
+            },
+            new BlogPost
+            {
+                Slug = "mobil-nobet-takip-uygulamalari",
+                TitleTr = "Mobil Nöbet Takip Uygulamaları",
+                TitleEn = "Mobile Shift Tracking Applications",
+                ExcerptTr = "Mobil nöbet uygulaması özellikleri ve seçim kriterleri. Telefon nöbet programı ve mobil vardiya takibi.",
+                ExcerptEn = "Mobile shift app features and selection criteria. Phone scheduling program and mobile roster tracking.",
+                KeywordsTr = new[] { "Mobil nöbet uygulaması", "Nöbet takip app", "Telefon nöbet programı", "Mobil vardiya takibi", "Nöbet bildirim uygulaması" },
+                KeywordsEn = new[] { "Mobile shift app", "Duty tracking app", "Phone scheduling program", "Mobile roster tracking", "Shift notification app" },
+                ContentTr = Combine(
+                    "Mobil nöbet uygulaması, modern nöbet yönetiminin vazgeçilmez parçasıdır. Nöbet takip app kullanımı, personelin her an programa erişebilmesini sağlar. Bu rehberde, telefon nöbet programı özellikleri ve mobil vardiya takibi seçim kriterlerini paylaşacağız.",
+                    "Mobil vardiya takibi uygulamalarında olması gereken temel özellikler: Gerçek zamanlı takvim görünümü, push bildirimleri, takas talep sistemi, izin başvurusu ve puantaj görüntüleme.",
+                    "Nöbet bildirim uygulaması, son dakika değişikliklerinin anında iletilmesi için kritiktir. Yeni nöbet ataması, onaylanan takas veya iptal durumlarında personel anlık bilgilendirilmelidir. Geldimmi, kapsamlı bildirim sistemi sunar.",
+                    "Telefon nöbet programı, iOS ve Android platformlarında çalışmalıdır. Web tabanlı responsive tasarım da mobil erişim sağlar. Geldimmi'nin web uygulaması tüm cihazlara uyumludur.",
+                    "Mobil nöbet uygulaması performansı önemlidir. Hızlı yüklenen, düşük veri tüketen ve çevrimdışı da bazı işlevler sunan uygulamalar tercih edilmelidir. Kullanıcı deneyimi, benimseme oranını doğrudan etkiler.",
+                    "Nöbet takip app güvenliği de değerlendirilmelidir. Şifre koruması, oturum yönetimi ve veri şifreleme olmalıdır. Kayıp telefon durumunda uzaktan oturum kapatma özelliği önemlidir.",
+                    "Mobil vardiya takibi uygulamasında self-servis özellikler personel memnuniyetini artırır. Kendi nöbet geçmişini görüntüleme, takas talebi açma ve izin başvurusu yapabilme, yönetici yükünü de azaltır.",
+                    "Sonuç olarak, nöbet bildirim uygulaması ve mobil erişim modern nöbet yönetiminin olmazsa olmazıdır. Telefon nöbet programı olarak Geldimmi'yi deneyin, mobil deneyimin farkını yaşayın."
+                ),
+                ContentEn = Combine(
+                    "Mobile shift app is an indispensable part of modern shift management. Using a duty tracking app ensures personnel can access the schedule at any time. In this guide, we'll share phone scheduling program features and mobile roster tracking selection criteria.",
+                    "Essential features in mobile roster tracking apps: Real-time calendar view, push notifications, swap request system, leave application, and timesheet viewing.",
+                    "Shift notification app is critical for instant delivery of last-minute changes. Personnel should be instantly informed of new shift assignments, approved swaps, or cancellations. Geldimmi offers a comprehensive notification system.",
+                    "Phone scheduling program should work on iOS and Android platforms. Web-based responsive design also provides mobile access. Geldimmi's web application is compatible with all devices.",
+                    "Mobile shift app performance is important. Applications that load fast, consume low data, and offer some functions offline should be preferred. User experience directly affects adoption rate.",
+                    "Duty tracking app security should also be evaluated. There should be password protection, session management, and data encryption. Remote logout feature is important in case of lost phone.",
+                    "Self-service features in mobile roster tracking app increase staff satisfaction. Viewing own shift history, opening swap requests, and applying for leave also reduce manager workload.",
+                    "In conclusion, shift notification app and mobile access are essential for modern shift management. Try Geldimmi as your phone scheduling program and experience the difference of mobile."
+                ),
+                PublishedAt = new DateTime(2026, 2, 27)
+            },
+            new BlogPost
+            {
+                Slug = "bulut-tabanli-nobet-yonetim-sistemleri",
+                TitleTr = "Bulut Tabanlı Nöbet Yönetim Sistemleri",
+                TitleEn = "Cloud-Based Shift Management Systems",
+                ExcerptTr = "Bulut nöbet sistemi avantajları. Cloud vardiya yönetimi, online nöbet programı ve SaaS nöbet yazılımı.",
+                ExcerptEn = "Cloud shift system advantages. Cloud roster management, online duty program, and SaaS scheduling software.",
+                KeywordsTr = new[] { "Bulut nöbet sistemi", "Cloud vardiya yönetimi", "Online nöbet programı", "SaaS nöbet yazılımı", "Web tabanlı nöbet takibi" },
+                KeywordsEn = new[] { "Cloud shift system", "Cloud roster management", "Online duty program", "SaaS scheduling software", "Web-based duty tracking" },
+                ContentTr = Combine(
+                    "Bulut nöbet sistemi, geleneksel yerel kurulumlu yazılımların yerini almaktadır. Cloud vardiya yönetimi, her yerden erişim, otomatik güncellemeler ve düşük IT yükü sunar. Bu rehberde, online nöbet programı avantajlarını ve SaaS nöbet yazılımı seçimini inceleyeceğiz.",
+                    "SaaS nöbet yazılımı modeli, kurulum ve bakım maliyetlerini ortadan kaldırır. Sunucu altyapısı, güncelleme ve yedekleme sağlayıcı tarafından yönetilir. Kurum sadece kullanıma odaklanır. Geldimmi, tam SaaS model sunar.",
+                    "Online nöbet programı kullanmanın avantajları: Herhangi bir cihazdan erişim, ekip üyelerinin eşzamanlı çalışması, veri kaybı riskinin azalması ve ölçeklenebilirlik. Bu avantajlar, özellikle çoklu lokasyon için değerlidir.",
+                    "Cloud vardiya yönetimi güvenliği, en çok sorulan konulardan biridir. Güvenilir bulut sağlayıcılar, yerel sunuculara göre daha güçlü güvenlik önlemleri sunar: Şifreleme, yedekleme, felaket kurtarma ve sürekli izleme.",
+                    "Web tabanlı nöbet takibi sistemlerinde veri lokasyonu da değerlendirilmelidir. Türkiye'de konumlanan sunucular, veri egemenliği ve yasal uyumluluk açısından tercih edilebilir. Geldimmi, Türkiye merkezli altyapı kullanır.",
+                    "Bulut nöbet sistemi, çoklu lokasyon yönetimini kolaylaştırır. Farklı şubelerdeki nöbet çizelgeleri tek panelden yönetilir, merkezi raporlama yapılır ve standart kurallar tüm birimlere uygulanır.",
+                    "SaaS nöbet yazılımı abonelik modeli, esnek maliyet planlaması sağlar. Aylık veya yıllık ödeme seçenekleri, büyüyen kurumlara ölçekleme imkanı tanır. İlk yatırım maliyeti minimumda kalır.",
+                    "Sonuç olarak, online nöbet programı ve bulut tabanlı çözümler geleceğin standardıdır. Web tabanlı nöbet takibi için Geldimmi'yi tercih edin, bulutun avantajlarından yararlanın."
+                ),
+                ContentEn = Combine(
+                    "Cloud shift system is replacing traditional locally installed software. Cloud roster management offers access from anywhere, automatic updates, and low IT burden. In this guide, we'll examine online duty program advantages and SaaS scheduling software selection.",
+                    "SaaS scheduling software model eliminates installation and maintenance costs. Server infrastructure, updates, and backups are managed by the provider. The institution only focuses on usage. Geldimmi offers a full SaaS model.",
+                    "Advantages of using online duty program: Access from any device, simultaneous work by team members, reduced risk of data loss, and scalability. These advantages are especially valuable for multiple locations.",
+                    "Cloud roster management security is one of the most asked questions. Reliable cloud providers offer stronger security measures than local servers: Encryption, backup, disaster recovery, and continuous monitoring.",
+                    "Data location should also be evaluated in web-based duty tracking systems. Servers located in Turkey may be preferred for data sovereignty and legal compliance. Geldimmi uses Turkey-based infrastructure.",
+                    "Cloud shift system facilitates multi-location management. Shift schedules at different branches are managed from a single panel, centralized reporting is done, and standard rules are applied to all units.",
+                    "SaaS scheduling software subscription model provides flexible cost planning. Monthly or annual payment options allow growing institutions to scale. Initial investment cost stays at minimum.",
+                    "In conclusion, online duty program and cloud-based solutions are the standard of the future. Prefer Geldimmi for web-based duty tracking and benefit from cloud advantages."
+                ),
+                PublishedAt = new DateTime(2026, 2, 28)
+            },
+            new BlogPost
+            {
+                Slug = "nobet-sistemi-his-hbys-entegrasyonu",
+                TitleTr = "Nöbet Sistemi Entegrasyonları: HIS ve HBYS",
+                TitleEn = "Shift System Integrations: HIS and HMS",
+                ExcerptTr = "Nöbet sistemi HIS/HBYS entegrasyonu rehberi. Hastane bilgi sistemi ile nöbet yazılım entegrasyonu.",
+                ExcerptEn = "Shift system HIS/HMS integration guide. Hospital information system and scheduling software integration.",
+                KeywordsTr = new[] { "Nöbet sistemi entegrasyonu", "HIS nöbet entegrasyonu", "HBYS nöbet modülü", "Hastane bilgi sistemi", "Nöbet yazılım entegrasyonu" },
+                KeywordsEn = new[] { "Shift system integration", "HIS duty integration", "HMS shift module", "Hospital information system", "Scheduling software integration" },
+                ContentTr = Combine(
+                    "Nöbet sistemi entegrasyonu, hastane BT altyapısının bütünlüğü için kritiktir. HIS nöbet entegrasyonu, veri tutarlılığını sağlar ve çift veri girişini önler. Bu rehberde, HBYS nöbet modülü bağlantısı ve entegrasyon yöntemlerini açıklayacağız.",
+                    "Hastane bilgi sistemi (HIS/HBYS) ile nöbet yazılım entegrasyonu çeşitli seviyelerle sağlanabilir: Tek yönlü veri aktarımı, çift yönlü senkronizasyon veya tam entegre modül. İhtiyaç ve teknik kapasite değerlendirilmelidir.",
+                    "HIS nöbet entegrasyonu için kullanılan yöntemler: API tabanlı entegrasyon, dosya aktarımı (XML, CSV), veritabanı bağlantısı veya web servisleri. Modern çözümlerde REST API tercih edilmektedir. Geldimmi, API desteği sunar.",
+                    "HBYS nöbet modülü entegrasyonunda aktarılan veriler: Personel bilgileri, departman yapısı, nöbet çizelgeleri, puantaj verileri ve izin kayıtları. Veri haritalama ve dönüşüm kuralları tanımlanmalıdır.",
+                    "Nöbet yazılım entegrasyonu projesinde dikkat edilecek konular: Veri güvenliği, performans etkisi, hata yönetimi, geri dönüş planları ve test süreci. Entegrasyon, canlı sisteme geçmeden önce kapsamlı test edilmelidir.",
+                    "Hastane bilgi sistemi entegrasyonu, bordro sistemleriyle de genişletilebilir. Nöbet verileri otomatik olarak bordro yazılımına aktarılarak maaş hesaplamaları hızlandırılır. Geldimmi, bordro entegrasyonu destekler.",
+                    "Nöbet sistemi entegrasyonu sonrasında bakım ve izleme önemlidir. Entegrasyon hatalarını yakalayan alarm sistemleri, veri tutarsızlığı raporları ve düzenli sağlık kontrolleri planlanmalıdır.",
+                    "Sonuç olarak, HIS nöbet entegrasyonu hastane verimliliğini artırır. HBYS nöbet modülü bağlantısı için Geldimmi'nin API ve entegrasyon özelliklerini değerlendirin."
+                ),
+                ContentEn = Combine(
+                    "Shift system integration is critical for the integrity of hospital IT infrastructure. HIS duty integration ensures data consistency and prevents double data entry. In this guide, we'll explain HMS shift module connection and integration methods.",
+                    "Hospital information system (HIS/HMS) and scheduling software integration can be provided at various levels: One-way data transfer, two-way synchronization, or fully integrated module. Need and technical capacity should be evaluated.",
+                    "Methods used for HIS duty integration: API-based integration, file transfer (XML, CSV), database connection, or web services. REST API is preferred in modern solutions. Geldimmi offers API support.",
+                    "Data transferred in HMS shift module integration: Personnel information, department structure, shift schedules, timesheet data, and leave records. Data mapping and transformation rules should be defined.",
+                    "Considerations in scheduling software integration project: Data security, performance impact, error management, rollback plans, and test process. Integration should be thoroughly tested before going live.",
+                    "Hospital information system integration can also be extended with payroll systems. Shift data is automatically transferred to payroll software, speeding up salary calculations. Geldimmi supports payroll integration.",
+                    "Maintenance and monitoring is important after shift system integration. Alarm systems catching integration errors, data inconsistency reports, and regular health checks should be planned.",
+                    "In conclusion, HIS duty integration increases hospital efficiency. Evaluate Geldimmi's API and integration features for HMS shift module connection."
+                ),
+                PublishedAt = new DateTime(2026, 3, 1)
+            },
+            new BlogPost
+            {
+                Slug = "yapay-zeka-nobet-optimizasyonu",
+                TitleTr = "Yapay Zeka ile Nöbet Optimizasyonu",
+                TitleEn = "Shift Optimization with Artificial Intelligence",
+                ExcerptTr = "Yapay zeka nöbet planlama ve AI optimizasyonu. Akıllı nöbet algoritması ve makine öğrenmesi uygulamaları.",
+                ExcerptEn = "AI shift planning and AI duty optimization. Smart scheduling algorithm and machine learning applications.",
+                KeywordsTr = new[] { "Yapay zeka nöbet planlama", "AI nöbet optimizasyonu", "Akıllı nöbet algoritması", "Makine öğrenmesi vardiya", "Otomatik nöbet optimizasyonu" },
+                KeywordsEn = new[] { "AI shift planning", "AI duty optimization", "Smart scheduling algorithm", "Machine learning roster", "Automatic shift optimization" },
+                ContentTr = Combine(
+                    "Yapay zeka nöbet planlama, geleneksel kural tabanlı sistemlerin ötesine geçmektedir. AI nöbet optimizasyonu, karmaşık kısıtlamaları aynı anda değerlendirerek en uygun planı bulur. Bu rehberde, akıllı nöbet algoritması ve makine öğrenmesi uygulamalarını inceleyeceğiz.",
+                    "Akıllı nöbet algoritması, birden fazla hedefi aynı anda optimize eder: Adil dağıtım, yasal uyumluluk, personel tercihleri, maliyet minimizasyonu ve hasta güvenliği. Geleneksel yöntemlerle bu dengeyi kurmak çok zordur.",
+                    "Makine öğrenmesi vardiya planlamasında kullanım alanları: Talep tahmini, personel tercihi öğrenme, anomali tespiti ve öneri sistemleri. Tarihsel veriler analiz edilerek gelecek planlar optimize edilir.",
+                    "AI nöbet optimizasyonu simülasyon senaryolarıyla çalışır. Farklı plan alternatifleri saniyeler içinde değerlendirilir ve en iyi seçenek sunulur. Manuel deneme-yanılma süreci ortadan kalkar.",
+                    "Otomatik nöbet optimizasyonu, özellikle büyük ekipler için değerlidir. Yüzlerce personel ve binlerce kısıtlamanın olduğu ortamlarda insan hesaplaması yetersiz kalır. Yapay zeka bu karmaşıklığı yönetir.",
+                    "Geldimmi, akıllı nöbet algoritması ile otomatik çizelge önerileri sunar. Sistem, tanımlanan kuralları ve geçmiş verileri analiz ederek optimize edilmiş planlar üretir. Yönetici, önerileri onaylar veya düzenler.",
+                    "Yapay zeka nöbet planlama etik boyutu da içerir. Algoritma kararlarının şeffaf olması, personele açıklanabilir olması ve önyargı içermemesi önemlidir. Geldimmi, karar gerekçelerini görünür kılar.",
+                    "Sonuç olarak, makine öğrenmesi vardiya yönetiminin geleceğidir. AI nöbet optimizasyonu için Geldimmi'nin akıllı planlama özelliklerini deneyin."
+                ),
+                ContentEn = Combine(
+                    "AI shift planning goes beyond traditional rule-based systems. AI duty optimization finds the most suitable plan by evaluating complex constraints simultaneously. In this guide, we'll examine smart scheduling algorithm and machine learning applications.",
+                    "Smart scheduling algorithm optimizes multiple goals simultaneously: Fair distribution, legal compliance, staff preferences, cost minimization, and patient safety. It's very difficult to establish this balance with traditional methods.",
+                    "Machine learning roster planning usage areas: Demand forecasting, staff preference learning, anomaly detection, and recommendation systems. Historical data is analyzed to optimize future plans.",
+                    "AI duty optimization works with simulation scenarios. Different plan alternatives are evaluated in seconds and the best option is presented. Manual trial-and-error process is eliminated.",
+                    "Automatic shift optimization is especially valuable for large teams. Human calculation is insufficient in environments with hundreds of personnel and thousands of constraints. Artificial intelligence manages this complexity.",
+                    "Geldimmi offers automatic schedule suggestions with smart scheduling algorithm. The system analyzes defined rules and historical data to produce optimized plans. Manager approves or edits suggestions.",
+                    "AI shift planning also includes an ethical dimension. It's important that algorithm decisions are transparent, explainable to personnel, and free from bias. Geldimmi makes decision rationales visible.",
+                    "In conclusion, machine learning roster is the future of shift management. Try Geldimmi's smart planning features for AI duty optimization."
+                ),
+                PublishedAt = new DateTime(2026, 3, 2)
+            },
+            // ============ SEKTÖREL VE BÖLÜM BAZLI (41-45) + RAPORLAMA VE ANALİZ (46-50) ============
+            new BlogPost
+            {
+                Slug = "acil-servis-nobet-duzeni",
+                TitleTr = "Acil Servis Nöbet Düzeni ve Özel Kurallar",
+                TitleEn = "Emergency Department Shift System and Special Rules",
+                ExcerptTr = "Acil servis nöbeti planlama kuralları. Acil nöbet düzeni, personel vardiya sistemi ve emergency kuralları.",
+                ExcerptEn = "Emergency department shift planning rules. ER duty schedule, staff shift system, and emergency rules.",
+                KeywordsTr = new[] { "Acil servis nöbeti", "Acil nöbet düzeni", "Acil servis vardiya sistemi", "Acil personel nöbeti", "Emergency nöbet kuralları" },
+                KeywordsEn = new[] { "Emergency department shift", "ER duty schedule", "Emergency shift system", "ED staff scheduling", "Emergency duty rules" },
+                ContentTr = Combine(
+                    "Acil servis nöbeti, hastane nöbet sisteminin en kritik bileşenidir. Acil nöbet düzeni, 7/24 kesintisiz hizmet ve ani yoğunluk artışlarına hazırlık gerektirir. Bu rehberde, acil servis vardiya sistemi kurallarını ve emergency nöbet planlamasını inceleyeceğiz.",
+                    "Acil personel nöbeti planlamasında minimum kadro gereksinimleri belirlenmelidir. Her vardiyada en az kaç doktor, hemşire ve destek personeli bulunacağı tanımlanmalı; yoğun dönemlerde takviye planı hazır olmalıdır.",
+                    "Emergency nöbet kuralları, diğer departmanlardan farklıdır. Acil serviste anlık hasta yoğunluğu değişkendir; bu nedenle esnek vardiya modelleri uygulanabilir. Overlapping vardiyalar (örtüşen), yoğun saatlerde personel sayısını artırır.",
+                    "Acil servis vardiya sistemi, triage (önceliklendirme) alanı, müdahale odaları ve gözlem birimi için ayrı planlama gerektirebilir. Her alanın özel yetkinlik gereksinimleri vardır. Geldimmi'de alt birimler tanımlanabilir.",
+                    "Acil nöbet düzeni oluştururken stres yönetimi de düşünülmelidir. Sürekli acil servis nöbeti tükenmişliğe yol açar. Rotasyon sistemiyle personel diğer bölümlerde de görev yapmalı, denge sağlanmalıdır.",
+                    "Acil personel nöbeti için yedekleme kritiktir. Son dakika devamsızlıklarında hızlı çağrılabilecek yedek havuzu oluşturulmalıdır. Geldimmi, yedek atama özelliğiyle bu süreci hızlandırır.",
+                    "Emergency nöbet kuralları, yasal düzenlemelerle de belirlidir. Acil serviste çalışma süreleri ve dinlenme araları titizlikle uygulanmalıdır; tükenmişlik hasta güvenliğini tehdit eder.",
+                    "Sonuç olarak, acil servis nöbeti özel planlama gerektirir. Acil nöbet düzeni ve vardiya sistemi için Geldimmi'nin esnek kural tanımlama özelliklerini kullanın."
+                ),
+                ContentEn = Combine(
+                    "Emergency department shift is the most critical component of hospital shift system. ER duty schedule requires 24/7 uninterrupted service and preparation for sudden volume increases. In this guide, we'll examine emergency shift system rules and emergency duty planning.",
+                    "Minimum staffing requirements should be determined in ED staff scheduling. How many doctors, nurses, and support staff will be present in each shift should be defined; reinforcement plan should be ready for busy periods.",
+                    "Emergency duty rules differ from other departments. Instant patient volume is variable in emergency; therefore, flexible shift models can be applied. Overlapping shifts increase staff numbers during busy hours.",
+                    "Emergency shift system may require separate planning for triage area, treatment rooms, and observation unit. Each area has special competency requirements. Sub-units can be defined in Geldimmi.",
+                    "Stress management should also be considered when creating ER duty schedule. Continuous emergency department shifts lead to burnout. With rotation system, staff should also work in other departments, balance should be maintained.",
+                    "Backup is critical for ED staff scheduling. A backup pool that can be quickly called for last-minute absences should be created. Geldimmi speeds up this process with backup assignment feature.",
+                    "Emergency duty rules are also determined by legal regulations. Working hours and rest breaks in emergency department should be strictly applied; burnout threatens patient safety.",
+                    "In conclusion, emergency department shift requires special planning. Use Geldimmi's flexible rule definition features for ER duty schedule and shift system."
+                ),
+                PublishedAt = new DateTime(2026, 3, 3)
+            },
+            new BlogPost
+            {
+                Slug = "yogun-bakim-nobet-planlamasi",
+                TitleTr = "Yoğun Bakım Nöbet Planlaması",
+                TitleEn = "Intensive Care Unit Shift Planning",
+                ExcerptTr = "Yoğun bakım nöbeti ve YBÜ planlama rehberi. ICU vardiya sistemi ve kritik bakım nöbet düzeni.",
+                ExcerptEn = "ICU shift and ICU planning guide. Intensive care roster and critical care shift system.",
+                KeywordsTr = new[] { "Yoğun bakım nöbeti", "YBÜ nöbet planlaması", "Yoğun bakım hemşire nöbeti", "ICU vardiya sistemi", "Kritik bakım nöbet düzeni" },
+                KeywordsEn = new[] { "ICU shift", "ICU duty planning", "ICU nurse scheduling", "Intensive care roster", "Critical care shift system" },
+                ContentTr = Combine(
+                    "Yoğun bakım nöbeti, sağlık hizmetlerinin en zorlu alanlarından biridir. YBÜ nöbet planlaması, yüksek yetkinlik gerektiren personelle kesintisiz hizmet sunmayı hedefler. Bu rehberde, ICU vardiya sistemi ve kritik bakım nöbet düzeni kurallarını inceleyeceğiz.",
+                    "Yoğun bakım hemşire nöbeti için özel sertifikalar ve eğitimler gerekir. Her vardiyada yeterli sayıda sertifikalı YBÜ hemşiresi bulunmalıdır. Yetkinlik eksikliği hasta güvenliğini doğrudan tehdit eder.",
+                    "ICU vardiya sistemi, hasta başına hemşire oranını dikkate almalıdır. Yoğun bakımda genellikle 1:1 veya 1:2 hasta/hemşire oranı hedeflenir. Bu oran, hasta acuity düzeyine göre değişebilir.",
+                    "Kritik bakım nöbet düzeni oluştururken ekipman kullanım yetkinliği de değerlendirilir. Ventilatör, monitör ve özel cihazları kullanabilecek personel her vardiyada planlanmalıdır.",
+                    "YBÜ nöbet planlaması, gece ve gündüz vardiyaları arasında denge gerektir. Gece vardiyalarında da deneyimli personel bulunmalı, acil durumlara müdahale kapasitesi korunmalıdır.",
+                    "Yoğun bakım nöbeti tükenmişlik riski yüksek bir alandır. Personel rotasyonu, psikolojik destek ve dinlenme süreleri titizlikle planlanmalıdır. Geldimmi, adil dağıtım ile bu dengeyi korur.",
+                    "Kritik bakım nöbet düzeninde aile ziyaret saatleri ve ekip toplantıları da koordine edilmelidir. Nöbet değişimi sırasında detaylı hasta devir teslimi için zaman ayrılmalıdır.",
+                    "Sonuç olarak, yoğun bakım hemşire nöbeti özel uzmanlık ve dikkat gerektirir. ICU vardiya sistemi planlaması için Geldimmi'nin yetkinlik tabanlı atama özelliklerini kullanın."
+                ),
+                ContentEn = Combine(
+                    "ICU shift is one of the most challenging areas of healthcare. ICU duty planning aims to provide uninterrupted service with highly competent staff. In this guide, we'll examine intensive care roster and critical care shift system rules.",
+                    "Special certificates and trainings are required for ICU nurse scheduling. Each shift should have a sufficient number of certified ICU nurses. Competency deficiency directly threatens patient safety.",
+                    "Intensive care roster should consider patient-to-nurse ratio. A 1:1 or 1:2 patient/nurse ratio is usually targeted in intensive care. This ratio may vary according to patient acuity level.",
+                    "Equipment usage competency is also evaluated when creating critical care shift system. Staff who can use ventilators, monitors, and special devices should be planned in each shift.",
+                    "ICU duty planning requires balance between night and day shifts. Experienced staff should also be present in night shifts, and emergency response capacity should be maintained.",
+                    "ICU shift is an area with high burnout risk. Staff rotation, psychological support, and rest periods should be carefully planned. Geldimmi maintains this balance with fair distribution.",
+                    "Family visit hours and team meetings should also be coordinated in critical care shift system. Time should be allocated for detailed patient handover during shift changes.",
+                    "In conclusion, ICU nurse scheduling requires special expertise and attention. Use Geldimmi's competency-based assignment features for intensive care roster planning."
+                ),
+                PublishedAt = new DateTime(2026, 3, 4)
+            },
+            new BlogPost
+            {
+                Slug = "nobet-raporlama-istatistik-analizi",
+                TitleTr = "Nöbet Raporlama ve İstatistik Analizi",
+                TitleEn = "Shift Reporting and Statistical Analysis",
+                ExcerptTr = "Nöbet raporu oluşturma ve istatistik analizi. Vardiya analiz raporu, performans raporu ve çalışma saati takibi.",
+                ExcerptEn = "Shift report creation and statistical analysis. Roster analysis report, performance report, and working hours tracking.",
+                KeywordsTr = new[] { "Nöbet raporu", "Nöbet istatistikleri", "Vardiya analiz raporu", "Nöbet performans raporu", "Çalışma saati raporu" },
+                KeywordsEn = new[] { "Shift report", "Duty statistics", "Roster analysis report", "Shift performance report", "Working hours report" },
+                ContentTr = Combine(
+                    "Nöbet raporu, yönetim kararları için kritik veriler sunar. Nöbet istatistikleri analizi, operasyonel iyileştirme fırsatlarını ortaya çıkarır. Bu rehberde, vardiya analiz raporu oluşturma ve nöbet performans raporu yorumlama yöntemlerini paylaşacağız.",
+                    "Çalışma saati raporu, temel nöbet raporlarından biridir. Personel bazında günlük, haftalık ve aylık çalışma saatleri, fazla mesai oranları ve yasal sınır aşımları görüntülenir. Geldimmi, bu raporları otomatik oluşturur.",
+                    "Nöbet istatistikleri kapsamında takip edilmesi gereken KPI'lar: Ortalama nöbet saati/personel, gece nöbet dağılımı, hafta sonu dağılımı, devamsızlık oranı, takas talep sayısı ve fazla mesai maliyeti.",
+                    "Vardiya analiz raporu, dönemsel karşılaştırmalar için kullanılır. Önceki ay veya yılla kıyaslama yapılarak trendler belirlenir. Artan fazla mesai veya dengesiz dağıtım, planlama sorunlarına işaret edebilir.",
+                    "Nöbet performans raporu, kurumsal hedeflere ulaşma durumunu gösterir. Hedef katılım oranı, hedef adil dağıtım skoru ve hedef maliyet gibi metrikler takip edilir. Geldimmi, dashboard görünümü sunar.",
+                    "Nöbet raporu oluşturma sıklığı belirlenmeli ve rutin haline getirilmelidir. Haftalık operasyonel raporlar, aylık yönetim raporları ve üç aylık stratejik analizler önerilir.",
+                    "Nöbet istatistikleri, dış denetimlerde de kullanılır. Sağlık Bakanlığı ve akreditasyon kurumları, nöbet uygulamalarını inceleyebilir. Geldimmi, denetim dostu raporlar sunar.",
+                    "Sonuç olarak, çalışma saati raporu ve nöbet performans raporu veri odaklı yönetim için şarttır. Vardiya analiz raporu için Geldimmi'nin raporlama modülünü kullanın."
+                ),
+                ContentEn = Combine(
+                    "Shift report provides critical data for management decisions. Duty statistics analysis reveals operational improvement opportunities. In this guide, we'll share methods for creating roster analysis report and interpreting shift performance report.",
+                    "Working hours report is one of the basic shift reports. Daily, weekly, and monthly working hours per personnel, overtime rates, and legal limit violations are displayed. Geldimmi automatically generates these reports.",
+                    "KPIs to track under duty statistics: Average shift hours/personnel, night shift distribution, weekend distribution, absenteeism rate, swap request count, and overtime cost.",
+                    "Roster analysis report is used for periodic comparisons. Trends are determined by comparing with previous month or year. Increasing overtime or unbalanced distribution may indicate planning problems.",
+                    "Shift performance report shows progress toward institutional goals. Metrics like target attendance rate, target fair distribution score, and target cost are tracked. Geldimmi offers dashboard view.",
+                    "Shift report creation frequency should be determined and made routine. Weekly operational reports, monthly management reports, and quarterly strategic analyses are recommended.",
+                    "Duty statistics are also used in external audits. Ministry of Health and accreditation bodies may examine shift practices. Geldimmi offers audit-friendly reports.",
+                    "In conclusion, working hours report and shift performance report are essential for data-driven management. Use Geldimmi's reporting module for roster analysis report."
+                ),
+                PublishedAt = new DateTime(2026, 3, 5)
+            },
+            new BlogPost
+            {
+                Slug = "nobet-maliyet-analizi-butce",
+                TitleTr = "Nöbet Maliyet Analizi ve Bütçe Planlaması",
+                TitleEn = "Shift Cost Analysis and Budget Planning",
+                ExcerptTr = "Nöbet maliyet analizi yapma rehberi. Vardiya bütçe planlaması, harcama raporu ve personel maliyet hesaplama.",
+                ExcerptEn = "Guide to shift cost analysis. Roster budget planning, expense report, and staff cost calculation.",
+                KeywordsTr = new[] { "Nöbet maliyet analizi", "Vardiya bütçe planlaması", "Nöbet harcama raporu", "Personel maliyet hesaplama", "Nöbet gider analizi" },
+                KeywordsEn = new[] { "Shift cost analysis", "Roster budget planning", "Duty expense report", "Staff cost calculation", "Shift expenditure analysis" },
+                ContentTr = Combine(
+                    "Nöbet maliyet analizi, sağlık kuruluşlarının bütçe yönetiminde kritik rol oynar. Vardiya bütçe planlaması, personel giderlerinin optimize edilmesini sağlar. Bu rehberde, nöbet harcama raporu oluşturma ve personel maliyet hesaplama yöntemlerini paylaşacağız.",
+                    "Personel maliyet hesaplama formülü: (Toplam Nöbet Saati × Saat Başı Maliyet) + Ek Ödemeler + Yan Haklar = Toplam Nöbet Maliyeti. Gece, hafta sonu ve tatil çarpanları hesaba katılmalıdır.",
+                    "Nöbet harcama raporu, maliyet kalemlerini detaylı göstermelidir: Normal mesai maliyeti, fazla mesai maliyeti, gece fark maliyeti, tatil fark maliyeti ve icap maliyeti. Bu ayrıştırma, optimizasyon fırsatlarını ortaya çıkarır.",
+                    "Vardiya bütçe planlaması dönemsel yapılmalıdır. Yıllık bütçe hedefleri belirlenir, aylık takip yapılır ve sapma analizi gerçekleştirilir. Bütçe aşımı riski erken tespit edilmelidir.",
+                    "Nöbet gider analizi, alternatif senaryoları karşılaştırmalıdır. Daha fazla kadrolu personel mi, yoksa fazla mesai mi ekonomik? Dış kaynak kullanımı maliyeti nasıl etkiler? Bu sorular analiz edilmelidir.",
+                    "Geldimmi, nöbet maliyet analizi için gerekli verileri otomatik toplar. Sistem, nöbet saatlerini ve türlerini kayıt altına alır, birim maliyetlerle çarparak toplam harcamayı hesaplar.",
+                    "Personel maliyet hesaplama doğruluğu, bordro verilerine bağlıdır. Geldimmi'nin puantaj verileri, bordro sistemlerine aktarılarak tutarlı hesaplama sağlanır.",
+                    "Sonuç olarak, nöbet harcama raporu finansal sürdürülebilirlik için gereklidir. Vardiya bütçe planlaması ve nöbet gider analizi için Geldimmi'nin maliyet raporlarını kullanın."
+                ),
+                ContentEn = Combine(
+                    "Shift cost analysis plays a critical role in budget management of healthcare facilities. Roster budget planning ensures optimization of personnel expenses. In this guide, we'll share methods for creating duty expense report and staff cost calculation.",
+                    "Staff cost calculation formula: (Total Shift Hours × Cost Per Hour) + Additional Payments + Benefits = Total Shift Cost. Night, weekend, and holiday multipliers should be taken into account.",
+                    "Duty expense report should show cost items in detail: Regular overtime cost, overtime cost, night differential cost, holiday differential cost, and on-call cost. This breakdown reveals optimization opportunities.",
+                    "Roster budget planning should be done periodically. Annual budget targets are set, monthly tracking is done, and deviation analysis is performed. Budget overrun risk should be detected early.",
+                    "Shift expenditure analysis should compare alternative scenarios. Is more permanent staff or overtime more economical? How does outsourcing affect cost? These questions should be analyzed.",
+                    "Geldimmi automatically collects data needed for shift cost analysis. The system records shift hours and types, multiplies by unit costs to calculate total expenditure.",
+                    "Staff cost calculation accuracy depends on payroll data. Geldimmi's timesheet data is transferred to payroll systems ensuring consistent calculation.",
+                    "In conclusion, duty expense report is necessary for financial sustainability. Use Geldimmi's cost reports for roster budget planning and shift expenditure analysis."
+                ),
+                PublishedAt = new DateTime(2026, 3, 6)
+            },
+            new BlogPost
+            {
+                Slug = "nobet-verimliligi-artirma-stratejileri",
+                TitleTr = "Nöbet Verimliliği Artırma Stratejileri",
+                TitleEn = "Strategies to Improve Shift Efficiency",
+                ExcerptTr = "Nöbet verimliliği artırma yöntemleri. Vardiya optimizasyon stratejileri, iyileştirme ve verimli planlama.",
+                ExcerptEn = "Methods to improve shift efficiency. Roster optimization strategies, enhancement, and efficient scheduling.",
+                KeywordsTr = new[] { "Nöbet verimliliği artırma", "Vardiya optimizasyon stratejileri", "Nöbet iyileştirme", "Verimli nöbet planlama", "Nöbet süreç geliştirme" },
+                KeywordsEn = new[] { "Shift efficiency improvement", "Roster optimization strategies", "Duty enhancement", "Efficient scheduling", "Shift process improvement" },
+                ContentTr = Combine(
+                    "Nöbet verimliliği artırma, sağlık kuruluşlarının operasyonel mükemmellik hedefinde kritik bir konudur. Vardiya optimizasyon stratejileri, aynı kaynaklarla daha iyi sonuçlar almayı sağlar. Bu rehberde, nöbet iyileştirme ve verimli nöbet planlama yöntemlerini paylaşacağız.",
+                    "Verimli nöbet planlama için temel stratejiler: Önceden planlama, adil dağıtım, yetkinlik eşleştirme, talep tahmini ve esneklik. Bu stratejilerin kombinasyonu optimal sonuçlar verir.",
+                    "Nöbet süreç geliştirme, mevcut durumun analiziyle başlar. Fazla mesai oranları, devamsızlık, takas talepleri ve personel şikayetleri incelenerek sorun alanları tespit edilir.",
+                    "Vardiya optimizasyon stratejileri arasında teknoloji kullanımı öne çıkar. Manuel planlamadan dijital sisteme geçiş, tek başına %30-50 verimlilik artışı sağlayabilir. Geldimmi, bu dönüşümü destekler.",
+                    "Nöbet iyileştirme için personel katılımı önemlidir. Tercih toplama, geri bildirim alma ve şeffaf iletişim, planlara uyumu artırır. Geldimmi'de personel tercihleri kaydedilebilir.",
+                    "Verimli nöbet planlama, esnek çalışma modellerini de içerebilir. Part-time pozisyonlar, iş paylaşımı ve sıkıştırılmış haftalar, personel memnuniyetini artırırken maliyeti optimize edebilir.",
+                    "Nöbet verimliliği artırma sürekli bir süreçtir. Düzenli analiz, hedef belirleme, uygulama ve değerlendirme döngüsü kurulmalıdır. KPI takibi bu döngüyü besler.",
+                    "Sonuç olarak, nöbet süreç geliştirme hem personel memnuniyetini hem de kurumsal verimliliği artırır. Vardiya optimizasyon stratejileri için Geldimmi'nin analiz ve planlama araçlarını kullanın."
+                ),
+                ContentEn = Combine(
+                    "Shift efficiency improvement is a critical topic in healthcare facilities' goal of operational excellence. Roster optimization strategies enable better results with the same resources. In this guide, we'll share duty enhancement and efficient scheduling methods.",
+                    "Basic strategies for efficient scheduling: Advance planning, fair distribution, competency matching, demand forecasting, and flexibility. Combination of these strategies yields optimal results.",
+                    "Shift process improvement starts with analysis of current situation. Problem areas are identified by examining overtime rates, absenteeism, swap requests, and staff complaints.",
+                    "Technology usage stands out among roster optimization strategies. Transition from manual planning to digital system alone can provide 30-50% efficiency increase. Geldimmi supports this transformation.",
+                    "Staff participation is important for duty enhancement. Collecting preferences, receiving feedback, and transparent communication increase compliance with plans. Staff preferences can be recorded in Geldimmi.",
+                    "Efficient scheduling may also include flexible working models. Part-time positions, job sharing, and compressed weeks can optimize costs while increasing staff satisfaction.",
+                    "Shift efficiency improvement is a continuous process. Regular analysis, goal setting, implementation, and evaluation cycle should be established. KPI tracking feeds this cycle.",
+                    "In conclusion, shift process improvement increases both staff satisfaction and institutional efficiency. Use Geldimmi's analysis and planning tools for roster optimization strategies."
+                ),
+                PublishedAt = new DateTime(2026, 3, 7)
             }
         };
 

@@ -27,14 +27,56 @@
                     }
                 </div>
                 <div class="blog-content">
+                    @{
+                        var midPoint = paragraphs.Count / 2;
+                        var index = 0;
+                    }
                     @foreach (var paragraph in paragraphs)
                     {
                         <p>@paragraph.Trim()</p>
+                        index++;
+                        @if (index == midPoint)
+                        {
+                            <!-- Mid-article CTA -->
+                            <div class="blog-cta blog-cta-inline">
+                                <div class="cta-icon">💡</div>
+                                <div class="cta-content">
+                                    <h4>@(isTurkish ? "Geldimmi ile Nöbet Planlamayı Deneyin" : "Try Shift Planning with Geldimmi")</h4>
+                                    <p>@(isTurkish ? "Ücretsiz hesap oluşturun, hemen kullanmaya başlayın." : "Create a free account and start using right away.")</p>
+                                    <a href="https://geldimmi.com/App" class="cta-btn cta-btn-primary" target="_blank">
+                                        @(isTurkish ? "🚀 Hemen Dene" : "🚀 Try Now")
+                                    </a>
+                                </div>
+                            </div>
+                        }
                     }
                 </div>
+
+                <!-- End-of-article CTA Box -->
+                <div class="blog-cta blog-cta-box">
+                    <div class="cta-box-content">
+                        <div class="cta-box-icon">⚡</div>
+                        <h3>@(isTurkish ? "Nöbet Planlamasını Kolaylaştırın" : "Simplify Your Shift Planning")</h3>
+                        <p>@(isTurkish ? "Geldimmi ile otomatik nöbet çizelgesi, adil dağıtım ve puantaj takibi. Hastaneler ve işletmeler için tasarlandı." : "Automatic shift scheduling, fair distribution, and timesheet tracking with Geldimmi. Designed for hospitals and businesses.")</p>
+                        <div class="cta-box-features">
+                            <span>✓ @(isTurkish ? "Ücretsiz başlangıç" : "Free to start")</span>
+                            <span>✓ @(isTurkish ? "10 personele kadar" : "Up to 10 staff")</span>
+                            <span>✓ @(isTurkish ? "Kredi kartı gerekmez" : "No credit card")</span>
+                        </div>
+                        <div class="cta-box-buttons">
+                            <a href="https://geldimmi.com/Account/Login" class="cta-btn cta-btn-primary" target="_blank">
+                                @(isTurkish ? "🎯 Ücretsiz Kayıt Ol" : "🎯 Sign Up Free")
+                            </a>
+                            <a href="https://geldimmi.com/App" class="cta-btn cta-btn-secondary" target="_blank">
+                                @(isTurkish ? "👀 Demo İncele" : "👀 View Demo")
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="blog-back mt-4">
                     <a asp-controller="Blog" asp-action="Index" class="blog-readmore">
-                        @(isTurkish ? "Tüm yazılara dön" : "Back to all posts")
+                        @(isTurkish ? "← Tüm yazılara dön" : "← Back to all posts")
                     </a>
                 </div>
             </div>
@@ -56,6 +98,141 @@
         line-height: 1.8;
         color: #353535;
         margin-bottom: 16px;
+    }
+
+    /* CTA Styles */
+    .blog-cta {
+        margin: 32px 0;
+        border-radius: 16px;
+    }
+
+    .blog-cta-inline {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border: 1px solid #bae6fd;
+        padding: 24px;
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .blog-cta-inline .cta-icon {
+        font-size: 2rem;
+        flex-shrink: 0;
+    }
+
+    .blog-cta-inline .cta-content h4 {
+        margin: 0 0 8px;
+        font-size: 1.1rem;
+        color: #0369a1;
+    }
+
+    .blog-cta-inline .cta-content p {
+        margin: 0 0 12px;
+        font-size: 0.95rem;
+        color: #475569;
+    }
+
+    .blog-cta-box {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        padding: 40px;
+        text-align: center;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+
+    .blog-cta-box .cta-box-icon {
+        font-size: 3rem;
+        margin-bottom: 16px;
+    }
+
+    .blog-cta-box h3 {
+        color: #fff;
+        font-size: 1.5rem;
+        margin-bottom: 12px;
+    }
+
+    .blog-cta-box > .cta-box-content > p {
+        color: #cbd5e1;
+        font-size: 1rem;
+        max-width: 500px;
+        margin: 0 auto 20px;
+        line-height: 1.6;
+    }
+
+    .cta-box-features {
+        display: flex;
+        justify-content: center;
+        gap: 24px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+    }
+
+    .cta-box-features span {
+        color: #22c55e;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .cta-box-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .cta-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .cta-btn-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .cta-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        color: #fff;
+    }
+
+    .cta-btn-secondary {
+        background: rgba(255,255,255,0.1);
+        color: #fff;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .cta-btn-secondary:hover {
+        background: rgba(255,255,255,0.2);
+        color: #fff;
+    }
+
+    @@media (max-width: 576px) {
+        .blog-cta-inline {
+            flex-direction: column;
+            text-align: center;
+        }
+        .blog-cta-box {
+            padding: 28px 20px;
+        }
+        .cta-box-features {
+            flex-direction: column;
+            gap: 8px;
+        }
+        .cta-box-buttons {
+            flex-direction: column;
+        }
+        .cta-btn {
+            width: 100%;
+            justify-content: center;
+        }
     }
 </style>
 
