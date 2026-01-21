@@ -497,6 +497,30 @@
                             <div>@error.ErrorMessage</div>
                         }
                     </div>
+                    
+                    @if (ViewData["ShowResendLink"] as bool? == true && ViewData["UserEmail"] != null)
+                    {
+                        <div style="margin-top: 16px; text-align: center;">
+                            <a href="@Url.Action("ResendConfirmationEmail", "Account", new { email = ViewData["UserEmail"] })" 
+                               style="color: var(--success); text-decoration: none; font-weight: 600; font-size: 0.9rem;">
+                                @(isTurkish ? "Doğrulama e-postasını tekrar gönder" : "Resend confirmation email")
+                            </a>
+                        </div>
+                    }
+                }
+                
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert-success" style="padding: 14px 18px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 12px; color: #15803d; font-size: 0.9rem; margin-bottom: 20px;">
+                        @TempData["Success"]
+                    </div>
+                }
+                
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert-error" style="padding: 14px 18px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; color: #dc2626; font-size: 0.9rem; margin-bottom: 20px;">
+                        @TempData["Error"]
+                    </div>
                 }
                 
                 <div class="input-group">

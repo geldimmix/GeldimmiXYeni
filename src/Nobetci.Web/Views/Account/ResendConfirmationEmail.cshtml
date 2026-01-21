@@ -1,0 +1,233 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IStringLocalizer<SharedResource> Localizer
+@{
+    ViewData["Title"] = Localizer["Resend Confirmation Email"];
+    Layout = null;
+    var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+    var email = ViewData["Email"] as string;
+}
+
+<!DOCTYPE html>
+<html lang="@(isTurkish ? "tr" : "en")">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(isTurkish ? "E-posta Doğrulama Tekrar Gönder" : "Resend Confirmation Email") - Geldimmi</title>
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        :root {
+            --bg-cream: #fffbf7;
+            --bg-warm: #fef7f0;
+            --bg-white: #ffffff;
+            --text: #1a1a1a;
+            --text-muted: #6b6b6b;
+            --border: #ebe5df;
+            --accent: #d4553d;
+            --accent-dark: #b8442f;
+            --success: #16a34a;
+            --success-light: #f0fdf4;
+            --error: #dc2626;
+            --error-light: #fef2f2;
+        }
+        
+        body {
+            font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-cream);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .resend-container {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 48px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .resend-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        
+        .resend-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 32px;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: var(--bg-cream);
+            transition: all 0.2s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--success);
+            background: var(--bg-white);
+            box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.08);
+        }
+        
+        .btn-submit {
+            width: 100%;
+            padding: 14px 24px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+        }
+        
+        .btn-submit:hover {
+            background: #15803d;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+        }
+        
+        .alert {
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+        }
+        
+        .alert-success {
+            background: var(--success-light);
+            border: 1px solid #86efac;
+            color: #15803d;
+        }
+        
+        .alert-info {
+            background: #eff6ff;
+            border: 1px solid #93c5fd;
+            color: #1e40af;
+        }
+        
+        .alert-error {
+            background: var(--error-light);
+            border: 1px solid #fecaca;
+            color: var(--error);
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .back-link a {
+            color: var(--success);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="resend-container">
+        <h1 class="resend-title">
+            @(isTurkish ? "E-posta Doğrulama Tekrar Gönder" : "Resend Confirmation Email")
+        </h1>
+        <p class="resend-subtitle">
+            @(isTurkish 
+                ? "E-posta adresinize yeni bir doğrulama linki gönderebiliriz." 
+                : "We can send you a new confirmation link to your email address.")
+        </p>
+        
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["Success"]
+            </div>
+        }
+        
+        @if (TempData["Info"] != null)
+        {
+            <div class="alert alert-info">
+                @TempData["Info"]
+            </div>
+        }
+        
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-error">
+                @TempData["Error"]
+            </div>
+        }
+        
+        <form asp-action="ResendConfirmationEmail" method="post">
+            @Html.AntiForgeryToken()
+            
+            <div class="form-group">
+                <label for="email">@(isTurkish ? "E-posta Adresi" : "Email Address")</label>
+                <input type="email" id="email" name="email" value="@email" required 
+                       placeholder="@(isTurkish ? "ornek@email.com" : "example@email.com")" />
+            </div>
+            
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-error">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <div>@error.ErrorMessage</div>
+                    }
+                </div>
+            }
+            
+            <button type="submit" class="btn-submit">
+                @(isTurkish ? "Doğrulama E-postası Gönder" : "Send Confirmation Email")
+            </button>
+        </form>
+        
+        <div class="back-link">
+            <a href="@Url.Action("Login", "Account")">
+                @(isTurkish ? "← Giriş sayfasına dön" : "← Back to login")
+            </a>
+        </div>
+    </div>
+</body>
+</html>

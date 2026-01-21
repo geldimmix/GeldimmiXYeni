@@ -6,6 +6,7 @@ using Nobetci.Web.Data;
 using Nobetci.Web.Data.Entities;
 using Nobetci.Web.Models;
 using Nobetci.Web.Resources;
+using Nobetci.Web.Services;
 
 namespace Nobetci.Web.Controllers;
 
@@ -17,6 +18,8 @@ public class AccountController : Controller
     private readonly IStringLocalizer<SharedResource> _localizer;
     private readonly ILogger<AccountController> _logger;
     private readonly IConfiguration _configuration;
+    private readonly IEmailSender _emailSender;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public AccountController(
         UserManager<ApplicationUser> userManager,
@@ -24,7 +27,9 @@ public class AccountController : Controller
         ApplicationDbContext context,
         IStringLocalizer<SharedResource> localizer,
         ILogger<AccountController> logger,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IEmailSender emailSender,
+        IHttpContextAccessor httpContextAccessor)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -32,6 +37,8 @@ public class AccountController : Controller
         _localizer = localizer;
         _logger = logger;
         _configuration = configuration;
+        _emailSender = emailSender;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     [HttpGet]
@@ -84,6 +91,21 @@ public class AccountController : Controller
             }
         }
 
+        var user = await _userManager.FindByEmailAsync(model.Email);
+        
+        // Check if user exists and email is confirmed
+        if (user != null && !await _userManager.IsEmailConfirmedAsync(user))
+        {
+            var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+            ModelState.AddModelError(string.Empty, isTurkish 
+                ? "E-posta adresiniz doğrulanmamış. Lütfen e-posta kutunuzu kontrol edin veya yeni bir doğrulama e-postası isteyin." 
+                : "Your email address has not been confirmed. Please check your inbox or request a new confirmation email.");
+            ViewData["ShowResendLink"] = true;
+            ViewData["UserEmail"] = model.Email;
+            ViewData["RecaptchaSiteKey"] = _configuration["ReCaptcha:SiteKey"] ?? "";
+            return View(model);
+        }
+
         var result = await _signInManager.PasswordSignInAsync(
             model.Email, 
             model.Password, 
@@ -92,7 +114,6 @@ public class AccountController : Controller
 
         if (result.Succeeded)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email);
             if (user != null)
             {
                 user.LastLoginAt = DateTime.UtcNow;
@@ -110,11 +131,13 @@ public class AccountController : Controller
         {
             var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
             ModelState.AddModelError(string.Empty, isTurkish ? "Hesap kilitlendi. Lütfen daha sonra tekrar deneyin." : "Account locked. Please try again later.");
+            ViewData["RecaptchaSiteKey"] = _configuration["ReCaptcha:SiteKey"] ?? "";
             return View(model);
         }
 
         var isTr = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
         ModelState.AddModelError(string.Empty, isTr ? "Geçersiz giriş denemesi." : "Invalid login attempt.");
+        ViewData["RecaptchaSiteKey"] = _configuration["ReCaptcha:SiteKey"] ?? "";
         return View(model);
     }
 
@@ -146,7 +169,8 @@ public class AccountController : Controller
             Email = model.Email,
             FullName = model.FullName,
             Plan = UserPlan.Free,
-            Language = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName
+            Language = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName,
+            EmailConfirmed = false // Email confirmation required
         };
 
         var result = await _userManager.CreateAsync(user, model.Password);
@@ -155,13 +179,58 @@ public class AccountController : Controller
         {
             _logger.LogInformation("User created a new account with password.");
             
-            // Sign in the user
-            await _signInManager.SignInAsync(user, isPersistent: false);
+            // Generate email confirmation token
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var callbackUrl = Url.Action(
+                nameof(ConfirmEmail),
+                "Account",
+                new { userId = user.Id, token = token, returnUrl = returnUrl },
+                protocol: Request.Scheme);
+
+            // Send confirmation email
+            var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+            var subject = isTurkish 
+                ? "Geldimmi - E-posta Adresinizi Doğrulayın" 
+                : "Geldimmi - Verify Your Email Address";
             
-            // Transfer guest data to user account
-            await TransferGuestDataToUser(user);
+            var emailBody = isTurkish
+                ? $@"
+                    <div style=""font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;"">
+                        <h2 style=""color: #16a34a;"">Hoş geldiniz!</h2>
+                        <p>Merhaba {user.FullName},</p>
+                        <p>Geldimmi'ye kaydolduğunuz için teşekkür ederiz. Hesabınızı aktifleştirmek için lütfen e-posta adresinizi doğrulayın.</p>
+                        <p style=""margin: 30px 0;"">
+                            <a href=""{callbackUrl}"" style=""background-color: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;"">E-posta Adresimi Doğrula</a>
+                        </p>
+                        <p>Veya aşağıdaki linki tarayıcınıza yapıştırabilirsiniz:</p>
+                        <p style=""word-break: break-all; color: #6b7280;"">{callbackUrl}</p>
+                        <p style=""margin-top: 30px; color: #6b7280; font-size: 14px;"">
+                            Bu e-postayı siz talep etmediyseniz, lütfen görmezden gelin.
+                        </p>
+                    </div>"
+                : $@"
+                    <div style=""font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;"">
+                        <h2 style=""color: #16a34a;"">Welcome!</h2>
+                        <p>Hello {user.FullName},</p>
+                        <p>Thank you for signing up for Geldimmi. Please verify your email address to activate your account.</p>
+                        <p style=""margin: 30px 0;"">
+                            <a href=""{callbackUrl}"" style=""background-color: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;"">Verify My Email Address</a>
+                        </p>
+                        <p>Or you can paste the following link into your browser:</p>
+                        <p style=""word-break: break-all; color: #6b7280;"">{callbackUrl}</p>
+                        <p style=""margin-top: 30px; color: #6b7280; font-size: 14px;"">
+                            If you did not request this email, please ignore it.
+                        </p>
+                    </div>";
+
+            await _emailSender.SendEmailAsync(user.Email, subject, emailBody);
             
-            return LocalRedirect(returnUrl ?? "/app");
+            // Don't sign in - user must confirm email first
+            // Show success message with email confirmation notice
+            TempData["EmailConfirmationSent"] = true;
+            TempData["UserEmail"] = user.Email;
+            
+            return RedirectToAction(nameof(RegisterConfirmation), new { email = user.Email, returnUrl = returnUrl });
         }
 
         foreach (var error in result.Errors)
@@ -188,6 +257,159 @@ public class AccountController : Controller
         await _signInManager.SignOutAsync();
         _logger.LogInformation("User logged out.");
         return RedirectToAction("Index", "Home");
+    }
+
+    [HttpGet]
+    public IActionResult RegisterConfirmation(string? email, string? returnUrl = null)
+    {
+        ViewData["Email"] = email;
+        ViewData["ReturnUrl"] = returnUrl;
+        return View();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ConfirmEmail(string userId, string token, string? returnUrl = null)
+    {
+        if (userId == null || token == null)
+        {
+            var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+            TempData["Error"] = isTurkish 
+                ? "Geçersiz email doğrulama linki." 
+                : "Invalid email confirmation link.";
+            return RedirectToAction(nameof(Login));
+        }
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+            TempData["Error"] = isTurkish 
+                ? "Kullanıcı bulunamadı." 
+                : "User not found.";
+            return RedirectToAction(nameof(Login));
+        }
+
+        // Token may be URL-encoded, decode it if needed
+        token = Uri.UnescapeDataString(token);
+        
+        var result = await _userManager.ConfirmEmailAsync(user, token);
+        
+        if (result.Succeeded)
+        {
+            _logger.LogInformation("User {UserId} confirmed their email.", userId);
+            
+            // Transfer guest data to user account
+            await TransferGuestDataToUser(user);
+            
+            var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+            TempData["Success"] = isTurkish 
+                ? "E-posta adresiniz başarıyla doğrulandı. Giriş yapabilirsiniz." 
+                : "Your email address has been confirmed. You can now sign in.";
+            
+            return RedirectToAction(nameof(Login), new { returnUrl = returnUrl });
+        }
+
+        var isTr = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+        TempData["Error"] = isTr 
+            ? "E-posta doğrulama başarısız. Lütfen yeni bir doğrulama linki isteyin." 
+            : "Email confirmation failed. Please request a new confirmation link.";
+        
+        return RedirectToAction(nameof(Login));
+    }
+
+    [HttpGet]
+    public IActionResult ResendConfirmationEmail(string? email = null)
+    {
+        ViewData["Email"] = email;
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [ActionName("ResendConfirmationEmail")]
+    public async Task<IActionResult> ResendConfirmationEmailPost(string email)
+    {
+        var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+        
+        if (string.IsNullOrEmpty(email))
+        {
+            ModelState.AddModelError(string.Empty, isTurkish 
+                ? "E-posta adresi gereklidir." 
+                : "Email address is required.");
+            return View();
+        }
+
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            // Don't reveal if user exists or not (security best practice)
+            TempData["Success"] = isTurkish 
+                ? "Eğer bu e-posta adresi kayıtlıysa, doğrulama e-postası gönderildi." 
+                : "If this email address is registered, a confirmation email has been sent.";
+            return RedirectToAction(nameof(ResendConfirmationEmail));
+        }
+
+        if (user.EmailConfirmed)
+        {
+            TempData["Info"] = isTurkish 
+                ? "Bu e-posta adresi zaten doğrulanmış." 
+                : "This email address is already confirmed.";
+            return RedirectToAction(nameof(Login));
+        }
+
+        // Generate new email confirmation token
+        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        var callbackUrl = Url.Action(
+            nameof(ConfirmEmail),
+            "Account",
+            new { userId = user.Id, token = token },
+            protocol: Request.Scheme);
+
+        // Send confirmation email
+        var subject = isTurkish 
+            ? "Geldimmi - E-posta Adresinizi Doğrulayın" 
+            : "Geldimmi - Verify Your Email Address";
+        
+        var emailBody = isTurkish
+            ? $@"
+                <div style=""font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;"">
+                    <h2 style=""color: #16a34a;"">E-posta Doğrulama</h2>
+                    <p>Merhaba {user.FullName},</p>
+                    <p>E-posta adresinizi doğrulamak için aşağıdaki bağlantıya tıklayın:</p>
+                    <p style=""margin: 30px 0;"">
+                        <a href=""{callbackUrl}"" style=""background-color: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;"">E-posta Adresimi Doğrula</a>
+                    </p>
+                    <p>Veya aşağıdaki linki tarayıcınıza yapıştırabilirsiniz:</p>
+                    <p style=""word-break: break-all; color: #6b7280;"">{callbackUrl}</p>
+                    <p style=""margin-top: 30px; color: #6b7280; font-size: 14px;"">
+                        Bu e-postayı siz talep etmediyseniz, lütfen görmezden gelin.
+                    </p>
+                </div>"
+            : $@"
+                <div style=""font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;"">
+                    <h2 style=""color: #16a34a;"">Email Verification</h2>
+                    <p>Hello {user.FullName},</p>
+                    <p>Click the link below to verify your email address:</p>
+                    <p style=""margin: 30px 0;"">
+                        <a href=""{callbackUrl}"" style=""background-color: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;"">Verify My Email Address</a>
+                    </p>
+                    <p>Or you can paste the following link into your browser:</p>
+                    <p style=""word-break: break-all; color: #6b7280;"">{callbackUrl}</p>
+                    <p style=""margin-top: 30px; color: #6b7280; font-size: 14px;"">
+                        If you did not request this email, please ignore it.
+                    </p>
+                </div>";
+
+        if (!string.IsNullOrEmpty(user.Email))
+        {
+            await _emailSender.SendEmailAsync(user.Email, subject, emailBody);
+        }
+        
+        TempData["Success"] = isTurkish 
+            ? "Doğrulama e-postası gönderildi. Lütfen e-posta kutunuzu kontrol edin." 
+            : "Confirmation email sent. Please check your inbox.";
+        
+        return RedirectToAction(nameof(ResendConfirmationEmail), new { email = user.Email });
     }
 
     [HttpGet]

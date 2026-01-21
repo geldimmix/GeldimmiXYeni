@@ -1,0 +1,201 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IStringLocalizer<SharedResource> Localizer
+@{
+    ViewData["Title"] = Localizer["Email Confirmation"];
+    Layout = null;
+    var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+    var email = ViewData["Email"] as string;
+    var returnUrl = ViewData["ReturnUrl"] as string;
+}
+
+<!DOCTYPE html>
+<html lang="@(isTurkish ? "tr" : "en")">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(isTurkish ? "E-posta Doğrulama" : "Email Confirmation") - Geldimmi</title>
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        :root {
+            --bg-cream: #fffbf7;
+            --bg-warm: #fef7f0;
+            --bg-white: #ffffff;
+            --text: #1a1a1a;
+            --text-muted: #6b6b6b;
+            --border: #ebe5df;
+            --accent: #d4553d;
+            --accent-dark: #b8442f;
+            --success: #16a34a;
+            --success-light: #f0fdf4;
+        }
+        
+        body {
+            font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-cream);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .confirmation-container {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 48px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .confirmation-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--success-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 40px;
+        }
+        
+        .confirmation-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 16px;
+        }
+        
+        .confirmation-message {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+        
+        .email-highlight {
+            color: var(--text);
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            display: inline-block;
+            padding: 14px 28px;
+            background: var(--success);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            margin: 8px;
+        }
+        
+        .btn-primary:hover {
+            background: #15803d;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+        }
+        
+        .btn-secondary {
+            display: inline-block;
+            padding: 14px 28px;
+            background: transparent;
+            color: var(--text);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            border: 1.5px solid var(--border);
+            transition: all 0.2s ease;
+            margin: 8px;
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--text);
+            background: var(--bg-cream);
+        }
+        
+        .resend-info {
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .resend-info a {
+            color: var(--success);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .resend-info a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="confirmation-container">
+        <div class="confirmation-icon">✉️</div>
+        <h1 class="confirmation-title">
+            @(isTurkish ? "E-posta Doğrulama Gönderildi" : "Confirmation Email Sent")
+        </h1>
+        <p class="confirmation-message">
+            @if (isTurkish)
+            {
+                <text>
+                    <span class="email-highlight">@email</span> adresine bir doğrulama e-postası gönderdik. 
+                    Lütfen e-posta kutunuzu kontrol edin ve hesabınızı aktifleştirmek için e-postadaki bağlantıya tıklayın.
+                </text>
+            }
+            else
+            {
+                <text>
+                    We've sent a confirmation email to <span class="email-highlight">@email</span>. 
+                    Please check your inbox and click the link in the email to activate your account.
+                </text>
+            }
+        </p>
+        
+        <div>
+            <a href="@Url.Action("ResendConfirmationEmail", "Account", new { email = email })" class="btn-primary">
+                @(isTurkish ? "E-postayı Tekrar Gönder" : "Resend Email")
+            </a>
+            <a href="@Url.Action("Login", "Account", new { returnUrl = returnUrl })" class="btn-secondary">
+                @(isTurkish ? "Giriş Sayfasına Dön" : "Back to Login")
+            </a>
+        </div>
+        
+        <div class="resend-info">
+            @if (isTurkish)
+            {
+                <text>
+                    E-postayı almadınız mı? 
+                    <a href="@Url.Action("ResendConfirmationEmail", "Account", new { email = email })">Tekrar gönder</a> 
+                    veya spam klasörünüzü kontrol edin.
+                </text>
+            }
+            else
+            {
+                <text>
+                    Didn't receive the email? 
+                    <a href="@Url.Action("ResendConfirmationEmail", "Account", new { email = email })">Resend</a> 
+                    or check your spam folder.
+                </text>
+            }
+        </div>
+    </div>
+</body>
+</html>

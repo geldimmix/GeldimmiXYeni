@@ -6,6 +6,7 @@ using Nobetci.Web.Data;
 using Nobetci.Web.Data.Entities;
 using Nobetci.Web.Middleware;
 using Nobetci.Web.Services;
+using Resend;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +30,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     
     // User settings
     options.User.RequireUniqueEmail = true;
+    
+    // Sign in settings - require email confirmation
+    options.SignIn.RequireConfirmedEmail = true;
     
     // Lockout settings
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
@@ -84,6 +88,17 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     });
 });
 
+// Resend Email Service
+builder.Services.AddOptions();
+builder.Services.AddHttpClient<ResendClient>();
+builder.Services.Configure<ResendClientOptions>(options =>
+{
+    options.ApiToken = builder.Configuration["Resend:ApiToken"] 
+        ?? Environment.GetEnvironmentVariable("RESEND_APITOKEN") 
+        ?? throw new InvalidOperationException("Resend API token is not configured");
+});
+builder.Services.AddTransient<IResend, ResendClient>();
+
 // Custom services
 builder.Services.AddScoped<ITranslationService, TranslationService>();
 builder.Services.AddHttpClient<ITranslationService, TranslationService>();
@@ -91,6 +106,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IVisitorLogService, VisitorLogService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<ISystemSettingsService, SystemSettingsService>();
+builder.Services.AddScoped<IEmailSender, EmailService>();
 
 // Session for guest users
 builder.Services.AddDistributedMemoryCache();
