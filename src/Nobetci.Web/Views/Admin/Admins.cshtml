@@ -4,97 +4,123 @@
 }
 
 <div class="admin-header">
-    <h2>👥 Admin Kullanıcıları</h2>
+    <h2>
+        <span>🔐</span>
+        Admin Kullanıcıları
+    </h2>
     <div class="header-actions">
-        <a href="/admin/admins/create" class="btn btn-primary">➕ Yeni Admin</a>
-        <a href="/admin" class="btn btn-secondary">← Ana Sayfa</a>
+        <a href="/admin/admins/create" class="btn btn-primary">
+            <span>➕</span>
+            Yeni Admin
+        </a>
     </div>
 </div>
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">@TempData["Error"]</div>
-}
-
-<div class="card">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Kullanıcı Adı</th>
-                <th>İsim</th>
-                <th>Email</th>
-                <th>Rol</th>
-                <th>Durum</th>
-                <th>Son Giriş</th>
-                <th>İşlemler</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var admin in Model)
-            {
+<div class="card" style="padding: 0; overflow: hidden;">
+    <div style="overflow-x: auto;">
+        <table class="table" style="margin: 0;">
+            <thead>
                 <tr>
-                    <td>@admin.Id</td>
-                    <td><strong>@admin.Username</strong></td>
-                    <td>@(admin.FullName ?? "-")</td>
-                    <td>@(admin.Email ?? "-")</td>
-                    <td>
-                        @if (admin.Role == Nobetci.Web.Data.Entities.AdminRoles.SuperAdmin)
-                        {
-                            <span class="badge badge-warning">⭐ SuperAdmin</span>
-                        }
-                        else if (admin.Role == Nobetci.Web.Data.Entities.AdminRoles.Admin)
-                        {
-                            <span class="badge badge-primary">Admin</span>
-                        }
-                        else
-                        {
-                            <span class="badge badge-secondary">Viewer</span>
-                        }
-                    </td>
-                    <td>
-                        @if (admin.IsActive)
-                        {
-                            <span class="badge badge-success">✓ Aktif</span>
-                        }
-                        else
-                        {
-                            <span class="badge badge-danger">✗ Pasif</span>
-                        }
-                    </td>
-                    <td>
-                        @if (admin.LastLoginAt.HasValue)
-                        {
-                            <span title="@admin.LastLoginAt.Value.ToString("dd.MM.yyyy HH:mm")">
-                                @admin.LastLoginAt.Value.ToString("dd.MM.yyyy HH:mm")
-                            </span>
-                        }
-                        else
-                        {
-                            <span style="color: #94a3b8;">-</span>
-                        }
-                    </td>
-                    <td>
-                        <div style="display: flex; gap: 8px;">
-                            <a href="/admin/admins/edit/@admin.Id" class="btn btn-sm btn-primary">✏️ Düzenle</a>
-                            <button class="btn btn-sm btn-danger" onclick="deleteAdmin(@admin.Id, '@admin.Username')">🗑️ Sil</button>
-                        </div>
-                    </td>
+                    <th style="text-align: center; width: 60px;">ID</th>
+                    <th style="padding-left: 20px;">Kullanıcı</th>
+                    <th>Email</th>
+                    <th style="text-align: center;">Rol</th>
+                    <th style="text-align: center;">Durum</th>
+                    <th>Son Giriş</th>
+                    <th style="text-align: center; padding-right: 20px;">İşlemler</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-    
-    @if (!Model.Any())
-    {
-        <div style="text-align: center; padding: 40px; color: #64748b;">
-            Henüz admin kullanıcı yok.
-        </div>
-    }
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state" style="padding: 60px 20px;">
+                                <div class="icon">🔐</div>
+                                <div class="title">Henüz admin kullanıcı yok</div>
+                                <a href="/admin/admins/create" class="btn btn-primary" style="margin-top: 16px;">
+                                    <span>➕</span>
+                                    İlk Admin'i Oluştur
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @foreach (var admin in Model)
+                {
+                    <tr>
+                        <td style="text-align: center;">
+                            <span class="badge badge-info">#@admin.Id</span>
+                        </td>
+                        <td style="padding-left: 20px;">
+                            <div style="font-weight: 700; color: var(--text-primary);">@admin.Username</div>
+                            @if (!string.IsNullOrEmpty(admin.FullName))
+                            {
+                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">@admin.FullName</div>
+                            }
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(admin.Email))
+                            {
+                                <span style="color: var(--text-secondary); font-size: 0.9rem;">@admin.Email</span>
+                            }
+                            else
+                            {
+                                <span style="color: var(--text-muted);">—</span>
+                            }
+                        </td>
+                        <td style="text-align: center;">
+                            @if (admin.Role == Nobetci.Web.Data.Entities.AdminRoles.SuperAdmin)
+                            {
+                                <span class="badge badge-warning">⭐ SuperAdmin</span>
+                            }
+                            else if (admin.Role == Nobetci.Web.Data.Entities.AdminRoles.Admin)
+                            {
+                                <span class="badge badge-purple">Admin</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-info">Viewer</span>
+                            }
+                        </td>
+                        <td style="text-align: center;">
+                            @if (admin.IsActive)
+                            {
+                                <span class="badge badge-success">✓ Aktif</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-danger">✗ Pasif</span>
+                            }
+                        </td>
+                        <td>
+                            @if (admin.LastLoginAt.HasValue)
+                            {
+                                <div style="font-size: 0.85rem; font-weight: 500;">@admin.LastLoginAt.Value.ToString("dd.MM.yyyy")</div>
+                                <div style="font-size: 0.7rem; color: var(--text-muted);">@admin.LastLoginAt.Value.ToString("HH:mm")</div>
+                            }
+                            else
+                            {
+                                <span style="color: var(--text-muted); font-size: 0.85rem;">—</span>
+                            }
+                        </td>
+                        <td style="text-align: center; padding-right: 20px;">
+                            <div style="display: flex; gap: 8px; justify-content: center;">
+                                <a href="/admin/admins/edit/@admin.Id" class="btn btn-sm btn-primary">
+                                    <span>✏️</span>
+                                    Düzenle
+                                </a>
+                                <button class="btn btn-sm btn-danger" onclick="deleteAdmin(@admin.Id, '@admin.Username')">
+                                    <span>🗑️</span>
+                                    Sil
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script>
@@ -120,4 +146,3 @@ function deleteAdmin(id, username) {
     }
 }
 </script>
-

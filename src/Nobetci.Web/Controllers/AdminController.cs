@@ -361,6 +361,7 @@ public class AdminController : Controller
     }
     
     // GET: /admin/users/edit/{id}
+    [Route("admin/users/edit/{id}")]
     public async Task<IActionResult> EditUser(string id)
     {
         if (!IsAdminLoggedIn())
@@ -404,6 +405,7 @@ public class AdminController : Controller
     
     // POST: /admin/users/edit/{id}
     [HttpPost]
+    [Route("admin/users/edit/{id}")]
     public async Task<IActionResult> EditUser(string id, EditUserViewModel model)
     {
         if (!IsAdminLoggedIn())

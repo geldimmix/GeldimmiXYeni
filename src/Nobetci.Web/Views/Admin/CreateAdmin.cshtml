@@ -6,65 +6,119 @@
 }
 
 <div class="admin-header">
-    <h2>➕ Yeni Admin Oluştur</h2>
+    <h2>
+        <span>➕</span>
+        Yeni Admin Oluştur
+    </h2>
     <div class="header-actions">
-        <a href="/admin/admins" class="btn btn-secondary">← Geri</a>
+        <a href="/admin/admins" class="btn btn-secondary">
+            <span>←</span>
+            Geri Dön
+        </a>
     </div>
 </div>
 
-<div class="card" style="max-width: 600px;">
-    <form method="post" action="/admin/admins/create">
-        <div class="form-group">
-            <label class="form-label">Kullanıcı Adı <span style="color: red;">*</span></label>
-            <input type="text" name="Username" class="form-control" 
-                   value="@Model.Username" required maxlength="50" placeholder="admin_username">
-            @if (ViewContext.ModelState["Username"]?.Errors.Any() == true)
-            {
-                <span style="color: red; font-size: 0.85rem;">@ViewContext.ModelState["Username"]!.Errors.First().ErrorMessage</span>
-            }
+<div class="grid-2">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">
+                <span>🔐</span>
+                Admin Bilgileri
+            </span>
         </div>
         
-        <div class="form-group">
-            <label class="form-label">Şifre <span style="color: red;">*</span></label>
-            <input type="password" name="Password" class="form-control" 
-                   required minlength="6" placeholder="En az 6 karakter">
-            @if (ViewContext.ModelState["Password"]?.Errors.Any() == true)
-            {
-                <span style="color: red; font-size: 0.85rem;">@ViewContext.ModelState["Password"]!.Errors.First().ErrorMessage</span>
-            }
+        <form method="post" action="/admin/admins/create">
+            <div class="form-group">
+                <label class="form-label">Kullanıcı Adı <span style="color: var(--danger);">*</span></label>
+                <input type="text" name="Username" class="form-control" 
+                       value="@Model.Username" required maxlength="50" placeholder="admin_username">
+                @if (ViewContext.ModelState["Username"]?.Errors.Any() == true)
+                {
+                    <span style="color: var(--danger); font-size: 0.85rem; margin-top: 6px; display: block;">
+                        ⚠️ @ViewContext.ModelState["Username"]!.Errors.First().ErrorMessage
+                    </span>
+                }
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Şifre <span style="color: var(--danger);">*</span></label>
+                <input type="password" name="Password" class="form-control" 
+                       required minlength="6" placeholder="En az 6 karakter">
+                @if (ViewContext.ModelState["Password"]?.Errors.Any() == true)
+                {
+                    <span style="color: var(--danger); font-size: 0.85rem; margin-top: 6px; display: block;">
+                        ⚠️ @ViewContext.ModelState["Password"]!.Errors.First().ErrorMessage
+                    </span>
+                }
+            </div>
+            
+            <hr style="margin: 24px 0; border: none; border-top: 2px solid var(--border-color);">
+            
+            <div class="form-group">
+                <label class="form-label">İsim</label>
+                <input type="text" name="FullName" class="form-control" 
+                       value="@Model.FullName" maxlength="100" placeholder="Ad Soyad">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" name="Email" class="form-control" 
+                       value="@Model.Email" maxlength="100" placeholder="email@@example.com">
+            </div>
+            
+            <hr style="margin: 24px 0; border: none; border-top: 2px solid var(--border-color);">
+            
+            <div class="form-group">
+                <label class="form-label">Rol</label>
+                <select name="Role" class="form-control">
+                    <option value="Admin" selected="@(Model.Role == "Admin")">👤 Admin - Tam erişim (admin yönetimi hariç)</option>
+                    <option value="SuperAdmin" selected="@(Model.Role == "SuperAdmin")">⭐ SuperAdmin - Tüm yetkilere sahip</option>
+                    <option value="Viewer" selected="@(Model.Role == "Viewer")">👁️ Viewer - Sadece görüntüleme</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-check" style="cursor: pointer; padding: 14px 18px; border-radius: var(--radius-md); border: 2px solid var(--success); background: rgba(16, 185, 129, 0.05);">
+                    <input type="checkbox" name="IsActive" value="true" checked="@Model.IsActive" style="width: 20px; height: 20px; accent-color: var(--success);">
+                    <span style="font-weight: 600;">✅ Aktif</span>
+                </label>
+            </div>
+            
+            <div style="display: flex; gap: 12px; margin-top: 28px;">
+                <button type="submit" class="btn btn-primary btn-lg" style="flex: 1;">
+                    <span>💾</span>
+                    Oluştur
+                </button>
+                <a href="/admin/admins" class="btn btn-secondary btn-lg">İptal</a>
+            </div>
+        </form>
+    </div>
+    
+    <div>
+        <div class="card" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-color: #60a5fa;">
+            <div style="display: flex; align-items: flex-start; gap: 14px;">
+                <span style="font-size: 1.8rem;">ℹ️</span>
+                <div>
+                    <div style="font-weight: 700; color: #1e40af; margin-bottom: 10px;">Rol Açıklamaları</div>
+                    <div style="font-size: 0.9rem; color: #1d4ed8; line-height: 1.8;">
+                        <p><strong>SuperAdmin:</strong> Tüm yetkilere sahiptir. Sistem ayarlarını ve diğer admin kullanıcılarını yönetebilir.</p>
+                        <p style="margin-top: 12px;"><strong>Admin:</strong> Sayfaları, kullanıcıları ve logları yönetebilir. Admin yönetimi ve sistem ayarlarına erişemez.</p>
+                        <p style="margin-top: 12px;"><strong>Viewer:</strong> Tüm verileri görüntüleyebilir ama değişiklik yapamaz.</p>
+                    </div>
+                </div>
+            </div>
         </div>
         
-        <div class="form-group">
-            <label class="form-label">İsim</label>
-            <input type="text" name="FullName" class="form-control" 
-                   value="@Model.FullName" maxlength="100" placeholder="Ad Soyad">
+        <div class="card" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-color: #fbbf24;">
+            <div style="display: flex; align-items: flex-start; gap: 14px;">
+                <span style="font-size: 1.8rem;">⚠️</span>
+                <div>
+                    <div style="font-weight: 700; color: #92400e; margin-bottom: 6px;">Güvenlik</div>
+                    <div style="font-size: 0.9rem; color: #a16207; line-height: 1.6;">
+                        Admin hesapları için güçlü şifreler kullanın. En az 6 karakter, büyük/küçük harf ve rakam içermesi önerilir.
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <div class="form-group">
-            <label class="form-label">Email</label>
-            <input type="email" name="Email" class="form-control" 
-                   value="@Model.Email" maxlength="100" placeholder="email@@example.com">
-        </div>
-        
-        <div class="form-group">
-            <label class="form-label">Rol</label>
-            <select name="Role" class="form-control">
-                <option value="Admin" selected="@(Model.Role == "Admin")">Admin - Tam erişim (admin yönetimi hariç)</option>
-                <option value="SuperAdmin" selected="@(Model.Role == "SuperAdmin")">⭐ SuperAdmin - Tüm yetkilere sahip</option>
-                <option value="Viewer" selected="@(Model.Role == "Viewer")">Viewer - Sadece görüntüleme</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label class="form-check" style="cursor: pointer;">
-                <input type="checkbox" name="IsActive" value="true" checked="@Model.IsActive">
-                <span>Aktif</span>
-            </label>
-        </div>
-        
-        <div style="display: flex; gap: 12px; margin-top: 24px;">
-            <button type="submit" class="btn btn-primary">💾 Oluştur</button>
-            <a href="/admin/admins" class="btn btn-secondary">İptal</a>
-        </div>
-    </form>
+    </div>
 </div>

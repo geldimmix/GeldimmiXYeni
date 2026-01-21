@@ -5,11 +5,19 @@
 }
 
 <div class="admin-header">
-    <h2>👋 Hoş Geldin, Admin</h2>
-    @if (isSuperAdmin)
-    {
-        <span class="badge badge-warning" style="margin-left: 12px;">⭐ SuperAdmin</span>
-    }
+    <h2>
+        <span>👋</span>
+        Hoş Geldin, Admin
+        @if (isSuperAdmin)
+        {
+            <span class="badge badge-purple" style="font-size: 0.6rem;">⭐ SuperAdmin</span>
+        }
+    </h2>
+    <div class="header-actions">
+        <span style="color: var(--text-muted); font-size: 0.85rem;">
+            @DateTime.Now.ToString("dd MMMM yyyy, dddd", new System.Globalization.CultureInfo("tr-TR"))
+        </span>
+    </div>
 </div>
 
 <div class="stats-grid">
@@ -48,79 +56,102 @@
 
 @if (isSuperAdmin)
 {
-    <div class="stats-grid" style="margin-top: 20px;">
+    <div class="stats-grid">
         <a href="/admin/settings" style="text-decoration: none;">
-            <div class="stat-card" style="background: #fef3c7; border-color: #f59e0b;">
+            <div class="stat-card" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-color: #fbbf24;">
                 <span class="stat-icon">⚙️</span>
-                <div class="stat-label">Sistem Ayarları</div>
-                <div class="stat-value">Limitler →</div>
+                <div class="stat-label" style="color: #92400e;">Sistem Ayarları</div>
+                <div class="stat-value" style="color: #78350f;">Limitler →</div>
             </div>
         </a>
         
         <a href="/admin/admins" style="text-decoration: none;">
-            <div class="stat-card" style="background: #fef3c7; border-color: #f59e0b;">
+            <div class="stat-card" style="background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%); border-color: #a78bfa;">
                 <span class="stat-icon">🔐</span>
-                <div class="stat-label">Admin Yönetimi</div>
-                <div class="stat-value">Kullanıcılar →</div>
+                <div class="stat-label" style="color: #5b21b6;">Admin Yönetimi</div>
+                <div class="stat-value" style="color: #4c1d95;">Kullanıcılar →</div>
             </div>
         </a>
         
         <a href="/" target="_blank" style="text-decoration: none;">
-            <div class="stat-card">
+            <div class="stat-card" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-color: #34d399;">
                 <span class="stat-icon">🌐</span>
-                <div class="stat-label">Siteyi Görüntüle</div>
-                <div class="stat-value">Aç →</div>
+                <div class="stat-label" style="color: #065f46;">Siteyi Görüntüle</div>
+                <div class="stat-value" style="color: #064e3b;">Aç →</div>
             </div>
         </a>
         
         <a href="/app" target="_blank" style="text-decoration: none;">
-            <div class="stat-card">
+            <div class="stat-card" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-color: #60a5fa;">
                 <span class="stat-icon">📅</span>
-                <div class="stat-label">Nöbet Uygulaması</div>
-                <div class="stat-value">Aç →</div>
+                <div class="stat-label" style="color: #1e40af;">Nöbet Uygulaması</div>
+                <div class="stat-value" style="color: #1e3a8a;">Aç →</div>
             </div>
         </a>
     </div>
 }
 else
 {
-    <div class="stats-grid" style="margin-top: 20px;">
+    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
         <a href="/" target="_blank" style="text-decoration: none;">
-            <div class="stat-card">
+            <div class="stat-card" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-color: #34d399;">
                 <span class="stat-icon">🌐</span>
-                <div class="stat-label">Siteyi Görüntüle</div>
-                <div class="stat-value">Aç →</div>
+                <div class="stat-label" style="color: #065f46;">Siteyi Görüntüle</div>
+                <div class="stat-value" style="color: #064e3b;">Aç →</div>
+            </div>
+        </a>
+        
+        <a href="/app" target="_blank" style="text-decoration: none;">
+            <div class="stat-card" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-color: #60a5fa;">
+                <span class="stat-icon">📅</span>
+                <div class="stat-label" style="color: #1e40af;">Nöbet Uygulaması</div>
+                <div class="stat-value" style="color: #1e3a8a;">Aç →</div>
             </div>
         </a>
     </div>
 }
 
-<div class="grid-2" style="margin-top: 20px;">
+<div class="grid-2" style="margin-top: 8px;">
     <div class="card">
         <div class="card-header">
-            <span class="card-title">⚡ Hızlı İşlemler</span>
+            <span class="card-title">
+                <span>⚡</span>
+                Hızlı İşlemler
+            </span>
         </div>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-            <a href="/admin/pages/create" class="btn btn-primary">+ Yeni Sayfa Oluştur</a>
-            <a href="/admin/users" class="btn btn-secondary">Kullanıcıları Görüntüle</a>
-            <a href="/admin/logs?dateFrom=@DateTime.UtcNow.ToString("yyyy-MM-dd")" class="btn btn-secondary">Bugünün Logları</a>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <a href="/admin/pages/create" class="quick-link">
+                <span class="icon">➕</span>
+                <span class="text">Yeni Sayfa Oluştur</span>
+            </a>
+            <a href="/admin/users" class="quick-link">
+                <span class="icon">👤</span>
+                <span class="text">Kullanıcıları Görüntüle</span>
+            </a>
+            <a href="/admin/logs?dateFrom=@DateTime.UtcNow.ToString("yyyy-MM-dd")" class="quick-link">
+                <span class="icon">📆</span>
+                <span class="text">Bugünün Logları</span>
+            </a>
         </div>
     </div>
     
     <div class="card">
         <div class="card-header">
-            <span class="card-title">📌 Notlar</span>
+            <span class="card-title">
+                <span>📌</span>
+                Notlar
+            </span>
         </div>
-        <ul style="padding-left: 20px; color: #64748b; font-size: 0.9rem; line-height: 1.8;">
+        <ul style="padding-left: 20px; color: var(--text-secondary); font-size: 0.9rem; line-height: 2;">
             <li>Sayfalar bölümünden SEO içeriklerini düzenleyebilirsiniz</li>
             <li>Kullanıcılar bölümünden kayıtlı kullanıcıları ve limitlerini yönetebilirsiniz</li>
             <li>Loglar bölümünden ziyaretçi aktivitelerini izleyebilirsiniz</li>
             @if (isSuperAdmin)
             {
-                <li><strong>⭐ SuperAdmin:</strong> Sistem Ayarları ve Admin Yönetimi sayfalarına erişebilirsiniz</li>
+                <li style="color: var(--primary); font-weight: 600;">
+                    ⭐ SuperAdmin: Sistem Ayarları ve Admin Yönetimi sayfalarına erişebilirsiniz
+                </li>
             }
         </ul>
     </div>
 </div>
-
-

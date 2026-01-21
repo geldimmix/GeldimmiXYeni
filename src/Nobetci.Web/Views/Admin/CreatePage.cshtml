@@ -5,9 +5,15 @@
 }
 
 <div class="admin-header">
-    <h2>📄 Yeni Sayfa Oluştur</h2>
+    <h2>
+        <span>📄</span>
+        Yeni Sayfa Oluştur
+    </h2>
     <div class="header-actions">
-        <a href="/admin/pages" class="btn btn-secondary">← Geri</a>
+        <a href="/admin/pages" class="btn btn-secondary">
+            <span>←</span>
+            Geri Dön
+        </a>
     </div>
 </div>
 
@@ -15,7 +21,10 @@
     <div class="grid-2">
         <div class="card">
             <div class="card-header">
-                <span class="card-title">Temel Bilgiler</span>
+                <span class="card-title">
+                    <span>📝</span>
+                    Temel Bilgiler
+                </span>
             </div>
             
             <div class="form-group">
@@ -26,7 +35,9 @@
             <div class="form-group">
                 <label class="form-label">URL Slug *</label>
                 <input type="text" name="Slug" class="form-control" required placeholder="Örn: nobet-listesi-olusturma">
-                <small style="color: #64748b;">URL'de görünecek kısım (küçük harf, tire ile)</small>
+                <small style="color: var(--text-muted); font-size: 0.8rem; margin-top: 6px; display: block;">
+                    URL'de görünecek kısım (küçük harf, tire ile)
+                </small>
             </div>
             
             <div class="form-group">
@@ -58,16 +69,19 @@
             </div>
             
             <div class="form-group">
-                <label class="form-check">
-                    <input type="checkbox" name="IsPublished" value="true" checked>
-                    <span>Yayınla</span>
+                <label class="form-check" style="cursor: pointer; padding: 14px 18px; border-radius: var(--radius-md); border: 2px solid var(--success); background: rgba(16, 185, 129, 0.05);">
+                    <input type="checkbox" name="IsPublished" value="true" checked style="width: 20px; height: 20px; accent-color: var(--success);">
+                    <span style="font-weight: 600;">✅ Yayınla</span>
                 </label>
             </div>
         </div>
         
         <div class="card">
             <div class="card-header">
-                <span class="card-title">SEO Ayarları</span>
+                <span class="card-title">
+                    <span>🔍</span>
+                    SEO Ayarları
+                </span>
             </div>
             
             <div class="form-group">
@@ -79,6 +93,8 @@
                 <label class="form-label">Meta Anahtar Kelimeler</label>
                 <input type="text" name="MetaKeywords" class="form-control" placeholder="Virgülle ayırın: nöbet, vardiya, hemşire">
             </div>
+            
+            <hr style="margin: 24px 0; border: none; border-top: 2px solid var(--border-color);">
             
             <div class="form-group">
                 <label class="form-label">CTA Buton Metni</label>
@@ -94,19 +110,25 @@
     
     <div class="card">
         <div class="card-header">
-            <span class="card-title">Sayfa İçeriği (HTML)</span>
+            <span class="card-title">
+                <span>📖</span>
+                Sayfa İçeriği (HTML)
+            </span>
         </div>
         
-        <div class="form-group">
-            <textarea name="Content" class="form-control" rows="15" placeholder="HTML içerik yazın..."></textarea>
-            <small style="color: #64748b;">HTML etiketleri kullanabilirsiniz. &lt;h2&gt;, &lt;p&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;strong&gt; vb.</small>
+        <div class="form-group" style="margin-bottom: 0;">
+            <textarea name="Content" class="form-control" rows="20" placeholder="HTML içerik yazın..." style="font-family: 'SF Mono', Monaco, monospace; font-size: 0.9rem;"></textarea>
+            <small style="color: var(--text-muted); font-size: 0.8rem; margin-top: 8px; display: block;">
+                💡 HTML etiketleri kullanabilirsiniz: &lt;h2&gt;, &lt;p&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;strong&gt; vb.
+            </small>
         </div>
     </div>
     
-    <div style="display: flex; gap: 10px; margin-top: 20px;">
-        <button type="submit" class="btn btn-primary">Kaydet</button>
-        <a href="/admin/pages" class="btn btn-secondary">İptal</a>
+    <div style="display: flex; gap: 12px; margin-top: 24px;">
+        <button type="submit" class="btn btn-primary btn-lg">
+            <span>💾</span>
+            Kaydet
+        </button>
+        <a href="/admin/pages" class="btn btn-secondary btn-lg">İptal</a>
     </div>
 </form>
-
-
