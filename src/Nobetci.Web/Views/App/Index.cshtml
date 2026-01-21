@@ -5834,13 +5834,13 @@
     
     // ========== Template Manager Functions ==========
     
-    // Load all templates from API and render in sidebar
+    // Load all templates from API and render in modal
     async function loadUserTemplates() {
         try {
             const response = await fetch('/api/shift-templates');
             if (response.ok) {
                 const templates = await response.json();
-                renderTemplatesInSidebar(templates);
+                renderTemplatesInModal(templates);
             }
         } catch (error) {
             console.error('Error loading templates:', error);
@@ -8310,13 +8310,33 @@
     }
     
     function getEligibleEmployees(settings) {
-        // Get all employees from the DOM
-        const employeeRows = document.querySelectorAll('.employee-row');
+        // Get all employees from the DOM - using emp-row class or tr with data-employee-id
+        const employeeRows = document.querySelectorAll('.emp-row[data-employee-id], tr[data-employee-id]');
         const employees = [];
+        const seenIds = new Set();
         
         employeeRows.forEach(row => {
             const employeeId = parseInt(row.dataset.employeeId);
-            const employeeName = row.querySelector('.employee-name')?.textContent?.trim() || 'Unknown';
+            
+            // Skip duplicates (emp-row and tr might both have same employee)
+            if (seenIds.has(employeeId)) return;
+            seenIds.add(employeeId);
+            
+            // Get employee name from different possible locations
+            let employeeName = 'Unknown';
+            const nameEl = row.querySelector('.emp-name') || row.querySelector('.employee-name');
+            if (nameEl) {
+                employeeName = nameEl.textContent?.trim() || 'Unknown';
+            } else {
+                // Try to get from emp-info
+                const infoEl = row.querySelector('.emp-info');
+                if (infoEl) {
+                    const firstDiv = infoEl.querySelector('div');
+                    if (firstDiv) {
+                        employeeName = firstDiv.textContent?.trim() || 'Unknown';
+                    }
+                }
+            }
             
             // Skip exempt employees
             if (settings.exemptEmployees.includes(employeeId)) {
@@ -8332,6 +8352,7 @@
             });
         });
         
+        console.log('Found employees:', employees.length, employees);
         return employees;
     }
     
