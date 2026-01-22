@@ -1,8 +1,9 @@
 @{
-    var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+    var currentLang = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    var isRtl = currentLang == "ar";
 }
 <!DOCTYPE html>
-<html lang="@System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName">
+<html lang="@currentLang" dir="@(isRtl ? "rtl" : "ltr")">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -82,28 +83,28 @@
                 <!-- Language -->
                 <div class="dropdown">
                     <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                        @if (isTurkish)
-                        {
-                            <span>🇹🇷</span>
-                        }
-                        else
-                        {
-                            <span>🇬🇧</span>
-                        }
+                        <span>@Localizer["CurrentLanguageFlag"].Value</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li>
                             <form asp-controller="Home" asp-action="SetLanguage" method="post">
                                 <input type="hidden" name="culture" value="tr" />
                                 <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                                <button type="submit" class="dropdown-item">🇹🇷 Türkçe</button>
+                                <button type="submit" class="dropdown-item @(currentLang == "tr" ? "active" : "")">🇹🇷 @Localizer["Turkish"]</button>
                             </form>
                         </li>
                         <li>
                             <form asp-controller="Home" asp-action="SetLanguage" method="post">
                                 <input type="hidden" name="culture" value="en" />
                                 <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                                <button type="submit" class="dropdown-item">🇬🇧 English</button>
+                                <button type="submit" class="dropdown-item @(currentLang == "en" ? "active" : "")">🇬🇧 @Localizer["English"]</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form asp-controller="Home" asp-action="SetLanguage" method="post">
+                                <input type="hidden" name="culture" value="ar" />
+                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                <button type="submit" class="dropdown-item @(currentLang == "ar" ? "active" : "")">🇸🇦 @Localizer["Arabic"]</button>
                             </form>
                         </li>
                     </ul>
@@ -112,12 +113,12 @@
                 @if (User.Identity?.IsAuthenticated == true)
                 {
                     <span class="text-muted small">@User.Identity.Name</span>
-                    <a href="/Account/Logout" class="btn btn-outline-secondary btn-sm">@(isTurkish ? "Çıkış" : "Logout")</a>
+                    <a href="/Account/Logout" class="btn btn-outline-secondary btn-sm">@Localizer["Logout"]</a>
                 }
                 else
                 {
-                    <a href="/Account/Login" class="btn btn-outline-secondary btn-sm">@(isTurkish ? "Giriş" : "Login")</a>
-                    <a href="/Account/Register" class="btn btn-primary btn-sm">@(isTurkish ? "Kayıt Ol" : "Register")</a>
+                    <a href="/Account/Login" class="btn btn-outline-secondary btn-sm">@Localizer["Giriş"]</a>
+                    <a href="/Account/Register" class="btn btn-primary btn-sm">@Localizer["Register"]</a>
                 }
             </div>
         </div>

@@ -1,10 +1,10 @@
 @using Nobetci.Web.Controllers
 @model BlogPost
 @{
-    var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
-    var title = isTurkish ? Model.TitleTr : Model.TitleEn;
-    var content = isTurkish ? Model.ContentTr : Model.ContentEn;
-    var keywords = isTurkish ? Model.KeywordsTr : Model.KeywordsEn;
+    var currentLang = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    var title = currentLang == "tr" ? Model.TitleTr : Model.TitleEn;
+    var content = currentLang == "tr" ? Model.ContentTr : Model.ContentEn;
+    var keywords = currentLang == "tr" ? Model.KeywordsTr : Model.KeywordsEn;
     ViewData["Title"] = title;
     var paragraphs = content
         .Split('\n', StringSplitOptions.RemoveEmptyEntries)
@@ -41,10 +41,10 @@
                             <div class="blog-cta blog-cta-inline">
                                 <div class="cta-icon">💡</div>
                                 <div class="cta-content">
-                                    <h4>@(isTurkish ? "Geldimmi ile Nöbet Planlamayı Deneyin" : "Try Shift Planning with Geldimmi")</h4>
-                                    <p>@(isTurkish ? "Ücretsiz hesap oluşturun, hemen kullanmaya başlayın." : "Create a free account and start using right away.")</p>
+                                    <h4>@Localizer["TryShiftPlanningWithGeldimmi"]</h4>
+                                    <p>@Localizer["CreateFreeAccountStartUsing"]</p>
                                     <a href="https://geldimmi.com/App" class="cta-btn cta-btn-primary" target="_blank">
-                                        @(isTurkish ? "🚀 Hemen Dene" : "🚀 Try Now")
+                                        @Localizer["TryNow"]
                                     </a>
                                 </div>
                             </div>
@@ -56,19 +56,19 @@
                 <div class="blog-cta blog-cta-box">
                     <div class="cta-box-content">
                         <div class="cta-box-icon">⚡</div>
-                        <h3>@(isTurkish ? "Nöbet Planlamasını Kolaylaştırın" : "Simplify Your Shift Planning")</h3>
-                        <p>@(isTurkish ? "Geldimmi ile otomatik nöbet çizelgesi, adil dağıtım ve puantaj takibi. Hastaneler ve işletmeler için tasarlandı." : "Automatic shift scheduling, fair distribution, and timesheet tracking with Geldimmi. Designed for hospitals and businesses.")</p>
+                        <h3>@Localizer["SimplifyYourShiftPlanning"]</h3>
+                        <p>@Localizer["AutomaticShiftSchedulingDescription"]</p>
                         <div class="cta-box-features">
-                            <span>✓ @(isTurkish ? "Ücretsiz başlangıç" : "Free to start")</span>
-                            <span>✓ @(isTurkish ? "10 personele kadar" : "Up to 10 staff")</span>
-                            <span>✓ @(isTurkish ? "Kredi kartı gerekmez" : "No credit card")</span>
+                            <span>✓ @Localizer["FreeToStart"]</span>
+                            <span>✓ @Localizer["UpTo10Staff"]</span>
+                            <span>✓ @Localizer["NoCreditCard"]</span>
                         </div>
                         <div class="cta-box-buttons">
                             <a href="https://geldimmi.com/Account/Login" class="cta-btn cta-btn-primary" target="_blank">
-                                @(isTurkish ? "🎯 Ücretsiz Kayıt Ol" : "🎯 Sign Up Free")
+                                @Localizer["SignUpFree"]
                             </a>
                             <a href="https://geldimmi.com/App" class="cta-btn cta-btn-secondary" target="_blank">
-                                @(isTurkish ? "👀 Demo İncele" : "👀 View Demo")
+                                @Localizer["ViewDemo"]
                             </a>
                         </div>
                     </div>
@@ -76,7 +76,7 @@
 
                 <div class="blog-back mt-4">
                     <a asp-controller="Blog" asp-action="Index" class="blog-readmore">
-                        @(isTurkish ? "← Tüm yazılara dön" : "← Back to all posts")
+                        @Localizer["BackToAllPosts"]
                     </a>
                 </div>
             </div>

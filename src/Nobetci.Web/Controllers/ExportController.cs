@@ -51,7 +51,7 @@ public class ExportController : Controller
 
         // Get current culture for localization
         var culture = CultureInfo.CurrentUICulture;
-        var isTurkish = culture.TwoLetterISOLanguageName == "tr";
+        var currentLang = culture.TwoLetterISOLanguageName;
 
         var employees = await _context.Employees
             .Where(e => e.OrganizationId == organization.Id && e.IsActive)
@@ -89,15 +89,21 @@ public class ExportController : Controller
         var monthName = monthDate.ToString("MMMM yyyy", culture);
 
         // Localized texts
-        var sheetName = isTurkish ? $"Nöbet Listesi - {monthName}" : $"Shift Schedule - {monthName}";
-        var employeeHeader = isTurkish ? "Personel" : "Employee";
-        var totalHoursHeader = isTurkish ? "Toplam" : "Total";
-        var hoursAbbrev = isTurkish ? "s" : "h"; // saat / hours abbreviation
+        var sheetName = string.Format(_localizer["ShiftScheduleWithMonth"].Value, monthName);
+        var employeeHeader = _localizer["PayrollHeader_Employee"].Value;
+        var totalHoursHeader = _localizer["Total"].Value;
+        var hoursAbbrev = _localizer["HoursAbbrev"].Value;
 
         // Day name abbreviations
-        var dayNames = isTurkish 
-            ? new[] { "Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt" }
-            : new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+        var dayNames = new[] {
+            _localizer["Paz"].Value,
+            _localizer["Pzt"].Value,
+            _localizer["Sal"].Value,
+            _localizer["Car"].Value,
+            _localizer["Per"].Value,
+            _localizer["Cum"].Value,
+            _localizer["Cmt"].Value
+        };
 
         using var workbook = new XLWorkbook();
         var worksheet = workbook.Worksheets.Add(sheetName.Length > 31 ? sheetName.Substring(0, 31) : sheetName);
@@ -187,7 +193,7 @@ public class ExportController : Controller
                     if (shift.IsDayOff)
                     {
                         // Day off - show X or İzin
-                        cell.Value = isTurkish ? "İzin" : "Off";
+                        cell.Value = _localizer["Off"].Value;
                         cell.Style.Font.FontSize = 9;
                         cell.Style.Font.Italic = true;
                     }
@@ -277,10 +283,8 @@ public class ExportController : Controller
         workbook.SaveAs(stream);
         stream.Position = 0;
 
-        // Localized filename
-        var fileName = isTurkish
-            ? $"Nobet_Listesi_{year}_{month:00}.xlsx"
-            : $"Shift_Schedule_{year}_{month:00}.xlsx";
+        // Localized filename - using English format for file names (standard practice)
+        var fileName = $"Shift_Schedule_{year}_{month:00}.xlsx";
             
         return ExcelFile(stream.ToArray(), fileName);
     }
@@ -531,7 +535,7 @@ public class ExportController : Controller
             return NotFound();
 
         var culture = CultureInfo.CurrentUICulture;
-        var isTurkish = culture.TwoLetterISOLanguageName == "tr";
+        var currentLang = culture.TwoLetterISOLanguageName;
 
         var employees = await _context.Employees
             .Where(e => e.OrganizationId == organization.Id && e.IsActive)
@@ -577,27 +581,34 @@ public class ExportController : Controller
 
         // Sheet name
         var sourceText = source == "attendance" 
-            ? (isTurkish ? "Mesai Takip" : "Attendance") 
-            : (isTurkish ? "Nöbet" : "Shift");
-        var sheetName = isTurkish ? $"Puantaj - {monthName}" : $"Payroll - {monthName}";
+            ? _localizer["Attendance"].Value
+            : _localizer["Shift"].Value;
+        var sheetName = string.Format(_localizer["PayrollWithMonth"].Value, monthName);
 
-        var headers = isTurkish
-            ? new[] { "Personel", "Ünvan", "Çalışılan Gün", "Çalışılan Saat", "Hedef Saat", "Fazla Mesai", "Gece Çalışma", "Hafta Sonu", "Resmi Tatil", "İzin Günü" }
-            : new[] { "Employee", "Title", "Days Worked", "Hours Worked", "Target Hours", "Overtime", "Night Hours", "Weekend Hours", "Holiday Hours", "Days Off" };
+        var headers = new[] {
+            _localizer["PayrollHeader_Employee"].Value,
+            _localizer["PayrollHeader_Title"].Value,
+            _localizer["PayrollHeader_DaysWorked"].Value,
+            _localizer["PayrollHeader_HoursWorked"].Value,
+            _localizer["PayrollHeader_TargetHours"].Value,
+            _localizer["PayrollHeader_Overtime"].Value,
+            _localizer["PayrollHeader_NightHours"].Value,
+            _localizer["PayrollHeader_WeekendHours"].Value,
+            _localizer["PayrollHeader_HolidayHours"].Value,
+            _localizer["PayrollHeader_DaysOff"].Value
+        };
 
         using var workbook = new XLWorkbook();
         var worksheet = workbook.Worksheets.Add(sheetName.Length > 31 ? sheetName.Substring(0, 31) : sheetName);
 
         // Add info header
-        worksheet.Cell(1, 1).Value = isTurkish ? "Puantaj Raporu" : "Payroll Report";
+        worksheet.Cell(1, 1).Value = _localizer["PayrollReport"].Value;
         worksheet.Cell(1, 1).Style.Font.Bold = true;
         worksheet.Cell(1, 1).Style.Font.FontSize = 14;
         worksheet.Range(1, 1, 1, 4).Merge();
 
-        worksheet.Cell(2, 1).Value = isTurkish ? $"Dönem: {monthName}" : $"Period: {monthName}";
-        worksheet.Cell(2, 5).Value = isTurkish 
-            ? $"Kaynak: {sourceText} | Gece: {nightStartHour:00}:00 - {nightEndHour:00}:00" 
-            : $"Source: {sourceText} | Night: {nightStartHour:00}:00 - {nightEndHour:00}:00";
+        worksheet.Cell(2, 1).Value = string.Format(_localizer["Period"].Value + ": {0}", monthName);
+        worksheet.Cell(2, 5).Value = string.Format(_localizer["Source"].Value + ": {0} | " + _localizer["Night"].Value + ": {1:00}:00 - {2:00}:00", sourceText, nightStartHour, nightEndHour);
 
         // Column headers
         int headerRow = 4;
@@ -698,9 +709,8 @@ public class ExportController : Controller
         workbook.SaveAs(stream);
         stream.Position = 0;
 
-        var fileName = isTurkish
-            ? $"Puantaj_{year}_{month:00}.xlsx"
-            : $"Payroll_{year}_{month:00}.xlsx";
+        // Localized filename - using English format for file names (standard practice)
+        var fileName = $"Payroll_{year}_{month:00}.xlsx";
 
         return ExcelFile(stream.ToArray(), fileName);
     }
@@ -726,7 +736,7 @@ public class ExportController : Controller
             return NotFound();
 
         var culture = CultureInfo.CurrentUICulture;
-        var isTurkish = culture.TwoLetterISOLanguageName == "tr";
+        var currentLang = culture.TwoLetterISOLanguageName;
 
         // Parse the saved payroll data
         var entries = System.Text.Json.JsonSerializer.Deserialize<List<SavedPayrollEntry>>(savedPayroll.PayrollDataJson) 
@@ -736,14 +746,23 @@ public class ExportController : Controller
         var monthName = monthDate.ToString("MMMM yyyy", culture);
 
         var sourceText = savedPayroll.DataSource == "attendance" 
-            ? (isTurkish ? "Mesai Takip" : "Attendance") 
-            : (isTurkish ? "Nöbet" : "Shift");
-        var summarySheetName = isTurkish ? "Özet" : "Summary";
-        var detailSheetName = isTurkish ? "Detay" : "Details";
+            ? _localizer["Attendance"].Value
+            : _localizer["Shift"].Value;
+        var summarySheetName = _localizer["Summary"].Value;
+        var detailSheetName = _localizer["Details"].Value;
 
-        var headers = isTurkish
-            ? new[] { "Personel", "Ünvan", "Çalışılan Gün", "Çalışılan Saat", "Hedef Saat", "Fazla Mesai", "Gece Çalışma", "Hafta Sonu", "Resmi Tatil", "İzin Günü" }
-            : new[] { "Employee", "Title", "Days Worked", "Hours Worked", "Target Hours", "Overtime", "Night Hours", "Weekend Hours", "Holiday Hours", "Days Off" };
+        var headers = new[] {
+            _localizer["PayrollHeader_Employee"].Value,
+            _localizer["PayrollHeader_Title"].Value,
+            _localizer["PayrollHeader_DaysWorked"].Value,
+            _localizer["PayrollHeader_HoursWorked"].Value,
+            _localizer["PayrollHeader_TargetHours"].Value,
+            _localizer["PayrollHeader_Overtime"].Value,
+            _localizer["PayrollHeader_NightHours"].Value,
+            _localizer["PayrollHeader_WeekendHours"].Value,
+            _localizer["PayrollHeader_HolidayHours"].Value,
+            _localizer["PayrollHeader_DaysOff"].Value
+        };
 
         using var workbook = new XLWorkbook();
         
@@ -751,20 +770,16 @@ public class ExportController : Controller
         var summarySheet = workbook.Worksheets.Add(summarySheetName);
 
         // Add info header
-        summarySheet.Cell(1, 1).Value = isTurkish ? "Puantaj Raporu" : "Payroll Report";
+        summarySheet.Cell(1, 1).Value = _localizer["PayrollReport"].Value;
         summarySheet.Cell(1, 1).Style.Font.Bold = true;
         summarySheet.Cell(1, 1).Style.Font.FontSize = 14;
         summarySheet.Range(1, 1, 1, 4).Merge();
 
-        summarySheet.Cell(2, 1).Value = isTurkish ? $"Dönem: {monthName}" : $"Period: {monthName}";
-        summarySheet.Cell(2, 5).Value = isTurkish 
-            ? $"Kaynak: {sourceText} | Gece: {savedPayroll.NightStartHour:00}:00 - {savedPayroll.NightEndHour:00}:00" 
-            : $"Source: {sourceText} | Night: {savedPayroll.NightStartHour:00}:00 - {savedPayroll.NightEndHour:00}:00";
+        summarySheet.Cell(2, 1).Value = string.Format(_localizer["Period"].Value + ": {0}", monthName);
+        summarySheet.Cell(2, 5).Value = string.Format(_localizer["Source"].Value + ": {0} | " + _localizer["Night"].Value + ": {1:00}:00 - {2:00}:00", sourceText, savedPayroll.NightStartHour, savedPayroll.NightEndHour);
         
-        summarySheet.Cell(3, 1).Value = isTurkish ? $"Kayıt: {savedPayroll.Name}" : $"Record: {savedPayroll.Name}";
-        summarySheet.Cell(3, 5).Value = isTurkish 
-            ? $"Oluşturulma: {savedPayroll.CreatedAt.ToLocalTime():dd.MM.yyyy HH:mm}" 
-            : $"Created: {savedPayroll.CreatedAt.ToLocalTime():dd.MM.yyyy HH:mm}";
+        summarySheet.Cell(3, 1).Value = string.Format(_localizer["Record"].Value + ": {0}", savedPayroll.Name);
+        summarySheet.Cell(3, 5).Value = string.Format(_localizer["Created"].Value + ": {0:dd.MM.yyyy HH:mm}", savedPayroll.CreatedAt.ToLocalTime());
 
         // Column headers
         int headerRow = 5;
@@ -822,13 +837,30 @@ public class ExportController : Controller
         // ========== DAILY DETAIL SHEET ==========
         var detailSheet = workbook.Worksheets.Add(detailSheetName);
         
-        var detailHeaders = isTurkish
-            ? new[] { "Personel", "Tarih", "Gün", "Giriş", "Çıkış", "Saat", "Gece", "H.Sonu", "Tatil", "İzin", "Not" }
-            : new[] { "Employee", "Date", "Day", "In", "Out", "Hours", "Night", "Wknd", "Hol", "Off", "Note" };
+        // Detail headers - need to add these keys to resources
+        var detailHeaders = new[] {
+            _localizer["PayrollHeader_Employee"].Value,
+            _localizer["Date"].Value,
+            _localizer["Day"].Value,
+            _localizer["In"].Value,
+            _localizer["Out"].Value,
+            _localizer["Hours"].Value,
+            _localizer["Night"].Value,
+            _localizer["Weekend"].Value,
+            _localizer["Holiday"].Value,
+            _localizer["Off"].Value,
+            _localizer["Note"].Value
+        };
         
-        var dayNames = isTurkish 
-            ? new[] { "Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt" }
-            : new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+        var dayNames = new[] {
+            _localizer["Paz"].Value,
+            _localizer["Pzt"].Value,
+            _localizer["Sal"].Value,
+            _localizer["Car"].Value,
+            _localizer["Per"].Value,
+            _localizer["Cum"].Value,
+            _localizer["Cmt"].Value
+        };
 
         // Detail header row
         for (int i = 0; i < detailHeaders.Length; i++)
@@ -904,9 +936,8 @@ public class ExportController : Controller
         workbook.SaveAs(stream);
         stream.Position = 0;
 
-        var fileName = isTurkish
-            ? $"Puantaj_{savedPayroll.Name.Replace(" ", "_")}_{savedPayroll.Year}_{savedPayroll.Month:00}.xlsx"
-            : $"Payroll_{savedPayroll.Name.Replace(" ", "_")}_{savedPayroll.Year}_{savedPayroll.Month:00}.xlsx";
+        // Localized filename - using English format for file names (standard practice)
+        var fileName = $"Payroll_{savedPayroll.Name.Replace(" ", "_")}_{savedPayroll.Year}_{savedPayroll.Month:00}.xlsx";
 
         return ExcelFile(stream.ToArray(), fileName);
     }

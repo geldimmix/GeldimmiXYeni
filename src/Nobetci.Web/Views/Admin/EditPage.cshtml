@@ -52,13 +52,13 @@
                 <select name="Language" class="form-control">
                     @if (Model.Language == "tr")
                     {
-                        <option value="tr" selected>🇹🇷 Türkçe</option>
-                        <option value="en">🇬🇧 İngilizce</option>
+                        <option value="tr" selected>🇹🇷 @Localizer["Turkish"]</option>
+                        <option value="en">🇬🇧 @Localizer["English"]</option>
                     }
                     else
                     {
-                        <option value="tr">🇹🇷 Türkçe</option>
-                        <option value="en" selected>🇬🇧 İngilizce</option>
+                        <option value="tr">🇹🇷 @Localizer["Turkish"]</option>
+                        <option value="en" selected>🇬🇧 @Localizer["English"]</option>
                     }
                 </select>
             </div>

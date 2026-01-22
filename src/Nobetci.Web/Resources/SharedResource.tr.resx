@@ -33,6 +33,9 @@
   <data name="English" xml:space="preserve">
     <value>İngilizce</value>
   </data>
+  <data name="Arabic" xml:space="preserve">
+    <value>Arapça</value>
+  </data>
 
   <!-- Navigation -->
   <data name="Home" xml:space="preserve">
@@ -56,6 +59,12 @@
   <data name="StartFree" xml:space="preserve">
     <value>Ücretsiz Başla</value>
   </data>
+  <data name="TryItNow" xml:space="preserve">
+    <value>Hemen Deneyin</value>
+  </data>
+  <data name="StartUsingForFree" xml:space="preserve">
+    <value>Kayıt olmadan ücretsiz kullanmaya başlayın</value>
+  </data>
 
   <!-- Hero Section -->
   <data name="HeroTitle" xml:space="preserve">
@@ -63,6 +72,12 @@
   </data>
   <data name="HeroSubtitle" xml:space="preserve">
     <value>Hemşire nöbet programı, vardiya planı ve otomatik puantaj hesaplama. Adil dağıtım algoritması ile saniyeler içinde nöbet listesi oluşturun.</value>
+  </data>
+  <data name="HeroTitleWithHighlight" xml:space="preserve">
+    <value>Nöbet planlamayı <span class="highlight">kolaylaştırın</span></value>
+  </data>
+  <data name="HeroDesc" xml:space="preserve">
+    <value>Nöbet çizelgesi oluşturun, mesai takibi yapın, puantaj hesaplayın ve izinleri yönetin. Tek platformda tüm iş gücü yönetimi.</value>
   </data>
   <data name="HeroCta" xml:space="preserve">
     <value>Hemen Başla - Ücretsiz</value>
@@ -250,6 +265,1724 @@
   <!-- Footer -->
   <data name="Copyright" xml:space="preserve">
     <value>© 2026 Nöbetçi. Tüm hakları saklıdır.</value>
+  </data>
+  
+  <!-- Navigation Extended -->
+  <data name="Products" xml:space="preserve">
+    <value>Ürünler</value>
+  </data>
+  <data name="SignUp" xml:space="preserve">
+    <value>Kayıt Ol</value>
+  </data>
+  <data name="Giriş" xml:space="preserve">
+    <value>Giriş</value>
+  </data>
+  
+  <!-- SEO Meta -->
+  <data name="MetaDescription_Default" xml:space="preserve">
+    <value>Online nöbet çizelgesi, mesai takip ve puantaj sistemi</value>
+  </data>
+  
+  <!-- Products Menu -->
+  <data name="ShiftScheduling" xml:space="preserve">
+    <value>Nöbet Çizelgesi</value>
+  </data>
+  <data name="CreateShiftSchedule" xml:space="preserve">
+    <value>Nöbet Çizelgesi Oluşturma</value>
+  </data>
+  <data name="CreateShiftSchedule_Desc" xml:space="preserve">
+    <value>Dakikalar içinde profesyonel nöbet planı</value>
+  </data>
+  <data name="NurseShiftPlanner" xml:space="preserve">
+    <value>Hemşire Nöbet Programı</value>
+  </data>
+  <data name="NurseShiftPlanner_Desc" xml:space="preserve">
+    <value>Hastaneler için özel çözüm</value>
+  </data>
+  <data name="FairShiftDistribution" xml:space="preserve">
+    <value>Adil Nöbet Dağıtımı</value>
+  </data>
+  <data name="FairShiftDistribution_Desc" xml:space="preserve">
+    <value>Akıllı algoritma ile dengeli dağıtım</value>
+  </data>
+  <data name="TimeAttendance" xml:space="preserve">
+    <value>Mesai Takip</value>
+  </data>
+  <data name="TimeAttendanceSystem" xml:space="preserve">
+    <value>Mesai Takip Sistemi</value>
+  </data>
+  <data name="TimeAttendanceSystem_Desc" xml:space="preserve">
+    <value>Giriş-çıkış saatlerini kaydedin</value>
+  </data>
+  <data name="AttendanceApp" xml:space="preserve">
+    <value>Mesai Takip Uygulaması</value>
+  </data>
+  <data name="AttendanceApp_Desc" xml:space="preserve">
+    <value>Hemen kullanmaya başla</value>
+  </data>
+  <data name="PayrollCalculation" xml:space="preserve">
+    <value>Puantaj Hesaplama</value>
+  </data>
+  <data name="PayrollCalculation_Desc" xml:space="preserve">
+    <value>Otomatik mesai hesabı</value>
+  </data>
+  <data name="OvertimeCalculation" xml:space="preserve">
+    <value>Fazla Mesai Hesaplama</value>
+  </data>
+  <data name="OvertimeCalculation_Desc" xml:space="preserve">
+    <value>Gece, hafta sonu, tatil</value>
+  </data>
+  <data name="LeaveManagement" xml:space="preserve">
+    <value>İzin Yönetimi</value>
+  </data>
+  <data name="LeaveManagementSystem" xml:space="preserve">
+    <value>İzin Yönetim Sistemi</value>
+  </data>
+  <data name="LeaveManagementSystem_Desc" xml:space="preserve">
+    <value>30+ izin türü desteği</value>
+  </data>
+  <data name="AnnualLeaveTracking" xml:space="preserve">
+    <value>Yıllık İzin Takibi</value>
+  </data>
+  <data name="AnnualLeaveTracking_Desc" xml:space="preserve">
+    <value>Bakiye ve kullanım takibi</value>
+  </data>
+  
+  <!-- Footer -->
+  <data name="Product" xml:space="preserve">
+    <value>Ürün</value>
+  </data>
+  <data name="CreateShift" xml:space="preserve">
+    <value>Nöbet Oluştur</value>
+  </data>
+  <data name="GetTimesheet" xml:space="preserve">
+    <value>Puantaj Al</value>
+  </data>
+  <data name="Resources" xml:space="preserve">
+    <value>Kaynaklar</value>
+  </data>
+  <data name="ShiftGuide" xml:space="preserve">
+    <value>Nöbet Rehberi</value>
+  </data>
+  <data name="TimesheetGuide" xml:space="preserve">
+    <value>Puantaj Rehberi</value>
+  </data>
+  <data name="Legal" xml:space="preserve">
+    <value>Yasal</value>
+  </data>
+  <data name="Privacy" xml:space="preserve">
+    <value>Gizlilik</value>
+  </data>
+  <data name="Terms" xml:space="preserve">
+    <value>Şartlar</value>
+  </data>
+  <data name="Contact" xml:space="preserve">
+    <value>İletişim</value>
+  </data>
+  <data name="AllRightsReserved" xml:space="preserve">
+    <value>Tüm hakları saklıdır.</value>
+  </data>
+  <data name="MadeInTurkey" xml:space="preserve">
+    <value>Türkiye'de yapıldı</value>
+  </data>
+  <data name="FooterDescription" xml:space="preserve">
+    <value>Hastaneler ve işletmeler için akıllı nöbet planlama ve otomatik puantaj sistemi.</value>
+  </data>
+  
+  <!-- App Specific -->
+  <data name="ShiftPlanning" xml:space="preserve">
+    <value>Nöbet Planlama</value>
+  </data>
+  <data name="Personeller" xml:space="preserve">
+    <value>Personeller</value>
+  </data>
+  <data name="Tatiller" xml:space="preserve">
+    <value>Tatiller</value>
+  </data>
+  <data name="Attendance" xml:space="preserve">
+    <value>Mesai Takip</value>
+  </data>
+  <data name="Leaves" xml:space="preserve">
+    <value>İzinler</value>
+  </data>
+  <data name="MultiSelect" xml:space="preserve">
+    <value>Çoklu Seçim</value>
+  </data>
+  <data name="Selected" xml:space="preserve">
+    <value>Seçili</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Temizle</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Uygula</value>
+  </data>
+  <data name="SmartGenerate" xml:space="preserve">
+    <value>Akıllı Oluştur</value>
+  </data>
+  <data name="SavedSchedules" xml:space="preserve">
+    <value>Kayıtlı Listeler</value>
+  </data>
+  <data name="Saved" xml:space="preserve">
+    <value>Kayıtlı Listeler</value>
+  </data>
+  <data name="Boş" xml:space="preserve">
+    <value>Boş</value>
+  </data>
+  <data name="Off" xml:space="preserve">
+    <value>Boş</value>
+  </data>
+  <data name="StartByAddingEmployees" xml:space="preserve">
+    <value>Personel ekleyerek başlayın</value>
+  </data>
+  <data name="Weekend" xml:space="preserve">
+    <value>Hafta Sonu</value>
+  </data>
+  <data name="Holiday" xml:space="preserve">
+    <value>Tatil</value>
+  </data>
+  <data name="Overnight" xml:space="preserve">
+    <value>Ertesi Güne Sarkan</value>
+  </data>
+  <data name="ContinuesFromPrevious" xml:space="preserve">
+    <value>Önceki Günden Devam</value>
+  </data>
+  <data name="EmployeeManagement" xml:space="preserve">
+    <value>Personel Yönetimi</value>
+  </data>
+  <data name="NoEmployeesAddedYet" xml:space="preserve">
+    <value>Henüz personel eklenmedi</value>
+  </data>
+  <data name="h/d" xml:space="preserve">
+    <value>s/g</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Sil</value>
+  </data>
+  <data name="EmployeeLimitReached_Register" xml:space="preserve">
+    <value>Personel limitine ulaşıldı. Daha fazla personel için kayıt olun.</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Kapat</value>
+  </data>
+  <data name="AddNewEmployee" xml:space="preserve">
+    <value>Yeni Personel Ekle</value>
+  </data>
+  <data name="EnterEmployeeInformation" xml:space="preserve">
+    <value>Personel bilgilerini girin</value>
+  </data>
+  <data name="BasicInformation" xml:space="preserve">
+    <value>Temel Bilgiler</value>
+  </data>
+  <data name="IDNumber" xml:space="preserve">
+    <value>Sicil No</value>
+  </data>
+  <data name="DailyHours" xml:space="preserve">
+    <value>Günlük Çalışma (saat)</value>
+  </data>
+  <data name="PositionInformation" xml:space="preserve">
+    <value>Kadro Bilgileri</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Seçiniz...</value>
+  </data>
+  <data name="CivilServant" xml:space="preserve">
+    <value>Memur</value>
+  </data>
+  <data name="Contracted" xml:space="preserve">
+    <value>Sözleşmeli</value>
+  </data>
+  <data name="Academic" xml:space="preserve">
+    <value>Akademik</value>
+  </data>
+  <data name="PositionType" xml:space="preserve">
+    <value>Kadro Tipi</value>
+  </data>
+  <data name="Professor" xml:space="preserve">
+    <value>Profesör</value>
+  </data>
+  <data name="AssociateProf" xml:space="preserve">
+    <value>Doçent</value>
+  </data>
+  <data name="AssistantProf" xml:space="preserve">
+    <value>Dr. Öğretim Üyesi</value>
+  </data>
+  <data name="ResearchAsst" xml:space="preserve">
+    <value>Araştırma Görevlisi</value>
+  </data>
+  <data name="ResearchAsstPhD" xml:space="preserve">
+    <value>Araştırma Görevlisi (Dr.)</value>
+  </data>
+  <data name="AcademicTitle" xml:space="preserve">
+    <value>Akademik Unvan</value>
+  </data>
+  <data name="ShiftScore" xml:space="preserve">
+    <value>Nöbet Puanı</value>
+  </data>
+  <data name="NonHealthServicesClass" xml:space="preserve">
+    <value>SH Dışı (Sağlık Hizmetleri Sınıfı Dışı)</value>
+  </data>
+  <data name="WeekendSettings" xml:space="preserve">
+    <value>Hafta Sonu Ayarları</value>
+  </data>
+  <data name="NoWeekends" xml:space="preserve">
+    <value>Hafta sonu çalışmaz</value>
+  </data>
+  <data name="SatSun" xml:space="preserve">
+    <value>Cmt + Paz çalışır</value>
+  </data>
+  <data name="SaturdayOnly" xml:space="preserve">
+    <value>Sadece Cumartesi</value>
+  </data>
+  <data name="CustomHours" xml:space="preserve">
+    <value>Özel saat</value>
+  </data>
+  <data name="SaturdayHours" xml:space="preserve">
+    <value>Cumartesi Saat</value>
+  </data>
+  <data name="AutoCalculation" xml:space="preserve">
+    <value>Otomatik Hesaplama</value>
+  </data>
+  <data name="AutoCalculationDesc" xml:space="preserve">
+    <value>Resmi tatiller ve izinler otomatik olarak çalışma süresinden düşülür.</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>İptal</value>
+  </data>
+  <data name="CreateAndManageTemplates" xml:space="preserve">
+    <value>Kendi özel vardiya şablonlarınızı oluşturun ve yönetin</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Yükleniyor...</value>
+  </data>
+  <data name="AddNewTemplate" xml:space="preserve">
+    <value>Yeni Şablon Ekle</value>
+  </data>
+  <data name="TemplateName" xml:space="preserve">
+    <value>Şablon Adı</value>
+  </data>
+  <data name="TemplateNamePlaceholder" xml:space="preserve">
+    <value>örn: Sabah Vardiyası</value>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>Başlangıç</value>
+  </data>
+  <data name="End" xml:space="preserve">
+    <value>Bitiş</value>
+  </data>
+  <data name="BreakMin" xml:space="preserve">
+    <value>Mola (dk)</value>
+  </data>
+  <data name="Color" xml:space="preserve">
+    <value>Renk</value>
+  </data>
+  <data name="SpansNextDay" xml:space="preserve">
+    <value>Ertesi güne sarkar (+1)</value>
+  </data>
+  <data name="AddTemplate" xml:space="preserve">
+    <value>Şablon Ekle</value>
+  </data>
+  <data name="SelectShiftTemplate" xml:space="preserve">
+    <value>Bir vardiya şablonu seçin</value>
+  </data>
+  <data name="DayOff" xml:space="preserve">
+    <value>Boş Gün</value>
+  </data>
+  <data name="CustomTime" xml:space="preserve">
+    <value>Özel Saat</value>
+  </data>
+  <data name="ManageTemplates" xml:space="preserve">
+    <value>Şablonları Yönet</value>
+  </data>
+  <data name="SelectLeaveType" xml:space="preserve">
+    <value>Bir izin tipi seçin</value>
+  </data>
+  <data name="ForRegisteredUsersOnly" xml:space="preserve">
+    <value>Kayıtlı kullanıcılara özel</value>
+  </data>
+  
+  <!-- Leave Categories -->
+  <data name="AnnualLeaves" xml:space="preserve">
+    <value>Yıllık İzinler</value>
+  </data>
+  <data name="MaternityPaternity" xml:space="preserve">
+    <value>Analık/Babalık</value>
+  </data>
+  <data name="HealthLeaves" xml:space="preserve">
+    <value>Sağlık İzinleri</value>
+  </data>
+  <data name="ExcuseLeaves" xml:space="preserve">
+    <value>Mazeret İzinleri</value>
+  </data>
+  <data name="Education" xml:space="preserve">
+    <value>Eğitim/Sınav</value>
+  </data>
+  <data name="Military" xml:space="preserve">
+    <value>Askerlik</value>
+  </data>
+  <data name="Administrative" xml:space="preserve">
+    <value>İdari İzinler</value>
+  </data>
+  <data name="UnpaidLeave" xml:space="preserve">
+    <value>Ücretsiz İzin</value>
+  </data>
+  <data name="Other" xml:space="preserve">
+    <value>Diğer</value>
+  </data>
+  
+  <!-- Holiday Management -->
+  <data name="HolidayManagement" xml:space="preserve">
+    <value>Tatil Yönetimi</value>
+  </data>
+  <data name="HolidayManagementDesc" xml:space="preserve">
+    <value>Tatilleri ekleyin, düzenleyin veya silin</value>
+  </data>
+  <data name="CurrentHolidays" xml:space="preserve">
+    <value>Mevcut Tatiller</value>
+  </data>
+  <data name="AddNewHoliday" xml:space="preserve">
+    <value>Yeni Tatil Ekle</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Tarih</value>
+  </data>
+  <data name="HolidayName" xml:space="preserve">
+    <value>Tatil Adı</value>
+  </data>
+  <data name="PublicHoliday" xml:space="preserve">
+    <value>Resmi Tatil</value>
+  </data>
+  <data name="AdministrativeHoliday" xml:space="preserve">
+    <value>İdari Tatil</value>
+  </data>
+  <data name="HalfDayHoliday" xml:space="preserve">
+    <value>Yarım Gün Tatil</value>
+  </data>
+  <data name="WorkHours" xml:space="preserve">
+    <value>Çalışma Saati</value>
+  </data>
+  <data name="HalfDayHint" xml:space="preserve">
+    <value>Yarım gün tatilde personelin çalışması gereken saat</value>
+  </data>
+  
+  <!-- Smart Generator -->
+  <data name="SmartScheduleGeneratorDesc" xml:space="preserve">
+    <value>için otomatik nöbet ve mesai planı</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Dikkat!</value>
+  </data>
+  <data name="SmartGeneratorWarning" xml:space="preserve">
+    <value>Bu işlem, seçili aydaki TÜM mevcut vardiyaları silecek ve yeni çizelge oluşturacaktır.</value>
+  </data>
+  <data name="WeekdayWorkHours" xml:space="preserve">
+    <value>Hafta İçi Mesai Saatleri</value>
+  </data>
+  <data name="SetDefaultWorkHours" xml:space="preserve">
+    <value>Varsayılan mesai saatlerini belirleyin</value>
+  </data>
+  <data name="WeekendWork" xml:space="preserve">
+    <value>Hafta Sonu Çalışma</value>
+  </data>
+  <data name="SelectedTemplate" xml:space="preserve">
+    <value>Seçili Şablon</value>
+  </data>
+  <data name="PleaseSelectTemplateFirst" xml:space="preserve">
+    <value>Lütfen önce bir vardiya şablonu seçin</value>
+  </data>
+  
+  <!-- Smart Generator Extended -->
+  <data name="SetMinStaffAndHoursWeekends" xml:space="preserve">
+    <value>Hafta sonları minimum personel ve saat belirleyin</value>
+  </data>
+  <data name="MinStaff" xml:space="preserve">
+    <value>Min. Personel</value>
+  </data>
+  <data name="ApplyWeekendWork" xml:space="preserve">
+    <value>Hafta sonu çalışma uygula</value>
+  </data>
+  <data name="WeekdayDuty" xml:space="preserve">
+    <value>Hafta İçi Nöbet</value>
+  </data>
+  <data name="HowManyStaffOnDuty" xml:space="preserve">
+    <value>Her gün kaç personel nöbet tutacak?</value>
+  </data>
+  <data name="MinOnDuty" xml:space="preserve">
+    <value>Min. Nöbetçi</value>
+  </data>
+  <data name="ApplyWeekdayDuty" xml:space="preserve">
+    <value>Hafta içi nöbet uygula</value>
+  </data>
+  <data name="NightShiftNote" xml:space="preserve">
+    <value>Bitiş saati başlangıçtan küçükse ertesi güne geçer (gece nöbeti)</value>
+  </data>
+  <data name="HolidayDuty" xml:space="preserve">
+    <value>Resmi Tatil Nöbeti</value>
+  </data>
+  <data name="DutySettingsForHolidays" xml:space="preserve">
+    <value>Resmi tatillerde nöbet ayarları</value>
+  </data>
+  <data name="ApplyHolidayDuty" xml:space="preserve">
+    <value>Tatil nöbeti uygula</value>
+  </data>
+  <data name="ExemptFromDuty" xml:space="preserve">
+    <value>Nöbet Tutmayan Personeller</value>
+  </data>
+  <data name="NeverAssignedToDuty" xml:space="preserve">
+    <value>Bu personeller hiçbir zaman nöbete yazılmaz</value>
+  </data>
+  <data name="DateBasedRestrictions" xml:space="preserve">
+    <value>Tarih Bazlı Kısıtlamalar</value>
+  </data>
+  <data name="EmployeesUnavailableOnDates" xml:space="preserve">
+    <value>Belirli tarihlerde nöbet tutamayacak personeller</value>
+  </data>
+  <data name="SelectEmployee" xml:space="preserve">
+    <value>Personel seç...</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Başlangıç</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>Bitiş</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Ekle</value>
+  </data>
+  <data name="DutyPreferenceDates" xml:space="preserve">
+    <value>Nöbet Tercih Tarihleri</value>
+  </data>
+  <data name="EmployeesAvailableOnDates" xml:space="preserve">
+    <value>Belirli tarihlerde nöbet tutabilecek/isteyenler</value>
+  </data>
+  <data name="AdditionalOptions" xml:space="preserve">
+    <value>Ek Ayarlar</value>
+  </data>
+  <data name="OverwriteExistingShifts" xml:space="preserve">
+    <value>Mevcut vardiyaları üzerine yaz</value>
+  </data>
+  <data name="BalanceDutiesFairly" xml:space="preserve">
+    <value>Nöbetleri adil dağıt</value>
+  </data>
+  <data name="MinDaysBetweenDuties" xml:space="preserve">
+    <value>Nöbetler arası min. gün</value>
+  </data>
+  <data name="GeneratingSchedule" xml:space="preserve">
+    <value>Çizelge oluşturuluyor...</value>
+  </data>
+  <data name="MayTakeFewSeconds" xml:space="preserve">
+    <value>Bu işlem birkaç saniye sürebilir</value>
+  </data>
+  <data name="activeEmployees" xml:space="preserve">
+    <value>aktif personel</value>
+  </data>
+  <data name="days" xml:space="preserve">
+    <value>gün</value>
+  </data>
+  <data name="AreYouSure" xml:space="preserve">
+    <value>Emin misiniz?</value>
+  </data>
+  <data name="CannotBeUndone" xml:space="preserve">
+    <value>Bu işlem geri alınamaz! Tüm mevcut vardiyalar silinecek ve yeni çizelge oluşturulacak.</value>
+  </data>
+  <data name="Month" xml:space="preserve">
+    <value>Ay</value>
+  </data>
+  <data name="ToDelete" xml:space="preserve">
+    <value>Silinecek</value>
+  </data>
+  <data name="shifts" xml:space="preserve">
+    <value>vardiya</value>
+  </data>
+  <data name="YesGenerate" xml:space="preserve">
+    <value>Evet, Oluştur</value>
+  </data>
+  <data name="PremiumFeature" xml:space="preserve">
+    <value>Premium Özellik</value>
+  </data>
+  
+  <!-- Premium Modal -->
+  <data name="ForRegisteredUsers" xml:space="preserve">
+    <value>Bu özellik kayıtlı kullanıcılar için</value>
+  </data>
+  <data name="ManageUpTo10Employees" xml:space="preserve">
+    <value>10 personele kadar yönetim</value>
+  </data>
+  <data name="SmartShiftScheduling" xml:space="preserve">
+    <value>Akıllı nöbet planlaması</value>
+  </data>
+  <data name="TimesheetAndOvertime" xml:space="preserve">
+    <value>Puantaj ve mesai hesaplama</value>
+  </data>
+  <data name="ExcelExport" xml:space="preserve">
+    <value>Excel export</value>
+  </data>
+  <data name="SaveShiftSchedules" xml:space="preserve">
+    <value>Nöbet listelerini kaydetme</value>
+  </data>
+  <data name="YourDataStaysSafe" xml:space="preserve">
+    <value>Verileriniz güvende kalır</value>
+  </data>
+  <data name="SignUpFree" xml:space="preserve">
+    <value>Ücretsiz Kayıt Ol</value>
+  </data>
+  
+  <!-- Saved Schedules -->
+  <data name="SavedSchedulesTitle" xml:space="preserve">
+    <value>Kayıtlı Nöbet Listeleri</value>
+  </data>
+  <data name="SavedSchedulesForMonth" xml:space="preserve">
+    <value>için kayıtlı listeler</value>
+  </data>
+  <data name="SaveCurrentSchedule" xml:space="preserve">
+    <value>Mevcut Listeyi Kaydet</value>
+  </data>
+  <data name="ScheduleNamePlaceholder" xml:space="preserve">
+    <value>Liste adı (örn: Ocak Final)</value>
+  </data>
+  <data name="DescriptionOptional" xml:space="preserve">
+    <value>Açıklama (isteğe bağlı)</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Kaydet</value>
+  </data>
+  <data name="ThisMonthOnly" xml:space="preserve">
+    <value>Sadece bu ay</value>
+  </data>
+  
+  <!-- Month End Shift -->
+  <data name="MonthEndShift" xml:space="preserve">
+    <value>Ay Sonu Nöbeti</value>
+  </data>
+  <data name="WhichMonthOvernightHours" xml:space="preserve">
+    <value>Sarkan saatler hangi aya yazılsın?</value>
+  </data>
+  <data name="AllThisMonth" xml:space="preserve">
+    <value>Tamamı Bu Ay</value>
+  </data>
+  <data name="AllThisMonthDesc" xml:space="preserve">
+    <value>Sarkan saatler dahil tümü bu aya yazılsın</value>
+  </data>
+  <data name="SplitAtMidnight" xml:space="preserve">
+    <value>Gece Yarısından Böl</value>
+  </data>
+  <data name="SplitAtMidnightDesc" xml:space="preserve">
+    <value>00:00'a kadar bu ay, 00:00 sonrası gelecek ay</value>
+  </data>
+  
+  <!-- Custom Shift -->
+  <data name="CustomShift" xml:space="preserve">
+    <value>Özel Vardiya</value>
+  </data>
+  <data name="SetTimeAndBreak" xml:space="preserve">
+    <value>Saat ve mola ayarlayın</value>
+  </data>
+  <data name="BreakTime" xml:space="preserve">
+    <value>Mola Süresi</value>
+  </data>
+  <data name="min" xml:space="preserve">
+    <value>dk</value>
+  </data>
+  <data name="OvernightShift" xml:space="preserve">
+    <value>Ertesi güne sarkar</value>
+  </data>
+  
+  <!-- Bulk Assign -->
+  <data name="BulkShiftAssignment" xml:space="preserve">
+    <value>Toplu nöbet atama</value>
+  </data>
+  <data name="WeekdaysOnly" xml:space="preserve">
+    <value>Hafta İçi Günler</value>
+  </data>
+  <data name="MondayFriday" xml:space="preserve">
+    <value>Pazartesi - Cuma</value>
+  </data>
+  <data name="AllDays" xml:space="preserve">
+    <value>Tüm Günler</value>
+  </data>
+  <data name="IncludingWeekends" xml:space="preserve">
+    <value>Hafta içi + Hafta sonu</value>
+  </data>
+  <data name="ExceptSunday" xml:space="preserve">
+    <value>Pazar Hariç</value>
+  </data>
+  <data name="SundaysExcluded" xml:space="preserve">
+    <value>Pazar günleri boş</value>
+  </data>
+  <data name="Processing" xml:space="preserve">
+    <value>İşleniyor...</value>
+  </data>
+  <data name="DeleteAllShifts" xml:space="preserve">
+    <value>Tüm Nöbetleri Sil</value>
+  </data>
+  <data name="AddShift" xml:space="preserve">
+    <value>Nöbet Ekle</value>
+  </data>
+  
+  <!-- JavaScript Messages -->
+  <data name="ConfirmDelete" xml:space="preserve">
+    <value>Silmek istediğinize emin misiniz?</value>
+  </data>
+  <data name="ConfirmDeletePage" xml:space="preserve">
+    <value>Bu sayfayı silmek istediğinize emin misiniz?</value>
+  </data>
+  <data name="AdminUserWillBeDeleted" xml:space="preserve">
+    <value>Admin kullanıcı "{0}" silinecek. Emin misiniz?</value>
+  </data>
+  <data name="DeleteFailed" xml:space="preserve">
+    <value>Silme işlemi başarısız.</value>
+  </data>
+  <data name="AnErrorOccurred" xml:space="preserve">
+    <value>Bir hata oluştu.</value>
+  </data>
+  <data name="ConfirmDeleteShift" xml:space="preserve">
+    <value>Bu nöbeti silmek istiyor musunuz?</value>
+  </data>
+  <data name="ErrorOccurred" xml:space="preserve">
+    <value>Hata oluştu</value>
+  </data>
+  <data name="NameRequired" xml:space="preserve">
+    <value>Ad soyad gerekli</value>
+  </data>
+  <data name="DateNameRequired" xml:space="preserve">
+    <value>Tarih ve ad gerekli</value>
+  </data>
+  <data name="ShiftAdded" xml:space="preserve">
+    <value>Nöbet eklendi</value>
+  </data>
+  <data name="ShiftDeleted" xml:space="preserve">
+    <value>Nöbet silindi</value>
+  </data>
+  <data name="EmployeeDeleted" xml:space="preserve">
+    <value>Personel silindi</value>
+  </data>
+  
+  <!-- JavaScript Extended -->
+  <data name="NoTemplatesAddWith" xml:space="preserve">
+    <value>Şablon yok. ⚙️ ile ekleyin.</value>
+  </data>
+  <data name="minBreak" xml:space="preserve">
+    <value>dk mola</value>
+  </data>
+  <data name="NightShift" xml:space="preserve">
+    <value>Gece nöbeti</value>
+  </data>
+  <data name="NoTemplatesYetAddBelow" xml:space="preserve">
+    <value>Henüz şablon yok. Aşağıdan ekleyin.</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Düzenle</value>
+  </data>
+  <data name="TemplateNameRequired" xml:space="preserve">
+    <value>Şablon adı gerekli</value>
+  </data>
+  <data name="StartAndEndTimeRequired" xml:space="preserve">
+    <value>Başlangıç ve bitiş saati gerekli</value>
+  </data>
+  <data name="TemplateAdded" xml:space="preserve">
+    <value>Şablon eklendi</value>
+  </data>
+  <data name="ConfirmDeleteTemplate" xml:space="preserve">
+    <value>Bu şablonu silmek istediğinize emin misiniz?</value>
+  </data>
+  <data name="TemplateDeleted" xml:space="preserve">
+    <value>Şablon silindi</value>
+  </data>
+  <data name="NewTemplateName" xml:space="preserve">
+    <value>Yeni şablon adı:</value>
+  </data>
+  <data name="TemplateUpdated" xml:space="preserve">
+    <value>Şablon güncellendi</value>
+  </data>
+  <data name="AddHolidayJS" xml:space="preserve">
+    <value>Tatil Ekle</value>
+  </data>
+  
+  <!-- Saved Schedules JS -->
+  <data name="NoSavedSchedulesYet" xml:space="preserve">
+    <value>Henüz kayıtlı liste yok</value>
+  </data>
+  <data name="Load" xml:space="preserve">
+    <value>Yükle</value>
+  </data>
+  <data name="ScheduleNameRequired" xml:space="preserve">
+    <value>Liste adı gerekli</value>
+  </data>
+  <data name="ConfirmDeleteSchedule" xml:space="preserve">
+    <value>Bu kaydı silmek istediğinize emin misiniz?</value>
+  </data>
+  <data name="Deleted" xml:space="preserve">
+    <value>Silindi</value>
+  </data>
+  <data name="ConfirmDeleteLeave" xml:space="preserve">
+    <value>İzni silmek istediğinize emin misiniz?</value>
+  </data>
+  <data name="PleaseSelectTemplateOrLeave" xml:space="preserve">
+    <value>Lütfen bir vardiya şablonu veya izin türü seçin</value>
+  </data>
+  <data name="NoShiftsToDelete" xml:space="preserve">
+    <value>Silinecek nöbet bulunamadı</value>
+  </data>
+  <data name="ShiftsDeleted" xml:space="preserve">
+    <value>nöbet silindi!</value>
+  </data>
+  
+  <!-- More JavaScript Messages -->
+  <data name="ShiftsAdded" xml:space="preserve">
+    <value>Nöbetler eklendi!</value>
+  </data>
+  <data name="ShiftOverlap" xml:space="preserve">
+    <value>⚠️ Nöbet çakışması:</value>
+  </data>
+  <data name="LeaveAssigned" xml:space="preserve">
+    <value>İzin atandı</value>
+  </data>
+  <data name="LeaveDeleted" xml:space="preserve">
+    <value>İzin silindi</value>
+  </data>
+  <data name="NoHolidaysThisMonth" xml:space="preserve">
+    <value>Bu ay tatil yok</value>
+  </data>
+  <data name="Official" xml:space="preserve">
+    <value>Resmi</value>
+  </data>
+  <data name="Admin" xml:space="preserve">
+    <value>İdari</value>
+  </data>
+  <data name="HalfDay" xml:space="preserve">
+    <value>Yarım Gün</value>
+  </data>
+  <data name="ConfirmDeleteHoliday" xml:space="preserve">
+    <value>Bu tatili silmek istediğinizden emin misiniz?</value>
+  </data>
+  <data name="HolidayDeleted" xml:space="preserve">
+    <value>Tatil silindi</value>
+  </data>
+  <data name="Adding" xml:space="preserve">
+    <value>Ekleniyor...</value>
+  </data>
+  <data name="HolidayAdded" xml:space="preserve">
+    <value>Tatil eklendi</value>
+  </data>
+  <data name="SmartSchedulingComingSoon" xml:space="preserve">
+    <value>Akıllı planlama özelliği yakında!</value>
+  </data>
+  
+  <!-- Invite Modal -->
+  <data name="CreateFreeAccount" xml:space="preserve">
+    <value>Ücretsiz Hesap Oluştur</value>
+  </data>
+  <data name="SaveDataAndAccessFeatures" xml:space="preserve">
+    <value>Verilerinizi kaydedin ve tüm özelliklere erişin</value>
+  </data>
+  <data name="DataPermanentlySaved" xml:space="preserve">
+    <value>Verileriniz kalıcı olarak saklanır</value>
+  </data>
+  <data name="AddUpTo10Employees" xml:space="preserve">
+    <value>10 personele kadar ekleyin</value>
+  </data>
+  <data name="DetailedTimesheetsReports" xml:space="preserve">
+    <value>Detaylı puantaj ve raporlar</value>
+  </data>
+  <data name="ExportToExcel" xml:space="preserve">
+    <value>Excel'e aktar</value>
+  </data>
+  <data name="IAlreadyHaveAccount" xml:space="preserve">
+    <value>Zaten hesabım var</value>
+  </data>
+  <data name="NoCreditCardRequired" xml:space="preserve">
+    <value>Kredi kartı gerekmez</value>
+  </data>
+  
+  <!-- Smart Generator Progress -->
+  <data name="SelectEmployeeAndStartDate" xml:space="preserve">
+    <value>Personel ve başlangıç tarihi seçin</value>
+  </data>
+  <data name="DeletingExistingShifts" xml:space="preserve">
+    <value>Mevcut vardiyalar siliniyor...</value>
+  </data>
+  <data name="AnalyzingRules" xml:space="preserve">
+    <value>Kurallar analiz ediliyor...</value>
+  </data>
+  <data name="EvaluatingEmployees" xml:space="preserve">
+    <value>Personeller değerlendiriliyor...</value>
+  </data>
+  <data name="SavingNewShifts" xml:space="preserve">
+    <value>Yeni vardiyalar kaydediliyor...</value>
+  </data>
+  <data name="ScheduleGeneratedSuccessfully" xml:space="preserve">
+    <value>✓ Çizelge başarıyla oluşturuldu!</value>
+  </data>
+  <data name="FailedToDeleteShifts" xml:space="preserve">
+    <value>Vardiyalar silinemedi</value>
+  </data>
+  <data name="OvernightShiftInfo" xml:space="preserve">
+    <value>Bu nöbet ayın son gününde başlayıp ertesi aya sarkıyor. Puantaj hesaplaması için sarkan saatlerin hangi aya dahil edileceğini seçin.</value>
+  </data>
+  <data name="LoadingScheduleWillReplace" xml:space="preserve">
+    <value>Bu liste yüklenirse mevcut nöbetler silinecek. Devam etmek istiyor musunuz?</value>
+  </data>
+  <data name="ConfirmDeleteAllShiftsForEmployee" xml:space="preserve">
+    <value>Bu personelin bu aydaki TÜM nöbetlerini silmek istediğinize emin misiniz?</value>
+  </data>
+  <data name="ProcessingDay" xml:space="preserve">
+    <value>{0}. gün işleniyor...</value>
+  </data>
+  <data name="PleaseCompleteReCaptcha" xml:space="preserve">
+    <value>Lütfen reCAPTCHA'yı işaretleyin.</value>
+  </data>
+  <data name="ReCaptchaVerificationFailed" xml:space="preserve">
+    <value>reCAPTCHA doğrulaması başarısız. Lütfen tekrar deneyin.</value>
+  </data>
+  <data name="EmailNotConfirmed" xml:space="preserve">
+    <value>E-posta adresiniz doğrulanmamış. Lütfen e-posta kutunuzu kontrol edin veya yeni bir doğrulama e-postası isteyin.</value>
+  </data>
+  <data name="AccountLocked" xml:space="preserve">
+    <value>Hesap kilitlendi. Lütfen daha sonra tekrar deneyin.</value>
+  </data>
+  <data name="InvalidLoginAttempt" xml:space="preserve">
+    <value>Geçersiz giriş denemesi.</value>
+  </data>
+  <data name="EmailVerificationSubject" xml:space="preserve">
+    <value>Geldimmi - E-posta Adresinizi Doğrulayın</value>
+  </data>
+  <data name="InvalidEmailConfirmationLink" xml:space="preserve">
+    <value>Geçersiz email doğrulama linki.</value>
+  </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>Kullanıcı bulunamadı.</value>
+  </data>
+  <data name="EmailConfirmedSuccessfully" xml:space="preserve">
+    <value>E-posta adresiniz başarıyla doğrulandı. Giriş yapabilirsiniz.</value>
+  </data>
+  <data name="EmailConfirmationFailed" xml:space="preserve">
+    <value>E-posta doğrulama başarısız. Lütfen yeni bir doğrulama linki isteyin.</value>
+  </data>
+  <data name="EmailAddressRequired" xml:space="preserve">
+    <value>E-posta adresi gereklidir.</value>
+  </data>
+  <data name="ConfirmationEmailSentIfRegistered" xml:space="preserve">
+    <value>Eğer bu e-posta adresi kayıtlıysa, doğrulama e-postası gönderildi.</value>
+  </data>
+  <data name="EmailAlreadyConfirmed" xml:space="preserve">
+    <value>Bu e-posta adresi zaten doğrulanmış.</value>
+  </data>
+  <data name="ConfirmationEmailSent" xml:space="preserve">
+    <value>Doğrulama e-postası gönderildi. Lütfen e-posta kutunuzu kontrol edin.</value>
+  </data>
+  <data name="GoogleSignInError" xml:space="preserve">
+    <value>Google ile giriş yapılırken bir hata oluştu.</value>
+  </data>
+  <data name="FailedToRetrieveGoogleLogin" xml:space="preserve">
+    <value>Google ile giriş bilgileri alınamadı.</value>
+  </data>
+  <data name="CouldNotRetrieveEmailFromGoogle" xml:space="preserve">
+    <value>Google hesabınızdan e-posta bilgisi alınamadı.</value>
+  </data>
+  <data name="TryShiftPlanningWithGeldimmi" xml:space="preserve">
+    <value>Geldimmi ile Nöbet Planlamayı Deneyin</value>
+  </data>
+  <data name="CreateFreeAccountStartUsing" xml:space="preserve">
+    <value>Ücretsiz hesap oluşturun, hemen kullanmaya başlayın.</value>
+  </data>
+  <data name="TryNow" xml:space="preserve">
+    <value>🚀 Hemen Dene</value>
+  </data>
+  <data name="SimplifyYourShiftPlanning" xml:space="preserve">
+    <value>Nöbet Planlamasını Kolaylaştırın</value>
+  </data>
+  <data name="AutomaticShiftSchedulingDescription" xml:space="preserve">
+    <value>Geldimmi ile otomatik nöbet çizelgesi, adil dağıtım ve puantaj takibi. Hastaneler ve işletmeler için tasarlandı.</value>
+  </data>
+  <data name="FreeToStart" xml:space="preserve">
+    <value>Ücretsiz başlangıç</value>
+  </data>
+  <data name="UpTo10Staff" xml:space="preserve">
+    <value>10 personele kadar</value>
+  </data>
+  <data name="NoCreditCard" xml:space="preserve">
+    <value>Kredi kartı gerekmez</value>
+  </data>
+  <data name="ViewDemo" xml:space="preserve">
+    <value>👀 Demo İncele</value>
+  </data>
+  <data name="BackToAllPosts" xml:space="preserve">
+    <value>← Tüm yazılara dön</value>
+  </data>
+  <data name="EmailConfirmation" xml:space="preserve">
+    <value>E-posta Doğrulama</value>
+  </data>
+  <data name="EmailConfirmationSentTitle" xml:space="preserve">
+    <value>E-posta Doğrulama Gönderildi</value>
+  </data>
+  <data name="EmailConfirmationSentMessage" xml:space="preserve">
+    <value>{0} adresine bir doğrulama e-postası gönderdik. Lütfen e-posta kutunuzu kontrol edin ve hesabınızı aktifleştirmek için e-postadaki bağlantıya tıklayın.</value>
+  </data>
+  <data name="DidntReceiveEmail" xml:space="preserve">
+    <value>E-postayı almadınız mı? <a href="{0}">Tekrar gönder</a> veya spam klasörünüzü kontrol edin.</value>
+  </data>
+  <data name="ResendEmail" xml:space="preserve">
+    <value>E-postayı Tekrar Gönder</value>
+  </data>
+  <data name="BackToLogin" xml:space="preserve">
+    <value>Giriş Sayfasına Dön</value>
+  </data>
+  <data name="ResendConfirmationEmail" xml:space="preserve">
+    <value>E-posta Doğrulama Tekrar Gönder</value>
+  </data>
+  <data name="WeCanSendYouNewConfirmationLink" xml:space="preserve">
+    <value>E-posta adresinize yeni bir doğrulama linki gönderebiliriz.</value>
+  </data>
+  <data name="EmailAddress" xml:space="preserve">
+    <value>E-posta Adresi</value>
+  </data>
+  <data name="SendConfirmationEmail" xml:space="preserve">
+    <value>Doğrulama E-postası Gönder</value>
+  </data>
+  <data name="NoEmployeesYet" xml:space="preserve">
+    <value>Henüz personel yok</value>
+  </data>
+  <data name="AddEmployeesFirst" xml:space="preserve">
+    <value>Mesai takibi için önce personel ekleyin.</value>
+  </data>
+  <data name="GoToCalendar" xml:space="preserve">
+    <value>Takvime Git</value>
+  </data>
+  <data name="ApplyTemplate" xml:space="preserve">
+    <value>Şablondan Ata</value>
+  </data>
+  <data name="ShiftTime" xml:space="preserve">
+    <value>Nöbet Saati</value>
+  </data>
+  <data name="CheckIn" xml:space="preserve">
+    <value>Giriş Saati</value>
+  </data>
+  <data name="CheckOut" xml:space="preserve">
+    <value>Çıkış Saati</value>
+  </data>
+  <data name="CheckOutNextDay" xml:space="preserve">
+    <value>Çıkış ertesi güne sarkar</value>
+  </data>
+  <data name="EnterAtLeastCheckInOrCheckOut" xml:space="preserve">
+    <value>En az giriş veya çıkış saati giriniz</value>
+  </data>
+  <data name="ConnectionError" xml:space="preserve">
+    <value>Bağlantı hatası</value>
+  </data>
+  <data name="DeleteThisRecord" xml:space="preserve">
+    <value>Bu kaydı silmek istediğinizden emin misiniz?</value>
+  </data>
+  <data name="SignIn" xml:space="preserve">
+    <value>Giriş Yap</value>
+  </data>
+  <data name="WelcomeBack" xml:space="preserve">
+    <value>Tekrar hoş geldiniz</value>
+  </data>
+  <data name="SignInToContinue" xml:space="preserve">
+    <value>Hesabınıza giriş yaparak devam edin</value>
+  </data>
+  <data name="CreateRostersInSeconds" xml:space="preserve">
+    <value>Saniyeler içinde nöbet listesi oluşturun</value>
+  </data>
+  <data name="FairAndBalancedShiftDistribution" xml:space="preserve">
+    <value>Adil ve dengeli nöbet dağıtımı</value>
+  </data>
+  <data name="AutomaticTimesheetsAndReports" xml:space="preserve">
+    <value>Otomatik puantaj ve raporlama</value>
+  </data>
+  <data name="Or" xml:space="preserve">
+    <value>veya</value>
+  </data>
+  <data name="SignInWithGoogle" xml:space="preserve">
+    <value>Google ile Giriş Yap</value>
+  </data>
+  <data name="DontHaveAccount" xml:space="preserve">
+    <value>Hesabınız yok mu?</value>
+  </data>
+  <data name="SignUpForFree" xml:space="preserve">
+    <value>Ücretsiz kayıt olun</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Şifre</value>
+  </data>
+  <data name="RememberMe" xml:space="preserve">
+    <value>Beni hatırla</value>
+  </data>
+  <data name="ForgotPassword" xml:space="preserve">
+    <value>Şifremi unuttum</value>
+  </data>
+  <data name="SignUp" xml:space="preserve">
+    <value>Kayıt Ol</value>
+  </data>
+  <data name="20EmployeeManagement" xml:space="preserve">
+    <value>20 Personel Yönetimi</value>
+  </data>
+  <data name="Manage20EmployeesInsteadOf7" xml:space="preserve">
+    <value>Kayıtsız kullanıcılar 7 personel ekleyebilirken, ücretsiz hesapla 20 personel yönetin.</value>
+  </data>
+  <data name="YourDataIsSafe" xml:space="preserve">
+    <value>Verileriniz Güvende</value>
+  </data>
+  <data name="YourRostersAndTimesheetsStoredInCloud" xml:space="preserve">
+    <value>Nöbet listeleri ve puantaj verileriniz bulutta saklanır.</value>
+  </data>
+  <data name="AdvancedReports" xml:space="preserve">
+    <value>Gelişmiş Raporlama</value>
+  </data>
+  <data name="DetailedTimesheetAndOvertimeReports" xml:space="preserve">
+    <value>Detaylı puantaj ve fazla mesai raporları, Excel export.</value>
+  </data>
+  <data name="CompletelyFree" xml:space="preserve">
+    <value>Tamamen Ücretsiz</value>
+  </data>
+  <data name="CreateYourAccount" xml:space="preserve">
+    <value>Hesap oluşturun</value>
+  </data>
+  <data name="GetStartedNowNoCreditCard" xml:space="preserve">
+    <value>Hemen başlayın, kredi kartı gerekmez</value>
+  </data>
+  <data name="FullName" xml:space="preserve">
+    <value>Ad Soyad</value>
+  </data>
+  <data name="YourFullName" xml:space="preserve">
+    <value>Adınız Soyadınız</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>Şifre Tekrar</value>
+  </data>
+  <data name="BySigningUpYouAgreeToOur" xml:space="preserve">
+    <value>Kayıt olarak </value>
+  </data>
+  <data name="TermsOfService" xml:space="preserve">
+    <value>Kullanım Şartları</value>
+  </data>
+  <data name="PrivacyPolicy" xml:space="preserve">
+    <value>Gizlilik Politikası</value>
+  </data>
+  <data name="And" xml:space="preserve">
+    <value> ve </value>
+  </data>
+  <data name="Period" xml:space="preserve">
+    <value>'nı kabul etmiş olursunuz.</value>
+  </data>
+  <data name="Payroll" xml:space="preserve">
+    <value>Puantaj</value>
+  </data>
+  <data name="DataSource" xml:space="preserve">
+    <value>Veri Kaynağı</value>
+  </data>
+  <data name="ShiftSchedule" xml:space="preserve">
+    <value>Nöbet Çizelgesi</value>
+  </data>
+  <data name="TimeAttendance" xml:space="preserve">
+    <value>Mesai Takip</value>
+  </data>
+  <data name="Shift" xml:space="preserve">
+    <value>Nöbet</value>
+  </data>
+  <data name="NightStart" xml:space="preserve">
+    <value>Gece Başlangıç</value>
+  </data>
+  <data name="NightEnd" xml:space="preserve">
+    <value>Gece Bitiş</value>
+  </data>
+  <data name="Calculate" xml:space="preserve">
+    <value>Hesapla</value>
+  </data>
+  <data name="SavedPayrolls" xml:space="preserve">
+    <value>Kaydedilmiş Puantajlar</value>
+  </data>
+  <data name="CalculationResults" xml:space="preserve">
+    <value>Hesaplama Sonuçları</value>
+  </data>
+  <data name="Edited" xml:space="preserve">
+    <value>düzenlendi</value>
+  </data>
+  <data name="Recalculate" xml:space="preserve">
+    <value>Tekrar Hesapla</value>
+  </data>
+  <data name="TotalWorked" xml:space="preserve">
+    <value>Toplam Çalışılan</value>
+  </data>
+  <data name="Days" xml:space="preserve">
+    <value>Gün</value>
+  </data>
+  <data name="Hours" xml:space="preserve">
+    <value>Saat</value>
+  </data>
+  <data name="Target" xml:space="preserve">
+    <value>Hedef</value>
+  </data>
+  <data name="OT" xml:space="preserve">
+    <value>F.Mesai</value>
+  </data>
+  <data name="Wknd" xml:space="preserve">
+    <value>H.Sonu</value>
+  </data>
+  <data name="Hol" xml:space="preserve">
+    <value>Tatil</value>
+  </data>
+  <data name="NoDataFound" xml:space="preserve">
+    <value>Veri bulunamadı</value>
+  </data>
+  <data name="NoAttendanceRecordsForSelectedMonth" xml:space="preserve">
+    <value>Seçilen ay için mesai kaydı bulunmuyor.</value>
+  </data>
+  <data name="NoShiftsAssignedForSelectedMonth" xml:space="preserve">
+    <value>Seçilen ay için nöbet ataması bulunmuyor.</value>
+  </data>
+  <data name="CalculatePayroll" xml:space="preserve">
+    <value>Puantaj Hesapla</value>
+  </data>
+  <data name="SelectDataSourceAndClickCalculate" xml:space="preserve">
+    <value>Veri kaynağını seçip 'Hesapla' butonuna tıklayın.</value>
+  </data>
+  <data name="SavePayroll" xml:space="preserve">
+    <value>Puantajı Kaydet</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>İsim</value>
+  </data>
+  <data name="YourEditsWillBeLost" xml:space="preserve">
+    <value>Düzenlemeleriniz kaybolacak. Devam etmek istiyor musunuz?</value>
+  </data>
+  <data name="NameRequired" xml:space="preserve">
+    <value>İsim gerekli</value>
+  </data>
+  <data name="PayrollSaved" xml:space="preserve">
+    <value>Puantaj kaydedildi!</value>
+  </data>
+  <data name="AreYouSureDeletePayroll" xml:space="preserve">
+    <value>Bu puantajı silmek istediğinize emin misiniz?</value>
+  </data>
+  <data name="OnlineShiftSchedulingTimeAttendanceAndPayrollSystem" xml:space="preserve">
+    <value>Online nöbet çizelgesi, mesai takip ve puantaj sistemi</value>
+  </data>
+  <data name="HowToCreateShiftSchedule" xml:space="preserve">
+    <value>Nöbet Çizelgesi Nasıl Oluşturulur?</value>
+  </data>
+  <data name="GeldimmiIle3AdimdaNobetCizelgesi" xml:space="preserve">
+    <value>Geldimmi ile 3 adımda nöbet çizelgesi oluşturun</value>
+  </data>
+  <data name="PersonelEkleyin" xml:space="preserve">
+    <value>Personel Ekleyin</value>
+  </data>
+  <data name="AdUnvanVeSicilNumaralariGirin" xml:space="preserve">
+    <value>Ad, unvan ve sicil numaralarını girin</value>
+  </data>
+  <data name="NobetAtayin" xml:space="preserve">
+    <value>Nöbet Atayın</value>
+  </data>
+  <data name="TakvimUzerindeTiklayarakVeyaOtomatikAtayin" xml:space="preserve">
+    <value>Takvim üzerinde tıklayarak veya otomatik atayın</value>
+  </data>
+  <data name="PuantajAlin" xml:space="preserve">
+    <value>Puantaj Alın</value>
+  </data>
+  <data name="OtomatikHesaplananPuantajiGorunVeExcelAktarin" xml:space="preserve">
+    <value>Otomatik hesaplanan puantajı görün ve Excel'e aktarın</value>
+  </data>
+  <data name="GeldimmiNedir" xml:space="preserve">
+    <value>Geldimmi nedir?</value>
+  </data>
+  <data name="GeldimmiNobetCizelgesiOlusturmaMesaiTakipPuantajHesaplamaVeIzinYonetimiIcinOnlineBirPlatformdur" xml:space="preserve">
+    <value>Geldimmi, nöbet çizelgesi oluşturma, mesai takip, puantaj hesaplama ve izin yönetimi için online bir platformdur. Hastane, klinik ve işletmeler için tasarlanmıştır.</value>
+  </data>
+  <data name="UcretsizMi" xml:space="preserve">
+    <value>Ücretsiz mi?</value>
+  </data>
+  <data name="EvetKayitOlmadan5PersoneleKadarUcretsizKullanabilirsiniz" xml:space="preserve">
+    <value>Evet, kayıt olmadan 5 personele kadar ücretsiz kullanabilirsiniz. Kayıt olduğunuzda 10 personele kadar ücretsiz, mesai takip ve puantaj özelliklerini de kullanabilirsiniz.</value>
+  </data>
+  <data name="GeceMesaisiNasilHesaplanir" xml:space="preserve">
+    <value>Gece mesaisi nasıl hesaplanır?</value>
+  </data>
+  <data name="VarsayilanOlarak22000600ArasiGeceCalismasiOlarakHesaplanir" xml:space="preserve">
+    <value>Varsayılan olarak 22:00-06:00 arası gece çalışması olarak hesaplanır. Bu saatleri ayarlardan değiştirebilirsiniz.</value>
+  </data>
+  <data name="HangiIzinTurleriDestekleniyor" xml:space="preserve">
+    <value>Hangi izin türleri destekleniyor?</value>
+  </data>
+  <data name="30danFazlaIzinTuruYillikIzinHastalikRaporuEvlilikIznibabalikIznianalikIzniveDahaFazlasi" xml:space="preserve">
+    <value>30'dan fazla izin türü: Yıllık izin, hastalık raporu, evlilik izni, babalık izni, analık izni ve daha fazlası.</value>
+  </data>
+  <data name="ExceleAktarabilirMiyim" xml:space="preserve">
+    <value>Excel'e aktarabilir miyim?</value>
+  </data>
+  <data name="EvetNobetCizelgesiVePuantajRaporlariniTekTiklaExcelFormatindaIndirebilirsiniz" xml:space="preserve">
+    <value>Evet, nöbet çizelgesi ve puantaj raporlarını tek tıkla Excel formatında indirebilirsiniz.</value>
+  </data>
+  <data name="OnlineShiftSchedulingTimeAttendancePayrollAndLeaveManagementSystem" xml:space="preserve">
+    <value>Online nöbet çizelgesi, mesai takip, puantaj ve izin yönetimi sistemi</value>
+  </data>
+  <data name="Free" xml:space="preserve">
+    <value>Ücretsiz</value>
+  </data>
+  <data name="StartUsingToday" xml:space="preserve">
+    <value>Hemen kullanmaya başlayın</value>
+  </data>
+  <data name="MakeSchedulingEffortless" xml:space="preserve">
+    <value>Make scheduling <span class="highlight">effortless</span></value>
+  </data>
+  <data name="NobetPlanlamayiKolaylastirin" xml:space="preserve">
+    <value>Nöbet planlamayı <span class="highlight">kolaylaştırın</span></value>
+  </data>
+  <data name="HemenBasla" xml:space="preserve">
+    <value>Hemen Başla</value>
+  </data>
+  <data name="GetStarted" xml:space="preserve">
+    <value>Get Started</value>
+  </data>
+  <data name="UrunleriKesfet" xml:space="preserve">
+    <value>Ürünleri Keşfet</value>
+  </data>
+  <data name="ExploreProducts" xml:space="preserve">
+    <value>Explore Products</value>
+  </data>
+  <data name="NoInstallation" xml:space="preserve">
+    <value>Kurulum gerektirmez</value>
+  </data>
+  <data name="KurulumGerektirmez" xml:space="preserve">
+    <value>Kurulum gerektirmez</value>
+  </data>
+  <data name="30IzinTuru" xml:space="preserve">
+    <value>30+ izin türü</value>
+  </data>
+  <data name="30LeaveTypes" xml:space="preserve">
+    <value>30+ leave types</value>
+  </data>
+  <data name="NobetListesi" xml:space="preserve">
+    <value>Nöbet Listesi</value>
+  </data>
+  <data name="Ocak2026" xml:space="preserve">
+    <value>Ocak 2026</value>
+  </data>
+  <data name="Jan2026" xml:space="preserve">
+    <value>Jan 2026</value>
+  </data>
+  <data name="Pzt" xml:space="preserve">
+    <value>Pzt</value>
+  </data>
+  <data name="Mon" xml:space="preserve">
+    <value>Mon</value>
+  </data>
+  <data name="Sal" xml:space="preserve">
+    <value>Sal</value>
+  </data>
+  <data name="Tue" xml:space="preserve">
+    <value>Tue</value>
+  </data>
+  <data name="Car" xml:space="preserve">
+    <value>Çar</value>
+  </data>
+  <data name="Wed" xml:space="preserve">
+    <value>Wed</value>
+  </data>
+  <data name="Per" xml:space="preserve">
+    <value>Per</value>
+  </data>
+  <data name="Thu" xml:space="preserve">
+    <value>Thu</value>
+  </data>
+  <data name="Cum" xml:space="preserve">
+    <value>Cum</value>
+  </data>
+  <data name="Fri" xml:space="preserve">
+    <value>Fri</value>
+  </data>
+  <data name="Cmt" xml:space="preserve">
+    <value>Cmt</value>
+  </data>
+  <data name="Sat" xml:space="preserve">
+    <value>Sat</value>
+  </data>
+  <data name="Paz" xml:space="preserve">
+    <value>Paz</value>
+  </data>
+  <data name="Sun" xml:space="preserve">
+    <value>Sun</value>
+  </data>
+  <!-- Months -->
+  <data name="MonthJanuary" xml:space="preserve">
+    <value>Ocak</value>
+  </data>
+  <data name="MonthFebruary" xml:space="preserve">
+    <value>Şubat</value>
+  </data>
+  <data name="MonthMarch" xml:space="preserve">
+    <value>Mart</value>
+  </data>
+  <data name="MonthApril" xml:space="preserve">
+    <value>Nisan</value>
+  </data>
+  <data name="MonthMay" xml:space="preserve">
+    <value>Mayıs</value>
+  </data>
+  <data name="MonthJune" xml:space="preserve">
+    <value>Haziran</value>
+  </data>
+  <data name="MonthJuly" xml:space="preserve">
+    <value>Temmuz</value>
+  </data>
+  <data name="MonthAugust" xml:space="preserve">
+    <value>Ağustos</value>
+  </data>
+  <data name="MonthSeptember" xml:space="preserve">
+    <value>Eylül</value>
+  </data>
+  <data name="MonthOctober" xml:space="preserve">
+    <value>Ekim</value>
+  </data>
+  <data name="MonthNovember" xml:space="preserve">
+    <value>Kasım</value>
+  </data>
+  <data name="MonthDecember" xml:space="preserve">
+    <value>Aralık</value>
+  </data>
+  <data name="NobetCizelgesiOlusturunMesaiTakibiYapinPuantajHesaplayinVeIzinleriYonetin" xml:space="preserve">
+    <value>Nöbet çizelgesi oluşturun, mesai takibi yapın, puantaj hesaplayın ve izinleri yönetin. Tek platformda tüm iş gücü yönetimi.</value>
+  </data>
+  <data name="CreateShiftSchedulesTrackAttendanceCalculatePayrollAndManageLeaves" xml:space="preserve">
+    <value>Create shift schedules, track attendance, calculate payroll and manage leaves. Complete workforce management in one platform.</value>
+  </data>
+  <data name="TimesheetReportJanuary2026" xml:space="preserve">
+    <value>Puantaj Raporu — Ocak 2026</value>
+  </data>
+  <data name="OurProducts" xml:space="preserve">
+    <value>Ürünlerimiz</value>
+  </data>
+  <data name="ComprehensiveSolutionsForWorkforceManagement" xml:space="preserve">
+    <value>İş gücü yönetimi için kapsamlı çözümler</value>
+  </data>
+  <data name="ShiftPlanningTimeAttendancePayrollAndLeaveManagementAllInOnePlatform" xml:space="preserve">
+    <value>Nöbet planlama, mesai takip, puantaj ve izin yönetimi - hepsi tek platformda.</value>
+  </data>
+  <data name="MostPopular" xml:space="preserve">
+    <value>En Popüler</value>
+  </data>
+  <data name="CreateProfessionalShiftSchedulesInMinutes" xml:space="preserve">
+    <value>Dakikalar içinde profesyonel nöbet çizelgesi oluşturun. Hemşire, doktor veya personel nöbet listesi hazırlamak artık çok kolay.</value>
+  </data>
+  <data name="DragDropEasyAssignment" xml:space="preserve">
+    <value>Sürükle-bırak ile kolay atama</value>
+  </data>
+  <data name="CustomizableShiftTemplates" xml:space="preserve">
+    <value>Özelleştirilebilir vardiya şablonları</value>
+  </data>
+  <data name="OvernightShiftSupport" xml:space="preserve">
+    <value>Ertesi güne sarkan nöbetler</value>
+  </data>
+  <data name="FairShiftDistribution" xml:space="preserve">
+    <value>Adil nöbet dağıtımı</value>
+  </data>
+  <data name="ExcelExport" xml:space="preserve">
+    <value>Excel'e aktarma</value>
+  </data>
+  <data name="RecordEmployeeCheckInCheckOutTimes" xml:space="preserve">
+    <value>Personelin giriş-çıkış saatlerini kaydedin. Planlanan nöbet ile gerçek mesaiyi karşılaştırın, farkları anında görün.</value>
+  </data>
+  <data name="ManualOrAPIRecording" xml:space="preserve">
+    <value>Manuel veya API ile kayıt</value>
+  </data>
+  <data name="NightShiftSupport" xml:space="preserve">
+    <value>Gece vardiyası desteği</value>
+  </data>
+  <data name="BreakTimeCalculation" xml:space="preserve">
+    <value>Mola süresi hesaplama</value>
+  </data>
+  <data name="JWTBasedAPIIntegration" xml:space="preserve">
+    <value>JWT tabanlı API entegrasyonu</value>
+  </data>
+  <data name="RealTimeMonitoring" xml:space="preserve">
+    <value>Gerçek zamanlı izleme</value>
+  </data>
+  <data name="Explore" xml:space="preserve">
+    <value>Keşfet</value>
+  </data>
+  <data name="AutomaticPayrollCalculation" xml:space="preserve">
+    <value>Otomatik puantaj hesaplama. Normal mesai, gece çalışması, hafta sonu ve fazla mesai ayrı ayrı hesaplanıp raporlanır.</value>
+  </data>
+  <data name="NightHoursCalculation22000600" xml:space="preserve">
+    <value>Gece mesai hesaplama (22:00-06:00)</value>
+  </data>
+  <data name="OvertimeTracking" xml:space="preserve">
+    <value>Fazla mesai takibi</value>
+  </data>
+  <data name="30DayDetailedBreakdown" xml:space="preserve">
+    <value>30 günlük detaylı döküm</value>
+  </data>
+  <data name="SaveAndEditPayroll" xml:space="preserve">
+    <value>Puantajı kaydetme ve düzenleme</value>
+  </data>
+  <data name="ExcelReport" xml:space="preserve">
+    <value>Excel raporu</value>
+  </data>
+  <data name="AnnualLeaveSickLeaveMarriageLeaveMaternityLeaveAndMore" xml:space="preserve">
+    <value>Yıllık izin, hastalık raporu, evlilik izni, doğum izni ve daha fazlası. Tüm izin türlerini tek yerden yönetin.</value>
+  </data>
+  <data name="30LeaveTypesSupported" xml:space="preserve">
+    <value>30+ izin türü desteği</value>
+  </data>
+  <data name="CalendarBasedLeaveAssignment" xml:space="preserve">
+    <value>Takvim üzerinde izin atama</value>
+  </data>
+  <data name="AutomaticHourDeduction" xml:space="preserve">
+    <value>Otomatik saat düşümü</value>
+  </data>
+  <data name="PaidUnpaidLeaveDistinction" xml:space="preserve">
+    <value>Ücretli/ücretsiz izin ayrımı</value>
+  </data>
+  <data name="AutoReflectInPayroll" xml:space="preserve">
+    <value>Puantaja otomatik yansıma</value>
+  </data>
+  <data name="EverythingYouNeedInOnePlace" xml:space="preserve">
+    <value>İhtiyacınız olan her şey tek bir yerde</value>
+  </data>
+  <data name="SimplifyAllYourProcessesFromShiftPlanningToTimesheetCalculation" xml:space="preserve">
+    <value>Nöbet planlamadan puantaj hesaplamaya, tüm süreçlerinizi kolaylaştırın.</value>
+  </data>
+  <data name="NightOvertime" xml:space="preserve">
+    <value>Gece &amp; Fazla Mesai</value>
+  </data>
+  <data name="NightHoursAndOvertimeCalculatedAutomatically" xml:space="preserve">
+    <value>Gece çalışma saatleri ve fazla mesailer otomatik hesaplanır.</value>
+  </data>
+  <data name="HolidayManagement" xml:space="preserve">
+    <value>Tatil Yönetimi</value>
+  </data>
+  <data name="DefineHolidaysAndEmployeeLeavesEasily" xml:space="preserve">
+    <value>Resmi tatiller ve personel izinlerini kolayca tanımlayın.</value>
+  </data>
+  <data name="HowItWorks" xml:space="preserve">
+    <value>Nasıl Çalışır?</value>
+  </data>
+  <data name="GetStartedIn3Steps" xml:space="preserve">
+    <value>3 adımda başlayın</value>
+  </data>
+  <data name="EnterNamesTitlesAndIDs" xml:space="preserve">
+    <value>Ad, unvan ve sicil numaralarını girin. Excel'den yapıştırabilirsiniz.</value>
+  </data>
+  <data name="Normal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="Regular" xml:space="preserve">
+    <value>Regular</value>
+  </data>
+  <data name="Weekend" xml:space="preserve">
+    <value>H.Sonu</value>
+  </data>
+  <data name="OT" xml:space="preserve">
+    <value>F.Mesai</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>Toplam</value>
+  </data>
+  <data name="TimesheetSystem" xml:space="preserve">
+    <value>Puantaj Sistemi</value>
+  </data>
+  <data name="DetailedTimesheetCalculation" xml:space="preserve">
+    <value>Detaylı puantaj hesaplama</value>
+  </data>
+  <data name="RegularHours" xml:space="preserve">
+    <value>Normal Çalışma</value>
+  </data>
+  <data name="StandardWorkingHours" xml:space="preserve">
+    <value>Standart mesai saatleri</value>
+  </data>
+  <data name="Between20000600" xml:space="preserve">
+    <value>20:00 - 06:00 arası</value>
+  </data>
+  <data name="WeekendHours" xml:space="preserve">
+    <value>Hafta Sonu</value>
+  </data>
+  <data name="SaturdayAndSunday" xml:space="preserve">
+    <value>Cumartesi ve Pazar</value>
+  </data>
+  <data name="Overtime" xml:space="preserve">
+    <value>Fazla Mesai</value>
+  </data>
+  <data name="DailyOrMonthlyCalculation" xml:space="preserve">
+    <value>Günlük veya aylık hesaplama</value>
+  </data>
+  <data name="FrequentlyAskedQuestions" xml:space="preserve">
+    <value>Sıkça Sorulan Sorular</value>
+  </data>
+  <data name="CommonQuestions" xml:space="preserve">
+    <value>Merak Edilenler</value>
+  </data>
+  <data name="IsThereAMobileApp" xml:space="preserve">
+    <value>Mobil uygulaması var mı?</value>
+  </data>
+  <data name="WebApplicationIsMobileFriendly" xml:space="preserve">
+    <value>Web uygulaması mobil uyumlu olarak tasarlanmıştır. Telefonunuzdan veya tabletinizden rahatlıkla kullanabilirsiniz. Ayrıca API desteğimiz sayesinde kendi mobil uygulamanızı entegre edebilirsiniz.</value>
+  </data>
+  <data name="StartFreeToday" xml:space="preserve">
+    <value>Hemen ücretsiz başlayın</value>
+  </data>
+  <data name="FreeForUpTo5EmployeesWithoutRegistration" xml:space="preserve">
+    <value>Kayıt olmadan 5 personele kadar, kayıtlı kullanıcılara 10 personele kadar ücretsiz. Kredi kartı gerekmez.</value>
+  </data>
+  <data name="GeldimmiNobetCizelgesiOlusturmaMesaiTakipPuantajHesaplamaVeIzinYonetimiIcinOnlineBirPlatformdurHastaneKlinikEczaneVeDigerIsletmelerIcinTasarlanmistir" xml:space="preserve">
+    <value>Geldimmi, nöbet çizelgesi oluşturma, mesai takip, puantaj hesaplama ve izin yönetimi için online bir platformdur. Hastane, klinik, eczane ve diğer işletmeler için tasarlanmıştır. Hemşire nöbet programı, doktor vardiya planı ve personel çalışma çizelgesi oluşturmak artık çok kolay.</value>
+  </data>
+  <data name="EvetKayitOlmadan5PersoneleKadarUcretsizKullanabilirsinizGoogleHesabinizlaKayitOldugunuzda10PersoneleKadarUcretsizVeMesaiTakipPuantajOzellikleriniDeKullanabilirsiniz" xml:space="preserve">
+    <value>Evet, kayıt olmadan 5 personele kadar ücretsiz kullanabilirsiniz. Google hesabınızla kayıt olduğunuzda 10 personele kadar ücretsiz ve mesai takip, puantaj özelliklerini de kullanabilirsiniz. Kredi kartı gerekmez, deneme süresi yoktur.</value>
+  </data>
+  <data name="30danFazlaIzinTuruDesteklenmektedirYillikUcretliIzinHastalikRaporuEvlilikIznibabalikIznianalikIznidogumOncesisonrasiSutIznirefakatIzniegitimIzniaskerlikIzniveDahaFazlasi" xml:space="preserve">
+    <value>30'dan fazla izin türü desteklenmektedir: Yıllık ücretli izin, hastalık raporu, evlilik izni, babalık izni, analık izni (doğum öncesi/sonrası), süt izni, refakat izni, eğitim izni, askerlik izni ve daha fazlası. Tüm izin türleri Türkçe ve İngilizce olarak görüntülenebilir.</value>
+  </data>
+  <data name="EvetNobetCizelgesiVePuantajRaporlariniTekTiklaExcelFormatindaxlsxIndirebilirsiniz" xml:space="preserve">
+    <value>Evet, nöbet çizelgesi ve puantaj raporlarını tek tıkla Excel formatında (.xlsx) indirebilirsiniz. Excel dosyasında tüm detaylar (gece saati, hafta sonu, fazla mesai, 30 günlük döküm) yer alır.</value>
+  </data>
+  <data name="HomeMetaDescription" xml:space="preserve">
+    <value>Online nöbet çizelgesi oluşturma, mesai takip sistemi, puantaj hesaplama ve izin yönetimi. Hemşire nöbet programı, vardiya planı, otomatik puantaj ve fazla mesai hesaplama. Ücretsiz başlayın!</value>
+  </data>
+  <data name="HomeMetaKeywords" xml:space="preserve">
+    <value>nöbet çizelgesi, nöbet programı, mesai takip, puantaj sistemi, izin yönetimi, hemşire nöbet listesi, vardiya planı, fazla mesai hesaplama, gece çalışması, hafta sonu nöbeti</value>
+  </data>
+  <data name="ShiftScheduleWithMonth" xml:space="preserve">
+    <value>Nöbet Listesi - {0}</value>
+  </data>
+  <data name="PayrollReport" xml:space="preserve">
+    <value>Puantaj Raporu</value>
+  </data>
+  <data name="Record" xml:space="preserve">
+    <value>Kayıt</value>
+  </data>
+  <data name="Summary" xml:space="preserve">
+    <value>Özet</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Detay</value>
+  </data>
+  <data name="Source" xml:space="preserve">
+    <value>Kaynak</value>
+  </data>
+  <data name="Night" xml:space="preserve">
+    <value>Gece</value>
+  </data>
+  <data name="HoursAbbrev" xml:space="preserve">
+    <value>s</value>
+  </data>
+  <data name="Attendance" xml:space="preserve">
+    <value>Mesai Takip</value>
+  </data>
+  <data name="Shift" xml:space="preserve">
+    <value>Nöbet</value>
+  </data>
+  <data name="PayrollWithMonth" xml:space="preserve">
+    <value>Puantaj - {0}</value>
+  </data>
+  <data name="PayrollHeader_Employee" xml:space="preserve">
+    <value>Personel</value>
+  </data>
+  <data name="PayrollHeader_Title" xml:space="preserve">
+    <value>Ünvan</value>
+  </data>
+  <data name="PayrollHeader_DaysWorked" xml:space="preserve">
+    <value>Çalışılan Gün</value>
+  </data>
+  <data name="PayrollHeader_HoursWorked" xml:space="preserve">
+    <value>Çalışılan Saat</value>
+  </data>
+  <data name="PayrollHeader_TargetHours" xml:space="preserve">
+    <value>Hedef Saat</value>
+  </data>
+  <data name="PayrollHeader_Overtime" xml:space="preserve">
+    <value>Fazla Mesai</value>
+  </data>
+  <data name="PayrollHeader_NightHours" xml:space="preserve">
+    <value>Gece Çalışma</value>
+  </data>
+  <data name="PayrollHeader_WeekendHours" xml:space="preserve">
+    <value>Hafta Sonu</value>
+  </data>
+  <data name="PayrollHeader_HolidayHours" xml:space="preserve">
+    <value>Resmi Tatil</value>
+  </data>
+  <data name="PayrollHeader_DaysOff" xml:space="preserve">
+    <value>İzin Günü</value>
+  </data>
+  <data name="Day" xml:space="preserve">
+    <value>Gün</value>
+  </data>
+  <data name="In" xml:space="preserve">
+    <value>Giriş</value>
+  </data>
+  <data name="Out" xml:space="preserve">
+    <value>Çıkış</value>
+  </data>
+  <data name="Note" xml:space="preserve">
+    <value>Not</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>Oluşturulma</value>
+  </data>
+  <data name="PayrollNamePlaceholder" xml:space="preserve">
+    <value>örn: Ocak 2026 Final</value>
+  </data>
+  <data name="OgLocale" xml:space="preserve">
+    <value>tr_TR</value>
+  </data>
+  <data name="CurrentLanguageFlag" xml:space="preserve">
+    <value>🇹🇷 TR</value>
+  </data>
+  <data name="BlogTitle" xml:space="preserve">
+    <value>Online Hemşire Nöbet Programı ve Akıllı Vardiya Rehberi</value>
+  </data>
+  <data name="BlogDescription" xml:space="preserve">
+    <value>Online hemşire nöbet programı, yapay zeka destekli planlama, adil dağıtım ve mobil deneyim üzerine derinlemesine içerikler.</value>
+  </data>
+  <data name="ReadMore" xml:space="preserve">
+    <value>Devamını Oku</value>
+  </data>
+  <data name="EmailPlaceholder" xml:space="preserve">
+    <value>ornek@email.com</value>
+  </data>
+  <data name="PasswordPlaceholder" xml:space="preserve">
+    <value>••••••••</value>
+  </data>
+  <data name="MinuteAbbr" xml:space="preserve">
+    <value>dk</value>
+  </data>
+  <data name="RegisterBrandHeadline" xml:space="preserve">
+    <value>Ücretsiz hesap ile <span>daha fazlasını</span> yapın</value>
+  </data>
+  <data name="LoginBrandHeadline" xml:space="preserve">
+    <value>Nöbet planlamayı <span>kolaylaştırın</span></value>
+  </data>
+  <data name="LoginBrandDesc" xml:space="preserve">
+    <value>Hastaneler ve işletmeler için akıllı nöbet planlama sistemi. Otomatik puantaj, adil dağıtım ve gerçek zamanlı takip.</value>
+  </data>
+  <data name="EmailWelcomeBody" xml:space="preserve">
+    <value>&lt;div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;"&gt;
+                        &lt;h2 style="color: #16a34a;"&gt;Hoş geldiniz!&lt;/h2&gt;
+                        &lt;p&gt;Merhaba {0},&lt;/p&gt;
+                        &lt;p&gt;Geldimmi'ye kaydolduğunuz için teşekkür ederiz. Hesabınızı aktifleştirmek için lütfen e-posta adresinizi doğrulayın.&lt;/p&gt;
+                        &lt;p style="margin: 30px 0;"&gt;
+                            &lt;a href="{1}" style="background-color: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;"&gt;E-posta Adresimi Doğrula&lt;/a&gt;
+                        &lt;/p&gt;
+                        &lt;p&gt;Veya aşağıdaki linki tarayıcınıza yapıştırabilirsiniz:&lt;/p&gt;
+                        &lt;p style="word-break: break-all; color: #6b7280;"&gt;{1}&lt;/p&gt;
+                        &lt;p style="margin-top: 30px; color: #6b7280; font-size: 14px;"&gt;
+                            Bu e-postayı siz talep etmediyseniz, lütfen görmezden gelin.
+                        &lt;/p&gt;
+                    &lt;/div&gt;</value>
+  </data>
+  <data name="EmailVerificationBody" xml:space="preserve">
+    <value>&lt;div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;"&gt;
+                        &lt;h2 style="color: #16a34a;"&gt;E-posta Doğrulama&lt;/h2&gt;
+                        &lt;p&gt;Merhaba {0},&lt;/p&gt;
+                        &lt;p&gt;E-posta adresinizi doğrulamak için aşağıdaki bağlantıya tıklayın:&lt;/p&gt;
+                        &lt;p style="margin: 30px 0;"&gt;
+                            &lt;a href="{1}" style="background-color: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;"&gt;E-posta Adresimi Doğrula&lt;/a&gt;
+                        &lt;/p&gt;
+                        &lt;p&gt;Veya aşağıdaki linki tarayıcınıza yapıştırabilirsiniz:&lt;/p&gt;
+                        &lt;p style="word-break: break-all; color: #6b7280;"&gt;{1}&lt;/p&gt;
+                        &lt;p style="margin-top: 30px; color: #6b7280; font-size: 14px;"&gt;
+                            Bu e-postayı siz talep etmediyseniz, lütfen görmezden gelin.
+                        &lt;/p&gt;
+                    &lt;/div&gt;</value>
   </data>
 </root>
 

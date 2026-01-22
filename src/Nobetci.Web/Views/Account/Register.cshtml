@@ -4,15 +4,16 @@
 @{
     ViewData["Title"] = Localizer["Register"];
     Layout = null;
-    var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+    var currentLang = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    var isRtl = currentLang == "ar";
 }
 
 <!DOCTYPE html>
-<html lang="@(isTurkish ? "tr" : "en")">
+<html lang="@currentLang" dir="@(isRtl ? "rtl" : "ltr")">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@(isTurkish ? "Kayıt Ol" : "Sign Up") - Geldimmi</title>
+    <title>@Localizer["SignUp"] - Geldimmi</title>
     <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -395,43 +396,36 @@
             
             <div class="brand-content">
                 <h2 class="brand-headline">
-                    @if (isTurkish)
-                    {
-                        <text>Ücretsiz hesap ile <span>daha fazlasını</span> yapın</text>
-                    }
-                    else
-                    {
-                        <text>Do <span>more</span> with a free account</text>
-                    }
+                    @Html.Raw(Localizer["RegisterBrandHeadline"].Value)
                 </h2>
                 
                 <div class="benefits-grid">
                     <div class="benefit-card">
                         <div class="benefit-icon">👥</div>
                         <div class="benefit-text">
-                            <h4>@(isTurkish ? "20 Personel Yönetimi" : "20 Employee Management")</h4>
-                            <p>@(isTurkish ? "Kayıtsız kullanıcılar 7 personel ekleyebilirken, ücretsiz hesapla 20 personel yönetin." : "Manage 20 employees instead of 7 for unregistered users.")</p>
+                            <h4>@Localizer["20EmployeeManagement"]</h4>
+                            <p>@Localizer["Manage20EmployeesInsteadOf7"]</p>
                         </div>
                     </div>
                     <div class="benefit-card">
                         <div class="benefit-icon">💾</div>
                         <div class="benefit-text">
-                            <h4>@(isTurkish ? "Verileriniz Güvende" : "Your Data is Safe")</h4>
-                            <p>@(isTurkish ? "Nöbet listeleri ve puantaj verileriniz bulutta saklanır." : "Your rosters and timesheets are stored in the cloud.")</p>
+                            <h4>@Localizer["YourDataIsSafe"]</h4>
+                            <p>@Localizer["YourRostersAndTimesheetsStoredInCloud"]</p>
                         </div>
                     </div>
                     <div class="benefit-card">
                         <div class="benefit-icon">📊</div>
                         <div class="benefit-text">
-                            <h4>@(isTurkish ? "Gelişmiş Raporlama" : "Advanced Reports")</h4>
-                            <p>@(isTurkish ? "Detaylı puantaj ve fazla mesai raporları, Excel export." : "Detailed timesheet and overtime reports with Excel export.")</p>
+                            <h4>@Localizer["AdvancedReports"]</h4>
+                            <p>@Localizer["DetailedTimesheetAndOvertimeReports"]</p>
                         </div>
                     </div>
                 </div>
             </div>
             
             <div class="brand-footer">
-                © 2026 Geldimmi. @(isTurkish ? "Tüm hakları saklıdır." : "All rights reserved.")
+                © 2026 Geldimmi. @Localizer["AllRightsReserved"]
             </div>
         </div>
         
@@ -443,9 +437,9 @@
             </div>
             
             <div class="form-header">
-                <span class="free-badge">✨ @(isTurkish ? "Tamamen Ücretsiz" : "Completely Free")</span>
-                <h1>@(isTurkish ? "Hesap oluşturun" : "Create your account")</h1>
-                <p>@(isTurkish ? "Hemen başlayın, kredi kartı gerekmez" : "Get started now, no credit card required")</p>
+                <span class="free-badge">✨ @Localizer["CompletelyFree"]</span>
+                <h1>@Localizer["CreateYourAccount"]</h1>
+                <p>@Localizer["GetStartedNowNoCreditCard"]</p>
             </div>
             
             <form asp-action="Register" method="post" class="register-form">
@@ -462,50 +456,48 @@
                 }
                 
                 <div class="input-group">
-                    <label for="FullName">@(isTurkish ? "Ad Soyad" : "Full Name")</label>
-                    <input asp-for="FullName" class="input-field" placeholder="@(isTurkish ? "Adınız Soyadınız" : "Your full name")" />
+                    <label for="FullName">@Localizer["FullName"]</label>
+                    <input asp-for="FullName" class="input-field" placeholder="@Localizer["YourFullName"]" />
                     <span asp-validation-for="FullName" class="text-danger"></span>
                 </div>
                 
                 <div class="input-group">
-                    <label for="Email">@(isTurkish ? "E-posta adresi" : "Email address")</label>
-                    <input asp-for="Email" type="email" class="input-field" placeholder="ornek@email.com" />
+                    <label for="Email">@Localizer["EmailAddress"]</label>
+                    <input asp-for="Email" type="email" class="input-field" placeholder="@Localizer["EmailPlaceholder"].Value" />
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
                 
                 <div class="form-row">
                     <div class="input-group">
-                        <label for="Password">@(isTurkish ? "Şifre" : "Password")</label>
-                        <input asp-for="Password" type="password" class="input-field" placeholder="••••••••" />
+                        <label for="Password">@Localizer["Password"]</label>
+                        <input asp-for="Password" type="password" class="input-field" placeholder="@Localizer["PasswordPlaceholder"].Value" />
                         <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
                     
                     <div class="input-group">
-                        <label for="ConfirmPassword">@(isTurkish ? "Şifre Tekrar" : "Confirm Password")</label>
-                        <input asp-for="ConfirmPassword" type="password" class="input-field" placeholder="••••••••" />
+                        <label for="ConfirmPassword">@Localizer["ConfirmPassword"]</label>
+                        <input asp-for="ConfirmPassword" type="password" class="input-field" placeholder="@Localizer["PasswordPlaceholder"].Value" />
                         <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                     </div>
                 </div>
                 
                 <button type="submit" class="btn-submit">
-                    @(isTurkish ? "Ücretsiz Hesap Oluştur" : "Create Free Account")
+                    @Localizer["CreateFreeAccount"]
                 </button>
                 
                 <p class="terms-text">
-                    @(isTurkish 
-                        ? "Kayıt olarak " 
-                        : "By signing up, you agree to our ")
-                    <a href="/terms">@(isTurkish ? "Kullanım Şartları" : "Terms of Service")</a>
-                    @(isTurkish ? " ve " : " and ")
-                    <a href="/privacy">@(isTurkish ? "Gizlilik Politikası" : "Privacy Policy")</a>@(isTurkish ? "'nı kabul etmiş olursunuz." : ".")
+                    @Localizer["BySigningUpYouAgreeToOur"]
+                    <a href="/terms">@Localizer["TermsOfService"]</a>
+                    @Localizer["And"]
+                    <a href="/privacy">@Localizer["PrivacyPolicy"]</a>@Localizer["Period"]
                 </p>
             </form>
             
             <div class="form-footer">
                 <p>
-                    @(isTurkish ? "Zaten hesabınız var mı?" : "Already have an account?")
+                    @Localizer["AlreadyHaveAccount"]
                     <a asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]">
-                        @(isTurkish ? "Giriş yapın" : "Sign in")
+                        @Localizer["SignIn"]
                     </a>
                 </p>
             </div>

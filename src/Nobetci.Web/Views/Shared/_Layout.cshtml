@@ -1,8 +1,9 @@
 @{
-    var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+    var currentLang = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    var isRtl = currentLang == "ar";
 }
 <!DOCTYPE html>
-<html lang="@System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName">
+<html lang="@currentLang" dir="@(isRtl ? "rtl" : "ltr")">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -32,21 +33,22 @@
     <!-- Language Alternates (hreflang) -->
     <link rel="alternate" hreflang="tr" href="https://geldimmi.com@Context.Request.Path?culture=tr-TR" />
     <link rel="alternate" hreflang="en" href="https://geldimmi.com@Context.Request.Path?culture=en-US" />
+    <link rel="alternate" hreflang="ar" href="https://geldimmi.com@Context.Request.Path?culture=ar" />
     <link rel="alternate" hreflang="x-default" href="https://geldimmi.com@Context.Request.Path" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:site_name" content="Geldimmi" />
     <meta property="og:title" content="@ViewData["Title"] - Geldimmi" />
-    <meta property="og:description" content="@(ViewData["MetaDescription"] ?? (isTurkish ? "Online nöbet çizelgesi, mesai takip ve puantaj sistemi" : "Online shift scheduling, time attendance and payroll system"))" />
+    <meta property="og:description" content="@(ViewData["MetaDescription"] ?? Localizer["MetaDescription_Default"].Value)" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://geldimmi.com@Context.Request.Path" />
     <meta property="og:image" content="https://geldimmi.com/images/og-image.png" />
-    <meta property="og:locale" content="@(isTurkish ? "tr_TR" : "en_US")" />
+    <meta property="og:locale" content="@Localizer["OgLocale"].Value" />
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="@ViewData["Title"] - Geldimmi" />
-    <meta name="twitter:description" content="@(ViewData["MetaDescription"] ?? (isTurkish ? "Online nöbet çizelgesi, mesai takip ve puantaj sistemi" : "Online shift scheduling, time attendance and payroll system"))" />
+    <meta name="twitter:description" content="@(ViewData["MetaDescription"] ?? Localizer["MetaDescription_Default"].Value)" />
     <meta name="twitter:image" content="https://geldimmi.com/images/og-image.png" />
     
     <!-- Structured Data (JSON-LD) -->
@@ -101,54 +103,54 @@
                 <ul class="navbar-nav mx-auto nav-center">
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Home" asp-action="Index">
-                            @(isTurkish ? "Ana Sayfa" : "Home")
+                            @Localizer["Home"]
                         </a>
                     </li>
                     
                     <!-- Products Dropdown -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="featuresDropdown" role="button" data-bs-toggle="dropdown">
-                            @(isTurkish ? "Ürünler" : "Products")
+                            @Localizer["Products"]
                         </a>
                         <ul class="dropdown-menu dropdown-menu-custom dropdown-mega">
                             <div class="dropdown-mega-inner">
                                 <div class="dropdown-column">
-                                    <div class="dropdown-header">📅 @(isTurkish ? "Nöbet Çizelgesi" : "Shift Scheduling")</div>
+                                    <div class="dropdown-header">📅 @Localizer["ShiftScheduling"]</div>
                                     <li>
-                                        <a class="dropdown-item" href="@(isTurkish ? "/rehber/nobet-listesi-olusturma" : "/guide/shift-scheduling")">
+                                        <a class="dropdown-item" href="@(currentLang == "tr" ? "/rehber/nobet-listesi-olusturma" : currentLang == "ar" ? "/rehber/nobet-listesi-olusturma" : "/guide/shift-scheduling")">
                                             <span class="dropdown-text">
-                                                <strong>@(isTurkish ? "Nöbet Çizelgesi Oluşturma" : "Create Shift Schedule")</strong>
-                                                <small>@(isTurkish ? "Dakikalar içinde profesyonel nöbet planı" : "Professional shift planning in minutes")</small>
+                                                <strong>@Localizer["CreateShiftSchedule"]</strong>
+                                                <small>@Localizer["CreateShiftSchedule_Desc"]</small>
                                             </span>
                                             <span class="dropdown-arrow">→</span>
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="@(isTurkish ? "/rehber/hemsire-nobet-programi" : "/guide/nurse-shift-planner")">
+                                        <a class="dropdown-item" href="@(currentLang == "tr" ? "/rehber/hemsire-nobet-programi" : currentLang == "ar" ? "/rehber/hemsire-nobet-programi" : "/guide/nurse-shift-planner")">
                                             <span class="dropdown-text">
-                                                <strong>@(isTurkish ? "Hemşire Nöbet Programı" : "Nurse Shift Planner")</strong>
-                                                <small>@(isTurkish ? "Hastaneler için özel çözüm" : "Special solution for hospitals")</small>
+                                                <strong>@Localizer["NurseShiftPlanner"]</strong>
+                                                <small>@Localizer["NurseShiftPlanner_Desc"]</small>
                                             </span>
                                             <span class="dropdown-arrow">→</span>
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="@(isTurkish ? "/rehber/adil-nobet-dagitimi" : "/guide/fair-shift-distribution")">
+                                        <a class="dropdown-item" href="@(currentLang == "tr" ? "/rehber/adil-nobet-dagitimi" : currentLang == "ar" ? "/rehber/adil-nobet-dagitimi" : "/guide/fair-shift-distribution")">
                                             <span class="dropdown-text">
-                                                <strong>@(isTurkish ? "Adil Nöbet Dağıtımı" : "Fair Shift Distribution")</strong>
-                                                <small>@(isTurkish ? "Akıllı algoritma ile dengeli dağıtım" : "Balanced distribution with smart algorithm")</small>
+                                                <strong>@Localizer["FairShiftDistribution"]</strong>
+                                                <small>@Localizer["FairShiftDistribution_Desc"]</small>
                                             </span>
                                             <span class="dropdown-arrow">→</span>
                                         </a>
                                     </li>
                                 </div>
                                 <div class="dropdown-column">
-                                    <div class="dropdown-header">🕐 @(isTurkish ? "Mesai Takip" : "Time Attendance")</div>
+                                    <div class="dropdown-header">🕐 @Localizer["TimeAttendance"]</div>
                                     <li>
-                                        <a class="dropdown-item" href="@(isTurkish ? "/rehber/mesai-takip-sistemi" : "/guide/time-attendance-system")">
+                                        <a class="dropdown-item" href="@(currentLang == "tr" ? "/rehber/mesai-takip-sistemi" : currentLang == "ar" ? "/rehber/mesai-takip-sistemi" : "/guide/time-attendance-system")">
                                             <span class="dropdown-text">
-                                                <strong>@(isTurkish ? "Mesai Takip Sistemi" : "Time Attendance System")</strong>
-                                                <small>@(isTurkish ? "Giriş-çıkış saatlerini kaydedin" : "Record check-in/check-out times")</small>
+                                                <strong>@Localizer["TimeAttendanceSystem"]</strong>
+                                                <small>@Localizer["TimeAttendanceSystem_Desc"]</small>
                                             </span>
                                             <span class="dropdown-arrow">→</span>
                                         </a>
@@ -156,50 +158,50 @@
                                     <li>
                                         <a class="dropdown-item" href="/app/attendance">
                                             <span class="dropdown-text">
-                                                <strong>@(isTurkish ? "Mesai Takip Uygulaması" : "Attendance App")</strong>
-                                                <small>@(isTurkish ? "Hemen kullanmaya başla" : "Start using now")</small>
+                                                <strong>@Localizer["AttendanceApp"]</strong>
+                                                <small>@Localizer["AttendanceApp_Desc"]</small>
                                             </span>
                                             <span class="dropdown-arrow">→</span>
                                         </a>
                                     </li>
                                 </div>
                                 <div class="dropdown-column">
-                                    <div class="dropdown-header">📊 @(isTurkish ? "Puantaj" : "Payroll")</div>
+                                    <div class="dropdown-header">📊 @Localizer["Timesheet"]</div>
                                     <li>
-                                        <a class="dropdown-item" href="@(isTurkish ? "/rehber/puantaj-hesaplama" : "/guide/timesheet-calculation")">
+                                        <a class="dropdown-item" href="@(currentLang == "tr" ? "/rehber/puantaj-hesaplama" : currentLang == "ar" ? "/rehber/puantaj-hesaplama" : "/guide/timesheet-calculation")">
                                             <span class="dropdown-text">
-                                                <strong>@(isTurkish ? "Puantaj Hesaplama" : "Payroll Calculation")</strong>
-                                                <small>@(isTurkish ? "Otomatik mesai hesabı" : "Automatic work hour calculation")</small>
+                                                <strong>@Localizer["PayrollCalculation"]</strong>
+                                                <small>@Localizer["PayrollCalculation_Desc"]</small>
                                             </span>
                                             <span class="dropdown-arrow">→</span>
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="@(isTurkish ? "/rehber/fazla-mesai-hesaplama" : "/guide/overtime-calculation")">
+                                        <a class="dropdown-item" href="@(currentLang == "tr" ? "/rehber/fazla-mesai-hesaplama" : currentLang == "ar" ? "/rehber/fazla-mesai-hesaplama" : "/guide/overtime-calculation")">
                                             <span class="dropdown-text">
-                                                <strong>@(isTurkish ? "Fazla Mesai Hesaplama" : "Overtime Calculation")</strong>
-                                                <small>@(isTurkish ? "Gece, hafta sonu, tatil" : "Night, weekend, holiday")</small>
+                                                <strong>@Localizer["OvertimeCalculation"]</strong>
+                                                <small>@Localizer["OvertimeCalculation_Desc"]</small>
                                             </span>
                                             <span class="dropdown-arrow">→</span>
                                         </a>
                                     </li>
                                 </div>
                                 <div class="dropdown-column">
-                                    <div class="dropdown-header">🏖️ @(isTurkish ? "İzin Yönetimi" : "Leave Management")</div>
+                                    <div class="dropdown-header">🏖️ @Localizer["LeaveManagement"]</div>
                                     <li>
-                                        <a class="dropdown-item" href="@(isTurkish ? "/rehber/izin-yonetimi" : "/guide/leave-management")">
+                                        <a class="dropdown-item" href="@(currentLang == "tr" ? "/rehber/izin-yonetimi" : currentLang == "ar" ? "/rehber/izin-yonetimi" : "/guide/leave-management")">
                                             <span class="dropdown-text">
-                                                <strong>@(isTurkish ? "İzin Yönetim Sistemi" : "Leave Management System")</strong>
-                                                <small>@(isTurkish ? "30+ izin türü desteği" : "30+ leave type support")</small>
+                                                <strong>@Localizer["LeaveManagementSystem"]</strong>
+                                                <small>@Localizer["LeaveManagementSystem_Desc"]</small>
                                             </span>
                                             <span class="dropdown-arrow">→</span>
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="@(isTurkish ? "/rehber/yillik-izin-takibi" : "/guide/annual-leave-tracking")">
+                                        <a class="dropdown-item" href="@(currentLang == "tr" ? "/rehber/yillik-izin-takibi" : currentLang == "ar" ? "/rehber/yillik-izin-takibi" : "/guide/annual-leave-tracking")">
                                             <span class="dropdown-text">
-                                                <strong>@(isTurkish ? "Yıllık İzin Takibi" : "Annual Leave Tracking")</strong>
-                                                <small>@(isTurkish ? "Bakiye ve kullanım takibi" : "Balance and usage tracking")</small>
+                                                <strong>@Localizer["AnnualLeaveTracking"]</strong>
+                                                <small>@Localizer["AnnualLeaveTracking_Desc"]</small>
                                             </span>
                                             <span class="dropdown-arrow">→</span>
                                         </a>
@@ -215,7 +217,7 @@
                     
                     <li class="nav-item">
                         <a class="nav-link nav-link-cta" asp-controller="App" asp-action="Index">
-                            @(isTurkish ? "Ücretsiz Başla" : "Start Free")
+                            @Localizer["StartFree"]
                         </a>
                     </li>
                 </ul>
@@ -224,22 +226,15 @@
                     <!-- Language Selector -->
                     <li class="nav-item dropdown">
                         <a class="nav-link lang-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown">
-                            @if (isTurkish)
-                            {
-                                <span>TR</span>
-                            }
-                            else
-                            {
-                                <span>EN</span>
-                            }
+                            <span>@Localizer["CurrentLanguageFlag"].Value</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom dropdown-lang">
                             <li>
                                 <form asp-controller="Home" asp-action="SetLanguage" method="post">
                                     <input type="hidden" name="culture" value="tr" />
                                     <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                                    <button type="submit" class="dropdown-item @(isTurkish ? "active" : "")">
-                                        Türkçe
+                                    <button type="submit" class="dropdown-item @(currentLang == "tr" ? "active" : "")">
+                                        🇹🇷 @Localizer["Turkish"]
                                     </button>
                                 </form>
                             </li>
@@ -247,8 +242,17 @@
                                 <form asp-controller="Home" asp-action="SetLanguage" method="post">
                                     <input type="hidden" name="culture" value="en" />
                                     <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                                    <button type="submit" class="dropdown-item @(!isTurkish ? "active" : "")">
-                                        English
+                                    <button type="submit" class="dropdown-item @(currentLang == "en" ? "active" : "")">
+                                        🇬🇧 @Localizer["English"]
+                                    </button>
+                                </form>
+                            </li>
+                            <li>
+                                <form asp-controller="Home" asp-action="SetLanguage" method="post">
+                                    <input type="hidden" name="culture" value="ar" />
+                                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                    <button type="submit" class="dropdown-item @(currentLang == "ar" ? "active" : "")">
+                                        🇸🇦 @Localizer["Arabic"]
                                     </button>
                                 </form>
                             </li>
@@ -259,7 +263,7 @@
                     {
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Account" asp-action="Logout">
-                                @(isTurkish ? "Çıkış" : "Logout")
+                                @Localizer["Logout"]
                             </a>
                         </li>
                     }
@@ -267,12 +271,12 @@
                     {
                         <li class="nav-item d-none d-lg-block">
                             <a class="nav-link" asp-controller="Account" asp-action="Login">
-                                @(isTurkish ? "Giriş" : "Login")
+                                @Localizer["Giriş"]
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="btn btn-nav-signup" asp-controller="Account" asp-action="Register">
-                                @(isTurkish ? "Kayıt Ol" : "Sign Up")
+                                @Localizer["SignUp"]
                             </a>
                         </li>
                     }
@@ -668,45 +672,43 @@
                                 <span class="footer-brand-text">Geldimmi</span>
                             </a>
                             <p class="footer-desc">
-                                @(isTurkish 
-                                    ? "Hastaneler ve işletmeler için akıllı nöbet planlama ve otomatik puantaj sistemi."
-                                    : "Smart shift planning and automatic timesheet system for hospitals and businesses.")
+                                @Localizer["FooterDescription"]
                             </p>
                         </div>
                     </div>
                     
                     <!-- Quick Links -->
                     <div class="col-lg-2 col-md-6 col-6">
-                        <h6 class="footer-title">@(isTurkish ? "Ürün" : "Product")</h6>
+                        <h6 class="footer-title">@Localizer["Product"]</h6>
                         <ul class="footer-links">
-                            <li><a href="/app">@(isTurkish ? "Nöbet Oluştur" : "Create Shift")</a></li>
-                            <li><a href="/app">@(isTurkish ? "Puantaj Al" : "Get Timesheet")</a></li>
+                            <li><a href="/app">@Localizer["CreateShift"]</a></li>
+                            <li><a href="/app">@Localizer["GetTimesheet"]</a></li>
                         </ul>
                     </div>
                     
                     <!-- Resources -->
                     <div class="col-lg-2 col-md-6 col-6">
-                        <h6 class="footer-title">@(isTurkish ? "Kaynaklar" : "Resources")</h6>
+                        <h6 class="footer-title">@Localizer["Resources"]</h6>
                         <ul class="footer-links">
                             <li><a href="/blog">Blog</a></li>
-                            <li><a href="/seo/nobet-listesi-olusturma">@(isTurkish ? "Nöbet Rehberi" : "Shift Guide")</a></li>
-                            <li><a href="/seo/puantaj-hesaplama">@(isTurkish ? "Puantaj Rehberi" : "Timesheet Guide")</a></li>
+                            <li><a href="/seo/nobet-listesi-olusturma">@Localizer["ShiftGuide"]</a></li>
+                            <li><a href="/seo/puantaj-hesaplama">@Localizer["TimesheetGuide"]</a></li>
                         </ul>
                     </div>
                     
                     <!-- Legal -->
                     <div class="col-lg-2 col-md-6 col-6">
-                        <h6 class="footer-title">@(isTurkish ? "Yasal" : "Legal")</h6>
+                        <h6 class="footer-title">@Localizer["Legal"]</h6>
                         <ul class="footer-links">
-                            <li><a href="/privacy">@(isTurkish ? "Gizlilik" : "Privacy")</a></li>
-                            <li><a href="/terms">@(isTurkish ? "Şartlar" : "Terms")</a></li>
+                            <li><a href="/privacy">@Localizer["Privacy"]</a></li>
+                            <li><a href="/terms">@Localizer["Terms"]</a></li>
                             <li><a href="/sitemap.xml" target="_blank">Sitemap</a></li>
                         </ul>
                     </div>
                     
                     <!-- Contact -->
                     <div class="col-lg-2 col-md-6 col-6">
-                        <h6 class="footer-title">@(isTurkish ? "İletişim" : "Contact")</h6>
+                        <h6 class="footer-title">@Localizer["Contact"]</h6>
                         <ul class="footer-links">
                             <li><a href="mailto:info@geldimmi.com">info&#64;geldimmi.com</a></li>
                         </ul>
@@ -717,11 +719,11 @@
             <div class="footer-bottom">
                 <div class="row align-items-center">
                     <div class="col-md-6 text-center text-md-start">
-                        <p class="mb-0">© 2026 Geldimmi. @(isTurkish ? "Tüm hakları saklıdır." : "All rights reserved.")</p>
+                        <p class="mb-0">© 2026 Geldimmi. @Localizer["AllRightsReserved"]</p>
                     </div>
                     <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
                         <span class="footer-made">
-                            @(isTurkish ? "Türkiye'de yapıldı" : "Made in Turkey")
+                            @Localizer["MadeInTurkey"]
                         </span>
                     </div>
                 </div>

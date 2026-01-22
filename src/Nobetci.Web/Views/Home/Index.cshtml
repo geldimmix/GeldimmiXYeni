@@ -1,12 +1,8 @@
-﻿@{
-    var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
-    ViewData["Title"] = isTurkish ? "Nöbet Çizelgesi, Mesai Takip, Puantaj & İzin Yönetimi" : "Shift Scheduling, Time Attendance, Payroll & Leave Management";
-    ViewData["MetaDescription"] = isTurkish 
-        ? "Online nöbet çizelgesi oluşturma, mesai takip sistemi, puantaj hesaplama ve izin yönetimi. Hemşire nöbet programı, vardiya planı, otomatik puantaj ve fazla mesai hesaplama. Ücretsiz başlayın!"
-        : "Online shift scheduling, time attendance tracking, payroll calculation and leave management system. Create nurse duty rosters, calculate timesheets and overtime automatically. Start free!";
-    ViewData["MetaKeywords"] = isTurkish
-        ? "nöbet çizelgesi, nöbet programı, mesai takip, puantaj sistemi, izin yönetimi, hemşire nöbet listesi, vardiya planı, fazla mesai hesaplama, gece çalışması, hafta sonu nöbeti"
-        : "shift scheduling, duty roster, time attendance, payroll system, leave management, nurse scheduling, shift planning, overtime calculation, night shift, weekend duty";
+@{
+    var currentLang = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    ViewData["Title"] = Localizer["ShiftSchedulingTimeAttendancePayrollLeaveManagement"];
+    ViewData["MetaDescription"] = Localizer["HomeMetaDescription"].Value;
+    ViewData["MetaKeywords"] = Localizer["HomeMetaKeywords"].Value;
 }
 
 @section StructuredData {
@@ -23,17 +19,17 @@
         "price": "0",
         "priceCurrency": "TRY"
     },
-    "description": "@(isTurkish ? "Nöbet çizelgesi oluşturma, mesai takip, puantaj hesaplama ve izin yönetimi sistemi" : "Shift scheduling, time attendance, payroll calculation and leave management system")",
+    "description": "@Localizer["ShiftSchedulingTimeAttendancePayrollLeaveManagement"]",
     "aggregateRating": {
         "@@type": "AggregateRating",
         "ratingValue": "4.8",
         "ratingCount": "150"
     },
     "featureList": [
-        "@(isTurkish ? "Nöbet Çizelgesi Oluşturma" : "Shift Schedule Creation")",
-        "@(isTurkish ? "Mesai Takip Sistemi" : "Time Attendance System")",
-        "@(isTurkish ? "Puantaj Hesaplama" : "Payroll Calculation")",
-        "@(isTurkish ? "İzin Yönetimi" : "Leave Management")"
+        "@Localizer["ShiftScheduleCreation"]",
+        "@Localizer["TimeAttendanceSystem"]",
+        "@Localizer["PayrollCalculation"]",
+        "@Localizer["LeaveManagementSystem"]"
     ]
 }
 </script>
@@ -46,7 +42,7 @@
     "name": "Geldimmi",
     "url": "https://geldimmi.com",
     "logo": "https://geldimmi.com/images/logo.png",
-    "description": "@(isTurkish ? "Online nöbet çizelgesi, mesai takip ve puantaj sistemi" : "Online shift scheduling, time attendance and payroll system")",
+    "description": "@Localizer["OnlineShiftSchedulingTimeAttendanceAndPayrollSystem"]",
     "sameAs": []
 }
 </script>
@@ -56,25 +52,25 @@
 {
     "@@context": "https://schema.org",
     "@@type": "HowTo",
-    "name": "@(isTurkish ? "Nöbet Çizelgesi Nasıl Oluşturulur?" : "How to Create a Shift Schedule?")",
-    "description": "@(isTurkish ? "Geldimmi ile 3 adımda nöbet çizelgesi oluşturun" : "Create shift schedule in 3 steps with Geldimmi")",
+    "name": "@Localizer["HowToCreateShiftSchedule"]",
+    "description": "@Localizer["GeldimmiIle3AdimdaNobetCizelgesi"]",
     "step": [
         {
             "@@type": "HowToStep",
-            "name": "@(isTurkish ? "Personel Ekleyin" : "Add Employees")",
-            "text": "@(isTurkish ? "Ad, unvan ve sicil numaralarını girin" : "Enter names, titles and employee IDs")",
+            "name": "@Localizer["PersonelEkleyin"]",
+            "text": "@Localizer["AdUnvanVeSicilNumaralariGirin"]",
             "position": 1
         },
         {
             "@@type": "HowToStep",
-            "name": "@(isTurkish ? "Nöbet Atayın" : "Assign Shifts")",
-            "text": "@(isTurkish ? "Takvim üzerinde tıklayarak veya otomatik atayın" : "Click on calendar or auto-assign")",
+            "name": "@Localizer["NobetAtayin"]",
+            "text": "@Localizer["TakvimUzerindeTiklayarakVeyaOtomatikAtayin"]",
             "position": 2
         },
         {
             "@@type": "HowToStep",
-            "name": "@(isTurkish ? "Puantaj Alın" : "Get Timesheet")",
-            "text": "@(isTurkish ? "Otomatik hesaplanan puantajı görün ve Excel'e aktarın" : "View auto-calculated timesheet and export to Excel")",
+            "name": "@Localizer["PuantajAlin"]",
+            "text": "@Localizer["OtomatikHesaplananPuantajiGorunVeExcelAktarin"]",
             "position": 3
         }
     ]
@@ -89,42 +85,42 @@
     "mainEntity": [
         {
             "@@type": "Question",
-            "name": "@(isTurkish ? "Geldimmi nedir?" : "What is Geldimmi?")",
+            "name": "@Localizer["GeldimmiNedir"]",
             "acceptedAnswer": {
                 "@@type": "Answer",
-                "text": "@(isTurkish ? "Geldimmi, nöbet çizelgesi oluşturma, mesai takip, puantaj hesaplama ve izin yönetimi için online bir platformdur. Hastane, klinik ve işletmeler için tasarlanmıştır." : "Geldimmi is an online platform for shift scheduling, time attendance tracking, payroll calculation and leave management. Designed for hospitals, clinics and businesses.")"
+                "text": "@Localizer["GeldimmiNobetCizelgesiOlusturmaMesaiTakipPuantajHesaplamaVeIzinYonetimiIcinOnlineBirPlatformdur"]"
             }
         },
         {
             "@@type": "Question",
-            "name": "@(isTurkish ? "Ücretsiz mi?" : "Is it free?")",
+            "name": "@Localizer["UcretsizMi"]",
             "acceptedAnswer": {
                 "@@type": "Answer",
-                "text": "@(isTurkish ? "Evet, kayıt olmadan 5 personele kadar ücretsiz kullanabilirsiniz. Kayıt olduğunuzda 10 personele kadar ücretsiz, mesai takip ve puantaj özelliklerini de kullanabilirsiniz." : "Yes, you can use it free for up to 5 employees without registration. After registration, free for up to 10 employees with full access to attendance tracking and payroll features.")"
+                "text": "@Localizer["EvetKayitOlmadan5PersoneleKadarUcretsizKullanabilirsiniz"]"
             }
         },
         {
             "@@type": "Question",
-            "name": "@(isTurkish ? "Gece mesaisi nasıl hesaplanır?" : "How is night shift calculated?")",
+            "name": "@Localizer["GeceMesaisiNasilHesaplanir"]",
             "acceptedAnswer": {
                 "@@type": "Answer",
-                "text": "@(isTurkish ? "Varsayılan olarak 22:00-06:00 arası gece çalışması olarak hesaplanır. Bu saatleri ayarlardan değiştirebilirsiniz." : "By default, work between 22:00-06:00 is calculated as night shift. You can change these hours in settings.")"
+                "text": "@Localizer["VarsayilanOlarak22000600ArasiGeceCalismasiOlarakHesaplanir"]"
             }
         },
         {
             "@@type": "Question",
-            "name": "@(isTurkish ? "Hangi izin türleri destekleniyor?" : "What leave types are supported?")",
+            "name": "@Localizer["HangiIzinTurleriDestekleniyor"]",
             "acceptedAnswer": {
                 "@@type": "Answer",
-                "text": "@(isTurkish ? "30'dan fazla izin türü: Yıllık izin, hastalık raporu, evlilik izni, babalık izni, analık izni ve daha fazlası." : "Over 30 leave types: Annual leave, sick leave, marriage leave, paternity leave, maternity leave and more.")"
+                "text": "@Localizer["30danFazlaIzinTuruYillikIzinHastalikRaporuEvlilikIznibabalikIznianalikIzniveDahaFazlasi"]"
             }
         },
         {
             "@@type": "Question",
-            "name": "@(isTurkish ? "Excel'e aktarabilir miyim?" : "Can I export to Excel?")",
+            "name": "@Localizer["ExceleAktarabilirMiyim"]",
             "acceptedAnswer": {
                 "@@type": "Answer",
-                "text": "@(isTurkish ? "Evet, nöbet çizelgesi ve puantaj raporlarını tek tıkla Excel formatında indirebilirsiniz." : "Yes, you can download shift schedules and timesheet reports in Excel format with one click.")"
+                "text": "@Localizer["EvetNobetCizelgesiVePuantajRaporlariniTekTiklaExcelFormatindaIndirebilirsiniz"]"
             }
         }
     ]
@@ -138,7 +134,7 @@
     "@@type": "WebSite",
     "name": "Geldimmi",
     "url": "https://geldimmi.com",
-    "description": "@(isTurkish ? "Online nöbet çizelgesi, mesai takip, puantaj ve izin yönetimi sistemi" : "Online shift scheduling, time attendance, payroll and leave management system")",
+    "description": "@Localizer["OnlineShiftSchedulingTimeAttendancePayrollAndLeaveManagementSystem"]",
     "inLanguage": ["tr", "en"]
 }
 </script>
@@ -1128,49 +1124,40 @@
             <div class="col-lg-6">
                 <div class="hero-content">
                     <div class="hero-label">
-                        <span class="hero-label-badge">🚀 @(isTurkish ? "Ücretsiz" : "Free")</span>
-                        <span class="hero-label-text">@(isTurkish ? "Hemen kullanmaya başlayın" : "Start using today")</span>
+                        <span class="hero-label-badge">🚀 @Localizer["Free"]</span>
+                        <span class="hero-label-text">@Localizer["StartUsingToday"]</span>
                     </div>
                     
                     <h1 class="hero-title heading-display">
-                        @if (isTurkish)
-                        {
-                            <text>Nöbet planlamayı <span class="highlight">kolaylaştırın</span></text>
-                        }
-                        else
-                        {
-                            <text>Make scheduling <span class="highlight">effortless</span></text>
-                        }
+                        @Html.Raw(Localizer["HeroTitleWithHighlight"])
                     </h1>
                     
                     <p class="hero-desc">
-                        @(isTurkish 
-                            ? "Nöbet çizelgesi oluşturun, mesai takibi yapın, puantaj hesaplayın ve izinleri yönetin. Tek platformda tüm iş gücü yönetimi."
-                            : "Create shift schedules, track attendance, calculate payroll and manage leaves. Complete workforce management in one platform.")
+                        @Localizer["HeroDesc"]
                     </p>
                     
                     <div class="hero-actions">
                         <a href="/app" class="btn-primary-hero">
-                            @(isTurkish ? "Hemen Başla" : "Get Started")
+                            @Localizer["GetStarted"]
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </a>
                         <a href="#products" class="btn-secondary-hero">
-                            @(isTurkish ? "Ürünleri Keşfet" : "Explore Products")
+                            @Localizer["ExploreProducts"]
                         </a>
                     </div>
                     
                     <div class="hero-trust">
                         <div class="trust-item">
                             <span class="trust-icon">✓</span>
-                            @(isTurkish ? "Ücretsiz başlayın" : "Start free")
+                            @Localizer["StartFree"]
                         </div>
                         <div class="trust-item">
                             <span class="trust-icon">✓</span>
-                            @(isTurkish ? "Kurulum gerektirmez" : "No installation")
+                            @Localizer["NoInstallation"]
                         </div>
                         <div class="trust-item">
                             <span class="trust-icon">✓</span>
-                            @(isTurkish ? "30+ izin türü" : "30+ leave types")
+                            @Localizer["30LeaveTypes"]
                         </div>
                         <div class="trust-item">
                             <span class="trust-icon">✓</span>
@@ -1184,19 +1171,19 @@
                 <div class="hero-visual">
                     <div class="hero-card">
                         <div class="card-header">
-                            <span class="card-title">@(isTurkish ? "Nöbet Listesi" : "Shift Schedule")</span>
-                            <span class="card-badge">@(isTurkish ? "Ocak 2026" : "Jan 2026")</span>
+                            <span class="card-title">@Localizer["NobetListesi"]</span>
+                            <span class="card-badge">@Localizer["Ocak2026"]</span>
                         </div>
                         <div class="card-body">
                             <div class="schedule-grid">
-                                <div class="sg-header name">@(isTurkish ? "Personel" : "Staff")</div>
-                                <div class="sg-header">@(isTurkish ? "Pzt" : "Mon")</div>
-                                <div class="sg-header">@(isTurkish ? "Sal" : "Tue")</div>
-                                <div class="sg-header">@(isTurkish ? "Çar" : "Wed")</div>
-                                <div class="sg-header">@(isTurkish ? "Per" : "Thu")</div>
-                                <div class="sg-header">@(isTurkish ? "Cum" : "Fri")</div>
-                                <div class="sg-header weekend">@(isTurkish ? "Cmt" : "Sat")</div>
-                                <div class="sg-header weekend">@(isTurkish ? "Paz" : "Sun")</div>
+                                <div class="sg-header name">@Localizer["Personel"]</div>
+                                <div class="sg-header">@Localizer["Pzt"]</div>
+                                <div class="sg-header">@Localizer["Sal"]</div>
+                                <div class="sg-header">@Localizer["Car"]</div>
+                                <div class="sg-header">@Localizer["Per"]</div>
+                                <div class="sg-header">@Localizer["Cum"]</div>
+                                <div class="sg-header weekend">@Localizer["Cmt"]</div>
+                                <div class="sg-header weekend">@Localizer["Paz"]</div>
                                 
                                 <div class="sg-cell name">Ayşe Y.</div>
                                 <div class="sg-cell"><span class="shift-tag morning">08-16</span></div>
@@ -1232,7 +1219,7 @@
                         <div class="stat-icon">📊</div>
                         <div>
                             <div class="stat-value">156s</div>
-                            <div class="stat-label">@(isTurkish ? "Toplam Saat" : "Total Hours")</div>
+                            <div class="stat-label">@Localizer["TotalHours"]</div>
                         </div>
                     </div>
                     
@@ -1240,7 +1227,7 @@
                         <div class="stat-icon">🌙</div>
                         <div>
                             <div class="stat-value">48s</div>
-                            <div class="stat-label">@(isTurkish ? "Gece Saati" : "Night Hours")</div>
+                            <div class="stat-label">@Localizer["NightHours"]</div>
                         </div>
                     </div>
                 </div>
@@ -1253,14 +1240,12 @@
 <section id="products" class="products-section">
     <div class="container">
         <div class="products-header">
-            <span class="section-eyebrow">@(isTurkish ? "Ürünlerimiz" : "Our Products")</span>
+            <span class="section-eyebrow">@Localizer["OurProducts"]</span>
             <h2 class="section-heading heading-display">
-                @(isTurkish ? "İş gücü yönetimi için kapsamlı çözümler" : "Comprehensive solutions for workforce management")
+                @Localizer["ComprehensiveSolutionsForWorkforceManagement"]
             </h2>
             <p class="section-text">
-                @(isTurkish 
-                    ? "Nöbet planlama, mesai takip, puantaj ve izin yönetimi - hepsi tek platformda."
-                    : "Shift planning, time attendance, payroll and leave management - all in one platform.")
+                @Localizer["ShiftPlanningTimeAttendancePayrollAndLeaveManagementAllInOnePlatform"]
             </p>
         </div>
         
@@ -1269,22 +1254,20 @@
             <div class="product-card" id="shift-scheduling">
                 <span class="product-number">01</span>
                 <div class="product-icon">📅</div>
-                <div class="product-badge">@(isTurkish ? "En Popüler" : "Most Popular")</div>
-                <h3 class="product-title">@(isTurkish ? "Nöbet Çizelgesi" : "Shift Scheduling")</h3>
+                <div class="product-badge">@Localizer["MostPopular"]</div>
+                <h3 class="product-title">@Localizer["ShiftScheduling"]</h3>
                 <p class="product-desc">
-                    @(isTurkish 
-                        ? "Dakikalar içinde profesyonel nöbet çizelgesi oluşturun. Hemşire, doktor veya personel nöbet listesi hazırlamak artık çok kolay."
-                        : "Create professional shift schedules in minutes. Nurse, doctor or staff duty roster preparation is now very easy.")
+                    @Localizer["CreateProfessionalShiftSchedulesInMinutes"]
                 </p>
                 <ul class="product-features">
-                    <li>@(isTurkish ? "Sürükle-bırak ile kolay atama" : "Drag & drop easy assignment")</li>
-                    <li>@(isTurkish ? "Özelleştirilebilir vardiya şablonları" : "Customizable shift templates")</li>
-                    <li>@(isTurkish ? "Ertesi güne sarkan nöbetler" : "Overnight shift support")</li>
-                    <li>@(isTurkish ? "Adil nöbet dağıtımı" : "Fair shift distribution")</li>
-                    <li>@(isTurkish ? "Excel'e aktarma" : "Excel export")</li>
+                    <li>@Localizer["DragDropEasyAssignment"]</li>
+                    <li>@Localizer["CustomizableShiftTemplates"]</li>
+                    <li>@Localizer["OvernightShiftSupport"]</li>
+                    <li>@Localizer["FairShiftDistribution"]</li>
+                    <li>@Localizer["ExcelExport"]</li>
                 </ul>
                 <a href="/app" class="product-btn">
-                    @(isTurkish ? "Hemen Başla" : "Get Started")
+                    @Localizer["GetStarted"]
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </a>
             </div>
@@ -1293,21 +1276,19 @@
             <div class="product-card" id="time-attendance">
                 <span class="product-number">02</span>
                 <div class="product-icon">🕐</div>
-                <h3 class="product-title">@(isTurkish ? "Mesai Takip" : "Time Attendance")</h3>
+                <h3 class="product-title">@Localizer["TimeAttendance"]</h3>
                 <p class="product-desc">
-                    @(isTurkish 
-                        ? "Personelin giriş-çıkış saatlerini kaydedin. Planlanan nöbet ile gerçek mesaiyi karşılaştırın, farkları anında görün."
-                        : "Record employee check-in/check-out times. Compare planned shifts with actual attendance, see differences instantly.")
+                    @Localizer["RecordEmployeeCheckInCheckOutTimes"]
                 </p>
                 <ul class="product-features">
-                    <li>@(isTurkish ? "Manuel veya API ile kayıt" : "Manual or API recording")</li>
-                    <li>@(isTurkish ? "Gece vardiyası desteği" : "Night shift support")</li>
-                    <li>@(isTurkish ? "Mola süresi hesaplama" : "Break time calculation")</li>
-                    <li>@(isTurkish ? "JWT tabanlı API entegrasyonu" : "JWT-based API integration")</li>
-                    <li>@(isTurkish ? "Gerçek zamanlı izleme" : "Real-time monitoring")</li>
+                    <li>@Localizer["ManualOrAPIRecording"]</li>
+                    <li>@Localizer["NightShiftSupport"]</li>
+                    <li>@Localizer["BreakTimeCalculation"]</li>
+                    <li>@Localizer["JWTBasedAPIIntegration"]</li>
+                    <li>@Localizer["RealTimeMonitoring"]</li>
                 </ul>
                 <a href="/app/attendance" class="product-btn">
-                    @(isTurkish ? "Keşfet" : "Explore")
+                    @Localizer["Explore"]
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </a>
             </div>
@@ -1316,21 +1297,19 @@
             <div class="product-card" id="payroll">
                 <span class="product-number">03</span>
                 <div class="product-icon">📊</div>
-                <h3 class="product-title">@(isTurkish ? "Puantaj Sistemi" : "Payroll System")</h3>
+                <h3 class="product-title">@Localizer["PayrollSystem"]</h3>
                 <p class="product-desc">
-                    @(isTurkish 
-                        ? "Otomatik puantaj hesaplama. Normal mesai, gece çalışması, hafta sonu ve fazla mesai ayrı ayrı hesaplanıp raporlanır."
-                        : "Automatic payroll calculation. Regular hours, night work, weekends and overtime calculated and reported separately.")
+                    @Localizer["AutomaticPayrollCalculation"]
                 </p>
                 <ul class="product-features">
-                    <li>@(isTurkish ? "Gece mesai hesaplama (22:00-06:00)" : "Night hours calculation (22:00-06:00)")</li>
-                    <li>@(isTurkish ? "Fazla mesai takibi" : "Overtime tracking")</li>
-                    <li>@(isTurkish ? "30 günlük detaylı döküm" : "30-day detailed breakdown")</li>
-                    <li>@(isTurkish ? "Puantajı kaydetme ve düzenleme" : "Save and edit payroll")</li>
-                    <li>@(isTurkish ? "Excel raporu" : "Excel report")</li>
+                    <li>@Localizer["NightHoursCalculation22000600"]</li>
+                    <li>@Localizer["OvertimeTracking"]</li>
+                    <li>@Localizer["30DayDetailedBreakdown"]</li>
+                    <li>@Localizer["SaveAndEditPayroll"]</li>
+                    <li>@Localizer["ExcelReport"]</li>
                 </ul>
                 <a href="/app/payroll" class="product-btn">
-                    @(isTurkish ? "Keşfet" : "Explore")
+                    @Localizer["Explore"]
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </a>
             </div>
@@ -1339,21 +1318,19 @@
             <div class="product-card" id="leave-management">
                 <span class="product-number">04</span>
                 <div class="product-icon">🏖️</div>
-                <h3 class="product-title">@(isTurkish ? "İzin Yönetimi" : "Leave Management")</h3>
+                <h3 class="product-title">@Localizer["LeaveManagementSystem"]</h3>
                 <p class="product-desc">
-                    @(isTurkish 
-                        ? "Yıllık izin, hastalık raporu, evlilik izni, doğum izni ve daha fazlası. Tüm izin türlerini tek yerden yönetin."
-                        : "Annual leave, sick leave, marriage leave, maternity leave and more. Manage all leave types from one place.")
+                    @Localizer["AnnualLeaveSickLeaveMarriageLeaveMaternityLeaveAndMore"]
                 </p>
                 <ul class="product-features">
-                    <li>@(isTurkish ? "30+ izin türü desteği" : "30+ leave types supported")</li>
-                    <li>@(isTurkish ? "Takvim üzerinde izin atama" : "Calendar-based leave assignment")</li>
-                    <li>@(isTurkish ? "Otomatik saat düşümü" : "Automatic hour deduction")</li>
-                    <li>@(isTurkish ? "Ücretli/ücretsiz izin ayrımı" : "Paid/unpaid leave distinction")</li>
-                    <li>@(isTurkish ? "Puantaja otomatik yansıma" : "Auto-reflect in payroll")</li>
+                    <li>@Localizer["30LeaveTypesSupported"]</li>
+                    <li>@Localizer["CalendarBasedLeaveAssignment"]</li>
+                    <li>@Localizer["AutomaticHourDeduction"]</li>
+                    <li>@Localizer["PaidUnpaidLeaveDistinction"]</li>
+                    <li>@Localizer["AutoReflectInPayroll"]</li>
                 </ul>
                 <a href="/app" class="product-btn">
-                    @(isTurkish ? "Keşfet" : "Explore")
+                    @Localizer["Explore"]
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </a>
             </div>
@@ -1366,14 +1343,12 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-5">
-                <span class="section-eyebrow">@(isTurkish ? "Özellikler" : "Features")</span>
+                <span class="section-eyebrow">@Localizer["Features"]</span>
                 <h2 class="section-heading heading-display">
-                    @(isTurkish ? "İhtiyacınız olan her şey tek bir yerde" : "Everything you need in one place")
+                    @Localizer["EverythingYouNeedInOnePlace"]
                 </h2>
                 <p class="section-text">
-                    @(isTurkish 
-                        ? "Nöbet planlamadan puantaj hesaplamaya, tüm süreçlerinizi kolaylaştırın."
-                        : "Simplify all your processes from shift planning to timesheet calculation.")
+                    @Localizer["SimplifyAllYourProcessesFromShiftPlanningToTimesheetCalculation"]
                 </p>
             </div>
         </div>
@@ -1381,38 +1356,38 @@
         <div class="features-grid">
             <div class="feature-box">
                 <span class="feature-emoji">⚡</span>
-                <h3 class="feature-name">@(isTurkish ? "Hızlı Nöbet Oluşturma" : "Quick Scheduling")</h3>
-                <p class="feature-desc">@(isTurkish ? "Hazır şablonlarla saniyeler içinde nöbet listesi oluşturun." : "Create schedules in seconds with ready templates.")</p>
+                <h3 class="feature-name">@Localizer["Feature_QuickScheduling"]</h3>
+                <p class="feature-desc">@Localizer["Feature_QuickScheduling_Desc"]</p>
             </div>
             
             <div class="feature-box">
                 <span class="feature-emoji">⚖️</span>
-                <h3 class="feature-name">@(isTurkish ? "Adil Dağıtım" : "Fair Distribution")</h3>
-                <p class="feature-desc">@(isTurkish ? "Akıllı algoritma ile gece ve hafta sonu nöbetlerini adil dağıtın." : "Distribute night and weekend shifts fairly with smart algorithm.")</p>
+                <h3 class="feature-name">@Localizer["Feature_FairDistribution"]</h3>
+                <p class="feature-desc">@Localizer["Feature_FairDistribution_Desc"]</p>
             </div>
             
             <div class="feature-box">
                 <span class="feature-emoji">📊</span>
-                <h3 class="feature-name">@(isTurkish ? "Otomatik Puantaj" : "Auto Timesheet")</h3>
-                <p class="feature-desc">@(isTurkish ? "Normal, gece, hafta sonu ve fazla mesai ayrı hesaplanır." : "Regular, night, weekend and overtime calculated separately.")</p>
+                <h3 class="feature-name">@Localizer["Feature_AutoTimesheet"]</h3>
+                <p class="feature-desc">@Localizer["Feature_AutoTimesheet_Desc"]</p>
             </div>
             
             <div class="feature-box">
                 <span class="feature-emoji">🌙</span>
-                <h3 class="feature-name">@(isTurkish ? "Gece & Fazla Mesai" : "Night & Overtime")</h3>
-                <p class="feature-desc">@(isTurkish ? "Gece çalışma saatleri ve fazla mesailer otomatik hesaplanır." : "Night hours and overtime calculated automatically.")</p>
+                <h3 class="feature-name">@Localizer["NightOvertime"]</h3>
+                <p class="feature-desc">@Localizer["NightHoursAndOvertimeCalculatedAutomatically"]</p>
             </div>
             
             <div class="feature-box">
                 <span class="feature-emoji">🎉</span>
-                <h3 class="feature-name">@(isTurkish ? "Tatil Yönetimi" : "Holiday Management")</h3>
-                <p class="feature-desc">@(isTurkish ? "Resmi tatiller ve personel izinlerini kolayca tanımlayın." : "Define holidays and employee leaves easily.")</p>
+                <h3 class="feature-name">@Localizer["HolidayManagement"]</h3>
+                <p class="feature-desc">@Localizer["DefineHolidaysAndEmployeeLeavesEasily"]</p>
             </div>
             
             <div class="feature-box">
                 <span class="feature-emoji">📥</span>
-                <h3 class="feature-name">Excel Export</h3>
-                <p class="feature-desc">@(isTurkish ? "Nöbet listesi ve puantajı tek tıkla Excel'e aktarın." : "Export schedules and timesheets to Excel with one click.")</p>
+                <h3 class="feature-name">@Localizer["Feature_ExcelExport"]</h3>
+                <p class="feature-desc">@Localizer["Feature_ExcelExport_Desc"]</p>
             </div>
         </div>
     </div>
@@ -1422,8 +1397,8 @@
 <section class="steps-section">
     <div class="container">
         <div class="text-center">
-            <span class="section-eyebrow">@(isTurkish ? "Nasıl Çalışır?" : "How It Works?")</span>
-            <h2 class="section-heading heading-display">@(isTurkish ? "3 adımda başlayın" : "Get started in 3 steps")</h2>
+            <span class="section-eyebrow">@Localizer["HowItWorks"]</span>
+            <h2 class="section-heading heading-display">@Localizer["GetStartedIn3Steps"]</h2>
         </div>
         
         <div class="steps-row">
@@ -1432,8 +1407,8 @@
                     👥
                     <span class="step-badge">1</span>
                 </div>
-                <h4 class="step-name">@(isTurkish ? "Personel Ekleyin" : "Add Employees")</h4>
-                <p class="step-text">@(isTurkish ? "Ad, unvan ve sicil numaralarını girin. Excel'den yapıştırabilirsiniz." : "Enter names, titles and IDs. Paste from Excel.")</p>
+                <h4 class="step-name">@Localizer["PersonelEkleyin"]</h4>
+                <p class="step-text">@Localizer["EnterNamesTitlesAndIDs"]</p>
             </div>
             
             <div class="step-box">
@@ -1441,8 +1416,8 @@
                     📅
                     <span class="step-badge">2</span>
                 </div>
-                <h4 class="step-name">@(isTurkish ? "Nöbet Atayın" : "Assign Shifts")</h4>
-                <p class="step-text">@(isTurkish ? "Takvim üzerinde tıklayarak veya otomatik atayın." : "Click on calendar or auto-assign with algorithm.")</p>
+                <h4 class="step-name">@Localizer["NobetAtayin"]</h4>
+                <p class="step-text">@Localizer["TakvimUzerindeTiklayarakVeyaOtomatikAtayin"]</p>
             </div>
             
             <div class="step-box">
@@ -1450,8 +1425,8 @@
                     📊
                     <span class="step-badge">3</span>
                 </div>
-                <h4 class="step-name">@(isTurkish ? "Puantaj Alın" : "Get Timesheet")</h4>
-                <p class="step-text">@(isTurkish ? "Otomatik hesaplanan puantajı görün ve Excel'e aktarın." : "View auto-calculated timesheet and export.")</p>
+                <h4 class="step-name">@Localizer["PuantajAlin"]</h4>
+                <p class="step-text">@Localizer["OtomatikHesaplananPuantajiGorunVeExcelAktarin"]</p>
             </div>
         </div>
     </div>
@@ -1464,18 +1439,18 @@
             <div class="col-lg-7">
                 <div class="ts-card">
                     <div class="ts-head">
-                        <h4>@(isTurkish ? "Puantaj Raporu — Ocak 2026" : "Timesheet Report — January 2026")</h4>
+                        <h4>@Localizer["TimesheetReportJanuary2026"]</h4>
                     </div>
                     <div class="ts-body">
                         <table class="ts-table">
                             <thead>
                                 <tr>
-                                    <th>@(isTurkish ? "Personel" : "Employee")</th>
-                                    <th>@(isTurkish ? "Normal" : "Regular")</th>
-                                    <th>@(isTurkish ? "Gece" : "Night")</th>
-                                    <th>@(isTurkish ? "H.Sonu" : "Weekend")</th>
-                                    <th>@(isTurkish ? "F.Mesai" : "OT")</th>
-                                    <th>@(isTurkish ? "Toplam" : "Total")</th>
+                                    <th>@Localizer["Personel"]</th>
+                                    <th>@Localizer["Normal"]</th>
+                                    <th>@Localizer["NightHours"]</th>
+                                    <th>@Localizer["Weekend"]</th>
+                                    <th>@Localizer["OT"]</th>
+                                    <th>@Localizer["Total"]</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1507,42 +1482,42 @@
                         </table>
                     </div>
                     <div class="ts-foot">
-                        <button class="btn-excel">📥 @(isTurkish ? "Excel'e Aktar" : "Export Excel")</button>
+                        <button class="btn-excel">📥 @Localizer["Feature_ExcelExport"]</button>
                     </div>
                 </div>
             </div>
             
             <div class="col-lg-5">
-                <span class="section-eyebrow">@(isTurkish ? "Puantaj Sistemi" : "Timesheet System")</span>
-                <h2 class="section-heading heading-display">@(isTurkish ? "Detaylı puantaj hesaplama" : "Detailed timesheet calculation")</h2>
+                <span class="section-eyebrow">@Localizer["TimesheetSystem"]</span>
+                <h2 class="section-heading heading-display">@Localizer["DetailedTimesheetCalculation"]</h2>
                 
                 <div class="ts-features-list">
                     <div class="tsf-item">
                         <div class="tsf-icon">☀️</div>
                         <div class="tsf-content">
-                            <h5>@(isTurkish ? "Normal Çalışma" : "Regular Hours")</h5>
-                            <p>@(isTurkish ? "Standart mesai saatleri" : "Standard working hours")</p>
+                            <h5>@Localizer["RegularHours"]</h5>
+                            <p>@Localizer["StandardWorkingHours"]</p>
                         </div>
                     </div>
                     <div class="tsf-item">
                         <div class="tsf-icon">🌙</div>
                         <div class="tsf-content">
-                            <h5>@(isTurkish ? "Gece Çalışması" : "Night Hours")</h5>
-                            <p>@(isTurkish ? "20:00 - 06:00 arası" : "Between 20:00 - 06:00")</p>
+                            <h5>@Localizer["NightHours"]</h5>
+                            <p>@Localizer["Between20000600"]</p>
                         </div>
                     </div>
                     <div class="tsf-item">
                         <div class="tsf-icon">📅</div>
                         <div class="tsf-content">
-                            <h5>@(isTurkish ? "Hafta Sonu" : "Weekend Hours")</h5>
-                            <p>@(isTurkish ? "Cumartesi ve Pazar" : "Saturday and Sunday")</p>
+                            <h5>@Localizer["WeekendHours"]</h5>
+                            <p>@Localizer["SaturdayAndSunday"]</p>
                         </div>
                     </div>
                     <div class="tsf-item">
                         <div class="tsf-icon">⏰</div>
                         <div class="tsf-content">
-                            <h5>@(isTurkish ? "Fazla Mesai" : "Overtime")</h5>
-                            <p>@(isTurkish ? "Günlük veya aylık hesaplama" : "Daily or monthly calculation")</p>
+                            <h5>@Localizer["Overtime"]</h5>
+                            <p>@Localizer["DailyOrMonthlyCalculation"]</p>
                         </div>
                     </div>
                 </div>
@@ -1555,91 +1530,79 @@
 <section id="faq" class="faq-section">
     <div class="container">
         <div class="faq-header">
-            <span class="section-eyebrow">@(isTurkish ? "Sıkça Sorulan Sorular" : "Frequently Asked Questions")</span>
-            <h2 class="section-heading heading-display">@(isTurkish ? "Merak Edilenler" : "Common Questions")</h2>
+            <span class="section-eyebrow">@Localizer["FrequentlyAskedQuestions"]</span>
+            <h2 class="section-heading heading-display">@Localizer["CommonQuestions"]</h2>
         </div>
         
         <div class="faq-list">
             <div class="faq-item">
                 <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
-                    <h4>@(isTurkish ? "Geldimmi nedir?" : "What is Geldimmi?")</h4>
+                    <h4>@Localizer["GeldimmiNedir"]</h4>
                     <span class="faq-icon">+</span>
                 </div>
                 <div class="faq-answer">
                     <div class="faq-answer-inner">
-                        @(isTurkish 
-                            ? "Geldimmi, nöbet çizelgesi oluşturma, mesai takip, puantaj hesaplama ve izin yönetimi için online bir platformdur. Hastane, klinik, eczane ve diğer işletmeler için tasarlanmıştır. Hemşire nöbet programı, doktor vardiya planı ve personel çalışma çizelgesi oluşturmak artık çok kolay."
-                            : "Geldimmi is an online platform for shift scheduling, time attendance tracking, payroll calculation and leave management. Designed for hospitals, clinics, pharmacies and other businesses. Creating nurse duty schedules, doctor shift plans and staff work schedules is now very easy.")
+                        @Localizer["GeldimmiNobetCizelgesiOlusturmaMesaiTakipPuantajHesaplamaVeIzinYonetimiIcinOnlineBirPlatformdurHastaneKlinikEczaneVeDigerIsletmelerIcinTasarlanmistir"]
                     </div>
                 </div>
             </div>
             
             <div class="faq-item">
                 <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
-                    <h4>@(isTurkish ? "Ücretsiz mi?" : "Is it free?")</h4>
+                    <h4>@Localizer["UcretsizMi"]</h4>
                     <span class="faq-icon">+</span>
                 </div>
                 <div class="faq-answer">
                     <div class="faq-answer-inner">
-                        @(isTurkish 
-                            ? "Evet, kayıt olmadan 5 personele kadar ücretsiz kullanabilirsiniz. Google hesabınızla kayıt olduğunuzda 10 personele kadar ücretsiz ve mesai takip, puantaj özelliklerini de kullanabilirsiniz. Kredi kartı gerekmez, deneme süresi yoktur."
-                            : "Yes, you can use it free for up to 5 employees without registration. When you sign up with your Google account, it's free for up to 10 employees with full access to attendance tracking and payroll features. No credit card required, no trial period.")
+                        @Localizer["EvetKayitOlmadan5PersoneleKadarUcretsizKullanabilirsinizGoogleHesabinizlaKayitOldugunuzda10PersoneleKadarUcretsizVeMesaiTakipPuantajOzellikleriniDeKullanabilirsiniz"]
                     </div>
                 </div>
             </div>
             
             <div class="faq-item">
                 <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
-                    <h4>@(isTurkish ? "Gece mesaisi nasıl hesaplanır?" : "How is night shift calculated?")</h4>
+                    <h4>@Localizer["GeceMesaisiNasilHesaplanir"]</h4>
                     <span class="faq-icon">+</span>
                 </div>
                 <div class="faq-answer">
                     <div class="faq-answer-inner">
-                        @(isTurkish 
-                            ? "Varsayılan olarak 22:00-06:00 arası gece çalışması olarak hesaplanır. Bu saatleri organizasyon ayarlarından istediğiniz şekilde değiştirebilirsiniz. Gece saatleri puantajda ayrı olarak gösterilir."
-                            : "By default, work between 22:00-06:00 is calculated as night shift. You can change these hours in organization settings as you wish. Night hours are shown separately in the timesheet.")
+                        @Localizer["VarsayilanOlarak22000600ArasiGeceCalismasiOlarakHesaplanir"]
                     </div>
                 </div>
             </div>
             
             <div class="faq-item">
                 <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
-                    <h4>@(isTurkish ? "Hangi izin türleri destekleniyor?" : "What leave types are supported?")</h4>
+                    <h4>@Localizer["HangiIzinTurleriDestekleniyor"]</h4>
                     <span class="faq-icon">+</span>
                 </div>
                 <div class="faq-answer">
                     <div class="faq-answer-inner">
-                        @(isTurkish 
-                            ? "30'dan fazla izin türü desteklenmektedir: Yıllık ücretli izin, hastalık raporu, evlilik izni, babalık izni, analık izni (doğum öncesi/sonrası), süt izni, refakat izni, eğitim izni, askerlik izni ve daha fazlası. Tüm izin türleri Türkçe ve İngilizce olarak görüntülenebilir."
-                            : "Over 30 leave types are supported: Annual paid leave, sick leave, marriage leave, paternity leave, maternity leave (prenatal/postnatal), nursing leave, accompanying leave, education leave, military leave and more. All leave types can be displayed in Turkish and English.")
+                        @Localizer["30danFazlaIzinTuruDesteklenmektedirYillikUcretliIzinHastalikRaporuEvlilikIznibabalikIznianalikIznidogumOncesisonrasiSutIznirefakatIzniegitimIzniaskerlikIzniveDahaFazlasi"]
                     </div>
                 </div>
             </div>
             
             <div class="faq-item">
                 <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
-                    <h4>@(isTurkish ? "Excel'e aktarabilir miyim?" : "Can I export to Excel?")</h4>
+                    <h4>@Localizer["ExceleAktarabilirMiyim"]</h4>
                     <span class="faq-icon">+</span>
                 </div>
                 <div class="faq-answer">
                     <div class="faq-answer-inner">
-                        @(isTurkish 
-                            ? "Evet, nöbet çizelgesi ve puantaj raporlarını tek tıkla Excel formatında (.xlsx) indirebilirsiniz. Excel dosyasında tüm detaylar (gece saati, hafta sonu, fazla mesai, 30 günlük döküm) yer alır."
-                            : "Yes, you can download shift schedules and timesheet reports in Excel format (.xlsx) with one click. The Excel file includes all details (night hours, weekend, overtime, 30-day breakdown).")
+                        @Localizer["EvetNobetCizelgesiVePuantajRaporlariniTekTiklaExcelFormatindaxlsxIndirebilirsiniz"]
                     </div>
                 </div>
             </div>
             
             <div class="faq-item">
                 <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
-                    <h4>@(isTurkish ? "Mobil uygulaması var mı?" : "Is there a mobile app?")</h4>
+                    <h4>@Localizer["IsThereAMobileApp"]</h4>
                     <span class="faq-icon">+</span>
                 </div>
                 <div class="faq-answer">
                     <div class="faq-answer-inner">
-                        @(isTurkish 
-                            ? "Web uygulaması mobil uyumlu olarak tasarlanmıştır. Telefonunuzdan veya tabletinizden rahatlıkla kullanabilirsiniz. Ayrıca API desteğimiz sayesinde kendi mobil uygulamanızı entegre edebilirsiniz."
-                            : "The web application is designed to be mobile-friendly. You can easily use it from your phone or tablet. Additionally, with our API support, you can integrate your own mobile application.")
+                        @Localizer["WebApplicationIsMobileFriendly"]
                     </div>
                 </div>
             </div>
@@ -1650,10 +1613,10 @@
 <!-- CTA Section -->
 <section class="cta">
     <div class="container">
-        <h2 class="cta-heading heading-display">@(isTurkish ? "Hemen ücretsiz başlayın" : "Start free today")</h2>
-        <p class="cta-text">@(isTurkish ? "Kayıt olmadan 5 personele kadar, kayıtlı kullanıcılara 10 personele kadar ücretsiz. Kredi kartı gerekmez." : "Free for up to 5 employees without registration, 10 employees for registered users. No credit card required.")</p>
+        <h2 class="cta-heading heading-display">@Localizer["StartFreeToday"]</h2>
+        <p class="cta-text">@Localizer["FreeForUpTo5EmployeesWithoutRegistration"]</p>
         <a href="/app" class="btn-cta">
-            @(isTurkish ? "Hemen Başla" : "Get Started")
+            @Localizer["GetStarted"]
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
     </div>

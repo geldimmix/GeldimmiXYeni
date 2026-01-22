@@ -125,7 +125,8 @@
 
 <script>
 function deleteAdmin(id, username) {
-    if (confirm('Admin kullanıcı "' + username + '" silinecek. Emin misiniz?')) {
+    const confirmMessage = '@Html.Raw(Localizer["AdminUserWillBeDeleted"].Value.Replace("\"", "\\\""))'.replace('{0}', username);
+    if (confirm(confirmMessage)) {
         fetch('/admin/admins/delete/' + id, {
             method: 'POST',
             headers: {
@@ -137,11 +138,11 @@ function deleteAdmin(id, username) {
             if (data.success) {
                 location.reload();
             } else {
-                alert(data.error || 'Silme işlemi başarısız.');
+                alert(data.error || '@Localizer["DeleteFailed"].Value');
             }
         })
         .catch(err => {
-            alert('Bir hata oluştu.');
+            alert('@Localizer["AnErrorOccurred"].Value');
         });
     }
 }

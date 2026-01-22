@@ -1,12 +1,18 @@
 @model AttendanceViewModel
 @{
-    var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
-    ViewData["Title"] = isTurkish ? "Mesai Takip" : "Attendance";
+    var currentLang = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    ViewData["Title"] = Localizer["TimeAttendance"];
     Layout = "_AppLayout";
     
-    var dayNames = isTurkish 
-        ? new[] { "Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt" }
-        : new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+    var dayNames = new[] {
+        Localizer["Paz"].Value,
+        Localizer["Pzt"].Value,
+        Localizer["Sal"].Value,
+        Localizer["Car"].Value,
+        Localizer["Per"].Value,
+        Localizer["Cum"].Value,
+        Localizer["Cmt"].Value
+    };
         
     // Get shift templates for the modal
     var shiftTemplates = ViewBag.ShiftTemplates as List<Nobetci.Web.Data.Entities.ShiftTemplate> ?? new List<Nobetci.Web.Data.Entities.ShiftTemplate>();
@@ -537,7 +543,7 @@
 
 <div class="att-page">
     <div class="att-header">
-        <h1 class="att-title">🕐 @(isTurkish ? "Mesai Takip" : "Attendance")</h1>
+        <h1 class="att-title">🕐 @Localizer["TimeAttendance"]</h1>
         
         <div class="att-nav">
             <div class="month-picker">
@@ -545,7 +551,7 @@
                 <span class="month-text">@Model.MonthName</span>
                 <a href="@Url.Action("Attendance", new { year = Model.SelectedMonth == 12 ? Model.SelectedYear + 1 : Model.SelectedYear, month = Model.SelectedMonth == 12 ? 1 : Model.SelectedMonth + 1 })">›</a>
             </div>
-            <a href="@Url.Action("Index", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="btn-back">← @(isTurkish ? "Takvim" : "Calendar")</a>
+            <a href="@Url.Action("Index", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="btn-back">← @Localizer["Calendar"]</a>
         </div>
     </div>
 
@@ -556,7 +562,7 @@
                 <table class="att-table">
                     <thead>
                         <tr>
-                            <th class="emp-col">@(isTurkish ? "Personel" : "Employee")</th>
+                            <th class="emp-col">@Localizer["Employees"]</th>
                             @for (int day = 1; day <= Model.DaysInMonth; day++)
                             {
                                 var date = new DateOnly(Model.SelectedYear, Model.SelectedMonth, day);
@@ -568,7 +574,7 @@
                                     <div class="day-name">@dayNames[(int)date.DayOfWeek]</div>
                                 </th>
                             }
-                            <th style="min-width:70px;">@(isTurkish ? "Toplam" : "Total")</th>
+                            <th style="min-width:70px;">@Localizer["Total"]</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -683,7 +689,7 @@
                                 }
                                 <td class="summary-cell">
                                     <div class="summary-hours">@totalWorked.ToString("0.#")</div>
-                                    <div class="summary-days">@daysWorked @(isTurkish ? "gün" : "days")</div>
+                                    <div class="summary-days">@daysWorked @Localizer["Days"]</div>
                                 </td>
                             </tr>
                         }
@@ -696,9 +702,9 @@
     {
         <div class="empty-box">
             <div style="font-size:3rem;">👤</div>
-            <h3>@(isTurkish ? "Henüz personel yok" : "No employees yet")</h3>
-            <p>@(isTurkish ? "Mesai takibi için önce personel ekleyin." : "Add employees first.")</p>
-            <a href="@Url.Action("Index")" class="btn btn-save">@(isTurkish ? "Takvime Git" : "Go to Calendar")</a>
+            <h3>@Localizer["NoEmployeesYet"]</h3>
+            <p>@Localizer["AddEmployeesFirst"]</p>
+            <a href="@Url.Action("Index")" class="btn btn-save">@Localizer["GoToCalendar"]</a>
         </div>
     }
 </div>
@@ -707,7 +713,7 @@
 <div class="modal-overlay" id="modal">
     <div class="modal-box">
         <div class="modal-header">
-            <h3 id="modalTitle">@(isTurkish ? "Mesai Kaydı" : "Attendance")</h3>
+            <h3 id="modalTitle">@Localizer["TimeAttendance"]</h3>
             <button class="modal-close" onclick="closeModal()">×</button>
         </div>
         
@@ -718,7 +724,7 @@
             
             <!-- Şablon Seçimi -->
             <div class="template-section">
-                <label class="template-label">@(isTurkish ? "Şablondan Ata" : "Apply Template")</label>
+                <label class="template-label">@Localizer["ApplyTemplate"]</label>
                 <div class="template-btns" id="templateBtns">
                     @foreach (var tpl in shiftTemplates.Where(t => t.IsActive))
                     {
@@ -731,18 +737,18 @@
                     <button type="button" class="template-btn" id="shiftTemplateBtn" style="display:none;" 
                             onclick="applyShiftTemplate()">
                         <span class="dot" style="background:#2196f3"></span>
-                        <span id="shiftTemplateText">@(isTurkish ? "Nöbet Saati" : "Shift Time")</span>
+                        <span id="shiftTemplateText">@Localizer["ShiftTime"]</span>
                     </button>
                 </div>
             </div>
             
             <div class="form-row">
                 <div class="form-group" style="margin-bottom:0;">
-                    <label class="form-label">@(isTurkish ? "Giriş Saati" : "Check In")</label>
+                    <label class="form-label">@Localizer["CheckIn"]</label>
                     <input type="time" class="form-input" id="timeIn">
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
-                    <label class="form-label">@(isTurkish ? "Çıkış Saati" : "Check Out")</label>
+                    <label class="form-label">@Localizer["CheckOut"]</label>
                     <input type="time" class="form-input" id="timeOut">
                 </div>
             </div>
@@ -750,22 +756,22 @@
             <div class="form-group">
                 <label class="checkbox-row">
                     <input type="checkbox" id="nextDay">
-                    <span>@(isTurkish ? "Çıkış ertesi güne sarkar" : "Check out next day")</span>
+                    <span>@Localizer["CheckOutNextDay"]</span>
                 </label>
             </div>
             
             <div class="form-group">
-                <label class="form-label">@(isTurkish ? "Not" : "Notes")</label>
+                <label class="form-label">@Localizer["Notes"]</label>
                 <textarea class="form-input" id="notes" rows="2"></textarea>
             </div>
         </div>
         
         <div class="modal-footer">
             <button class="btn btn-delete" id="deleteBtn" onclick="deleteRecord()" style="display:none;">
-                @(isTurkish ? "Sil" : "Delete")
+                @Localizer["Delete"]
             </button>
-            <button class="btn btn-cancel" onclick="closeModal()">@(isTurkish ? "İptal" : "Cancel")</button>
-            <button class="btn btn-save" onclick="saveRecord()">@(isTurkish ? "Kaydet" : "Save")</button>
+            <button class="btn btn-cancel" onclick="closeModal()">@Localizer["Cancel"]</button>
+            <button class="btn btn-save" onclick="saveRecord()">@Localizer["Save"]</button>
         </div>
     </div>
 </div>
@@ -833,7 +839,7 @@
         // For new records, at least one time is required
         if (!attId || attId === '0') {
             if (!checkIn && !checkOut) {
-                alert('@(isTurkish ? "En az giriş veya çıkış saati giriniz" : "Enter at least check-in or check-out time")');
+                alert('@Localizer["EnterAtLeastCheckInOrCheckOut"]');
                 return;
             }
         }
@@ -867,17 +873,17 @@
                 closeModal();
                 location.reload();
             } else {
-                alert(result.error || '@(isTurkish ? "Hata" : "Error")');
+                alert(result.error || '@Localizer["Error"]');
             }
         } catch (e) {
-            alert('@(isTurkish ? "Bağlantı hatası" : "Connection error")');
+            alert('@Localizer["ConnectionError"]');
         }
     }
 
     async function deleteRecord() {
         const id = document.getElementById('attId').value;
         if (!id || id === '0') return;
-        if (!confirm('@(isTurkish ? "Bu kaydı silmek istediğinizden emin misiniz?" : "Delete this record?")')) return;
+        if (!confirm('@Localizer["DeleteThisRecord"]')) return;
 
         try {
             const res = await fetch('/api/attendance/' + id, { method: 'DELETE' });
@@ -887,7 +893,7 @@
                 location.reload();
             }
         } catch (e) {
-            alert('@(isTurkish ? "Hata" : "Error")');
+            alert('@Localizer["Error"]');
         }
     }
 

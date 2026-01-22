@@ -1,18 +1,19 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IStringLocalizer<SharedResource> Localizer
 @{
-    ViewData["Title"] = Localizer["Resend Confirmation Email"];
+    ViewData["Title"] = Localizer["ResendConfirmationEmail"];
     Layout = null;
-    var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+    var currentLang = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    var isRtl = currentLang == "ar";
     var email = ViewData["Email"] as string;
 }
 
 <!DOCTYPE html>
-<html lang="@(isTurkish ? "tr" : "en")">
+<html lang="@currentLang" dir="@(isRtl ? "rtl" : "ltr")">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@(isTurkish ? "E-posta Doğrulama Tekrar Gönder" : "Resend Confirmation Email") - Geldimmi</title>
+    <title>@Localizer["ResendConfirmationEmail"] - Geldimmi</title>
     <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -170,12 +171,10 @@
 <body>
     <div class="resend-container">
         <h1 class="resend-title">
-            @(isTurkish ? "E-posta Doğrulama Tekrar Gönder" : "Resend Confirmation Email")
+            @Localizer["ResendConfirmationEmail"]
         </h1>
         <p class="resend-subtitle">
-            @(isTurkish 
-                ? "E-posta adresinize yeni bir doğrulama linki gönderebiliriz." 
-                : "We can send you a new confirmation link to your email address.")
+            @Localizer["WeCanSendYouNewConfirmationLink"]
         </p>
         
         @if (TempData["Success"] != null)
@@ -203,9 +202,9 @@
             @Html.AntiForgeryToken()
             
             <div class="form-group">
-                <label for="email">@(isTurkish ? "E-posta Adresi" : "Email Address")</label>
+                <label for="email">@Localizer["EmailAddress"]</label>
                 <input type="email" id="email" name="email" value="@email" required 
-                       placeholder="@(isTurkish ? "ornek@email.com" : "example@email.com")" />
+                       placeholder="@Localizer["EmailPlaceholder"].Value" />
             </div>
             
             @if (!ViewData.ModelState.IsValid)
@@ -219,13 +218,13 @@
             }
             
             <button type="submit" class="btn-submit">
-                @(isTurkish ? "Doğrulama E-postası Gönder" : "Send Confirmation Email")
+                @Localizer["SendConfirmationEmail"]
             </button>
         </form>
         
         <div class="back-link">
             <a href="@Url.Action("Login", "Account")">
-                @(isTurkish ? "← Giriş sayfasına dön" : "← Back to login")
+                ← @Localizer["BackToLogin"]
             </a>
         </div>
     </div>

@@ -1943,22 +1943,21 @@ namespace Nobetci.Web.Controllers
 
         public IActionResult Index()
         {
-            var isTurkish = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
             ViewData["Title"] = "Blog";
-            var model = new BlogListViewModel(Posts.OrderByDescending(p => p.PublishedAt), isTurkish);
+            var model = new BlogListViewModel(Posts.OrderByDescending(p => p.PublishedAt), CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr");
             return View(model);
         }
 
         [Route("blog/{slug}")]
         public IActionResult Detail(string slug)
         {
-            var isTurkish = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+            var currentLang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
             var post = Posts.FirstOrDefault(p => string.Equals(p.Slug, slug, StringComparison.OrdinalIgnoreCase));
             if (post == null) return NotFound();
 
-            ViewData["Title"] = isTurkish ? post.TitleTr : post.TitleEn;
-            ViewData["MetaDescription"] = isTurkish ? post.ExcerptTr : post.ExcerptEn;
-            ViewData["MetaKeywords"] = string.Join(", ", isTurkish ? post.KeywordsTr : post.KeywordsEn);
+            ViewData["Title"] = currentLang == "tr" ? post.TitleTr : post.TitleEn;
+            ViewData["MetaDescription"] = currentLang == "tr" ? post.ExcerptTr : post.ExcerptEn;
+            ViewData["MetaKeywords"] = string.Join(", ", currentLang == "tr" ? post.KeywordsTr : post.KeywordsEn);
 
             return View(post);
         }

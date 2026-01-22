@@ -1,8 +1,8 @@
 @model AppViewModel
 @{
-    var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
-    ViewData["Title"] = isTurkish ? "Nöbet Planlama" : "Shift Planning";
+    ViewData["Title"] = Localizer["ShiftPlanning"];
     Layout = "_AppLayout";
+    var currentLang = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
 }
 
 <div class="app-wrapper">
@@ -12,13 +12,13 @@
         <div class="sidebar-actions">
             <button class="action-btn employees-btn" data-bs-toggle="modal" data-bs-target="#employeesModal">
                 <span class="action-icon">👥</span>
-                <span class="action-label">@(isTurkish ? "Personeller" : "Employees")</span>
+                <span class="action-label">@Localizer["Personeller"]</span>
                 <span class="action-badge">@Model.EmployeeCount</span>
             </button>
             
             <button class="action-btn holidays-btn" data-bs-toggle="modal" data-bs-target="#addHolidayModal">
                 <span class="action-icon">🗓️</span>
-                <span class="action-label">@(isTurkish ? "Tatiller" : "Holidays")</span>
+                <span class="action-label">@Localizer["Tatiller"]</span>
                 <span class="action-badge">@Model.Holidays.Count</span>
             </button>
             
@@ -26,15 +26,15 @@
             {
                 <a href="@Url.Action("Payroll", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="action-btn payroll-btn">
                     <span class="action-icon">📊</span>
-                    <span class="action-label">@(isTurkish ? "Puantaj" : "Payroll")</span>
+                    <span class="action-label">@Localizer["Timesheet"]</span>
                     <span class="action-badge">✓</span>
                 </a>
             }
             else
             {
-                <button class="action-btn payroll-btn disabled" title="@(isTurkish ? "Kayıtlı kullanıcılara özel" : "For registered users only")" disabled>
+                <button class="action-btn payroll-btn disabled" title="@Localizer["ForRegisteredUsersOnly"]" disabled>
                     <span class="action-icon">📊</span>
-                    <span class="action-label">@(isTurkish ? "Puantaj" : "Payroll")</span>
+                    <span class="action-label">@Localizer["Timesheet"]</span>
                     <span class="action-badge">🔒</span>
                 </button>
             }
@@ -43,15 +43,15 @@
             {
                 <a href="@Url.Action("Attendance", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="action-btn attendance-btn">
                     <span class="action-icon">🕐</span>
-                    <span class="action-label">@(isTurkish ? "Mesai Takip" : "Attendance")</span>
+                    <span class="action-label">@Localizer["Attendance"]</span>
                     <span class="action-badge">✓</span>
                 </a>
             }
             else
             {
-                <button class="action-btn attendance-btn disabled" title="@(isTurkish ? "Kayıtlı kullanıcılara özel" : "For registered users only")" disabled>
+                <button class="action-btn attendance-btn disabled" title="@Localizer["ForRegisteredUsersOnly"]" disabled>
                     <span class="action-icon">🕐</span>
-                    <span class="action-label">@(isTurkish ? "Mesai Takip" : "Attendance")</span>
+                    <span class="action-label">@Localizer["Attendance"]</span>
                     <span class="action-badge">🔒</span>
                 </button>
             }
@@ -60,14 +60,14 @@
         <!-- Templates Button -->
         <button class="action-btn templates-btn" data-bs-toggle="modal" data-bs-target="#templatesModal">
             <span class="action-icon">⏰</span>
-            <span class="action-label">@(isTurkish ? "Vardiya Şablonları" : "Shift Templates")</span>
+            <span class="action-label">@Localizer["ShiftTemplates"]</span>
             <span class="action-badge">✓</span>
         </button>
         
         <!-- Leaves Button -->
         <button class="action-btn leaves-btn" data-bs-toggle="modal" data-bs-target="#leavesModal">
             <span class="action-icon">📋</span>
-            <span class="action-label">@(isTurkish ? "İzinler" : "Leaves")</span>
+            <span class="action-label">@Localizer["Leaves"]</span>
             <span class="action-badge">✓</span>
         </button>
         
@@ -76,7 +76,7 @@
             <label>
                 <input type="checkbox" id="multiSelectMode">
                 <span class="toggle-track"><span class="toggle-thumb"></span></span>
-                <span class="toggle-text">@(isTurkish ? "Çoklu Seçim" : "Multi-Select")</span>
+                <span class="toggle-text">@Localizer["MultiSelect"]</span>
             </label>
         </div>
         
@@ -84,7 +84,7 @@
         <div class="selected-indicator" id="selectedIndicator" style="display:none;">
             <div class="indicator-color"></div>
             <div class="indicator-text">
-                <span class="indicator-label">@(isTurkish ? "Seçili" : "Selected")</span>
+                <span class="indicator-label">@Localizer["Selected"]</span>
                 <span class="indicator-time" id="selectedTime"></span>
             </div>
         </div>
@@ -108,24 +108,24 @@
             
             <div class="toolbar-actions">
                 <button class="toolbar-btn ghost" id="clearSelectionBtn" style="display:none;">
-                    @(isTurkish ? "Temizle" : "Clear")
+                    @Localizer["Clear"]
                 </button>
                 <button class="toolbar-btn primary" id="applyToSelectedBtn" style="display:none;">
-                    ✓ @(isTurkish ? "Uygula" : "Apply")
+                    ✓ @Localizer["Apply"]
                 </button>
                 
                 @if (Model.CanUseSmartScheduling)
                 {
                     <button class="toolbar-btn accent" id="generateScheduleBtn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-                        @(isTurkish ? "Akıllı Oluştur" : "Smart Generate")
+                        @Localizer["SmartGenerate"]
                     </button>
                 }
                 else
                 {
                     <button class="toolbar-btn accent locked" id="generateScheduleBtn" data-premium="true">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-                        @(isTurkish ? "Akıllı Oluştur" : "Smart Generate")
+                        @Localizer["SmartGenerate"]
                     </button>
                 }
                 
@@ -148,14 +148,14 @@
                 {
                     <button class="toolbar-btn" id="savedSchedulesBtn" data-bs-toggle="modal" data-bs-target="#savedSchedulesModal">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
-                        @(isTurkish ? "Kayıtlı Listeler" : "Saved Schedules")
+                        @Localizer["SavedSchedules"]
                     </button>
                 }
                 else
                 {
                     <button class="toolbar-btn locked" id="savedSchedulesBtn" data-premium="true">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-                        @(isTurkish ? "Kayıtlı Listeler" : "Saved")
+                        @Localizer["Saved"]
                     </button>
                 }
             </div>
@@ -166,15 +166,21 @@
             <table class="schedule-table" id="scheduleTable">
                 <thead>
                     <tr>
-                        <th class="col-employee sticky-col">@(isTurkish ? "Personel" : "Employee")</th>
+                        <th class="col-employee sticky-col">@Localizer["Employees"]</th>
                         @for (int day = 1; day <= Model.DaysInMonth; day++)
                         {
                             var date = new DateOnly(Model.SelectedYear, Model.SelectedMonth, day);
                             var isWeekend = Model.IsWeekend(date);
                             var isHoliday = Model.IsHoliday(date);
-                            var dayNames = isTurkish 
-                                ? new[] { "Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt" }
-                                : new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+                            var dayNames = new[] {
+                                Localizer["Paz"].Value,
+                                Localizer["Pzt"].Value,
+                                Localizer["Sal"].Value,
+                                Localizer["Car"].Value,
+                                Localizer["Per"].Value,
+                                Localizer["Cum"].Value,
+                                Localizer["Cmt"].Value
+                            };
                             var dayName = dayNames[(int)date.DayOfWeek];
                             
                             <th class="col-day @(isWeekend ? "weekend" : "") @(isHoliday ? "holiday" : "")">
@@ -182,7 +188,7 @@
                                 <span class="day-num">@day</span>
                             </th>
                         }
-                        <th class="col-total sticky-col-right">@(isTurkish ? "Toplam" : "Total")</th>
+                        <th class="col-total sticky-col-right">@Localizer["TotalHours"]</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -354,8 +360,8 @@
                                         <div class="leave-badge" 
                                              style="background: @leave.LeaveType.Color"
                                              data-leave-id="@leave.Id"
-                                             title="@(isTurkish ? leave.LeaveType.NameTr : leave.LeaveType.NameEn)">
-                                            @(isTurkish ? leave.LeaveType.Code : leave.LeaveType.CodeEn)
+                                             title="@(currentLang == "tr" ? leave.LeaveType.NameTr : leave.LeaveType.NameEn)">
+                                            @(currentLang == "tr" ? leave.LeaveType.Code : leave.LeaveType.CodeEn)
                                         </div>
                                     }
                                     else if (shift != null)
@@ -364,7 +370,7 @@
                                         {
                                             <div class="shift-badge day-off" data-shift-id="@shift.Id">
                                                 <span class="day-off-icon">🚫</span>
-                                                <span class="day-off-text">@(isTurkish ? "Boş" : "Off")</span>
+                                                <span class="day-off-text">@Localizer["Boş"]</span>
                                             </div>
                                         }
                                         else
@@ -407,7 +413,7 @@
                             <td colspan="@(Model.DaysInMonth + 2)" class="empty-table">
                                 <div class="empty-state">
                                     <span class="icon">📅</span>
-                                    <p>@(isTurkish ? "Personel ekleyerek başlayın" : "Start by adding employees")</p>
+                                    <p>@Localizer["StartByAddingEmployees"]</p>
                                 </div>
                             </td>
                         </tr>
@@ -420,19 +426,19 @@
         <div class="schedule-legend">
             <div class="legend-item">
                 <span class="legend-color weekend"></span>
-                <span>@(isTurkish ? "Hafta Sonu" : "Weekend")</span>
+                <span>@Localizer["Weekend"]</span>
             </div>
             <div class="legend-item">
                 <span class="legend-color holiday"></span>
-                <span>@(isTurkish ? "Tatil" : "Holiday")</span>
+                <span>@Localizer["Holiday"]</span>
             </div>
             <div class="legend-item">
                 <span class="legend-badge overnight">+1</span>
-                <span>@(isTurkish ? "Ertesi Güne Sarkan" : "Overnight")</span>
+                <span>@Localizer["Overnight"]</span>
             </div>
             <div class="legend-item">
                 <span class="legend-icon">↓</span>
-                <span>@(isTurkish ? "Önceki Günden Devam" : "Continues from Previous")</span>
+                <span>@Localizer["ContinuesFromPrevious"]</span>
             </div>
         </div>
     </main>
@@ -445,8 +451,8 @@
             <div class="modal-header-custom">
                 <div class="modal-icon">👥</div>
                 <div class="modal-title-group">
-                    <h5 class="modal-title">@(isTurkish ? "Personel Yönetimi" : "Employee Management")</h5>
-                    <p class="modal-subtitle">@Model.EmployeeCount / @Model.EmployeeLimit @(isTurkish ? "personel" : "employees")</p>
+                    <h5 class="modal-title">@Localizer["EmployeeManagement"]</h5>
+                    <p class="modal-subtitle">@Model.EmployeeCount / @Model.EmployeeLimit @Localizer["employees"]</p>
                 </div>
                 <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
             </div>
@@ -457,7 +463,7 @@
                     {
                         <div class="empty-employees">
                             <span>👥</span>
-                            <p>@(isTurkish ? "Henüz personel eklenmedi" : "No employees added yet")</p>
+                            <p>@Localizer["NoEmployeesAddedYet"]</p>
                         </div>
                     }
                     @foreach (var employee in Model.Employees)
@@ -471,8 +477,8 @@
                                     <span class="emp-title">@employee.Title</span>
                                 }
                             </div>
-                            <div class="emp-hours">@employee.DailyWorkHours @(isTurkish ? "s/g" : "h/d")</div>
-                            <button class="emp-delete" data-id="@employee.Id" title="@(isTurkish ? "Sil" : "Delete")">
+                            <div class="emp-hours">@employee.DailyWorkHours @Localizer["h/d"]</div>
+                            <button class="emp-delete" data-id="@employee.Id" title="@Localizer["Delete"]">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
                             </button>
                         </div>
@@ -482,14 +488,14 @@
                 @if (!Model.CanAddEmployee)
                 {
                     <div class="limit-alert">
-                        ⚠️ @(isTurkish ? "Personel limitine ulaşıldı. Daha fazla personel için kayıt olun." : "Employee limit reached. Register for more.")
+                        ⚠️ @Localizer["EmployeeLimitReached_Register"]
                     </div>
                 }
             </div>
             <div class="modal-footer-custom">
-                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">@(isTurkish ? "Kapat" : "Close")</button>
+                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">@Localizer["Close"]</button>
                 <button type="button" class="btn-modal-save" data-bs-toggle="modal" data-bs-target="#addEmployeeModal" @(Model.CanAddEmployee ? "" : "disabled")>
-                    <span class="btn-icon">+</span> @(isTurkish ? "Personel Ekle" : "Add Employee")
+                    <span class="btn-icon">+</span> @Localizer["AddEmployee"]
                 </button>
             </div>
         </div>
@@ -503,8 +509,8 @@
             <div class="modal-header-custom">
                 <div class="modal-icon">👤</div>
                 <div class="modal-title-group">
-                    <h5 class="modal-title">@(isTurkish ? "Yeni Personel Ekle" : "Add New Employee")</h5>
-                    <p class="modal-subtitle">@(isTurkish ? "Personel bilgilerini girin" : "Enter employee information")</p>
+                    <h5 class="modal-title">@Localizer["AddNewEmployee"]</h5>
+                    <p class="modal-subtitle">@Localizer["EnterEmployeeInformation"]</p>
                 </div>
                 <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
             </div>
@@ -512,31 +518,31 @@
                 <div class="form-section">
                     <div class="section-title">
                         <span class="section-icon">📋</span>
-                        @(isTurkish ? "Temel Bilgiler" : "Basic Information")
+                        @Localizer["BasicInformation"]
                     </div>
                     <div class="row g-3">
                         <div class="col-md-6">
                             <div class="form-floating-custom">
                                 <input type="text" class="form-input" id="employeeFullName" placeholder=" " required>
-                                <label>@(isTurkish ? "Ad Soyad" : "Full Name") *</label>
+                                <label>@Localizer["FullName"] *</label>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating-custom">
                                 <input type="text" class="form-input" id="employeeTitle" placeholder=" ">
-                                <label>@(isTurkish ? "Unvan" : "Title")</label>
+                                <label>@Localizer["Title"]</label>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating-custom">
                                 <input type="text" class="form-input" id="employeeIdentityNo" placeholder=" ">
-                                <label>@(isTurkish ? "Sicil No" : "ID Number")</label>
+                                <label>@Localizer["IDNumber"]</label>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating-custom">
                                 <input type="number" class="form-input" id="employeeDailyHours" value="8" min="1" max="24" step="0.5" placeholder=" ">
-                                <label>@(isTurkish ? "Günlük Çalışma (saat)" : "Daily Hours") *</label>
+                                <label>@Localizer["DailyHours"] *</label>
                             </div>
                         </div>
                     </div>
@@ -545,38 +551,38 @@
                 <div class="form-section">
                     <div class="section-title">
                         <span class="section-icon">🏛️</span>
-                        @(isTurkish ? "Kadro Bilgileri" : "Position Information")
+                        @Localizer["PositionInformation"]
                     </div>
                     <div class="row g-3">
                         <div class="col-md-6">
                             <div class="form-floating-custom">
                                 <select class="form-input" id="employeePositionType" onchange="toggleAcademicTitle()">
-                                    <option value="">@(isTurkish ? "Seçiniz..." : "Select...")</option>
-                                    <option value="4A">4A (@(isTurkish ? "Memur" : "Civil Servant"))</option>
-                                    <option value="4B">4B (@(isTurkish ? "Sözleşmeli" : "Contracted"))</option>
+                                    <option value="">@Localizer["Select"]</option>
+                                    <option value="4A">4A (@Localizer["CivilServant"])</option>
+                                    <option value="4B">4B (@Localizer["Contracted"])</option>
                                     <option value="4D">4D (696 KHK)</option>
-                                    <option value="Academic">@(isTurkish ? "Akademik" : "Academic")</option>
+                                    <option value="Academic">@Localizer["Academic"]</option>
                                 </select>
-                                <label>@(isTurkish ? "Kadro Tipi" : "Position Type")</label>
+                                <label>@Localizer["PositionType"]</label>
                             </div>
                         </div>
                         <div class="col-md-6" id="academicTitleGroup" style="display: none;">
                             <div class="form-floating-custom">
                                 <select class="form-input" id="employeeAcademicTitle">
-                                    <option value="">@(isTurkish ? "Seçiniz..." : "Select...")</option>
-                                    <option value="Prof">@(isTurkish ? "Profesör" : "Professor")</option>
-                                    <option value="Doçent">@(isTurkish ? "Doçent" : "Associate Prof.")</option>
-                                    <option value="Dr. Öğretim Üyesi">@(isTurkish ? "Dr. Öğretim Üyesi" : "Assistant Prof.")</option>
-                                    <option value="Araştırma Görevlisi">@(isTurkish ? "Araştırma Görevlisi" : "Research Asst.")</option>
-                                    <option value="Araştırma Görevlisi (Dr.)">@(isTurkish ? "Araştırma Görevlisi (Dr.)" : "Research Asst. (PhD)")</option>
+                                    <option value="">@Localizer["Select"]</option>
+                                    <option value="Prof">@Localizer["Professor"]</option>
+                                    <option value="Doçent">@Localizer["AssociateProf"]</option>
+                                    <option value="Dr. Öğretim Üyesi">@Localizer["AssistantProf"]</option>
+                                    <option value="Araştırma Görevlisi">@Localizer["ResearchAsst"]</option>
+                                    <option value="Araştırma Görevlisi (Dr.)">@Localizer["ResearchAsstPhD"]</option>
                                 </select>
-                                <label>@(isTurkish ? "Akademik Unvan" : "Academic Title")</label>
+                                <label>@Localizer["AcademicTitle"]</label>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating-custom">
                                 <input type="number" class="form-input" id="employeeShiftScore" value="100" min="0" max="1000" step="1" placeholder=" ">
-                                <label>@(isTurkish ? "Nöbet Puanı" : "Shift Score")</label>
+                                <label>@Localizer["ShiftScore"]</label>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -584,7 +590,7 @@
                                 <label class="custom-checkbox">
                                     <input type="checkbox" id="employeeIsNonHealthServices">
                                     <span class="checkmark"></span>
-                                    <span class="checkbox-label">@(isTurkish ? "SH Dışı (Sağlık Hizmetleri Sınıfı Dışı)" : "Non-Health Services Class")</span>
+                                    <span class="checkbox-label">@Localizer["NonHealthServicesClass"]</span>
                                 </label>
                             </div>
                         </div>
@@ -594,35 +600,35 @@
                 <div class="form-section">
                     <div class="section-title">
                         <span class="section-icon">📅</span>
-                        @(isTurkish ? "Hafta Sonu Ayarları" : "Weekend Settings")
+                        @Localizer["WeekendSettings"]
                     </div>
                     <div class="weekend-options">
                         <label class="weekend-option">
                             <input type="radio" name="weekendMode" value="0" checked onchange="document.getElementById('employeeWeekendMode').value='0'; document.getElementById('saturdayHoursGroup').style.display='none';">
                             <span class="option-card">
                                 <span class="option-icon">🚫</span>
-                                <span class="option-text">@(isTurkish ? "Hafta sonu çalışmaz" : "No weekends")</span>
+                                <span class="option-text">@Localizer["NoWeekends"]</span>
                             </span>
                         </label>
                         <label class="weekend-option">
                             <input type="radio" name="weekendMode" value="1" onchange="document.getElementById('employeeWeekendMode').value='1'; document.getElementById('saturdayHoursGroup').style.display='none';">
                             <span class="option-card">
                                 <span class="option-icon">✅</span>
-                                <span class="option-text">@(isTurkish ? "Cmt + Paz çalışır" : "Sat + Sun")</span>
+                                <span class="option-text">@Localizer["SatSun"]</span>
                             </span>
                         </label>
                         <label class="weekend-option">
                             <input type="radio" name="weekendMode" value="2" onchange="document.getElementById('employeeWeekendMode').value='2'; document.getElementById('saturdayHoursGroup').style.display='none';">
                             <span class="option-card">
                                 <span class="option-icon">📆</span>
-                                <span class="option-text">@(isTurkish ? "Sadece Cumartesi" : "Saturday only")</span>
+                                <span class="option-text">@Localizer["SaturdayOnly"]</span>
                             </span>
                         </label>
                         <label class="weekend-option">
                             <input type="radio" name="weekendMode" value="3" onchange="document.getElementById('employeeWeekendMode').value='3'; document.getElementById('saturdayHoursGroup').style.display='block';">
                             <span class="option-card">
                                 <span class="option-icon">⏱️</span>
-                                <span class="option-text">@(isTurkish ? "Özel saat" : "Custom hours")</span>
+                                <span class="option-text">@Localizer["CustomHours"]</span>
                             </span>
                         </label>
                     </div>
@@ -635,7 +641,7 @@
                     <div class="saturday-hours-input" id="saturdayHoursGroup" style="display: none;">
                         <div class="form-floating-custom">
                             <input type="number" class="form-input" id="employeeSaturdayHours" value="4" min="1" max="24" step="0.5" placeholder=" ">
-                            <label>@(isTurkish ? "Cumartesi Saat" : "Saturday Hours")</label>
+                            <label>@Localizer["SaturdayHours"]</label>
                         </div>
                     </div>
                 </div>
@@ -643,18 +649,18 @@
                 <div class="info-box">
                     <span class="info-icon">💡</span>
                     <div class="info-content">
-                        <strong>@(isTurkish ? "Otomatik Hesaplama" : "Auto Calculation")</strong>
-                        <p>@(isTurkish ? "Resmi tatiller ve izinler otomatik olarak çalışma süresinden düşülür." : "Holidays and leaves are automatically deducted from work hours.")</p>
+                        <strong>@Localizer["AutoCalculation"]</strong>
+                        <p>@Localizer["AutoCalculationDesc"]</p>
                     </div>
                 </div>
             </div>
             <div class="modal-footer-custom">
                 <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
-                    @(isTurkish ? "İptal" : "Cancel")
+                    @Localizer["Cancel"]
                 </button>
                 <button type="button" class="btn-modal-save" id="saveEmployeeBtn">
                     <span class="btn-icon">✓</span>
-                    @(isTurkish ? "Personel Ekle" : "Add Employee")
+                    @Localizer["AddEmployee"]
                 </button>
             </div>
         </div>
@@ -670,56 +676,56 @@
             <div class="modal-header-custom templates-modal-header">
                 <div class="modal-icon">⏰</div>
                 <div class="modal-title-group">
-                    <h5 class="modal-title">@(isTurkish ? "Vardiya Şablonları" : "Shift Templates")</h5>
-                    <p class="modal-subtitle">@(isTurkish ? "Kendi özel vardiya şablonlarınızı oluşturun ve yönetin" : "Create and manage your custom shift templates")</p>
+                    <h5 class="modal-title">@Localizer["ShiftTemplates"]</h5>
+                    <p class="modal-subtitle">@Localizer["CreateAndManageTemplates"]</p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body-custom">
                 <!-- Template List -->
                 <div class="template-manager-list" id="templateManagerList">
-                    <div class="template-loading">@(isTurkish ? "Yükleniyor..." : "Loading...")</div>
+                    <div class="template-loading">@Localizer["Loading"]</div>
                 </div>
                 
                 <!-- Add New Template Form -->
                 <div class="template-add-form" id="templateAddForm">
-                    <h6 class="form-section-title">@(isTurkish ? "Yeni Şablon Ekle" : "Add New Template")</h6>
+                    <h6 class="form-section-title">@Localizer["AddNewTemplate"]</h6>
                     <div class="template-form-grid">
                         <div class="form-group">
-                            <label>@(isTurkish ? "Şablon Adı" : "Template Name")</label>
-                            <input type="text" id="newTemplateName" class="form-control" placeholder="@(isTurkish ? "örn: Sabah Vardiyası" : "e.g. Morning Shift")">
+                            <label>@Localizer["TemplateName"]</label>
+                            <input type="text" id="newTemplateName" class="form-control" placeholder="@Localizer["TemplateNamePlaceholder"]">
                         </div>
                         <div class="form-group">
-                            <label>@(isTurkish ? "Başlangıç" : "Start")</label>
+                            <label>@Localizer["Start"]</label>
                             <input type="time" id="newTemplateStart" class="form-control" value="08:00">
                         </div>
                         <div class="form-group">
-                            <label>@(isTurkish ? "Bitiş" : "End")</label>
+                            <label>@Localizer["End"]</label>
                             <input type="time" id="newTemplateEnd" class="form-control" value="17:00">
                         </div>
                         <div class="form-group">
-                            <label>@(isTurkish ? "Mola (dk)" : "Break (min)")</label>
+                            <label>@Localizer["BreakMin"]</label>
                             <input type="number" id="newTemplateBreak" class="form-control" value="60" min="0" max="120">
                         </div>
                         <div class="form-group">
-                            <label>@(isTurkish ? "Renk" : "Color")</label>
+                            <label>@Localizer["Color"]</label>
                             <input type="color" id="newTemplateColor" class="form-control form-control-color" value="#3B82F6">
                         </div>
                         <div class="form-group form-check-group">
                             <label class="form-check">
                                 <input type="checkbox" id="newTemplateSpans" class="form-check-input">
-                                <span>@(isTurkish ? "Ertesi güne sarkar (+1)" : "Spans next day (+1)")</span>
+                                <span>@Localizer["SpansNextDay"]</span>
                             </label>
                         </div>
                     </div>
                     <button type="button" class="btn-add-template" id="addNewTemplateBtn">
-                        <span>➕</span> @(isTurkish ? "Şablon Ekle" : "Add Template")
+                        <span>➕</span> @Localizer["AddTemplate"]
                     </button>
                 </div>
             </div>
             <div class="modal-footer-custom">
                 <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
-                    @(isTurkish ? "Kapat" : "Close")
+                    @Localizer["Close"]
                 </button>
             </div>
         </div>
@@ -734,15 +740,15 @@
             <div class="modal-header-custom templates-modal-header">
                 <div class="modal-icon">⏰</div>
                 <div class="modal-title-group">
-                    <h5 class="modal-title">@(isTurkish ? "Vardiya Şablonları" : "Shift Templates")</h5>
-                    <p class="modal-subtitle">@(isTurkish ? "Bir vardiya şablonu seçin" : "Select a shift template")</p>
+                    <h5 class="modal-title">@Localizer["ShiftTemplates"]</h5>
+                    <p class="modal-subtitle">@Localizer["SelectShiftTemplate"]</p>
                 </div>
                 <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
             </div>
             <div class="modal-body-custom">
                 <div class="template-list-modal" id="templateListModal">
                     <div id="templatesContainerModal">
-                        <div class="template-loading">@(isTurkish ? "Yükleniyor..." : "Loading...")</div>
+                        <div class="template-loading">@Localizer["Loading"]</div>
                     </div>
                     
                     <!-- Separator and special buttons -->
@@ -750,13 +756,13 @@
                     <button class="tpl-btn-row day-off" data-start="00:00" data-end="00:00" data-spans="false" data-break="0" data-color="#94a3b8" data-day-off="true">
                         <span class="tpl-color" style="background:#94a3b8"></span>
                         <span class="tpl-info">
-                            <span class="tpl-time">🚫 @(isTurkish ? "Boş Gün" : "Day Off")</span>
+                            <span class="tpl-time">🚫 @Localizer["DayOff"]</span>
                         </span>
                     </button>
                     <button class="tpl-btn-row custom" id="customTimeBtnModal" data-color="#64748B">
                         <span class="tpl-color" style="background:#64748B"></span>
                         <span class="tpl-info">
-                            <span class="tpl-time">⏱️ @(isTurkish ? "Özel Saat" : "Custom Time")</span>
+                            <span class="tpl-time">⏱️ @Localizer["CustomTime"]</span>
                         </span>
                     </button>
                 </div>
@@ -765,13 +771,13 @@
                     <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
                         <button class="action-btn" data-bs-toggle="modal" data-bs-target="#manageTemplatesModal" data-bs-dismiss="modal" style="width: 100%; justify-content: center;">
                             <span class="action-icon">⚙️</span>
-                            <span class="action-label">@(isTurkish ? "Şablonları Yönet" : "Manage Templates")</span>
+                            <span class="action-label">@Localizer["ManageTemplates"]</span>
                         </button>
                     </div>
                 }
             </div>
             <div class="modal-footer-custom">
-                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">@(isTurkish ? "Kapat" : "Close")</button>
+                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">@Localizer["Close"]</button>
             </div>
         </div>
     </div>
@@ -784,8 +790,8 @@
             <div class="modal-header-custom">
                 <div class="modal-icon">📋</div>
                 <div class="modal-title-group">
-                    <h5 class="modal-title">@(isTurkish ? "İzinler" : "Leaves")</h5>
-                    <p class="modal-subtitle">@(isTurkish ? "Bir izin tipi seçin" : "Select a leave type")</p>
+                    <h5 class="modal-title">@Localizer["Leaves"]</h5>
+                    <p class="modal-subtitle">@Localizer["SelectLeaveType"]</p>
                 </div>
                 <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
             </div>
@@ -795,26 +801,26 @@
                     {
                         var categoryName = category.Key switch
                         {
-                            "annual" => isTurkish ? "Yıllık İzinler" : "Annual Leaves",
-                            "maternity" => isTurkish ? "Analık/Babalık" : "Maternity/Paternity",
-                            "health" => isTurkish ? "Sağlık İzinleri" : "Health Leaves",
-                            "excuse" => isTurkish ? "Mazeret İzinleri" : "Excuse Leaves",
-                            "education" => isTurkish ? "Eğitim/Sınav" : "Education",
-                            "military" => isTurkish ? "Askerlik" : "Military",
-                            "administrative" => isTurkish ? "İdari İzinler" : "Administrative",
-                            "unpaid" => isTurkish ? "Ücretsiz İzin" : "Unpaid Leave",
-                            _ => isTurkish ? "Diğer" : "Other"
+                            "annual" => Localizer["AnnualLeaves"].Value,
+                            "maternity" => Localizer["MaternityPaternity"].Value,
+                            "health" => Localizer["HealthLeaves"].Value,
+                            "excuse" => Localizer["ExcuseLeaves"].Value,
+                            "education" => Localizer["Education"].Value,
+                            "military" => Localizer["Military"].Value,
+                            "administrative" => Localizer["Administrative"].Value,
+                            "unpaid" => Localizer["UnpaidLeave"].Value,
+                            _ => Localizer["Other"].Value
                         };
                         <div class="leave-category-modal">
                             <div class="leave-category-name-modal">@categoryName</div>
                             <div class="leave-buttons-grid">
                                 @foreach (var leaveType in category.OrderBy(lt => lt.SortOrder))
                                 {
-                                    <button class="leave-btn-modal" data-leave-id="@leaveType.Id" data-leave-code="@(isTurkish ? leaveType.Code : leaveType.CodeEn)" data-leave-color="@leaveType.Color">
+                                    <button class="leave-btn-modal" data-leave-id="@leaveType.Id" data-leave-code="@(currentLang == "tr" ? leaveType.Code : leaveType.CodeEn)" data-leave-color="@leaveType.Color">
                                         <span class="leave-color-modal" style="background:@leaveType.Color"></span>
                                         <div class="leave-content-modal">
-                                            <span class="leave-code-modal">@(isTurkish ? leaveType.Code : leaveType.CodeEn)</span>
-                                            <span class="leave-name-modal">@(isTurkish ? leaveType.NameTr : leaveType.NameEn)</span>
+                                            <span class="leave-code-modal">@(currentLang == "tr" ? leaveType.Code : leaveType.CodeEn)</span>
+                                            <span class="leave-name-modal">@(currentLang == "tr" ? leaveType.NameTr : leaveType.NameEn)</span>
                                         </div>
                                     </button>
                                 }
@@ -824,7 +830,7 @@
                 </div>
             </div>
             <div class="modal-footer-custom">
-                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">@(isTurkish ? "Kapat" : "Close")</button>
+                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">@Localizer["Close"]</button>
             </div>
         </div>
     </div>
@@ -837,17 +843,17 @@
             <div class="modal-header-custom holiday-header">
                 <div class="modal-icon">🗓️</div>
                 <div class="modal-title-group">
-                    <h5 class="modal-title">@(isTurkish ? "Tatil Yönetimi" : "Holiday Management")</h5>
-                    <p class="modal-subtitle">@(isTurkish ? "Tatilleri ekleyin, düzenleyin veya silin" : "Add, edit or delete holidays")</p>
+                    <h5 class="modal-title">@Localizer["HolidayManagement"]</h5>
+                    <p class="modal-subtitle">@Localizer["HolidayManagementDesc"]</p>
                 </div>
                 <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
             </div>
             <div class="modal-body-custom">
                 <!-- Existing Holidays List -->
                 <div class="holidays-list-section" id="holidaysListSection">
-                    <h6 class="section-title">@(isTurkish ? "Mevcut Tatiller" : "Current Holidays")</h6>
+                    <h6 class="section-title">@Localizer["CurrentHolidays"]</h6>
                     <div class="holidays-list" id="holidaysList">
-                        <div class="holiday-loading">@(isTurkish ? "Yükleniyor..." : "Loading...")</div>
+                        <div class="holiday-loading">@Localizer["Loading"]</div>
                     </div>
                 </div>
                 
@@ -855,18 +861,18 @@
                 
                 <!-- Add New Holiday Form -->
                 <div class="form-section">
-                    <h6 class="section-title">@(isTurkish ? "Yeni Tatil Ekle" : "Add New Holiday")</h6>
+                    <h6 class="section-title">@Localizer["AddNewHoliday"]</h6>
                     <div class="row g-3">
                         <div class="col-md-6">
                             <div class="form-floating-custom">
                                 <input type="date" class="form-input" id="holidayDate" required placeholder=" ">
-                                <label>@(isTurkish ? "Tarih" : "Date") *</label>
+                                <label>@Localizer["Date"] *</label>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating-custom">
                                 <input type="text" class="form-input" id="holidayName" placeholder=" " required>
-                                <label>@(isTurkish ? "Tatil Adı" : "Holiday Name") *</label>
+                                <label>@Localizer["HolidayName"] *</label>
                             </div>
                         </div>
                         <div class="col-12">
@@ -875,14 +881,14 @@
                                     <input type="radio" name="holidayTypeRadio" value="0" checked onchange="document.getElementById('holidayType').value='0';">
                                     <span class="type-card official">
                                         <span class="type-icon">🏛️</span>
-                                        <span class="type-label">@(isTurkish ? "Resmi Tatil" : "Public Holiday")</span>
+                                        <span class="type-label">@Localizer["PublicHoliday"]</span>
                                     </span>
                                 </label>
                                 <label class="type-option">
                                     <input type="radio" name="holidayTypeRadio" value="1" onchange="document.getElementById('holidayType').value='1';">
                                     <span class="type-card administrative">
                                         <span class="type-icon">📋</span>
-                                        <span class="type-label">@(isTurkish ? "İdari Tatil" : "Administrative")</span>
+                                        <span class="type-label">@Localizer["AdministrativeHoliday"]</span>
                                     </span>
                                 </label>
                             </div>
@@ -896,14 +902,14 @@
                                 <label class="half-day-toggle">
                                     <input type="checkbox" id="isHalfDay" onchange="toggleHalfDayOptions()">
                                     <span class="toggle-track"><span class="toggle-thumb"></span></span>
-                                    <span class="toggle-label">@(isTurkish ? "Yarım Gün Tatil" : "Half-Day Holiday")</span>
+                                    <span class="toggle-label">@Localizer["HalfDayHoliday"]</span>
                                 </label>
                                 <div class="half-day-options" id="halfDayOptions" style="display:none;">
                                     <div class="form-floating-custom">
                                         <input type="number" class="form-input" id="halfDayWorkHours" value="4" min="1" max="8" step="0.5" placeholder=" ">
-                                        <label>@(isTurkish ? "Çalışma Saati" : "Work Hours")</label>
+                                        <label>@Localizer["WorkHours"]</label>
                                     </div>
-                                    <p class="half-day-hint">@(isTurkish ? "Yarım gün tatilde personelin çalışması gereken saat" : "Hours employee should work on half-day")</p>
+                                    <p class="half-day-hint">@Localizer["HalfDayHint"]</p>
                                 </div>
                             </div>
                         </div>
@@ -912,11 +918,11 @@
             </div>
             <div class="modal-footer-custom">
                 <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
-                    @(isTurkish ? "Kapat" : "Close")
+                    @Localizer["Close"]
                 </button>
                 <button type="button" class="btn-modal-save holiday" id="saveHolidayBtn">
                     <span class="btn-icon">✓</span>
-                    @(isTurkish ? "Tatil Ekle" : "Add Holiday")
+                    @Localizer["AddHoliday"]
                 </button>
             </div>
         </div>
@@ -942,8 +948,8 @@
                         </svg>
                     </div>
                     <div class="sg-header-text">
-                        <h2>@(isTurkish ? "Akıllı Çizelge Oluşturucu" : "Smart Schedule Generator")</h2>
-                        <p>@Model.MonthName @(isTurkish ? "için otomatik nöbet ve mesai planı" : "automatic shift and work schedule")</p>
+                        <h2>@Localizer["SmartScheduleGenerator"]</h2>
+                        <p>@Model.MonthName @Localizer["SmartScheduleGeneratorDesc"]</p>
                     </div>
                 </div>
                 <button type="button" class="sg-close-btn" data-bs-dismiss="modal">
@@ -957,8 +963,8 @@
             <div class="sg-warning-banner">
                 <div class="sg-warning-icon">⚠️</div>
                 <div class="sg-warning-text">
-                    <strong>@(isTurkish ? "Dikkat!" : "Warning!")</strong>
-                    @(isTurkish ? "Bu işlem, seçili aydaki TÜM mevcut vardiyaları silecek ve yeni çizelge oluşturacaktır." : "This will DELETE ALL existing shifts for the selected month and create a new schedule.")
+                    <strong>@Localizer["Warning"]</strong>
+                    @Localizer["SmartGeneratorWarning"]
                 </div>
             </div>
             
@@ -969,27 +975,27 @@
                     <div class="section-header">
                         <span class="section-number">1</span>
                         <div class="section-info">
-                            <h6>@(isTurkish ? "Hafta İçi Mesai Saatleri" : "Weekday Work Hours")</h6>
-                            <p>@(isTurkish ? "Varsayılan mesai saatlerini belirleyin" : "Set default work hours")</p>
+                            <h6>@Localizer["WeekdayWorkHours"]</h6>
+                            <p>@Localizer["SetDefaultWorkHours"]</p>
                         </div>
                     </div>
                     <div class="row g-3">
                         <div class="col-md-3">
                             <div class="form-floating-custom">
                                 <input type="time" class="form-input" id="sgWeekdayStart" value="08:00">
-                                <label>@(isTurkish ? "Başlangıç" : "Start")</label>
+                                <label>@Localizer["Start"]</label>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-floating-custom">
                                 <input type="time" class="form-input" id="sgWeekdayEnd" value="17:00">
-                                <label>@(isTurkish ? "Bitiş" : "End")</label>
+                                <label>@Localizer["End"]</label>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-floating-custom">
                                 <input type="number" class="form-input" id="sgWeekdayBreak" value="60" min="0" max="120" step="5">
-                                <label>@(isTurkish ? "Mola (dk)" : "Break (min)")</label>
+                                <label>@Localizer["BreakMin"]</label>
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -997,7 +1003,7 @@
                                 <label class="custom-checkbox">
                                     <input type="checkbox" id="sgApplyWeekday" checked>
                                     <span class="checkmark"></span>
-                                    <span class="checkbox-label">@(isTurkish ? "Uygula" : "Apply")</span>
+                                    <span class="checkbox-label">@Localizer["Apply"]</span>
                                 </label>
                             </div>
                         </div>
@@ -1009,33 +1015,33 @@
                     <div class="section-header">
                         <span class="section-number">2</span>
                         <div class="section-info">
-                            <h6>@(isTurkish ? "Hafta Sonu Çalışma" : "Weekend Work")</h6>
-                            <p>@(isTurkish ? "Hafta sonları minimum personel ve saat belirleyin" : "Set minimum staff and hours for weekends")</p>
+                            <h6>@Localizer["WeekendWork"]</h6>
+                            <p>@Localizer["SetMinStaffAndHoursWeekends"]</p>
                         </div>
                     </div>
                     <div class="row g-3">
                         <div class="col-md-2">
                             <div class="form-floating-custom">
                                 <input type="number" class="form-input" id="sgWeekendMinStaff" value="1" min="0" max="50">
-                                <label>@(isTurkish ? "Min. Personel" : "Min Staff")</label>
+                                <label>@Localizer["MinStaff"]</label>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-floating-custom">
                                 <input type="time" class="form-input" id="sgWeekendStart" value="08:00">
-                                <label>@(isTurkish ? "Başlangıç" : "Start")</label>
+                                <label>@Localizer["Start"]</label>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-floating-custom">
                                 <input type="time" class="form-input" id="sgWeekendEnd" value="17:00">
-                                <label>@(isTurkish ? "Bitiş" : "End")</label>
+                                <label>@Localizer["End"]</label>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-floating-custom">
                                 <input type="number" class="form-input" id="sgWeekendBreak" value="60" min="0" max="120" step="5">
-                                <label>@(isTurkish ? "Mola (dk)" : "Break (min)")</label>
+                                <label>@Localizer["BreakMin"]</label>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -1043,7 +1049,7 @@
                                 <label class="custom-checkbox">
                                     <input type="checkbox" id="sgApplyWeekend" checked>
                                     <span class="checkmark"></span>
-                                    <span class="checkbox-label">@(isTurkish ? "Hafta sonu çalışma uygula" : "Apply weekend work")</span>
+                                    <span class="checkbox-label">@Localizer["ApplyWeekendWork"]</span>
                                 </label>
                             </div>
                         </div>
@@ -1055,33 +1061,33 @@
                     <div class="section-header">
                         <span class="section-number">3</span>
                         <div class="section-info">
-                            <h6>@(isTurkish ? "Hafta İçi Nöbet" : "Weekday Duty")</h6>
-                            <p>@(isTurkish ? "Her gün kaç personel nöbet tutacak?" : "How many staff on duty each day?")</p>
+                            <h6>@Localizer["WeekdayDuty"]</h6>
+                            <p>@Localizer["HowManyStaffOnDuty"]</p>
                         </div>
                     </div>
                     <div class="row g-3">
                         <div class="col-md-2">
                             <div class="form-floating-custom">
                                 <input type="number" class="form-input" id="sgWeekdayDutyMin" value="1" min="0" max="50">
-                                <label>@(isTurkish ? "Min. Nöbetçi" : "Min On-Duty")</label>
+                                <label>@Localizer["MinOnDuty"]</label>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-floating-custom">
                                 <input type="time" class="form-input" id="sgWeekdayDutyStart" value="17:00">
-                                <label>@(isTurkish ? "Başlangıç" : "Start")</label>
+                                <label>@Localizer["Start"]</label>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-floating-custom">
                                 <input type="time" class="form-input" id="sgWeekdayDutyEnd" value="08:00">
-                                <label>@(isTurkish ? "Bitiş" : "End")</label>
+                                <label>@Localizer["End"]</label>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-floating-custom">
                                 <input type="number" class="form-input" id="sgWeekdayDutyBreak" value="0" min="0" max="120" step="5">
-                                <label>@(isTurkish ? "Mola (dk)" : "Break (min)")</label>
+                                <label>@Localizer["BreakMin"]</label>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -1089,14 +1095,14 @@
                                 <label class="custom-checkbox">
                                     <input type="checkbox" id="sgApplyWeekdayDuty" checked>
                                     <span class="checkmark"></span>
-                                    <span class="checkbox-label">@(isTurkish ? "Hafta içi nöbet uygula" : "Apply weekday duty")</span>
+                                    <span class="checkbox-label">@Localizer["ApplyWeekdayDuty"]</span>
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div class="info-box mini mt-2">
                         <span class="info-icon">💡</span>
-                        <span>@(isTurkish ? "Bitiş saati başlangıçtan küçükse ertesi güne geçer (gece nöbeti)" : "If end time is before start, it spans to next day (night shift)")</span>
+                        <span>@Localizer["NightShiftNote"]</span>
                     </div>
                 </div>
 
@@ -1105,33 +1111,33 @@
                     <div class="section-header">
                         <span class="section-number">4</span>
                         <div class="section-info">
-                            <h6>@(isTurkish ? "Resmi Tatil Nöbeti" : "Holiday Duty")</h6>
-                            <p>@(isTurkish ? "Resmi tatillerde nöbet ayarları" : "Duty settings for holidays")</p>
+                            <h6>@Localizer["HolidayDuty"]</h6>
+                            <p>@Localizer["DutySettingsForHolidays"]</p>
                         </div>
                     </div>
                     <div class="row g-3">
                         <div class="col-md-2">
                             <div class="form-floating-custom">
                                 <input type="number" class="form-input" id="sgHolidayDutyMin" value="1" min="0" max="50">
-                                <label>@(isTurkish ? "Min. Nöbetçi" : "Min On-Duty")</label>
+                                <label>@Localizer["MinOnDuty"]</label>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-floating-custom">
                                 <input type="time" class="form-input" id="sgHolidayDutyStart" value="08:00">
-                                <label>@(isTurkish ? "Başlangıç" : "Start")</label>
+                                <label>@Localizer["Start"]</label>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-floating-custom">
                                 <input type="time" class="form-input" id="sgHolidayDutyEnd" value="08:00">
-                                <label>@(isTurkish ? "Bitiş" : "End")</label>
+                                <label>@Localizer["End"]</label>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-floating-custom">
                                 <input type="number" class="form-input" id="sgHolidayDutyBreak" value="0" min="0" max="120" step="5">
-                                <label>@(isTurkish ? "Mola (dk)" : "Break (min)")</label>
+                                <label>@Localizer["BreakMin"]</label>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -1139,7 +1145,7 @@
                                 <label class="custom-checkbox">
                                     <input type="checkbox" id="sgApplyHolidayDuty" checked>
                                     <span class="checkmark"></span>
-                                    <span class="checkbox-label">@(isTurkish ? "Tatil nöbeti uygula" : "Apply holiday duty")</span>
+                                    <span class="checkbox-label">@Localizer["ApplyHolidayDuty"]</span>
                                 </label>
                             </div>
                         </div>
@@ -1151,8 +1157,8 @@
                     <div class="section-header">
                         <span class="section-number">5</span>
                         <div class="section-info">
-                            <h6>@(isTurkish ? "Nöbet Tutmayan Personeller" : "Exempt from Duty")</h6>
-                            <p>@(isTurkish ? "Bu personeller hiçbir zaman nöbete yazılmaz" : "These employees are never assigned to duty")</p>
+                            <h6>@Localizer["ExemptFromDuty"]</h6>
+                            <p>@Localizer["NeverAssignedToDuty"]</p>
                         </div>
                     </div>
                     <div class="exempt-employees-list" id="sgExemptEmployeesList">
@@ -1175,8 +1181,8 @@
                     <div class="section-header">
                         <span class="section-number">6</span>
                         <div class="section-info">
-                            <h6>@(isTurkish ? "Tarih Bazlı Kısıtlamalar" : "Date-Based Restrictions")</h6>
-                            <p>@(isTurkish ? "Belirli tarihlerde nöbet tutamayacak personeller" : "Employees unavailable on specific dates")</p>
+                            <h6>@Localizer["DateBasedRestrictions"]</h6>
+                            <p>@Localizer["EmployeesUnavailableOnDates"]</p>
                         </div>
                     </div>
                     <div class="date-restrictions-container">
@@ -1185,30 +1191,30 @@
                                 <div class="col-md-4">
                                     <div class="form-floating-custom">
                                         <select class="form-input" id="sgRestrictionEmployee">
-                                            <option value="">@(isTurkish ? "Personel seç..." : "Select employee...")</option>
+                                            <option value="">@Localizer["SelectEmployee"]</option>
                                             @foreach (var emp in Model.Employees.Where(e => e.IsActive).OrderBy(e => e.FullName))
                                             {
                                                 <option value="@emp.Id">@emp.FullName</option>
                                             }
                                         </select>
-                                        <label>@(isTurkish ? "Personel" : "Employee")</label>
+                                        <label>@Localizer["Employees"]</label>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-floating-custom">
                                         <input type="date" class="form-input" id="sgRestrictionStartDate">
-                                        <label>@(isTurkish ? "Başlangıç" : "Start Date")</label>
+                                        <label>@Localizer["StartDate"]</label>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-floating-custom">
                                         <input type="date" class="form-input" id="sgRestrictionEndDate">
-                                        <label>@(isTurkish ? "Bitiş" : "End Date")</label>
+                                        <label>@Localizer["EndDate"]</label>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
                                     <button type="button" class="btn-add-restriction" id="sgAddRestriction">
-                                        <span>+</span> @(isTurkish ? "Ekle" : "Add")
+                                        <span>+</span> @Localizer["Add"]
                                     </button>
                                 </div>
                             </div>
@@ -1224,8 +1230,8 @@
                     <div class="section-header">
                         <span class="section-number">7</span>
                         <div class="section-info">
-                            <h6>@(isTurkish ? "Nöbet Tercih Tarihleri" : "Duty Preference Dates")</h6>
-                            <p>@(isTurkish ? "Belirli tarihlerde nöbet tutabilecek/isteyenler" : "Employees available/preferred on specific dates")</p>
+                            <h6>@Localizer["DutyPreferenceDates"]</h6>
+                            <p>@Localizer["EmployeesAvailableOnDates"]</p>
                         </div>
                     </div>
                     <div class="date-restrictions-container">
@@ -1234,30 +1240,30 @@
                                 <div class="col-md-4">
                                     <div class="form-floating-custom">
                                         <select class="form-input" id="sgPreferenceEmployee">
-                                            <option value="">@(isTurkish ? "Personel seç..." : "Select employee...")</option>
+                                            <option value="">@Localizer["SelectEmployee"]</option>
                                             @foreach (var emp in Model.Employees.Where(e => e.IsActive).OrderBy(e => e.FullName))
                                             {
                                                 <option value="@emp.Id">@emp.FullName</option>
                                             }
                                         </select>
-                                        <label>@(isTurkish ? "Personel" : "Employee")</label>
+                                        <label>@Localizer["Employees"]</label>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-floating-custom">
                                         <input type="date" class="form-input" id="sgPreferenceStartDate">
-                                        <label>@(isTurkish ? "Başlangıç" : "Start Date")</label>
+                                        <label>@Localizer["StartDate"]</label>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-floating-custom">
                                         <input type="date" class="form-input" id="sgPreferenceEndDate">
-                                        <label>@(isTurkish ? "Bitiş" : "End Date")</label>
+                                        <label>@Localizer["EndDate"]</label>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
                                     <button type="button" class="btn-add-restriction preference" id="sgAddPreference">
-                                        <span>+</span> @(isTurkish ? "Ekle" : "Add")
+                                        <span>+</span> @Localizer["Add"]
                                     </button>
                                 </div>
                             </div>
@@ -1273,7 +1279,7 @@
                     <div class="section-header">
                         <span class="section-number">⚙️</span>
                         <div class="section-info">
-                            <h6>@(isTurkish ? "Ek Ayarlar" : "Additional Options")</h6>
+                            <h6>@Localizer["AdditionalOptions"]</h6>
                         </div>
                     </div>
                     <div class="row g-3">
@@ -1282,7 +1288,7 @@
                                 <label class="custom-checkbox">
                                     <input type="checkbox" id="sgOverwriteExisting">
                                     <span class="checkmark"></span>
-                                    <span class="checkbox-label">@(isTurkish ? "Mevcut vardiyaları üzerine yaz" : "Overwrite existing shifts")</span>
+                                    <span class="checkbox-label">@Localizer["OverwriteExistingShifts"]</span>
                                 </label>
                             </div>
                         </div>
@@ -1291,14 +1297,14 @@
                                 <label class="custom-checkbox">
                                     <input type="checkbox" id="sgBalanceDuties" checked>
                                     <span class="checkmark"></span>
-                                    <span class="checkbox-label">@(isTurkish ? "Nöbetleri adil dağıt" : "Balance duties fairly")</span>
+                                    <span class="checkbox-label">@Localizer["BalanceDutiesFairly"]</span>
                                 </label>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-floating-custom">
                                 <input type="number" class="form-input" id="sgMinDaysBetweenDuties" value="2" min="0" max="14">
-                                <label>@(isTurkish ? "Nöbetler arası min. gün" : "Min days between duties")</label>
+                                <label>@Localizer["MinDaysBetweenDuties"]</label>
                             </div>
                         </div>
                     </div>
@@ -1311,11 +1317,11 @@
                             <div class="sg-spinner"></div>
                         </div>
                         <div class="sg-progress-info">
-                            <h4 id="sgProgressText">@(isTurkish ? "Çizelge oluşturuluyor..." : "Generating schedule...")</h4>
+                            <h4 id="sgProgressText">@Localizer["GeneratingSchedule"]</h4>
                             <div class="sg-progress-bar-wrap">
                                 <div class="sg-progress-bar" id="sgProgressBar"></div>
                             </div>
-                            <p class="sg-progress-hint">@(isTurkish ? "Bu işlem birkaç saniye sürebilir" : "This may take a few seconds")</p>
+                            <p class="sg-progress-hint">@Localizer["MayTakeFewSeconds"]</p>
                         </div>
                     </div>
                 </div>
@@ -1324,21 +1330,21 @@
             <!-- Footer -->
             <div class="sg-modal-footer">
                 <div class="sg-footer-info">
-                    <span class="sg-employee-count">👥 @Model.Employees.Count(e => e.IsActive) @(isTurkish ? "aktif personel" : "active employees")</span>
-                    <span class="sg-day-count">📅 @Model.DaysInMonth @(isTurkish ? "gün" : "days")</span>
+                    <span class="sg-employee-count">👥 @Model.Employees.Count(e => e.IsActive) @Localizer["activeEmployees"]</span>
+                    <span class="sg-day-count">📅 @Model.DaysInMonth @Localizer["days"]</span>
                 </div>
                 <div class="sg-footer-actions">
                     <button type="button" class="sg-btn-cancel" data-bs-dismiss="modal">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M18 6L6 18M6 6l12 12"/>
                         </svg>
-                        @(isTurkish ? "İptal" : "Cancel")
+                        @Localizer["Cancel"]
                     </button>
                     <button type="button" class="sg-btn-generate" id="sgGenerateBtn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
                         </svg>
-                        @(isTurkish ? "Çizelge Oluştur" : "Generate Schedule")
+                        @Localizer["GenerateSchedule"]
                     </button>
                 </div>
             </div>
@@ -1351,24 +1357,24 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content sg-confirm-modal">
             <div class="sg-confirm-icon">🗑️</div>
-            <h3>@(isTurkish ? "Emin misiniz?" : "Are you sure?")</h3>
-            <p>@(isTurkish ? "Bu işlem geri alınamaz! Tüm mevcut vardiyalar silinecek ve yeni çizelge oluşturulacak." : "This cannot be undone! All existing shifts will be deleted and a new schedule will be created.")</p>
+            <h3>@Localizer["AreYouSure"]</h3>
+            <p>@Localizer["CannotBeUndone"]</p>
             <div class="sg-confirm-details">
                 <div class="sg-confirm-item">
-                    <span class="sg-confirm-label">@(isTurkish ? "Ay" : "Month"):</span>
+                    <span class="sg-confirm-label">@Localizer["Month"]:</span>
                     <span class="sg-confirm-value">@Model.MonthName</span>
                 </div>
                 <div class="sg-confirm-item">
-                    <span class="sg-confirm-label">@(isTurkish ? "Silinecek" : "To delete"):</span>
-                    <span class="sg-confirm-value sg-delete-count">@Model.Shifts.Count @(isTurkish ? "vardiya" : "shifts")</span>
+                    <span class="sg-confirm-label">@Localizer["ToDelete"]:</span>
+                    <span class="sg-confirm-value sg-delete-count">@Model.Shifts.Count @Localizer["shifts"]</span>
                 </div>
             </div>
             <div class="sg-confirm-actions">
                 <button type="button" class="sg-btn-cancel-confirm" data-bs-dismiss="modal">
-                    @(isTurkish ? "Vazgeç" : "Cancel")
+                    @Localizer["Cancel"]
                 </button>
                 <button type="button" class="sg-btn-confirm-delete" id="sgConfirmGenerate">
-                    @(isTurkish ? "Evet, Oluştur" : "Yes, Generate")
+                    @Localizer["YesGenerate"]
                 </button>
             </div>
         </div>
@@ -2068,25 +2074,25 @@
     <div class="premium-modal">
         <div class="premium-modal-header">
             <div class="icon">🔒</div>
-            <h3>@(isTurkish ? "Premium Özellik" : "Premium Feature")</h3>
-            <p>@(isTurkish ? "Bu özellik kayıtlı kullanıcılar için" : "This feature is for registered users")</p>
+            <h3>@Localizer["PremiumFeature"]</h3>
+            <p>@Localizer["ForRegisteredUsers"]</p>
         </div>
         <div class="premium-modal-body">
             <ul class="premium-features">
-                <li>@(isTurkish ? "10 personele kadar yönetim" : "Manage up to 10 employees")</li>
-                <li>@(isTurkish ? "Akıllı nöbet planlaması" : "Smart shift scheduling")</li>
-                <li>@(isTurkish ? "Puantaj ve mesai hesaplama" : "Timesheet and overtime calculation")</li>
-                <li>@(isTurkish ? "Excel export" : "Excel export")</li>
-                <li>@(isTurkish ? "Nöbet listelerini kaydetme" : "Save shift schedules")</li>
-                <li>@(isTurkish ? "Verileriniz güvende kalır" : "Your data stays safe")</li>
+                <li>@Localizer["ManageUpTo10Employees"]</li>
+                <li>@Localizer["SmartShiftScheduling"]</li>
+                <li>@Localizer["TimesheetAndOvertime"]</li>
+                <li>@Localizer["ExcelExport"]</li>
+                <li>@Localizer["SaveShiftSchedules"]</li>
+                <li>@Localizer["YourDataStaysSafe"]</li>
             </ul>
         </div>
         <div class="premium-modal-footer">
             <button class="btn-premium-close" onclick="closePremiumModal()">
-                @(isTurkish ? "Kapat" : "Close")
+                @Localizer["Close"]
             </button>
             <a href="/Account/Register?returnUrl=/app" class="btn-premium-register">
-                @(isTurkish ? "Ücretsiz Kayıt Ol" : "Sign Up Free")
+                @Localizer["SignUpFree"]
             </a>
         </div>
     </div>
@@ -2101,8 +2107,8 @@
             <div class="modal-header-custom">
                 <div class="modal-icon">📋</div>
                 <div class="modal-title-group">
-                    <h5 class="modal-title">@(isTurkish ? "Kayıtlı Nöbet Listeleri" : "Saved Schedules")</h5>
-                    <p class="modal-subtitle">@Model.MonthName - @(isTurkish ? "için kayıtlı listeler" : "saved schedules")</p>
+                    <h5 class="modal-title">@Localizer["SavedSchedulesTitle"]</h5>
+                    <p class="modal-subtitle">@Model.MonthName - @Localizer["SavedSchedulesForMonth"]</p>
                 </div>
                 <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
             </div>
@@ -2111,14 +2117,14 @@
                 <div class="saved-schedule-section">
                     <h6 class="section-title">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
-                        @(isTurkish ? "Mevcut Listeyi Kaydet" : "Save Current Schedule")
+                        @Localizer["SaveCurrentSchedule"]
                     </h6>
                     <div class="save-schedule-form">
-                        <input type="text" id="scheduleNameInput" class="form-input" placeholder="@(isTurkish ? "Liste adı (örn: Ocak Final)" : "Schedule name (e.g., January Final)")">
-                        <input type="text" id="scheduleDescInput" class="form-input" placeholder="@(isTurkish ? "Açıklama (isteğe bağlı)" : "Description (optional)")" style="margin-top: 8px;">
+                        <input type="text" id="scheduleNameInput" class="form-input" placeholder="@Localizer["ScheduleNamePlaceholder"]">
+                        <input type="text" id="scheduleDescInput" class="form-input" placeholder="@Localizer["DescriptionOptional"]" style="margin-top: 8px;">
                         <button class="btn-save-schedule" id="saveScheduleBtn">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
-                            @(isTurkish ? "Kaydet" : "Save")
+                            @Localizer["Save"]
                         </button>
                     </div>
                 </div>
@@ -2129,16 +2135,16 @@
                 <div class="saved-schedule-section">
                     <h6 class="section-title">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-                        @(isTurkish ? "Kayıtlı Listeler" : "Saved Schedules")
+                        @Localizer["SavedSchedules"]
                     </h6>
                     <div class="saved-schedules-filter">
                         <label>
                             <input type="checkbox" id="filterCurrentMonthOnly" checked>
-                            @(isTurkish ? "Sadece bu ay" : "This month only")
+                            @Localizer["ThisMonthOnly"]
                         </label>
                     </div>
                     <div id="savedSchedulesList" class="saved-schedules-list">
-                        <div class="loading-placeholder">@(isTurkish ? "Yükleniyor..." : "Loading...")</div>
+                        <div class="loading-placeholder">@Localizer["Loading"]</div>
                     </div>
                 </div>
             </div>
@@ -2154,16 +2160,14 @@
             <div class="modal-header-custom">
                 <div class="modal-icon">🌙</div>
                 <div class="modal-title-group">
-                    <h5 class="modal-title">@(isTurkish ? "Ay Sonu Nöbeti" : "Month-End Shift")</h5>
-                    <p class="modal-subtitle">@(isTurkish ? "Sarkan saatler hangi aya yazılsın?" : "Which month should overnight hours count?")</p>
+                    <h5 class="modal-title">@Localizer["MonthEndShift"]</h5>
+                    <p class="modal-subtitle">@Localizer["WhichMonthOvernightHours"]</p>
                 </div>
                 <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
             </div>
             <div class="modal-body-custom">
                 <p class="overnight-info">
-                    @(isTurkish 
-                        ? "Bu nöbet ayın son gününde başlayıp ertesi aya sarkıyor. Puantaj hesaplaması için sarkan saatlerin hangi aya dahil edileceğini seçin." 
-                        : "This shift starts on the last day of the month and continues into the next month. Choose which month the overnight hours should count for the timesheet.")
+                    @Localizer["OvernightShiftInfo"]
                 </p>
                 
                 <div class="overnight-options">
@@ -2172,8 +2176,8 @@
                         <div class="overnight-card">
                             <div class="overnight-icon">📅</div>
                             <div class="overnight-text">
-                                <strong>@(isTurkish ? "Tamamı Bu Ay" : "All This Month")</strong>
-                                <span>@(isTurkish ? "Sarkan saatler dahil tümü bu aya yazılsın" : "Including overnight hours, all count in this month")</span>
+                                <strong>@Localizer["AllThisMonth"]</strong>
+                                <span>@Localizer["AllThisMonthDesc"]</span>
                             </div>
                         </div>
                     </label>
@@ -2183,17 +2187,17 @@
                         <div class="overnight-card">
                             <div class="overnight-icon">✂️</div>
                             <div class="overnight-text">
-                                <strong>@(isTurkish ? "Gece Yarısından Böl" : "Split at Midnight")</strong>
-                                <span>@(isTurkish ? "00:00'a kadar bu ay, 00:00 sonrası gelecek ay" : "Until 00:00 this month, after 00:00 next month")</span>
+                                <strong>@Localizer["SplitAtMidnight"]</strong>
+                                <span>@Localizer["SplitAtMidnightDesc"]</span>
                             </div>
                         </div>
                     </label>
                 </div>
             </div>
             <div class="modal-footer-custom">
-                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">@(isTurkish ? "İptal" : "Cancel")</button>
+                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
                 <button type="button" class="btn-modal-save" id="confirmOvernightBtn">
-                    <span class="btn-icon">✓</span> @(isTurkish ? "Nöbet Ekle" : "Add Shift")
+                    <span class="btn-icon">✓</span> @Localizer["AddShift"]
                 </button>
             </div>
         </div>
@@ -2207,33 +2211,33 @@
             <div class="modal-header-custom time-header">
                 <div class="modal-icon">⏰</div>
                 <div class="modal-title-group">
-                    <h5 class="modal-title">@(isTurkish ? "Özel Vardiya" : "Custom Shift")</h5>
-                    <p class="modal-subtitle">@(isTurkish ? "Saat ve mola ayarlayın" : "Set time and break")</p>
+                    <h5 class="modal-title">@Localizer["CustomShift"]</h5>
+                    <p class="modal-subtitle">@Localizer["SetTimeAndBreak"]</p>
                 </div>
                 <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
             </div>
             <div class="modal-body-custom">
                 <div class="time-inputs">
                     <div class="time-input-group">
-                        <label class="time-label">@(isTurkish ? "Başlangıç" : "Start")</label>
+                        <label class="time-label">@Localizer["Start"]</label>
                         <input type="time" class="time-input" id="customStartTime" value="08:00">
                     </div>
                     <div class="time-arrow">→</div>
                     <div class="time-input-group">
-                        <label class="time-label">@(isTurkish ? "Bitiş" : "End")</label>
+                        <label class="time-label">@Localizer["End"]</label>
                         <input type="time" class="time-input" id="customEndTime" value="17:00">
                     </div>
                 </div>
                 
                 <div class="break-input">
-                    <label class="break-label">☕ @(isTurkish ? "Mola Süresi" : "Break Time")</label>
+                    <label class="break-label">☕ @Localizer["BreakTime"]</label>
                     <div class="break-buttons">
                         <button type="button" class="break-btn active" data-break="0">0</button>
                         <button type="button" class="break-btn" data-break="30">30</button>
                         <button type="button" class="break-btn" data-break="60">60</button>
                         <button type="button" class="break-btn" data-break="90">90</button>
-                        <input type="number" class="break-custom" id="customBreak" value="0" min="0" max="480" placeholder="dk">
-                        <span class="break-unit">@(isTurkish ? "dk" : "min")</span>
+                        <input type="number" class="break-custom" id="customBreak" value="0" min="0" max="480" placeholder="@Localizer["MinuteAbbr"].Value">
+                        <span class="break-unit">@Localizer["min"]</span>
                     </div>
                 </div>
                 
@@ -2244,17 +2248,17 @@
                     </span>
                     <span class="toggle-label">
                         <span class="toggle-icon">🌙</span>
-                        @(isTurkish ? "Ertesi güne sarkar" : "Overnight shift")
+                        @Localizer["OvernightShift"]
                     </span>
                 </label>
             </div>
             <div class="modal-footer-custom">
                 <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
-                    @(isTurkish ? "İptal" : "Cancel")
+                    @Localizer["Cancel"]
                 </button>
                 <button type="button" class="btn-modal-save time" id="applyCustomTimeBtn">
                     <span class="btn-icon">✓</span>
-                    @(isTurkish ? "Uygula" : "Apply")
+                    @Localizer["Apply"]
                 </button>
             </div>
         </div>
@@ -2269,7 +2273,7 @@
                 <div class="modal-icon">📅</div>
                 <div class="modal-title-group">
                     <h5 class="modal-title" id="bulkAssignEmployeeName"></h5>
-                    <p class="modal-subtitle">@(isTurkish ? "Toplu nöbet atama" : "Bulk shift assignment")</p>
+                    <p class="modal-subtitle">@Localizer["BulkShiftAssignment"]</p>
                 </div>
                 <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
             </div>
@@ -2277,8 +2281,8 @@
                 <div class="info-box template-highlight-box" style="margin-bottom: 16px;" id="bulkAssignTemplateBox">
                     <span class="info-icon" id="bulkAssignTemplateIcon">ℹ️</span>
                     <div class="info-content">
-                        <strong>@(isTurkish ? "Seçili Şablon" : "Selected Template")</strong>
-                        <p id="bulkAssignTemplateInfo">@(isTurkish ? "Lütfen önce bir vardiya şablonu seçin" : "Please select a shift template first")</p>
+                        <strong>@Localizer["SelectedTemplate"]</strong>
+                        <p id="bulkAssignTemplateInfo">@Localizer["PleaseSelectTemplateFirst"]</p>
                     </div>
                     <div class="template-preview-badge" id="bulkAssignTemplateBadge" style="display: none;">
                         <span class="template-preview-color" id="bulkAssignTemplateColor"></span>
@@ -2290,24 +2294,24 @@
                     <button type="button" class="bulk-option-btn" data-mode="weekdays">
                         <span class="option-icon">📅</span>
                         <div class="option-content">
-                            <strong>@(isTurkish ? "Hafta İçi Günler" : "Weekdays Only")</strong>
-                            <small>@(isTurkish ? "Pazartesi - Cuma" : "Monday - Friday")</small>
+                            <strong>@Localizer["WeekdaysOnly"]</strong>
+                            <small>@Localizer["MondayFriday"]</small>
                         </div>
                     </button>
                     
                     <button type="button" class="bulk-option-btn" data-mode="all">
                         <span class="option-icon">📆</span>
                         <div class="option-content">
-                            <strong>@(isTurkish ? "Tüm Günler" : "All Days")</strong>
-                            <small>@(isTurkish ? "Hafta içi + Hafta sonu" : "Including weekends")</small>
+                            <strong>@Localizer["AllDays"]</strong>
+                            <small>@Localizer["IncludingWeekends"]</small>
                         </div>
                     </button>
                     
                     <button type="button" class="bulk-option-btn" data-mode="no-sunday">
                         <span class="option-icon">🗓️</span>
                         <div class="option-content">
-                            <strong>@(isTurkish ? "Pazar Hariç" : "Except Sunday")</strong>
-                            <small>@(isTurkish ? "Pazar günleri boş" : "Sundays excluded")</small>
+                            <strong>@Localizer["ExceptSunday"]</strong>
+                            <small>@Localizer["SundaysExcluded"]</small>
                         </div>
                     </button>
                 </div>
@@ -2315,23 +2319,23 @@
                 <div class="form-section" style="margin-top: 12px;">
                     <label class="overwrite-checkbox">
                         <input type="checkbox" id="bulkOverwrite">
-                        <span class="checkbox-text">@(isTurkish ? "Mevcut nöbetlerin üzerine yaz" : "Overwrite existing shifts")</span>
+                        <span class="checkbox-text">@Localizer["OverwriteExistingShifts"]</span>
                     </label>
                 </div>
                 
                 <!-- Loading Indicator -->
                 <div class="bulk-loading" id="bulkLoading" style="display: none;">
                     <div class="loading-spinner"></div>
-                    <span class="loading-text">@(isTurkish ? "İşleniyor..." : "Processing...")</span>
+                    <span class="loading-text">@Localizer["Processing"]</span>
                     <span class="loading-progress" id="bulkProgress"></span>
                 </div>
             </div>
             <div class="modal-footer-custom" style="justify-content: space-between;">
                 <button type="button" class="btn-modal-delete" id="bulkDeleteAllBtn">
                     <span class="btn-icon">🗑️</span>
-                    @(isTurkish ? "Tüm Nöbetleri Sil" : "Delete All Shifts")
+                    @Localizer["DeleteAllShifts"]
                 </button>
-                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">@(isTurkish ? "İptal" : "Cancel")</button>
+                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
             </div>
         </div>
     </div>
@@ -5681,18 +5685,77 @@
 
 @section Scripts {
 <script>
-    const isTurkish = @(isTurkish ? "true" : "false");
+    const currentLang = '@currentLang';
     const isRegistered = @(Model.IsRegistered ? "true" : "false");
     const texts = {
-        confirmDelete: isTurkish ? 'Silmek istediğinize emin misiniz?' : 'Are you sure you want to delete?',
-        confirmDeleteShift: isTurkish ? 'Bu nöbeti silmek istiyor musunuz?' : 'Do you want to delete this shift?',
-        selectTemplate: isTurkish ? 'Lütfen önce bir vardiya şablonu seçin' : 'Please select a shift template first',
-        errorOccurred: isTurkish ? 'Hata oluştu' : 'An error occurred',
-        nameRequired: isTurkish ? 'Ad soyad gerekli' : 'Full name is required',
-        dateNameRequired: isTurkish ? 'Tarih ve ad gerekli' : 'Date and name are required',
-        shiftAdded: isTurkish ? 'Nöbet eklendi' : 'Shift added',
-        shiftDeleted: isTurkish ? 'Nöbet silindi' : 'Shift deleted',
-        employeeDeleted: isTurkish ? 'Personel silindi' : 'Employee deleted'
+        confirmDelete: '@Localizer["ConfirmDelete"].Value',
+        confirmDeleteShift: '@Localizer["ConfirmDeleteShift"].Value',
+        selectTemplate: '@Localizer["PleaseSelectTemplateFirst"].Value',
+        errorOccurred: '@Localizer["ErrorOccurred"].Value',
+        nameRequired: '@Localizer["NameRequired"].Value',
+        dateNameRequired: '@Localizer["DateNameRequired"].Value',
+        shiftAdded: '@Localizer["ShiftAdded"].Value',
+        shiftDeleted: '@Localizer["ShiftDeleted"].Value',
+        employeeDeleted: '@Localizer["EmployeeDeleted"].Value',
+        dayOff: '@Localizer["DayOff"].Value',
+        noTemplatesAddWith: '@Localizer["NoTemplatesAddWith"].Value',
+        minBreak: '@Localizer["minBreak"].Value',
+        nightShift: '@Localizer["NightShift"].Value',
+        noTemplatesYet: '@Localizer["NoTemplatesYetAddBelow"].Value',
+        edit: '@Localizer["Edit"].Value',
+        delete: '@Localizer["Delete"].Value',
+        templateNameRequired: '@Localizer["TemplateNameRequired"].Value',
+        startEndTimeRequired: '@Localizer["StartAndEndTimeRequired"].Value',
+        templateAdded: '@Localizer["TemplateAdded"].Value',
+        confirmDeleteTemplate: '@Localizer["ConfirmDeleteTemplate"].Value',
+        templateDeleted: '@Localizer["TemplateDeleted"].Value',
+        newTemplateName: '@Localizer["NewTemplateName"].Value',
+        templateUpdated: '@Localizer["TemplateUpdated"].Value',
+        loading: '@Localizer["Loading"].Value',
+        addHoliday: '@Localizer["AddHolidayJS"].Value',
+        noSavedSchedulesYet: '@Localizer["NoSavedSchedulesYet"].Value',
+        saved: '@Localizer["Saved"].Value',
+        load: '@Localizer["Load"].Value',
+        scheduleNameRequired: '@Localizer["ScheduleNameRequired"].Value',
+        confirmDeleteSchedule: '@Localizer["ConfirmDeleteSchedule"].Value',
+        deleted: '@Localizer["Deleted"].Value',
+        confirmDeleteLeave: '@Localizer["ConfirmDeleteLeave"].Value',
+        pleaseSelectTemplateOrLeave: '@Localizer["PleaseSelectTemplateOrLeave"].Value',
+        noShiftsToDelete: '@Localizer["NoShiftsToDelete"].Value',
+        shiftsDeleted: '@Localizer["ShiftsDeleted"].Value',
+        shiftsAdded: '@Localizer["ShiftsAdded"].Value',
+        shiftOverlap: '@Localizer["ShiftOverlap"].Value',
+        leaveAssigned: '@Localizer["LeaveAssigned"].Value',
+        leaveDeleted: '@Localizer["LeaveDeleted"].Value',
+        noHolidaysThisMonth: '@Localizer["NoHolidaysThisMonth"].Value',
+        official: '@Localizer["Official"].Value',
+        admin: '@Localizer["Admin"].Value',
+        halfDay: '@Localizer["HalfDay"].Value',
+        confirmDeleteHoliday: '@Localizer["ConfirmDeleteHoliday"].Value',
+        holidayDeleted: '@Localizer["HolidayDeleted"].Value',
+        adding: '@Localizer["Adding"].Value',
+        holidayAdded: '@Localizer["HolidayAdded"].Value',
+        smartSchedulingComingSoon: '@Localizer["SmartSchedulingComingSoon"].Value',
+        off: '@Localizer["Off"].Value',
+        createFreeAccount: '@Localizer["CreateFreeAccount"].Value',
+        saveDataAndAccessFeatures: '@Localizer["SaveDataAndAccessFeatures"].Value',
+        dataPermanentlySaved: '@Localizer["DataPermanentlySaved"].Value',
+        addUpTo10Employees: '@Localizer["AddUpTo10Employees"].Value',
+        detailedTimesheetsReports: '@Localizer["DetailedTimesheetsReports"].Value',
+        exportToExcel: '@Localizer["ExportToExcel"].Value',
+        iAlreadyHaveAccount: '@Localizer["IAlreadyHaveAccount"].Value',
+        noCreditCardRequired: '@Localizer["NoCreditCardRequired"].Value',
+        selectEmployeeAndStartDate: '@Localizer["SelectEmployeeAndStartDate"].Value',
+        deletingExistingShifts: '@Localizer["DeletingExistingShifts"].Value',
+        analyzingRules: '@Localizer["AnalyzingRules"].Value',
+        evaluatingEmployees: '@Localizer["EvaluatingEmployees"].Value',
+        savingNewShifts: '@Localizer["SavingNewShifts"].Value',
+        scheduleGeneratedSuccessfully: '@Localizer["ScheduleGeneratedSuccessfully"].Value',
+        errorPrefix: '@Localizer["Error"].Value',
+        failedToDeleteShifts: '@Localizer["FailedToDeleteShifts"].Value',
+        loadingScheduleWillReplace: '@Localizer["LoadingScheduleWillReplace"].Value',
+        confirmDeleteAllShiftsForEmployee: '@Localizer["ConfirmDeleteAllShiftsForEmployee"].Value',
+        processingDay: '@Localizer["ProcessingDay"].Value'
     };
     
     // Premium Modal Functions
@@ -5819,7 +5882,7 @@
             indicator.style.display = 'flex';
             const colorEl = indicator.querySelector('.indicator-color');
             if (colorEl) colorEl.style.background = '#94a3b8';
-            if (selectedTimeEl) selectedTimeEl.textContent = isTurkish ? 'Boş Gün' : 'Day Off';
+            if (selectedTimeEl) selectedTimeEl.textContent = texts.dayOff;
         } else {
             indicator.style.display = 'none';
         }
@@ -5853,7 +5916,7 @@
         if (!container) return;
         
         if (templates.length === 0) {
-            container.innerHTML = '<div class="template-loading">' + (isTurkish ? 'Şablon yok. ⚙️ ile ekleyin.' : 'No templates. Add with ⚙️') + '</div>';
+            container.innerHTML = '<div class="template-loading">' + texts.noTemplatesAddWith + '</div>';
             return;
         }
         
@@ -5869,7 +5932,7 @@
             btn.dataset.break = t.breakMinutes || 0;
             btn.dataset.color = t.color;
             
-            const breakText = t.breakMinutes ? (isTurkish ? `${t.breakMinutes}dk mola` : `${t.breakMinutes}min break`) : (t.spansNextDay ? (isTurkish ? 'Gece nöbeti' : 'Night shift') : '');
+            const breakText = t.breakMinutes ? `${t.breakMinutes}${texts.minBreak}` : (t.spansNextDay ? texts.nightShift : '');
             
             btn.innerHTML = `
                 <span class="tpl-color" style="background:${t.color}"></span>
@@ -5913,7 +5976,7 @@
         const container = document.getElementById('templatesContainerModal');
         if (!container) return;
         
-        container.innerHTML = '<div class="template-loading">' + (isTurkish ? 'Yükleniyor...' : 'Loading...') + '</div>';
+        container.innerHTML = '<div class="template-loading">' + texts.loading + '</div>';
         
         try {
             const response = await fetch('/api/shift-templates');
@@ -5923,7 +5986,7 @@
             }
         } catch (error) {
             console.error('Error loading templates:', error);
-            container.innerHTML = '<div class="template-loading">' + (isTurkish ? 'Hata oluştu' : 'Error occurred') + '</div>';
+            container.innerHTML = '<div class="template-loading">' + texts.errorOccurred + '</div>';
         }
     }
     
@@ -5950,7 +6013,7 @@
         const listEl = document.getElementById('templateManagerList');
         if (!listEl) return;
         
-        listEl.innerHTML = '<div class="template-loading">' + (isTurkish ? 'Yükleniyor...' : 'Loading...') + '</div>';
+        listEl.innerHTML = '<div class="template-loading">' + texts.loading + '</div>';
         
         try {
             const response = await fetch('/api/shift-templates');
@@ -5959,7 +6022,7 @@
                 renderTemplatesInManager(templates);
             }
         } catch (error) {
-            listEl.innerHTML = '<div class="template-loading">' + (isTurkish ? 'Hata oluştu' : 'Error occurred') + '</div>';
+            listEl.innerHTML = '<div class="template-loading">' + texts.errorOccurred + '</div>';
         }
     }
     
@@ -5969,7 +6032,7 @@
         if (!listEl) return;
         
         if (templates.length === 0) {
-            listEl.innerHTML = '<div class="template-loading">' + (isTurkish ? 'Henüz şablon yok. Aşağıdan ekleyin.' : 'No templates yet. Add below.') + '</div>';
+            listEl.innerHTML = '<div class="template-loading">' + texts.noTemplatesYet + '</div>';
             return;
         }
         
@@ -5978,11 +6041,11 @@
                 <span class="tpl-item-color" style="background:${t.color}"></span>
                 <div class="tpl-item-info">
                     <div class="tpl-item-name">${t.name || (t.startTime + ' - ' + t.endTime)}</div>
-                    <div class="tpl-item-time">${t.startTime} - ${t.endTime} ${t.spansNextDay ? '(+1)' : ''} • ${t.breakMinutes || 0}${isTurkish ? 'dk mola' : 'min break'}</div>
+                    <div class="tpl-item-time">${t.startTime} - ${t.endTime} ${t.spansNextDay ? '(+1)' : ''} • ${t.breakMinutes || 0}${texts.minBreak}</div>
                 </div>
                 <div class="tpl-item-actions">
-                    <button class="btn-edit" onclick="editTemplate(${t.id})" title="${isTurkish ? 'Düzenle' : 'Edit'}">✏️</button>
-                    <button class="btn-delete" onclick="deleteTemplate(${t.id})" title="${isTurkish ? 'Sil' : 'Delete'}">🗑️</button>
+                    <button class="btn-edit" onclick="editTemplate(${t.id})" title="${texts.edit}">✏️</button>
+                    <button class="btn-delete" onclick="deleteTemplate(${t.id})" title="${texts.delete}">🗑️</button>
                 </div>
             </div>
         `).join('');
@@ -5998,12 +6061,12 @@
         const spansNextDay = document.getElementById('newTemplateSpans').checked;
         
         if (!name) {
-            showToast(isTurkish ? 'Şablon adı gerekli' : 'Template name is required', 'error');
+            showToast(texts.templateNameRequired, 'error');
             return;
         }
         
         if (!startTime || !endTime) {
-            showToast(isTurkish ? 'Başlangıç ve bitiş saati gerekli' : 'Start and end time are required', 'error');
+            showToast(texts.startEndTimeRequired, 'error');
             return;
         }
         
@@ -6023,7 +6086,7 @@
             });
             
             if (response.ok) {
-                showToast(isTurkish ? 'Şablon eklendi' : 'Template added', 'success');
+                showToast(texts.templateAdded, 'success');
                 // Clear form
                 document.getElementById('newTemplateName').value = '';
                 document.getElementById('newTemplateStart').value = '08:00';
@@ -6036,16 +6099,16 @@
                 loadUserTemplates();
             } else {
                 const error = await response.json();
-                showToast(error.error || (isTurkish ? 'Hata oluştu' : 'Error occurred'), 'error');
+                showToast(error.error || texts.errorOccurred, 'error');
             }
         } catch (error) {
-            showToast(isTurkish ? 'Hata oluştu' : 'Error occurred', 'error');
+            showToast(texts.errorOccurred, 'error');
         }
     }
     
     // Delete template
     async function deleteTemplate(id) {
-        if (!confirm(isTurkish ? 'Bu şablonu silmek istediğinize emin misiniz?' : 'Are you sure you want to delete this template?')) {
+        if (!confirm(texts.confirmDeleteTemplate)) {
             return;
         }
         
@@ -6055,15 +6118,15 @@
             });
             
             if (response.ok) {
-                showToast(isTurkish ? 'Şablon silindi' : 'Template deleted', 'success');
+                showToast(texts.templateDeleted, 'success');
                 loadTemplatesForManager();
                 loadUserTemplates();
             } else {
                 const error = await response.json();
-                showToast(error.error || (isTurkish ? 'Hata oluştu' : 'Error occurred'), 'error');
+                showToast(error.error || texts.errorOccurred, 'error');
             }
         } catch (error) {
-            showToast(isTurkish ? 'Hata oluştu' : 'Error occurred', 'error');
+            showToast(texts.errorOccurred, 'error');
         }
     }
     
@@ -6075,7 +6138,7 @@
         const nameEl = item.querySelector('.tpl-item-name');
         const currentName = nameEl ? nameEl.textContent : '';
         
-        const newName = prompt(isTurkish ? 'Yeni şablon adı:' : 'New template name:', currentName);
+        const newName = prompt(texts.newTemplateName, currentName);
         if (!newName || newName === currentName) return;
         
         // Get current template data from the item
@@ -6105,15 +6168,15 @@
             });
             
             if (response.ok) {
-                showToast(isTurkish ? 'Şablon güncellendi' : 'Template updated', 'success');
+                showToast(texts.templateUpdated, 'success');
                 loadTemplatesForManager();
                 loadUserTemplates();
             } else {
                 const error = await response.json();
-                showToast(error.error || (isTurkish ? 'Hata oluştu' : 'Error occurred'), 'error');
+                showToast(error.error || texts.errorOccurred, 'error');
             }
         } catch (error) {
-            showToast(isTurkish ? 'Hata oluştu' : 'Error occurred', 'error');
+            showToast(texts.errorOccurred, 'error');
         }
     }
     
@@ -6163,7 +6226,7 @@
         const listEl = document.getElementById('savedSchedulesList');
         if (!listEl) return;
         
-        listEl.innerHTML = '<div class="loading-placeholder">' + (isTurkish ? 'Yükleniyor...' : 'Loading...') + '</div>';
+        listEl.innerHTML = '<div class="loading-placeholder">' + texts.loading + '</div>';
         
         try {
             const filterCurrentMonth = document.getElementById('filterCurrentMonthOnly')?.checked;
@@ -6178,10 +6241,10 @@
                 const schedules = await response.json();
                 renderSavedSchedules(schedules);
             } else {
-                listEl.innerHTML = '<div class="empty-placeholder">' + (isTurkish ? 'Hata oluştu' : 'Error occurred') + '</div>';
+                listEl.innerHTML = '<div class="empty-placeholder">' + texts.errorOccurred + '</div>';
             }
         } catch (error) {
-            listEl.innerHTML = '<div class="empty-placeholder">' + (isTurkish ? 'Hata oluştu' : 'Error occurred') + '</div>';
+            listEl.innerHTML = '<div class="empty-placeholder">' + texts.errorOccurred + '</div>';
         }
     }
     
@@ -6191,30 +6254,41 @@
         
         if (schedules.length === 0) {
             listEl.innerHTML = '<div class="empty-placeholder">' + 
-                (isTurkish ? 'Henüz kayıtlı liste yok' : 'No saved schedules yet') + 
+                texts.noSavedSchedulesYet + 
                 '</div>';
             return;
         }
         
-        const months = isTurkish 
-            ? ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık']
-            : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        const months = [
+            '@Localizer["MonthJanuary"].Value',
+            '@Localizer["MonthFebruary"].Value',
+            '@Localizer["MonthMarch"].Value',
+            '@Localizer["MonthApril"].Value',
+            '@Localizer["MonthMay"].Value',
+            '@Localizer["MonthJune"].Value',
+            '@Localizer["MonthJuly"].Value',
+            '@Localizer["MonthAugust"].Value',
+            '@Localizer["MonthSeptember"].Value',
+            '@Localizer["MonthOctober"].Value',
+            '@Localizer["MonthNovember"].Value',
+            '@Localizer["MonthDecember"].Value'
+        ];
         
         listEl.innerHTML = schedules.map(s => `
             <div class="saved-schedule-item" data-id="${s.id}">
                 <div class="saved-schedule-info">
                     <div class="saved-schedule-name">${s.name}</div>
                     <div class="saved-schedule-meta">
-                        ${months[s.month - 1]} ${s.year} • ${isTurkish ? 'Kaydedildi:' : 'Saved:'} ${s.createdAt}
+                        ${months[s.month - 1]} ${s.year} • ${texts.saved} ${s.createdAt}
                         ${s.description ? '<br><em>' + s.description + '</em>' : ''}
                     </div>
                 </div>
                 <div class="saved-schedule-actions">
                     <button class="btn-schedule-action btn-schedule-load" onclick="loadSchedule(${s.id}, ${s.year}, ${s.month})">
-                        ${isTurkish ? 'Yükle' : 'Load'}
+                        ${texts.load}
                     </button>
                     <button class="btn-schedule-action btn-schedule-delete" onclick="deleteSchedule(${s.id})">
-                        ${isTurkish ? 'Sil' : 'Delete'}
+                        ${texts.delete}
                     </button>
                 </div>
             </div>
@@ -6227,7 +6301,7 @@
         
         const name = nameInput?.value.trim();
         if (!name) {
-            showToast(isTurkish ? 'Liste adı gerekli' : 'Schedule name is required', 'error');
+            showToast(texts.scheduleNameRequired, 'error');
             return;
         }
         
@@ -6245,23 +6319,21 @@
             
             if (response.ok) {
                 const result = await response.json();
-                showToast(result.message || (isTurkish ? 'Kaydedildi' : 'Saved'), 'success');
+                showToast(result.message || texts.saved.replace(':', ''), 'success');
                 nameInput.value = '';
                 if (descInput) descInput.value = '';
                 loadSavedSchedules();
             } else {
                 const error = await response.json();
-                showToast(error.error || (isTurkish ? 'Hata oluştu' : 'Error occurred'), 'error');
+                showToast(error.error || texts.errorOccurred, 'error');
             }
         } catch (error) {
-            showToast(isTurkish ? 'Hata oluştu' : 'Error occurred', 'error');
+            showToast(texts.errorOccurred, 'error');
         }
     }
     
     async function loadSchedule(id, year, month) {
-        if (!confirm(isTurkish 
-            ? 'Bu liste yüklenirse mevcut nöbetler silinecek. Devam etmek istiyor musunuz?' 
-            : 'Loading this schedule will replace current shifts. Continue?')) {
+        if (!confirm(texts.loadingScheduleWillReplace)) {
             return;
         }
         
@@ -6286,15 +6358,15 @@
                 }
             } else {
                 const error = await response.json();
-                showToast(error.error || (isTurkish ? 'Hata oluştu' : 'Error occurred'), 'error');
+                showToast(error.error || texts.errorOccurred, 'error');
             }
         } catch (error) {
-            showToast(isTurkish ? 'Hata oluştu' : 'Error occurred', 'error');
+            showToast(texts.errorOccurred, 'error');
         }
     }
     
     async function deleteSchedule(id) {
-        if (!confirm(isTurkish ? 'Bu kaydı silmek istediğinize emin misiniz?' : 'Are you sure you want to delete this saved schedule?')) {
+        if (!confirm(texts.confirmDeleteSchedule)) {
             return;
         }
         
@@ -6304,14 +6376,14 @@
             });
             
             if (response.ok) {
-                showToast(isTurkish ? 'Silindi' : 'Deleted', 'success');
+                showToast(texts.deleted, 'success');
                 loadSavedSchedules();
             } else {
                 const error = await response.json();
-                showToast(error.error || (isTurkish ? 'Hata oluştu' : 'Error occurred'), 'error');
+                showToast(error.error || texts.errorOccurred, 'error');
             }
         } catch (error) {
-            showToast(isTurkish ? 'Hata oluştu' : 'Error occurred', 'error');
+            showToast(texts.errorOccurred, 'error');
         }
     }
     
@@ -6545,7 +6617,7 @@
                 
                 // Delete leave if clicking on leave badge
                 if (leaveBadge) {
-                    if (confirm(isTurkish ? 'İzni silmek istediğinize emin misiniz?' : 'Are you sure you want to delete this leave?')) {
+                    if (confirm(texts.confirmDeleteLeave)) {
                         const leaveId = leaveBadge.dataset.leaveId;
                         await deleteLeave(leaveId, this);
                     }
@@ -6584,7 +6656,7 @@
                     // Create shift
                     await createShift(this.dataset.employeeId, this.dataset.date, this);
                 } else {
-                    alert(isTurkish ? 'Lütfen bir vardiya şablonu veya izin türü seçin' : 'Please select a shift template or leave type');
+                    alert(texts.pleaseSelectTemplateOrLeave);
                 }
             });
         });
@@ -6609,7 +6681,7 @@
                 
                 // Set template info with visual highlighting
                 const templateInfo = state.selectedTemplate.isDayOff 
-                    ? (isTurkish ? '🚫 Boş Gün' : '🚫 Day Off')
+                    ? '🚫 ' + texts.dayOff
                     : `${state.selectedTemplate.start} - ${state.selectedTemplate.end}`;
                 document.getElementById('bulkAssignTemplateInfo').textContent = templateInfo;
                 
@@ -6712,7 +6784,7 @@
             
                 await Promise.all(promises);
                 clearSelection();
-                showToast(isTurkish ? 'Nöbetler eklendi!' : 'Shifts added!', 'success');
+                showToast(texts.shiftsAdded, 'success');
             });
         }
     }
@@ -6797,7 +6869,7 @@
                 const errorResult = await response.json();
                 if (errorResult.error === 'overlap') {
                     if (!skipToast) {
-                        showToast(isTurkish ? '⚠️ Nöbet çakışması: ' + errorResult.message : '⚠️ Shift overlap: ' + errorResult.message, 'error');
+                        showToast(texts.shiftOverlap + ' ' + errorResult.message, 'error');
                     }
                     return { success: false, overlap: true, message: errorResult.message };
                 }
@@ -6867,7 +6939,7 @@
             if (response.ok) {
                 const result = await response.json();
                 // Update UI - use correct code based on language
-                const displayCode = isTurkish ? result.leaveCode : result.leaveCodeEn;
+                const displayCode = currentLang === 'tr' ? result.leaveCode : result.leaveCodeEn;
                 updateCellWithLeave(cell, result.id, displayCode, result.leaveColor);
                 
                 // Update hours based on what was replaced
@@ -6881,7 +6953,7 @@
                 }
                 // If hadLeave or hadDayOff, required hours were already reduced
                 
-                showToast(isTurkish ? 'İzin atandı' : 'Leave assigned', 'success');
+                showToast(texts.leaveAssigned, 'success');
             } else {
                 const error = await response.json();
                 showToast(error.error || texts.errorOccurred, 'error');
@@ -6909,7 +6981,7 @@
                 // Add back required hours (like removing a day off)
                 updateEmployeeTotalHours(employeeId, null, false, true); // wasDayOff = true
                 
-                showToast(isTurkish ? 'İzin silindi' : 'Leave deleted', 'info');
+                showToast(texts.leaveDeleted, 'info');
             }
         } catch (error) {
             console.error('Error deleting leave:', error);
@@ -6989,7 +7061,7 @@
             
             const textSpan = document.createElement('span');
             textSpan.className = 'day-off-text';
-            textSpan.textContent = isTurkish ? 'Boş' : 'Off';
+            textSpan.textContent = texts.off;
             badge.appendChild(textSpan);
         } else {
             // Normal shift styling
@@ -7195,7 +7267,7 @@
         const listEl = document.getElementById('holidaysList');
         if (!listEl) return;
         
-        listEl.innerHTML = '<div class="holiday-loading">' + (isTurkish ? 'Yükleniyor...' : 'Loading...') + '</div>';
+        listEl.innerHTML = '<div class="holiday-loading">' + texts.loading + '</div>';
         
         try {
             const response = await fetch(`/api/holidays?year=${state.year}&month=${state.month}`);
@@ -7205,14 +7277,14 @@
             }
         } catch (error) {
             console.error('Error loading holidays:', error);
-            listEl.innerHTML = '<div class="holiday-empty">' + (isTurkish ? 'Hata oluştu' : 'Error occurred') + '</div>';
+            listEl.innerHTML = '<div class="holiday-empty">' + texts.errorOccurred + '</div>';
         }
         
         // Re-enable save button
         const saveBtn = document.getElementById('saveHolidayBtn');
         if (saveBtn) {
             saveBtn.disabled = false;
-            saveBtn.innerHTML = '<span class="btn-icon">✓</span> ' + (isTurkish ? 'Tatil Ekle' : 'Add Holiday');
+            saveBtn.innerHTML = '<span class="btn-icon">✓</span> ' + texts.addHoliday;
         }
     }
     
@@ -7222,19 +7294,25 @@
         if (!listEl) return;
         
         if (holidays.length === 0) {
-            listEl.innerHTML = '<div class="holiday-empty">' + (isTurkish ? 'Bu ay tatil yok' : 'No holidays this month') + '</div>';
+            listEl.innerHTML = '<div class="holiday-empty">' + texts.noHolidaysThisMonth + '</div>';
             return;
         }
         
-        const dayNames = isTurkish 
-            ? ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt']
-            : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const dayNames = [
+            '@Localizer["Paz"].Value',
+            '@Localizer["Pzt"].Value',
+            '@Localizer["Sal"].Value',
+            '@Localizer["Car"].Value',
+            '@Localizer["Per"].Value',
+            '@Localizer["Cum"].Value',
+            '@Localizer["Cmt"].Value'
+        ];
         
         listEl.innerHTML = holidays.map(h => {
             const date = new Date(h.date);
             const dayName = dayNames[date.getDay()];
             const dateStr = date.getDate().toString().padStart(2, '0') + '/' + (date.getMonth() + 1).toString().padStart(2, '0');
-            const typeLabel = h.type === 0 ? (isTurkish ? 'Resmi' : 'Official') : (isTurkish ? 'İdari' : 'Admin');
+            const typeLabel = h.type === 0 ? texts.official : texts.admin;
             const typeBadgeClass = h.type === 0 ? 'official' : 'admin';
             
             return `
@@ -7244,10 +7322,10 @@
                         <span class="holiday-name">${h.name}</span>
                         <div class="holiday-badges">
                             <span class="holiday-badge ${typeBadgeClass}">${typeLabel}</span>
-                            ${h.isHalfDay ? `<span class="holiday-badge half-day">${isTurkish ? 'Yarım Gün' : 'Half Day'} (${h.halfDayWorkHours || 4}s)</span>` : ''}
+                            ${h.isHalfDay ? `<span class="holiday-badge half-day">${texts.halfDay} (${h.halfDayWorkHours || 4}s)</span>` : ''}
                         </div>
                     </div>
-                    <button class="holiday-delete-btn" onclick="deleteHoliday(${h.id})" title="${isTurkish ? 'Sil' : 'Delete'}">🗑️</button>
+                    <button class="holiday-delete-btn" onclick="deleteHoliday(${h.id})" title="${texts.delete}">🗑️</button>
                 </div>
             `;
         }).join('');
@@ -7255,7 +7333,7 @@
     
     // Delete holiday
     async function deleteHoliday(id) {
-        if (!confirm(isTurkish ? 'Bu tatili silmek istediğinizden emin misiniz?' : 'Are you sure you want to delete this holiday?')) {
+        if (!confirm(texts.confirmDeleteHoliday)) {
             return;
         }
         
@@ -7266,13 +7344,13 @@
             
             if (response.ok) {
                 loadHolidaysForModal();
-                showToast(isTurkish ? 'Tatil silindi' : 'Holiday deleted', 'success');
+                showToast(texts.holidayDeleted, 'success');
             } else {
-                showToast(isTurkish ? 'Hata oluştu' : 'Error occurred', 'error');
+                showToast(texts.errorOccurred, 'error');
             }
         } catch (error) {
             console.error('Error deleting holiday:', error);
-            showToast(isTurkish ? 'Hata oluştu' : 'Error occurred', 'error');
+            showToast(texts.errorOccurred, 'error');
         }
     }
     
@@ -7306,7 +7384,7 @@
                 // Disable button and show loading
                 this.disabled = true;
                 const originalText = this.innerHTML;
-                this.innerHTML = '<span class="btn-icon">⏳</span> ' + (isTurkish ? 'Ekleniyor...' : 'Adding...');
+                this.innerHTML = '<span class="btn-icon">⏳</span> ' + texts.adding;
                 
                 try {
                     const positionType = document.getElementById('employeePositionType')?.value || '';
@@ -7373,7 +7451,7 @@
                 // Disable button
                 this.disabled = true;
                 const originalText = this.innerHTML;
-                this.innerHTML = '<span class="btn-icon">⏳</span> ' + (isTurkish ? 'Ekleniyor...' : 'Adding...');
+                this.innerHTML = '<span class="btn-icon">⏳</span> ' + texts.adding;
                 
                 try {
                     const data = {
@@ -7397,7 +7475,7 @@
                         document.getElementById('holidayName').value = '';
                         document.getElementById('isHalfDay').checked = false;
                         toggleHalfDayOptions();
-                        showToast(isTurkish ? 'Tatil eklendi' : 'Holiday added', 'success');
+                        showToast(texts.holidayAdded, 'success');
                     } else {
                         // Re-enable button on error
                         this.disabled = false;
@@ -7437,7 +7515,7 @@
                     const modal = new bootstrap.Modal(sgModal);
                     modal.show();
                 } else {
-                    alert(isTurkish ? 'Akıllı planlama özelliği yakında!' : 'Smart scheduling coming soon!');
+                    alert(texts.smartSchedulingComingSoon);
                 }
             });
         }
@@ -7569,7 +7647,7 @@
                     // Close modal
                     setTimeout(() => {
                         bootstrap.Modal.getInstance(document.getElementById('bulkAssignModal')).hide();
-                        showToast(isTurkish ? `${datesToAssign.length} nöbet eklendi!` : `${datesToAssign.length} shifts added!`, 'success');
+                        showToast(`${datesToAssign.length} ${texts.shiftsAdded}`, 'success');
                     }, 300);
                     
                 } catch (error) {
@@ -7595,11 +7673,7 @@
                 const employeeId = state.bulkAssignEmployeeId;
                 if (!employeeId) return;
                 
-                const confirmMsg = isTurkish 
-                    ? 'Bu personelin bu aydaki TÜM nöbetlerini silmek istediğinize emin misiniz?' 
-                    : 'Are you sure you want to delete ALL shifts for this employee this month?';
-                
-                if (!confirm(confirmMsg)) return;
+                if (!confirm(texts.confirmDeleteAllShiftsForEmployee)) return;
                 
                 // Disable button
                 this.disabled = true;
@@ -7620,7 +7694,7 @@
                 });
                 
                 if (shiftsToDelete.length === 0) {
-                    showToast(isTurkish ? 'Silinecek nöbet bulunamadı' : 'No shifts to delete', 'info');
+                    showToast(texts.noShiftsToDelete, 'info');
                     return;
                 }
                 
@@ -7631,7 +7705,7 @@
                 }
                 
                 await Promise.all(deletePromises);
-                showToast(isTurkish ? `${shiftsToDelete.length} nöbet silindi!` : `${shiftsToDelete.length} shifts deleted!`, 'info');
+                showToast(`${shiftsToDelete.length} ${texts.shiftsDeleted}`, 'info');
                 
                 // Re-enable button
                 this.disabled = false;
@@ -7715,7 +7789,7 @@
                         badge.textContent = count;
                     }
                     
-                    showToast(texts.employeeDeleted || 'Silindi', 'success');
+                    showToast(texts.employeeDeleted || texts.deleted, 'success');
                     
                     // Reload to update table
                     setTimeout(() => location.reload(), 500);
@@ -7749,38 +7823,38 @@
         <div class="modal-content register-invite-modal">
             <button type="button" class="btn-close-invite" id="closeInviteModal" aria-label="Close">×</button>
             <div class="invite-content">
-                <h2 class="invite-title">@(isTurkish ? "Ücretsiz Hesap Oluştur" : "Create Free Account")</h2>
-                <p class="invite-subtitle">@(isTurkish ? "Verilerinizi kaydedin ve tüm özelliklere erişin" : "Save your data and access all features")</p>
+                <h2 class="invite-title">@Localizer["CreateFreeAccount"]</h2>
+                <p class="invite-subtitle">@Localizer["SaveDataAndAccessFeatures"]</p>
                 
                 <div class="invite-features">
                     <div class="invite-feature">
                         <span class="feature-check">✓</span>
-                        <span class="feature-text">@(isTurkish ? "Verileriniz kalıcı olarak saklanır" : "Your data is permanently saved")</span>
+                        <span class="feature-text">@Localizer["DataPermanentlySaved"]</span>
                     </div>
                     <div class="invite-feature">
                         <span class="feature-check">✓</span>
-                        <span class="feature-text">@(isTurkish ? "10 personele kadar ekleyin" : "Add up to 10 employees")</span>
+                        <span class="feature-text">@Localizer["AddUpTo10Employees"]</span>
                     </div>
                     <div class="invite-feature">
                         <span class="feature-check">✓</span>
-                        <span class="feature-text">@(isTurkish ? "Detaylı puantaj ve raporlar" : "Detailed timesheets & reports")</span>
+                        <span class="feature-text">@Localizer["DetailedTimesheetsReports"]</span>
                     </div>
                     <div class="invite-feature">
                         <span class="feature-check">✓</span>
-                        <span class="feature-text">@(isTurkish ? "Excel'e aktar" : "Export to Excel")</span>
+                        <span class="feature-text">@Localizer["ExportToExcel"]</span>
                     </div>
                 </div>
                 
                 <div class="invite-actions">
                     <a href="/Account/Register" class="btn-invite-primary">
-                        @(isTurkish ? "Ücretsiz Kayıt Ol" : "Sign Up Free")
+                        @Localizer["SignUpFree"]
                     </a>
                     <a href="/Account/Login" class="btn-invite-secondary">
-                        @(isTurkish ? "Zaten hesabım var" : "I already have an account")
+                        @Localizer["IAlreadyHaveAccount"]
                     </a>
                 </div>
                 
-                <p class="invite-note">@(isTurkish ? "Kredi kartı gerekmez" : "No credit card required")</p>
+                <p class="invite-note">@Localizer["NoCreditCardRequired"]</p>
             </div>
         </div>
     </div>
@@ -7999,7 +8073,7 @@
 (function() {
     'use strict';
     
-    const isTurkish = document.documentElement.lang === 'tr' || navigator.language.startsWith('tr');
+    const currentLang = document.documentElement.lang || navigator.language.substring(0, 2);
     
     // State for restrictions and preferences
     const sgState = {
@@ -8058,7 +8132,7 @@
         const endDate = document.getElementById('sgRestrictionEndDate').value;
         
         if (!employeeSelect.value || !startDate) {
-            alert(isTurkish ? 'Personel ve başlangıç tarihi seçin' : 'Select employee and start date');
+            alert(texts.selectEmployeeAndStartDate);
             return;
         }
         
@@ -8085,7 +8159,7 @@
         const endDate = document.getElementById('sgPreferenceEndDate').value;
         
         if (!employeeSelect.value || !startDate) {
-            alert(isTurkish ? 'Personel ve başlangıç tarihi seçin' : 'Select employee and start date');
+            alert(texts.selectEmployeeAndStartDate);
             return;
         }
         
@@ -8134,7 +8208,8 @@
     
     function formatDate(dateStr) {
         const date = new Date(dateStr);
-        return date.toLocaleDateString(isTurkish ? 'tr-TR' : 'en-US', { day: 'numeric', month: 'short' });
+        const locale = currentLang === 'tr' ? 'tr-TR' : currentLang === 'ar' ? 'ar-SA' : 'en-US';
+        return date.toLocaleDateString(locale, { day: 'numeric', month: 'short' });
     }
     
     // Make remove functions global
@@ -8175,7 +8250,7 @@
         
         try {
             // Step 1: Delete all existing shifts for this month
-            progressText.textContent = isTurkish ? 'Mevcut vardiyalar siliniyor...' : 'Deleting existing shifts...';
+            progressText.textContent = texts.deletingExistingShifts;
             progressBar.style.width = '5%';
             
             await deleteAllShiftsForMonth();
@@ -8184,13 +8259,13 @@
             // Gather all settings
             const settings = gatherSettings();
             progressBar.style.width = '20%';
-            progressText.textContent = isTurkish ? 'Kurallar analiz ediliyor...' : 'Analyzing rules...';
+            progressText.textContent = texts.analyzingRules;
             
             // Get employees and dates
             const employees = getEligibleEmployees(settings);
             const dates = getMonthDates();
             progressBar.style.width = '25%';
-            progressText.textContent = isTurkish ? 'Personeller değerlendiriliyor...' : 'Evaluating employees...';
+            progressText.textContent = texts.evaluatingEmployees;
             
             // Generate schedule
             const schedule = await generateOptimalSchedule(settings, employees, dates, (pct, msg) => {
@@ -8198,12 +8273,12 @@
                 progressText.textContent = msg;
             });
             progressBar.style.width = '90%';
-            progressText.textContent = isTurkish ? 'Yeni vardiyalar kaydediliyor...' : 'Saving new shifts...';
+            progressText.textContent = texts.savingNewShifts;
             
             // Apply schedule (always overwrite since we deleted everything)
             await applySchedule(schedule, true);
             progressBar.style.width = '100%';
-            progressText.textContent = isTurkish ? '✓ Çizelge başarıyla oluşturuldu!' : '✓ Schedule generated successfully!';
+            progressText.textContent = texts.scheduleGeneratedSuccessfully;
             
             // Close modal after delay
             setTimeout(() => {
@@ -8218,7 +8293,7 @@
             
         } catch (error) {
             console.error('Smart Generate Error:', error);
-            progressText.textContent = isTurkish ? '❌ Hata: ' + error.message : '❌ Error: ' + error.message;
+            progressText.textContent = texts.errorPrefix + ' ' + error.message;
             progressBar.style.background = 'linear-gradient(90deg, #ef4444 0%, #dc2626 100%)';
             setTimeout(() => {
                 progress.style.display = 'none';
@@ -8259,7 +8334,7 @@
             console.log(`Deleted ${shiftIds.length} shifts`);
         } catch (error) {
             console.error('Error deleting shifts:', error);
-            throw new Error(isTurkish ? 'Vardiyalar silinemedi' : 'Failed to delete shifts');
+            throw new Error(texts.failedToDeleteShifts);
         }
     }
     
@@ -8379,7 +8454,7 @@
                 dayOfWeek: dayOfWeek,
                 isWeekend: dayOfWeek === 0 || dayOfWeek === 6,
                 isHoliday: holidayDates.has(dateStr),
-                dayName: date.toLocaleDateString(isTurkish ? 'tr-TR' : 'en-US', { weekday: 'short' })
+                dayName: date.toLocaleDateString(currentLang === 'tr' ? 'tr-TR' : currentLang === 'ar' ? 'ar-SA' : 'en-US', { weekday: 'short' })
             });
         }
         
@@ -8444,9 +8519,8 @@
         
         for (const dateInfo of dates) {
             processedDays++;
-            onProgress(processedDays / totalDays, isTurkish 
-                ? `${dateInfo.day}. gün işleniyor...` 
-                : `Processing day ${dateInfo.day}...`);
+            const processingText = texts.processingDay.replace('{0}', dateInfo.day);
+            onProgress(processedDays / totalDays, processingText);
             
             // Simulate async for UI responsiveness
             await new Promise(r => setTimeout(r, 10));

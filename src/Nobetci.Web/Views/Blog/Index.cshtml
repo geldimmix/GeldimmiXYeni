@@ -1,7 +1,7 @@
 @using Nobetci.Web.Controllers
 @model BlogListViewModel
 @{
-    var isTurkish = Model.IsTurkish;
+    var currentLang = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
     ViewData["Title"] = "Blog";
 }
 
@@ -9,14 +9,12 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-7">
-                <p class="eyebrow">@(isTurkish ? "Blog" : "Blog")</p>
+                <p class="eyebrow">Blog</p>
                 <h1 class="display-5 fw-bold">
-                    @(isTurkish ? "Online Hemşire Nöbet Programı ve Akıllı Vardiya Rehberi" : "Online Nurse Scheduling and Smart Rostering Guide")
+                    @Localizer["BlogTitle"]
                 </h1>
                 <p class="lead text-muted">
-                    @(isTurkish
-                        ? "Online hemşire nöbet programı, yapay zeka destekli planlama, adil dağıtım ve mobil deneyim üzerine derinlemesine içerikler."
-                        : "Deep dives into online nurse scheduling, AI-powered planning, fairness, and great mobile experiences.")
+                    @Localizer["BlogDescription"]
                 </p>
             </div>
         </div>
@@ -28,9 +26,9 @@
         <div class="row g-4">
             @foreach (var post in Model.Posts)
             {
-                var title = isTurkish ? post.TitleTr : post.TitleEn;
-                var excerpt = isTurkish ? post.ExcerptTr : post.ExcerptEn;
-                var keywords = isTurkish ? post.KeywordsTr : post.KeywordsEn;
+                var title = currentLang == "tr" ? post.TitleTr : post.TitleEn;
+                var excerpt = currentLang == "tr" ? post.ExcerptTr : post.ExcerptEn;
+                var keywords = currentLang == "tr" ? post.KeywordsTr : post.KeywordsEn;
                 <div class="col-lg-6">
                     <div class="blog-card">
                         <p class="blog-date">@post.PublishedAt.ToString("dd MMM yyyy")</p>
@@ -45,7 +43,7 @@
                             }
                         </div>
                         <a class="blog-readmore" asp-controller="Blog" asp-action="Detail" asp-route-slug="@post.Slug">
-                            @(isTurkish ? "Devamını Oku" : "Read More")
+                            @Localizer["ReadMore"]
                         </a>
                     </div>
                 </div>

@@ -109,7 +109,7 @@
                                 <a href="/@(p.Language == "tr" ? "rehber" : "guide")/@p.Slug" target="_blank" class="btn btn-secondary btn-sm" title="Önizle">
                                     👁️
                                 </a>
-                                <form method="post" action="/admin/pages/delete/@p.Id" style="display: inline;" onsubmit="return confirm('Bu sayfayı silmek istediğinize emin misiniz?')">
+                                <form method="post" action="/admin/pages/delete/@p.Id" style="display: inline;" onsubmit="return confirm('@Localizer["ConfirmDeletePage"].Value')">
                                     <button type="submit" class="btn btn-danger btn-sm" title="Sil">
                                         🗑️
                                     </button>

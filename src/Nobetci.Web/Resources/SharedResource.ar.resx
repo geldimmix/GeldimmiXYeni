@@ -19,1947 +19,1930 @@
 
   <!-- Common -->
   <data name="AppName" xml:space="preserve">
-    <value>Nobetci</value>
+    <value>نوبتجي</value>
   </data>
   <data name="AppTagline" xml:space="preserve">
-    <value>Smart Shift Scheduling Software</value>
+    <value>منشئ جدول المناوبة الذكي</value>
   </data>
   <data name="Language" xml:space="preserve">
-    <value>Language</value>
+    <value>اللغة</value>
   </data>
   <data name="Turkish" xml:space="preserve">
-    <value>Turkish</value>
+    <value>التركية</value>
   </data>
   <data name="English" xml:space="preserve">
-    <value>English</value>
+    <value>الإنجليزية</value>
   </data>
   <data name="Arabic" xml:space="preserve">
-    <value>Arabic</value>
+    <value>العربية</value>
   </data>
 
   <!-- Navigation -->
   <data name="Home" xml:space="preserve">
-    <value>Home</value>
+    <value>الرئيسية</value>
   </data>
   <data name="Features" xml:space="preserve">
-    <value>Features</value>
+    <value>المميزات</value>
   </data>
   <data name="Pricing" xml:space="preserve">
-    <value>Pricing</value>
+    <value>الأسعار</value>
   </data>
   <data name="Login" xml:space="preserve">
-    <value>Login</value>
+    <value>تسجيل الدخول</value>
   </data>
   <data name="Register" xml:space="preserve">
-    <value>Register</value>
+    <value>التسجيل</value>
   </data>
   <data name="Logout" xml:space="preserve">
-    <value>Logout</value>
+    <value>تسجيل الخروج</value>
   </data>
   <data name="StartFree" xml:space="preserve">
-    <value>Start Free</value>
+    <value>ابدأ مجاناً</value>
   </data>
   <data name="TryItNow" xml:space="preserve">
-    <value>Try It Now</value>
+    <value>جرب الآن</value>
   </data>
   <data name="StartUsingForFree" xml:space="preserve">
-    <value>Start using for free without registration</value>
+    <value>ابدأ الاستخدام مجاناً دون تسجيل</value>
   </data>
 
   <!-- Hero Section -->
   <data name="HeroTitle" xml:space="preserve">
-    <value>Online Shift Schedule Creator</value>
+    <value>منشئ جدول المناوبة عبر الإنترنت</value>
   </data>
   <data name="HeroSubtitle" xml:space="preserve">
-    <value>Nurse shift scheduling, duty roster planning, and automatic timesheet calculation. Create fair shift schedules in seconds with our smart algorithm.</value>
+    <value>جدولة مناوبة الممرضات، تخطيط جدول الورديات، وحساب كشف الوقت تلقائياً. أنشئ جداول مناوبة عادلة في ثوانٍ باستخدام خوارزميتنا الذكية.</value>
   </data>
   <data name="HeroTitleWithHighlight" xml:space="preserve">
-    <value>Make scheduling <span class="highlight">effortless</span></value>
+    <value>اجعل الجدولة <span class="highlight">سهلة</span></value>
   </data>
   <data name="HeroDesc" xml:space="preserve">
-    <value>Create shift schedules, track attendance, calculate payroll and manage leaves. Complete workforce management in one platform.</value>
+    <value>إنشاء جداول المناوبات، تتبع الحضور، حساب الرواتب وإدارة الإجازات. إدارة القوى العاملة الكاملة في منصة واحدة.</value>
   </data>
   <data name="HeroCta" xml:space="preserve">
-    <value>Get Started - Free</value>
+    <value>ابدأ الآن - مجاناً</value>
   </data>
   <data name="NoRegistrationRequired" xml:space="preserve">
-    <value>No registration required</value>
+    <value>يمكنك الاستخدام بدون تسجيل</value>
   </data>
 
   <!-- Features -->
   <data name="Feature_QuickScheduling" xml:space="preserve">
-    <value>Quick Scheduling</value>
+    <value>إنشاء المناوبة السريع</value>
   </data>
   <data name="Feature_QuickScheduling_Desc" xml:space="preserve">
-    <value>Create shift schedules in seconds. One-click assignment with templates.</value>
+    <value>أنشئ جداول المناوبة في ثوانٍ. تعيين بنقرة واحدة باستخدام القوالب.</value>
   </data>
   <data name="Feature_FairDistribution" xml:space="preserve">
-    <value>Fair Distribution Algorithm</value>
+    <value>خوارزمية التوزيع العادل</value>
   </data>
   <data name="Feature_FairDistribution_Desc" xml:space="preserve">
-    <value>Distribute night, weekend, and holiday shifts fairly among all staff.</value>
+    <value>قم بتوزيع مناوبات الليل وعطلات نهاية الأسبوع والأعياد بشكل عادل على الجميع.</value>
   </data>
   <data name="Feature_AutoTimesheet" xml:space="preserve">
-    <value>Automatic Timesheet</value>
+    <value>كشف الوقت التلقائي</value>
   </data>
   <data name="Feature_AutoTimesheet_Desc" xml:space="preserve">
-    <value>Generate timesheets automatically from schedules. Night and overtime shown separately.</value>
+    <value>أنشئ كشوف الوقت تلقائياً من جداول المناوبة. يتم عرض الليل والعمل الإضافي بشكل منفصل.</value>
   </data>
   <data name="Feature_ExcelExport" xml:space="preserve">
-    <value>Export to Excel</value>
+    <value>تصدير إلى Excel</value>
   </data>
   <data name="Feature_ExcelExport_Desc" xml:space="preserve">
-    <value>Export schedules and timesheets to Excel with one click.</value>
+    <value>قم بتصدير جداول المناوبة وكشوف الوقت إلى Excel بنقرة واحدة.</value>
   </data>
 
   <!-- Shift Templates -->
   <data name="shift.morning" xml:space="preserve">
-    <value>Morning Shift</value>
+    <value>وردية الصباح</value>
   </data>
   <data name="shift.evening" xml:space="preserve">
-    <value>Evening Shift</value>
+    <value>وردية المساء</value>
   </data>
   <data name="shift.night" xml:space="preserve">
-    <value>Night Shift</value>
+    <value>وردية الليل</value>
   </data>
   <data name="shift.fullday" xml:space="preserve">
-    <value>Full Day</value>
+    <value>يوم كامل</value>
   </data>
   <data name="shift.nurseduty" xml:space="preserve">
-    <value>Nurse Duty (16h)</value>
+    <value>مناوبة الممرضة (16 ساعة)</value>
   </data>
   <data name="shift.24h" xml:space="preserve">
-    <value>24 Hour Duty</value>
+    <value>مناوبة 24 ساعة</value>
   </data>
   <data name="shift.custom" xml:space="preserve">
-    <value>Custom Time</value>
+    <value>وقت مخصص</value>
   </data>
 
   <!-- App -->
   <data name="Employees" xml:space="preserve">
-    <value>Employees</value>
+    <value>الموظفون</value>
   </data>
   <data name="AddEmployee" xml:space="preserve">
-    <value>Add Employee</value>
+    <value>إضافة موظف</value>
   </data>
   <data name="FullName" xml:space="preserve">
-    <value>Full Name</value>
+    <value>الاسم الكامل</value>
   </data>
   <data name="Title" xml:space="preserve">
-    <value>Title</value>
+    <value>المسمى الوظيفي</value>
   </data>
   <data name="IdentityNo" xml:space="preserve">
-    <value>ID Number</value>
+    <value>رقم الهوية</value>
   </data>
   <data name="ShiftTemplates" xml:space="preserve">
-    <value>Shift Templates</value>
+    <value>قوالب الورديات</value>
   </data>
   <data name="Holidays" xml:space="preserve">
-    <value>Holidays</value>
+    <value>العطلات الرسمية</value>
   </data>
   <data name="AddHoliday" xml:space="preserve">
-    <value>Add Holiday</value>
+    <value>إضافة عطلة</value>
   </data>
   <data name="GenerateSchedule" xml:space="preserve">
-    <value>Generate Smart Schedule</value>
+    <value>إنشاء مناوبة ذكية</value>
   </data>
   <data name="ExportExcel" xml:space="preserve">
-    <value>Export to Excel</value>
+    <value>تصدير إلى Excel</value>
   </data>
   <data name="Timesheet" xml:space="preserve">
-    <value>Timesheet</value>
+    <value>كشف الوقت</value>
   </data>
   <data name="ViewTimesheet" xml:space="preserve">
-    <value>View Timesheet</value>
+    <value>عرض كشف الوقت</value>
   </data>
 
   <!-- Calendar -->
   <data name="Monday" xml:space="preserve">
-    <value>Monday</value>
+    <value>الإثنين</value>
   </data>
   <data name="Tuesday" xml:space="preserve">
-    <value>Tuesday</value>
+    <value>الثلاثاء</value>
   </data>
   <data name="Wednesday" xml:space="preserve">
-    <value>Wednesday</value>
+    <value>الأربعاء</value>
   </data>
   <data name="Thursday" xml:space="preserve">
-    <value>Thursday</value>
+    <value>الخميس</value>
   </data>
   <data name="Friday" xml:space="preserve">
-    <value>Friday</value>
+    <value>الجمعة</value>
   </data>
   <data name="Saturday" xml:space="preserve">
-    <value>Saturday</value>
+    <value>السبت</value>
   </data>
   <data name="Sunday" xml:space="preserve">
-    <value>Sunday</value>
+    <value>الأحد</value>
   </data>
 
   <!-- Timesheet -->
   <data name="TotalHours" xml:space="preserve">
-    <value>Total Hours</value>
+    <value>إجمالي الساعات</value>
   </data>
   <data name="NormalHours" xml:space="preserve">
-    <value>Normal Hours</value>
+    <value>ساعات العمل العادية</value>
   </data>
   <data name="NightHours" xml:space="preserve">
-    <value>Night Hours</value>
+    <value>ساعات العمل الليلية</value>
   </data>
   <data name="WeekendHours" xml:space="preserve">
-    <value>Weekend Hours</value>
+    <value>عطلة نهاية الأسبوع</value>
   </data>
   <data name="HolidayHours" xml:space="preserve">
-    <value>Holiday Hours</value>
+    <value>ساعات العطلة</value>
   </data>
   <data name="Overtime" xml:space="preserve">
-    <value>Overtime</value>
+    <value>العمل الإضافي</value>
   </data>
 
   <!-- Smart Scheduling -->
   <data name="SmartScheduling" xml:space="preserve">
-    <value>Smart Scheduling</value>
+    <value>إنشاء المناوبة الذكية</value>
   </data>
   <data name="Availability" xml:space="preserve">
-    <value>Availability</value>
+    <value>التوفر</value>
   </data>
   <data name="SetAvailability" xml:space="preserve">
-    <value>Set Availability</value>
+    <value>تحديد التوفر</value>
   </data>
   <data name="MinDailyStaff" xml:space="preserve">
-    <value>Minimum Daily Staff</value>
+    <value>الحد الأدنى اليومي للمناوبين</value>
   </data>
   <data name="WeekendStaffRequired" xml:space="preserve">
-    <value>Weekend Staff Required</value>
+    <value>مناوب عطلة نهاية الأسبوع مطلوب</value>
   </data>
   <data name="WeekendMinStaff" xml:space="preserve">
-    <value>Weekend Minimum Staff</value>
+    <value>الحد الأدنى لمناوبي عطلة نهاية الأسبوع</value>
   </data>
   <data name="HolidayStaffRequired" xml:space="preserve">
-    <value>Holiday Staff Required</value>
+    <value>مناوب العطلة مطلوب</value>
   </data>
   <data name="HolidayMinStaff" xml:space="preserve">
-    <value>Holiday Minimum Staff</value>
+    <value>الحد الأدنى لمناوبي العطلة</value>
   </data>
   <data name="Generate" xml:space="preserve">
-    <value>Generate</value>
+    <value>إنشاء</value>
   </data>
 
   <!-- Messages -->
   <data name="SaveSuccess" xml:space="preserve">
-    <value>Saved successfully</value>
+    <value>تم الحفظ</value>
   </data>
   <data name="DeleteSuccess" xml:space="preserve">
-    <value>Deleted successfully</value>
+    <value>تم الحذف</value>
   </data>
   <data name="Error" xml:space="preserve">
-    <value>An error occurred</value>
+    <value>حدث خطأ</value>
   </data>
   <data name="EmployeeLimitReached" xml:space="preserve">
-    <value>Employee limit reached. Register to add more.</value>
+    <value>تم الوصول إلى حد الموظفين. سجل للسماح بإضافة المزيد.</value>
   </data>
   <data name="RegisterToAccessTimesheet" xml:space="preserve">
-    <value>Register to access the timesheet feature.</value>
+    <value>سجل للوصول إلى ميزة كشف الوقت.</value>
   </data>
 
   <!-- Footer -->
   <data name="Copyright" xml:space="preserve">
-    <value>© 2026 Nobetci. All rights reserved.</value>
+    <value>© 2026 نوبتجي. جميع الحقوق محفوظة.</value>
   </data>
   
   <!-- Navigation Extended -->
   <data name="Products" xml:space="preserve">
-    <value>Products</value>
+    <value>المنتجات</value>
   </data>
   <data name="SignUp" xml:space="preserve">
-    <value>Sign Up</value>
+    <value>التسجيل</value>
   </data>
   <data name="Giriş" xml:space="preserve">
-    <value>Login</value>
+    <value>تسجيل الدخول</value>
   </data>
   
   <!-- SEO Meta -->
   <data name="MetaDescription_Default" xml:space="preserve">
-    <value>Online shift scheduling, time attendance and payroll system</value>
+    <value>جدولة المناوبة عبر الإنترنت، تتبع الحضور ونظام كشف الوقت</value>
   </data>
   
   <!-- Products Menu -->
   <data name="ShiftScheduling" xml:space="preserve">
-    <value>Shift Scheduling</value>
+    <value>جدولة المناوبة</value>
   </data>
   <data name="CreateShiftSchedule" xml:space="preserve">
-    <value>Create Shift Schedule</value>
+    <value>إنشاء جدول المناوبة</value>
   </data>
   <data name="CreateShiftSchedule_Desc" xml:space="preserve">
-    <value>Professional shift planning in minutes</value>
+    <value>تخطيط المناوبة الاحترافي في دقائق</value>
   </data>
   <data name="NurseShiftPlanner" xml:space="preserve">
-    <value>Nurse Shift Planner</value>
+    <value>منظم مناوبة الممرضات</value>
   </data>
   <data name="NurseShiftPlanner_Desc" xml:space="preserve">
-    <value>Special solution for hospitals</value>
+    <value>حل خاص للمستشفيات</value>
   </data>
   <data name="FairShiftDistribution" xml:space="preserve">
-    <value>Fair Shift Distribution</value>
+    <value>توزيع المناوبة العادل</value>
   </data>
   <data name="FairShiftDistribution_Desc" xml:space="preserve">
-    <value>Balanced distribution with smart algorithm</value>
+    <value>توزيع متوازن بخوارزمية ذكية</value>
   </data>
   <data name="TimeAttendance" xml:space="preserve">
-    <value>Time Attendance</value>
+    <value>تتبع الحضور</value>
   </data>
   <data name="TimeAttendanceSystem" xml:space="preserve">
-    <value>Time Attendance System</value>
+    <value>نظام تتبع الحضور</value>
   </data>
   <data name="TimeAttendanceSystem_Desc" xml:space="preserve">
-    <value>Record check-in/check-out times</value>
+    <value>تسجيل أوقات الدخول والخروج</value>
   </data>
   <data name="AttendanceApp" xml:space="preserve">
-    <value>Attendance App</value>
+    <value>تطبيق تتبع الحضور</value>
   </data>
   <data name="AttendanceApp_Desc" xml:space="preserve">
-    <value>Start using now</value>
+    <value>ابدأ الاستخدام الآن</value>
   </data>
   <data name="PayrollCalculation" xml:space="preserve">
-    <value>Payroll Calculation</value>
+    <value>حساب كشف الوقت</value>
   </data>
   <data name="PayrollCalculation_Desc" xml:space="preserve">
-    <value>Automatic work hour calculation</value>
+    <value>حساب ساعات العمل التلقائي</value>
   </data>
   <data name="OvertimeCalculation" xml:space="preserve">
-    <value>Overtime Calculation</value>
+    <value>حساب العمل الإضافي</value>
   </data>
   <data name="OvertimeCalculation_Desc" xml:space="preserve">
-    <value>Night, weekend, holiday</value>
+    <value>ليل، عطلة نهاية الأسبوع، عطلة</value>
   </data>
   <data name="LeaveManagement" xml:space="preserve">
-    <value>Leave Management</value>
+    <value>إدارة الإجازات</value>
   </data>
   <data name="LeaveManagementSystem" xml:space="preserve">
-    <value>Leave Management System</value>
+    <value>نظام إدارة الإجازات</value>
   </data>
   <data name="LeaveManagementSystem_Desc" xml:space="preserve">
-    <value>30+ leave type support</value>
+    <value>دعم 30+ نوع إجازة</value>
   </data>
   <data name="AnnualLeaveTracking" xml:space="preserve">
-    <value>Annual Leave Tracking</value>
+    <value>تتبع الإجازة السنوية</value>
   </data>
   <data name="AnnualLeaveTracking_Desc" xml:space="preserve">
-    <value>Balance and usage tracking</value>
+    <value>تتبع الرصيد والاستخدام</value>
   </data>
   
   <!-- Footer -->
   <data name="Product" xml:space="preserve">
-    <value>Product</value>
+    <value>المنتج</value>
   </data>
   <data name="CreateShift" xml:space="preserve">
-    <value>Create Shift</value>
+    <value>إنشاء مناوبة</value>
   </data>
   <data name="GetTimesheet" xml:space="preserve">
-    <value>Get Timesheet</value>
+    <value>الحصول على كشف الوقت</value>
   </data>
   <data name="Resources" xml:space="preserve">
-    <value>Resources</value>
+    <value>الموارد</value>
   </data>
   <data name="ShiftGuide" xml:space="preserve">
-    <value>Shift Guide</value>
+    <value>دليل المناوبة</value>
   </data>
   <data name="TimesheetGuide" xml:space="preserve">
-    <value>Timesheet Guide</value>
+    <value>دليل كشف الوقت</value>
   </data>
   <data name="Legal" xml:space="preserve">
-    <value>Legal</value>
+    <value>قانوني</value>
   </data>
   <data name="Privacy" xml:space="preserve">
-    <value>Privacy</value>
+    <value>الخصوصية</value>
   </data>
   <data name="Terms" xml:space="preserve">
-    <value>Terms</value>
+    <value>الشروط</value>
   </data>
   <data name="Contact" xml:space="preserve">
-    <value>Contact</value>
+    <value>اتصل بنا</value>
   </data>
   <data name="AllRightsReserved" xml:space="preserve">
-    <value>All rights reserved.</value>
+    <value>جميع الحقوق محفوظة.</value>
   </data>
   <data name="MadeInTurkey" xml:space="preserve">
-    <value>Made in Turkey</value>
+    <value>صُنع في تركيا</value>
   </data>
   <data name="FooterDescription" xml:space="preserve">
-    <value>Smart shift planning and automatic timesheet system for hospitals and businesses.</value>
+    <value>نظام تخطيط المناوبة الذكي وحساب كشف الوقت التلقائي للمستشفيات والشركات.</value>
   </data>
   
   <!-- App Specific -->
   <data name="ShiftPlanning" xml:space="preserve">
-    <value>Shift Planning</value>
+    <value>تخطيط المناوبة</value>
   </data>
   <data name="Personeller" xml:space="preserve">
-    <value>Employees</value>
+    <value>الموظفون</value>
   </data>
   <data name="Tatiller" xml:space="preserve">
-    <value>Holidays</value>
+    <value>العطلات</value>
   </data>
   <data name="Attendance" xml:space="preserve">
-    <value>Attendance</value>
+    <value>تتبع الحضور</value>
   </data>
   <data name="Leaves" xml:space="preserve">
-    <value>Leaves</value>
+    <value>الإجازات</value>
   </data>
   <data name="MultiSelect" xml:space="preserve">
-    <value>Multi-Select</value>
+    <value>اختيار متعدد</value>
   </data>
   <data name="Selected" xml:space="preserve">
-    <value>Selected</value>
+    <value>محدد</value>
   </data>
   <data name="Clear" xml:space="preserve">
-    <value>Clear</value>
+    <value>مسح</value>
   </data>
   <data name="Apply" xml:space="preserve">
-    <value>Apply</value>
+    <value>تطبيق</value>
   </data>
   <data name="SmartGenerate" xml:space="preserve">
-    <value>Smart Generate</value>
+    <value>إنشاء ذكي</value>
   </data>
   <data name="SavedSchedules" xml:space="preserve">
-    <value>Saved Schedules</value>
+    <value>الجداول المحفوظة</value>
   </data>
   <data name="Saved" xml:space="preserve">
-    <value>Saved</value>
+    <value>محفوظ</value>
   </data>
   <data name="Boş" xml:space="preserve">
-    <value>Off</value>
+    <value>إجازة</value>
   </data>
   <data name="Off" xml:space="preserve">
-    <value>Off</value>
+    <value>إجازة</value>
   </data>
   <data name="StartByAddingEmployees" xml:space="preserve">
-    <value>Start by adding employees</value>
+    <value>ابدأ بإضافة الموظفين</value>
   </data>
   <data name="Weekend" xml:space="preserve">
-    <value>Weekend</value>
+    <value>عطلة نهاية الأسبوع</value>
   </data>
   <data name="Holiday" xml:space="preserve">
-    <value>Holiday</value>
+    <value>عطلة</value>
   </data>
   <data name="Overnight" xml:space="preserve">
-    <value>Overnight</value>
+    <value>يمتد إلى اليوم التالي</value>
   </data>
   <data name="ContinuesFromPrevious" xml:space="preserve">
-    <value>Continues from Previous</value>
+    <value>يستمر من اليوم السابق</value>
   </data>
   <data name="EmployeeManagement" xml:space="preserve">
-    <value>Employee Management</value>
+    <value>إدارة الموظفين</value>
   </data>
   <data name="NoEmployeesAddedYet" xml:space="preserve">
-    <value>No employees added yet</value>
+    <value>لم تتم إضافة موظفين بعد</value>
   </data>
   <data name="h/d" xml:space="preserve">
-    <value>h/d</value>
+    <value>س/ي</value>
   </data>
   <data name="Delete" xml:space="preserve">
-    <value>Delete</value>
+    <value>حذف</value>
   </data>
   <data name="EmployeeLimitReached_Register" xml:space="preserve">
-    <value>Employee limit reached. Register for more.</value>
+    <value>تم الوصول إلى حد الموظفين. سجل لإضافة المزيد.</value>
   </data>
   <data name="Close" xml:space="preserve">
-    <value>Close</value>
+    <value>إغلاق</value>
   </data>
   <data name="AddNewEmployee" xml:space="preserve">
-    <value>Add New Employee</value>
+    <value>إضافة موظف جديد</value>
   </data>
   <data name="EnterEmployeeInformation" xml:space="preserve">
-    <value>Enter employee information</value>
+    <value>أدخل معلومات الموظف</value>
   </data>
   <data name="BasicInformation" xml:space="preserve">
-    <value>Basic Information</value>
+    <value>المعلومات الأساسية</value>
   </data>
   <data name="IDNumber" xml:space="preserve">
-    <value>ID Number</value>
+    <value>رقم الهوية</value>
   </data>
   <data name="DailyHours" xml:space="preserve">
-    <value>Daily Hours</value>
+    <value>ساعات العمل اليومية</value>
   </data>
   <data name="PositionInformation" xml:space="preserve">
-    <value>Position Information</value>
+    <value>معلومات المنصب</value>
   </data>
   <data name="Select" xml:space="preserve">
-    <value>Select...</value>
+    <value>اختر...</value>
   </data>
   <data name="CivilServant" xml:space="preserve">
-    <value>Civil Servant</value>
+    <value>موظف حكومي</value>
   </data>
   <data name="Contracted" xml:space="preserve">
-    <value>Contracted</value>
+    <value>متعاقد</value>
   </data>
   <data name="Academic" xml:space="preserve">
-    <value>Academic</value>
+    <value>أكاديمي</value>
   </data>
   <data name="PositionType" xml:space="preserve">
-    <value>Position Type</value>
+    <value>نوع المنصب</value>
   </data>
   <data name="Professor" xml:space="preserve">
-    <value>Professor</value>
+    <value>أستاذ</value>
   </data>
   <data name="AssociateProf" xml:space="preserve">
-    <value>Associate Prof.</value>
+    <value>أستاذ مشارك</value>
   </data>
   <data name="AssistantProf" xml:space="preserve">
-    <value>Assistant Prof.</value>
+    <value>أستاذ مساعد</value>
   </data>
   <data name="ResearchAsst" xml:space="preserve">
-    <value>Research Asst.</value>
+    <value>مساعد باحث</value>
   </data>
   <data name="ResearchAsstPhD" xml:space="preserve">
-    <value>Research Asst. (PhD)</value>
+    <value>مساعد باحث (دكتوراه)</value>
   </data>
   <data name="AcademicTitle" xml:space="preserve">
-    <value>Academic Title</value>
+    <value>اللقب الأكاديمي</value>
   </data>
   <data name="ShiftScore" xml:space="preserve">
-    <value>Shift Score</value>
+    <value>نقاط المناوبة</value>
   </data>
   <data name="NonHealthServicesClass" xml:space="preserve">
-    <value>Non-Health Services Class</value>
+    <value>خارج فئة الخدمات الصحية</value>
   </data>
   <data name="WeekendSettings" xml:space="preserve">
-    <value>Weekend Settings</value>
+    <value>إعدادات عطلة نهاية الأسبوع</value>
   </data>
   <data name="NoWeekends" xml:space="preserve">
-    <value>No weekends</value>
+    <value>لا يعمل في عطلة نهاية الأسبوع</value>
   </data>
   <data name="SatSun" xml:space="preserve">
-    <value>Sat + Sun</value>
+    <value>السبت + الأحد</value>
   </data>
   <data name="SaturdayOnly" xml:space="preserve">
-    <value>Saturday only</value>
+    <value>السبت فقط</value>
   </data>
   <data name="CustomHours" xml:space="preserve">
-    <value>Custom hours</value>
+    <value>ساعات مخصصة</value>
   </data>
   <data name="SaturdayHours" xml:space="preserve">
-    <value>Saturday Hours</value>
+    <value>ساعات السبت</value>
   </data>
   <data name="AutoCalculation" xml:space="preserve">
-    <value>Auto Calculation</value>
+    <value>حساب تلقائي</value>
   </data>
   <data name="AutoCalculationDesc" xml:space="preserve">
-    <value>Holidays and leaves are automatically deducted from work hours.</value>
+    <value>يتم خصم العطلات والإجازات تلقائياً من ساعات العمل.</value>
   </data>
   <data name="Cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>إلغاء</value>
   </data>
   <data name="CreateAndManageTemplates" xml:space="preserve">
-    <value>Create and manage your custom shift templates</value>
+    <value>إنشاء وإدارة قوالب المناوبة المخصصة</value>
   </data>
   <data name="Loading" xml:space="preserve">
-    <value>Loading...</value>
+    <value>جاري التحميل...</value>
   </data>
   <data name="AddNewTemplate" xml:space="preserve">
-    <value>Add New Template</value>
+    <value>إضافة قالب جديد</value>
   </data>
   <data name="TemplateName" xml:space="preserve">
-    <value>Template Name</value>
+    <value>اسم القالب</value>
   </data>
   <data name="TemplateNamePlaceholder" xml:space="preserve">
-    <value>e.g. Morning Shift</value>
+    <value>مثال: وردية الصباح</value>
   </data>
   <data name="Start" xml:space="preserve">
-    <value>Start</value>
+    <value>البداية</value>
   </data>
   <data name="End" xml:space="preserve">
-    <value>End</value>
+    <value>النهاية</value>
   </data>
   <data name="BreakMin" xml:space="preserve">
-    <value>Break (min)</value>
+    <value>استراحة (دقيقة)</value>
   </data>
   <data name="Color" xml:space="preserve">
-    <value>Color</value>
+    <value>اللون</value>
   </data>
   <data name="SpansNextDay" xml:space="preserve">
-    <value>Spans next day (+1)</value>
+    <value>يمتد إلى اليوم التالي (+1)</value>
   </data>
   <data name="AddTemplate" xml:space="preserve">
-    <value>Add Template</value>
+    <value>إضافة قالب</value>
   </data>
   <data name="SelectShiftTemplate" xml:space="preserve">
-    <value>Select a shift template</value>
+    <value>اختر قالب مناوبة</value>
   </data>
   <data name="DayOff" xml:space="preserve">
-    <value>Day Off</value>
+    <value>يوم إجازة</value>
   </data>
   <data name="CustomTime" xml:space="preserve">
-    <value>Custom Time</value>
+    <value>وقت مخصص</value>
   </data>
   <data name="ManageTemplates" xml:space="preserve">
-    <value>Manage Templates</value>
+    <value>إدارة القوالب</value>
   </data>
   <data name="SelectLeaveType" xml:space="preserve">
-    <value>Select a leave type</value>
+    <value>اختر نوع الإجازة</value>
   </data>
   <data name="ForRegisteredUsersOnly" xml:space="preserve">
-    <value>For registered users only</value>
+    <value>للمستخدمين المسجلين فقط</value>
   </data>
   
   <!-- Leave Categories -->
   <data name="AnnualLeaves" xml:space="preserve">
-    <value>Annual Leaves</value>
+    <value>الإجازات السنوية</value>
   </data>
   <data name="MaternityPaternity" xml:space="preserve">
-    <value>Maternity/Paternity</value>
+    <value>إجازة الأمومة/الأبوة</value>
   </data>
   <data name="HealthLeaves" xml:space="preserve">
-    <value>Health Leaves</value>
+    <value>إجازات صحية</value>
   </data>
   <data name="ExcuseLeaves" xml:space="preserve">
-    <value>Excuse Leaves</value>
+    <value>إجازات عذر</value>
   </data>
   <data name="Education" xml:space="preserve">
-    <value>Education</value>
+    <value>التعليم/الامتحان</value>
   </data>
   <data name="Military" xml:space="preserve">
-    <value>Military</value>
+    <value>الخدمة العسكرية</value>
   </data>
   <data name="Administrative" xml:space="preserve">
-    <value>Administrative</value>
+    <value>إجازات إدارية</value>
   </data>
   <data name="UnpaidLeave" xml:space="preserve">
-    <value>Unpaid Leave</value>
+    <value>إجازة غير مدفوعة</value>
   </data>
   <data name="Other" xml:space="preserve">
-    <value>Other</value>
+    <value>أخرى</value>
   </data>
   
   <!-- Holiday Management -->
   <data name="HolidayManagement" xml:space="preserve">
-    <value>Holiday Management</value>
+    <value>إدارة العطلات</value>
   </data>
   <data name="HolidayManagementDesc" xml:space="preserve">
-    <value>Add, edit or delete holidays</value>
+    <value>إضافة أو تعديل أو حذف العطلات</value>
   </data>
   <data name="CurrentHolidays" xml:space="preserve">
-    <value>Current Holidays</value>
+    <value>العطلات الحالية</value>
   </data>
   <data name="AddNewHoliday" xml:space="preserve">
-    <value>Add New Holiday</value>
+    <value>إضافة عطلة جديدة</value>
   </data>
   <data name="Date" xml:space="preserve">
-    <value>Date</value>
+    <value>التاريخ</value>
   </data>
   <data name="HolidayName" xml:space="preserve">
-    <value>Holiday Name</value>
+    <value>اسم العطلة</value>
   </data>
   <data name="PublicHoliday" xml:space="preserve">
-    <value>Public Holiday</value>
+    <value>عطلة رسمية</value>
   </data>
   <data name="AdministrativeHoliday" xml:space="preserve">
-    <value>Administrative</value>
+    <value>إدارية</value>
   </data>
   <data name="HalfDayHoliday" xml:space="preserve">
-    <value>Half-Day Holiday</value>
+    <value>عطلة نصف يوم</value>
   </data>
   <data name="WorkHours" xml:space="preserve">
-    <value>Work Hours</value>
+    <value>ساعات العمل</value>
   </data>
   <data name="HalfDayHint" xml:space="preserve">
-    <value>Hours employee should work on half-day</value>
+    <value>الساعات التي يجب أن يعملها الموظف في عطلة نصف اليوم</value>
   </data>
   
   <!-- Smart Generator -->
   <data name="SmartScheduleGenerator" xml:space="preserve">
-    <value>Smart Schedule Generator</value>
+    <value>منشئ الجدول الذكي</value>
   </data>
   <data name="SmartScheduleGeneratorDesc" xml:space="preserve">
-    <value>automatic shift and work schedule</value>
+    <value>جدول المناوبة والعمل التلقائي</value>
   </data>
   <data name="Warning" xml:space="preserve">
-    <value>Warning!</value>
+    <value>تحذير!</value>
   </data>
   <data name="SmartGeneratorWarning" xml:space="preserve">
-    <value>This will DELETE ALL existing shifts for the selected month and create a new schedule.</value>
+    <value>سيؤدي هذا إلى حذف جميع المناوبات الموجودة للشهر المحدد وإنشاء جدول جديد.</value>
   </data>
   <data name="WeekdayWorkHours" xml:space="preserve">
-    <value>Weekday Work Hours</value>
+    <value>ساعات العمل في أيام الأسبوع</value>
   </data>
   <data name="SetDefaultWorkHours" xml:space="preserve">
-    <value>Set default work hours</value>
+    <value>تعيين ساعات العمل الافتراضية</value>
   </data>
   <data name="WeekendWork" xml:space="preserve">
-    <value>Weekend Work</value>
+    <value>العمل في عطلة نهاية الأسبوع</value>
   </data>
   <data name="SelectedTemplate" xml:space="preserve">
-    <value>Selected Template</value>
+    <value>القالب المحدد</value>
   </data>
   <data name="PleaseSelectTemplateFirst" xml:space="preserve">
-    <value>Please select a shift template first</value>
+    <value>يرجى اختيار قالب مناوبة أولاً</value>
   </data>
   
   <!-- Smart Generator Extended -->
   <data name="SetMinStaffAndHoursWeekends" xml:space="preserve">
-    <value>Set minimum staff and hours for weekends</value>
+    <value>تعيين الحد الأدنى من الموظفين والساعات لعطلات نهاية الأسبوع</value>
   </data>
   <data name="MinStaff" xml:space="preserve">
-    <value>Min Staff</value>
+    <value>الحد الأدنى للموظفين</value>
   </data>
   <data name="ApplyWeekendWork" xml:space="preserve">
-    <value>Apply weekend work</value>
+    <value>تطبيق العمل في عطلة نهاية الأسبوع</value>
   </data>
   <data name="WeekdayDuty" xml:space="preserve">
-    <value>Weekday Duty</value>
+    <value>مناوبة أيام الأسبوع</value>
   </data>
   <data name="HowManyStaffOnDuty" xml:space="preserve">
-    <value>How many staff on duty each day?</value>
+    <value>كم موظف في المناوبة كل يوم؟</value>
   </data>
   <data name="MinOnDuty" xml:space="preserve">
-    <value>Min On-Duty</value>
+    <value>الحد الأدنى للمناوبين</value>
   </data>
   <data name="ApplyWeekdayDuty" xml:space="preserve">
-    <value>Apply weekday duty</value>
+    <value>تطبيق مناوبة أيام الأسبوع</value>
   </data>
   <data name="NightShiftNote" xml:space="preserve">
-    <value>If end time is before start, it spans to next day (night shift)</value>
+    <value>إذا كان وقت الانتهاء قبل البداية، يمتد إلى اليوم التالي (مناوبة ليلية)</value>
   </data>
   <data name="HolidayDuty" xml:space="preserve">
-    <value>Holiday Duty</value>
+    <value>مناوبة العطلة</value>
   </data>
   <data name="DutySettingsForHolidays" xml:space="preserve">
-    <value>Duty settings for holidays</value>
+    <value>إعدادات المناوبة للعطلات</value>
   </data>
   <data name="ApplyHolidayDuty" xml:space="preserve">
-    <value>Apply holiday duty</value>
+    <value>تطبيق مناوبة العطلة</value>
   </data>
   <data name="ExemptFromDuty" xml:space="preserve">
-    <value>Exempt from Duty</value>
+    <value>الموظفون المعفون من المناوبة</value>
   </data>
   <data name="NeverAssignedToDuty" xml:space="preserve">
-    <value>These employees are never assigned to duty</value>
+    <value>هؤلاء الموظفون لا يتم تعيينهم للمناوبة أبداً</value>
   </data>
   <data name="DateBasedRestrictions" xml:space="preserve">
-    <value>Date-Based Restrictions</value>
+    <value>قيود قائمة على التاريخ</value>
   </data>
   <data name="EmployeesUnavailableOnDates" xml:space="preserve">
-    <value>Employees unavailable on specific dates</value>
+    <value>الموظفون غير المتاحين في تواريخ محددة</value>
   </data>
   <data name="SelectEmployee" xml:space="preserve">
-    <value>Select employee...</value>
+    <value>اختر موظف...</value>
   </data>
   <data name="StartDate" xml:space="preserve">
-    <value>Start Date</value>
+    <value>تاريخ البداية</value>
   </data>
   <data name="EndDate" xml:space="preserve">
-    <value>End Date</value>
+    <value>تاريخ النهاية</value>
   </data>
   <data name="Add" xml:space="preserve">
-    <value>Add</value>
+    <value>إضافة</value>
   </data>
   <data name="DutyPreferenceDates" xml:space="preserve">
-    <value>Duty Preference Dates</value>
+    <value>تواريخ تفضيل المناوبة</value>
   </data>
   <data name="EmployeesAvailableOnDates" xml:space="preserve">
-    <value>Employees available/preferred on specific dates</value>
+    <value>الموظفون المتاحون/المفضلون في تواريخ محددة</value>
   </data>
   <data name="AdditionalOptions" xml:space="preserve">
-    <value>Additional Options</value>
+    <value>خيارات إضافية</value>
   </data>
   <data name="OverwriteExistingShifts" xml:space="preserve">
-    <value>Overwrite existing shifts</value>
+    <value>الكتابة فوق المناوبات الموجودة</value>
   </data>
   <data name="BalanceDutiesFairly" xml:space="preserve">
-    <value>Balance duties fairly</value>
+    <value>توزيع المناوبات بشكل عادل</value>
   </data>
   <data name="MinDaysBetweenDuties" xml:space="preserve">
-    <value>Min days between duties</value>
+    <value>الحد الأدنى للأيام بين المناوبات</value>
   </data>
   <data name="GeneratingSchedule" xml:space="preserve">
-    <value>Generating schedule...</value>
+    <value>جاري إنشاء الجدول...</value>
   </data>
   <data name="MayTakeFewSeconds" xml:space="preserve">
-    <value>This may take a few seconds</value>
+    <value>قد يستغرق هذا بضع ثوانٍ</value>
   </data>
   <data name="activeEmployees" xml:space="preserve">
-    <value>active employees</value>
+    <value>موظف نشط</value>
   </data>
   <data name="days" xml:space="preserve">
-    <value>days</value>
+    <value>يوم</value>
   </data>
   <data name="AreYouSure" xml:space="preserve">
-    <value>Are you sure?</value>
+    <value>هل أنت متأكد؟</value>
   </data>
   <data name="CannotBeUndone" xml:space="preserve">
-    <value>This cannot be undone! All existing shifts will be deleted and a new schedule will be created.</value>
+    <value>لا يمكن التراجع عن هذا! سيتم حذف جميع المناوبات الموجودة وإنشاء جدول جديد.</value>
   </data>
   <data name="Month" xml:space="preserve">
-    <value>Month</value>
+    <value>شهر</value>
   </data>
   <data name="ToDelete" xml:space="preserve">
-    <value>To delete</value>
+    <value>للحذف</value>
   </data>
   <data name="shifts" xml:space="preserve">
-    <value>shifts</value>
+    <value>مناوبة</value>
   </data>
   <data name="YesGenerate" xml:space="preserve">
-    <value>Yes, Generate</value>
+    <value>نعم، إنشاء</value>
   </data>
   <data name="PremiumFeature" xml:space="preserve">
-    <value>Premium Feature</value>
+    <value>ميزة مميزة</value>
   </data>
   
   <!-- Premium Modal -->
   <data name="ForRegisteredUsers" xml:space="preserve">
-    <value>This feature is for registered users</value>
+    <value>هذه الميزة للمستخدمين المسجلين</value>
   </data>
   <data name="ManageUpTo10Employees" xml:space="preserve">
-    <value>Manage up to 10 employees</value>
+    <value>إدارة حتى 10 موظفين</value>
   </data>
   <data name="SmartShiftScheduling" xml:space="preserve">
-    <value>Smart shift scheduling</value>
+    <value>جدولة المناوبة الذكية</value>
   </data>
   <data name="TimesheetAndOvertime" xml:space="preserve">
-    <value>Timesheet and overtime calculation</value>
+    <value>حساب كشف الوقت والعمل الإضافي</value>
   </data>
   <data name="ExcelExport" xml:space="preserve">
-    <value>Excel export</value>
+    <value>تصدير Excel</value>
   </data>
   <data name="SaveShiftSchedules" xml:space="preserve">
-    <value>Save shift schedules</value>
+    <value>حفظ جداول المناوبة</value>
   </data>
   <data name="YourDataStaysSafe" xml:space="preserve">
-    <value>Your data stays safe</value>
+    <value>بياناتك تبقى آمنة</value>
   </data>
   <data name="SignUpFree" xml:space="preserve">
-    <value>Sign Up Free</value>
+    <value>التسجيل مجاناً</value>
   </data>
   
   <!-- Saved Schedules -->
   <data name="SavedSchedulesTitle" xml:space="preserve">
-    <value>Saved Schedules</value>
+    <value>الجداول المحفوظة</value>
   </data>
   <data name="SavedSchedulesForMonth" xml:space="preserve">
-    <value>saved schedules</value>
+    <value>الجداول المحفوظة</value>
   </data>
   <data name="SaveCurrentSchedule" xml:space="preserve">
-    <value>Save Current Schedule</value>
+    <value>حفظ الجدول الحالي</value>
   </data>
   <data name="ScheduleNamePlaceholder" xml:space="preserve">
-    <value>Schedule name (e.g., January Final)</value>
+    <value>اسم الجدول (مثال: يناير النهائي)</value>
   </data>
   <data name="DescriptionOptional" xml:space="preserve">
-    <value>Description (optional)</value>
+    <value>الوصف (اختياري)</value>
   </data>
   <data name="Save" xml:space="preserve">
-    <value>Save</value>
+    <value>حفظ</value>
   </data>
   <data name="ThisMonthOnly" xml:space="preserve">
-    <value>This month only</value>
+    <value>هذا الشهر فقط</value>
   </data>
   
   <!-- Month End Shift -->
   <data name="MonthEndShift" xml:space="preserve">
-    <value>Month-End Shift</value>
+    <value>مناوبة نهاية الشهر</value>
   </data>
   <data name="WhichMonthOvernightHours" xml:space="preserve">
-    <value>Which month should overnight hours count?</value>
+    <value>في أي شهر يجب احتساب الساعات الليلية؟</value>
   </data>
   <data name="AllThisMonth" xml:space="preserve">
-    <value>All This Month</value>
+    <value>كلها هذا الشهر</value>
   </data>
   <data name="AllThisMonthDesc" xml:space="preserve">
-    <value>Including overnight hours, all count in this month</value>
+    <value>بما في ذلك الساعات الليلية، كلها تحتسب في هذا الشهر</value>
   </data>
   <data name="SplitAtMidnight" xml:space="preserve">
-    <value>Split at Midnight</value>
+    <value>تقسيم عند منتصف الليل</value>
   </data>
   <data name="SplitAtMidnightDesc" xml:space="preserve">
-    <value>Until 00:00 this month, after 00:00 next month</value>
+    <value>حتى 00:00 هذا الشهر، بعد 00:00 الشهر القادم</value>
   </data>
   
   <!-- Custom Shift -->
   <data name="CustomShift" xml:space="preserve">
-    <value>Custom Shift</value>
+    <value>مناوبة مخصصة</value>
   </data>
   <data name="SetTimeAndBreak" xml:space="preserve">
-    <value>Set time and break</value>
+    <value>تعيين الوقت والاستراحة</value>
   </data>
   <data name="BreakTime" xml:space="preserve">
-    <value>Break Time</value>
+    <value>وقت الاستراحة</value>
   </data>
   <data name="min" xml:space="preserve">
-    <value>min</value>
+    <value>دقيقة</value>
   </data>
   <data name="OvernightShift" xml:space="preserve">
-    <value>Overnight shift</value>
+    <value>مناوبة ليلية</value>
   </data>
   
   <!-- Bulk Assign -->
   <data name="BulkShiftAssignment" xml:space="preserve">
-    <value>Bulk shift assignment</value>
+    <value>تعيين المناوبة الجماعي</value>
   </data>
   <data name="WeekdaysOnly" xml:space="preserve">
-    <value>Weekdays Only</value>
+    <value>أيام الأسبوع فقط</value>
   </data>
   <data name="MondayFriday" xml:space="preserve">
-    <value>Monday - Friday</value>
+    <value>الاثنين - الجمعة</value>
   </data>
   <data name="AllDays" xml:space="preserve">
-    <value>All Days</value>
+    <value>جميع الأيام</value>
   </data>
   <data name="IncludingWeekends" xml:space="preserve">
-    <value>Including weekends</value>
+    <value>بما في ذلك عطلات نهاية الأسبوع</value>
   </data>
   <data name="ExceptSunday" xml:space="preserve">
-    <value>Except Sunday</value>
+    <value>ما عدا الأحد</value>
   </data>
   <data name="SundaysExcluded" xml:space="preserve">
-    <value>Sundays excluded</value>
+    <value>أيام الأحد مستثناة</value>
   </data>
   <data name="Processing" xml:space="preserve">
-    <value>Processing...</value>
+    <value>جاري المعالجة...</value>
   </data>
   <data name="DeleteAllShifts" xml:space="preserve">
-    <value>Delete All Shifts</value>
+    <value>حذف جميع المناوبات</value>
   </data>
   <data name="AddShift" xml:space="preserve">
-    <value>Add Shift</value>
+    <value>إضافة مناوبة</value>
   </data>
   
   <!-- JavaScript Messages -->
   <data name="ConfirmDelete" xml:space="preserve">
-    <value>Are you sure you want to delete?</value>
+    <value>هل أنت متأكد أنك تريد الحذف؟</value>
   </data>
   <data name="ConfirmDeletePage" xml:space="preserve">
-    <value>Are you sure you want to delete this page?</value>
+    <value>هل أنت متأكد أنك تريد حذف هذه الصفحة؟</value>
   </data>
   <data name="AdminUserWillBeDeleted" xml:space="preserve">
-    <value>Admin user "{0}" will be deleted. Are you sure?</value>
+    <value>سيتم حذف مستخدم المسؤول "{0}". هل أنت متأكد؟</value>
   </data>
   <data name="DeleteFailed" xml:space="preserve">
-    <value>Delete operation failed.</value>
+    <value>فشلت عملية الحذف.</value>
   </data>
   <data name="AnErrorOccurred" xml:space="preserve">
-    <value>An error occurred.</value>
+    <value>حدث خطأ.</value>
   </data>
   <data name="ConfirmDeleteShift" xml:space="preserve">
-    <value>Do you want to delete this shift?</value>
+    <value>هل تريد حذف هذه المناوبة؟</value>
   </data>
   <data name="ErrorOccurred" xml:space="preserve">
-    <value>An error occurred</value>
+    <value>حدث خطأ</value>
   </data>
   <data name="NameRequired" xml:space="preserve">
-    <value>Full name is required</value>
+    <value>الاسم الكامل مطلوب</value>
   </data>
   <data name="DateNameRequired" xml:space="preserve">
-    <value>Date and name are required</value>
+    <value>التاريخ والاسم مطلوبان</value>
   </data>
   <data name="ShiftAdded" xml:space="preserve">
-    <value>Shift added</value>
+    <value>تمت إضافة المناوبة</value>
   </data>
   <data name="ShiftDeleted" xml:space="preserve">
-    <value>Shift deleted</value>
+    <value>تم حذف المناوبة</value>
   </data>
   <data name="EmployeeDeleted" xml:space="preserve">
-    <value>Employee deleted</value>
+    <value>تم حذف الموظف</value>
   </data>
   
   <!-- JavaScript Extended -->
   <data name="NoTemplatesAddWith" xml:space="preserve">
-    <value>No templates. Add with ⚙️</value>
+    <value>لا توجد قوالب. أضف باستخدام ⚙️</value>
   </data>
   <data name="minBreak" xml:space="preserve">
-    <value>min break</value>
+    <value>دقيقة استراحة</value>
   </data>
   <data name="NightShift" xml:space="preserve">
-    <value>Night shift</value>
+    <value>مناوبة ليلية</value>
   </data>
   <data name="NoTemplatesYetAddBelow" xml:space="preserve">
-    <value>No templates yet. Add below.</value>
+    <value>لا توجد قوالب بعد. أضف من الأسفل.</value>
   </data>
   <data name="Edit" xml:space="preserve">
-    <value>Edit</value>
+    <value>تعديل</value>
   </data>
   <data name="TemplateNameRequired" xml:space="preserve">
-    <value>Template name is required</value>
+    <value>اسم القالب مطلوب</value>
   </data>
   <data name="StartAndEndTimeRequired" xml:space="preserve">
-    <value>Start and end time are required</value>
+    <value>وقت البداية والنهاية مطلوب</value>
   </data>
   <data name="TemplateAdded" xml:space="preserve">
-    <value>Template added</value>
+    <value>تمت إضافة القالب</value>
   </data>
   <data name="ConfirmDeleteTemplate" xml:space="preserve">
-    <value>Are you sure you want to delete this template?</value>
+    <value>هل أنت متأكد أنك تريد حذف هذا القالب؟</value>
   </data>
   <data name="TemplateDeleted" xml:space="preserve">
-    <value>Template deleted</value>
+    <value>تم حذف القالب</value>
   </data>
   <data name="NewTemplateName" xml:space="preserve">
-    <value>New template name:</value>
+    <value>اسم القالب الجديد:</value>
   </data>
   <data name="TemplateUpdated" xml:space="preserve">
-    <value>Template updated</value>
+    <value>تم تحديث القالب</value>
   </data>
   <data name="AddHolidayJS" xml:space="preserve">
-    <value>Add Holiday</value>
+    <value>إضافة عطلة</value>
   </data>
   
   <!-- Saved Schedules JS -->
   <data name="NoSavedSchedulesYet" xml:space="preserve">
-    <value>No saved schedules yet</value>
+    <value>لا توجد جداول محفوظة بعد</value>
   </data>
   <data name="Load" xml:space="preserve">
-    <value>Load</value>
+    <value>تحميل</value>
   </data>
   <data name="ScheduleNameRequired" xml:space="preserve">
-    <value>Schedule name is required</value>
+    <value>اسم الجدول مطلوب</value>
   </data>
   <data name="ConfirmDeleteSchedule" xml:space="preserve">
-    <value>Are you sure you want to delete this saved schedule?</value>
+    <value>هل أنت متأكد أنك تريد حذف هذا الجدول المحفوظ؟</value>
   </data>
   <data name="Deleted" xml:space="preserve">
-    <value>Deleted</value>
+    <value>تم الحذف</value>
   </data>
   <data name="ConfirmDeleteLeave" xml:space="preserve">
-    <value>Are you sure you want to delete this leave?</value>
+    <value>هل أنت متأكد أنك تريد حذف هذه الإجازة؟</value>
   </data>
   <data name="PleaseSelectTemplateOrLeave" xml:space="preserve">
-    <value>Please select a shift template or leave type</value>
+    <value>يرجى اختيار قالب مناوبة أو نوع إجازة</value>
   </data>
   <data name="NoShiftsToDelete" xml:space="preserve">
-    <value>No shifts to delete</value>
+    <value>لا توجد مناوبات للحذف</value>
   </data>
   <data name="ShiftsDeleted" xml:space="preserve">
-    <value>shifts deleted!</value>
+    <value>تم حذف المناوبة!</value>
   </data>
   
   <!-- More JavaScript Messages -->
   <data name="ShiftsAdded" xml:space="preserve">
-    <value>Shifts added!</value>
+    <value>تمت إضافة المناوبات!</value>
   </data>
   <data name="ShiftOverlap" xml:space="preserve">
-    <value>⚠️ Shift overlap:</value>
+    <value>⚠️ تعارض المناوبة:</value>
   </data>
   <data name="LeaveAssigned" xml:space="preserve">
-    <value>Leave assigned</value>
+    <value>تم تعيين الإجازة</value>
   </data>
   <data name="LeaveDeleted" xml:space="preserve">
-    <value>Leave deleted</value>
+    <value>تم حذف الإجازة</value>
   </data>
   <data name="NoHolidaysThisMonth" xml:space="preserve">
-    <value>No holidays this month</value>
+    <value>لا توجد عطلات هذا الشهر</value>
   </data>
   <data name="Official" xml:space="preserve">
-    <value>Official</value>
+    <value>رسمي</value>
   </data>
   <data name="Admin" xml:space="preserve">
-    <value>Admin</value>
+    <value>إداري</value>
   </data>
   <data name="HalfDay" xml:space="preserve">
-    <value>Half Day</value>
+    <value>نصف يوم</value>
   </data>
   <data name="ConfirmDeleteHoliday" xml:space="preserve">
-    <value>Are you sure you want to delete this holiday?</value>
+    <value>هل أنت متأكد أنك تريد حذف هذه العطلة؟</value>
   </data>
   <data name="HolidayDeleted" xml:space="preserve">
-    <value>Holiday deleted</value>
+    <value>تم حذف العطلة</value>
   </data>
   <data name="Adding" xml:space="preserve">
-    <value>Adding...</value>
+    <value>جاري الإضافة...</value>
   </data>
   <data name="HolidayAdded" xml:space="preserve">
-    <value>Holiday added</value>
+    <value>تمت إضافة العطلة</value>
   </data>
   <data name="SmartSchedulingComingSoon" xml:space="preserve">
-    <value>Smart scheduling coming soon!</value>
+    <value>ميزة التخطيط الذكي قريباً!</value>
   </data>
   
   <!-- Invite Modal -->
   <data name="CreateFreeAccount" xml:space="preserve">
-    <value>Create Free Account</value>
+    <value>إنشاء حساب مجاني</value>
   </data>
   <data name="SaveDataAndAccessFeatures" xml:space="preserve">
-    <value>Save your data and access all features</value>
+    <value>احفظ بياناتك وتمتع بجميع الميزات</value>
   </data>
   <data name="DataPermanentlySaved" xml:space="preserve">
-    <value>Your data is permanently saved</value>
+    <value>بياناتك محفوظة بشكل دائم</value>
   </data>
   <data name="AddUpTo10Employees" xml:space="preserve">
-    <value>Add up to 10 employees</value>
+    <value>أضف حتى 10 موظفين</value>
   </data>
   <data name="DetailedTimesheetsReports" xml:space="preserve">
-    <value>Detailed timesheets &amp; reports</value>
+    <value>كشوف الوقت والتقارير التفصيلية</value>
   </data>
   <data name="ExportToExcel" xml:space="preserve">
-    <value>Export to Excel</value>
+    <value>تصدير إلى Excel</value>
   </data>
   <data name="IAlreadyHaveAccount" xml:space="preserve">
-    <value>I already have an account</value>
+    <value>لدي حساب بالفعل</value>
   </data>
   <data name="NoCreditCardRequired" xml:space="preserve">
-    <value>No credit card required</value>
+    <value>لا حاجة لبطاقة ائتمان</value>
   </data>
   
   <!-- Smart Generator Progress -->
   <data name="SelectEmployeeAndStartDate" xml:space="preserve">
-    <value>Select employee and start date</value>
+    <value>اختر الموظف وتاريخ البداية</value>
   </data>
   <data name="DeletingExistingShifts" xml:space="preserve">
-    <value>Deleting existing shifts...</value>
+    <value>جاري حذف المناوبات الموجودة...</value>
   </data>
   <data name="AnalyzingRules" xml:space="preserve">
-    <value>Analyzing rules...</value>
+    <value>جاري تحليل القواعد...</value>
   </data>
   <data name="EvaluatingEmployees" xml:space="preserve">
-    <value>Evaluating employees...</value>
+    <value>جاري تقييم الموظفين...</value>
   </data>
   <data name="SavingNewShifts" xml:space="preserve">
-    <value>Saving new shifts...</value>
+    <value>جاري حفظ المناوبات الجديدة...</value>
   </data>
   <data name="ScheduleGeneratedSuccessfully" xml:space="preserve">
-    <value>✓ Schedule generated successfully!</value>
+    <value>✓ تم إنشاء الجدول بنجاح!</value>
   </data>
   <data name="FailedToDeleteShifts" xml:space="preserve">
-    <value>Failed to delete shifts</value>
+    <value>فشل حذف المناوبات</value>
   </data>
   <data name="OvernightShiftInfo" xml:space="preserve">
-    <value>This shift starts on the last day of the month and continues into the next month. Choose which month the overnight hours should count for the timesheet.</value>
+    <value>تبدأ هذه المناوبة في آخر يوم من الشهر وتستمر إلى الشهر التالي. اختر الشهر الذي يجب أن تُحسب فيه ساعات الليل لورقة الوقت.</value>
   </data>
   <data name="LoadingScheduleWillReplace" xml:space="preserve">
-    <value>Loading this schedule will replace current shifts. Continue?</value>
+    <value>تحميل هذا الجدول سيستبدل المناوبات الحالية. متابعة؟</value>
   </data>
   <data name="ConfirmDeleteAllShiftsForEmployee" xml:space="preserve">
-    <value>Are you sure you want to delete ALL shifts for this employee this month?</value>
+    <value>هل أنت متأكد أنك تريد حذف جميع المناوبات لهذا الموظف في هذا الشهر؟</value>
   </data>
   <data name="ProcessingDay" xml:space="preserve">
-    <value>Processing day {0}...</value>
+    <value>معالجة اليوم {0}...</value>
   </data>
   <data name="PleaseCompleteReCaptcha" xml:space="preserve">
-    <value>Please complete the reCAPTCHA.</value>
+    <value>يرجى إكمال reCAPTCHA.</value>
   </data>
   <data name="ReCaptchaVerificationFailed" xml:space="preserve">
-    <value>reCAPTCHA verification failed. Please try again.</value>
+    <value>فشل التحقق من reCAPTCHA. يرجى المحاولة مرة أخرى.</value>
   </data>
   <data name="EmailNotConfirmed" xml:space="preserve">
-    <value>Your email address has not been confirmed. Please check your inbox or request a new confirmation email.</value>
+    <value>لم يتم تأكيد عنوان بريدك الإلكتروني. يرجى التحقق من صندوق الوارد أو طلب بريد تأكيد جديد.</value>
   </data>
   <data name="AccountLocked" xml:space="preserve">
-    <value>Account locked. Please try again later.</value>
+    <value>تم قفل الحساب. يرجى المحاولة مرة أخرى لاحقاً.</value>
   </data>
   <data name="InvalidLoginAttempt" xml:space="preserve">
-    <value>Invalid login attempt.</value>
+    <value>محاولة تسجيل دخول غير صالحة.</value>
   </data>
   <data name="EmailVerificationSubject" xml:space="preserve">
-    <value>Geldimmi - Verify Your Email Address</value>
+    <value>Geldimmi - تحقق من عنوان بريدك الإلكتروني</value>
   </data>
   <data name="InvalidEmailConfirmationLink" xml:space="preserve">
-    <value>Invalid email confirmation link.</value>
+    <value>رابط تأكيد البريد الإلكتروني غير صالح.</value>
   </data>
   <data name="UserNotFound" xml:space="preserve">
-    <value>User not found.</value>
+    <value>المستخدم غير موجود.</value>
   </data>
   <data name="EmailConfirmedSuccessfully" xml:space="preserve">
-    <value>Your email address has been confirmed. You can now sign in.</value>
+    <value>تم تأكيد عنوان بريدك الإلكتروني بنجاح. يمكنك الآن تسجيل الدخول.</value>
   </data>
   <data name="EmailConfirmationFailed" xml:space="preserve">
-    <value>Email confirmation failed. Please request a new confirmation link.</value>
+    <value>فشل تأكيد البريد الإلكتروني. يرجى طلب رابط تأكيد جديد.</value>
   </data>
   <data name="EmailAddressRequired" xml:space="preserve">
-    <value>Email address is required.</value>
+    <value>عنوان البريد الإلكتروني مطلوب.</value>
   </data>
   <data name="ConfirmationEmailSentIfRegistered" xml:space="preserve">
-    <value>If this email address is registered, a confirmation email has been sent.</value>
+    <value>إذا كان عنوان البريد الإلكتروني هذا مسجلاً، تم إرسال بريد التأكيد.</value>
   </data>
   <data name="EmailAlreadyConfirmed" xml:space="preserve">
-    <value>This email address is already confirmed.</value>
+    <value>تم تأكيد عنوان البريد الإلكتروني هذا بالفعل.</value>
   </data>
   <data name="ConfirmationEmailSent" xml:space="preserve">
-    <value>Confirmation email sent. Please check your inbox.</value>
+    <value>تم إرسال بريد التأكيد. يرجى التحقق من صندوق الوارد.</value>
   </data>
   <data name="GoogleSignInError" xml:space="preserve">
-    <value>An error occurred during Google sign-in.</value>
+    <value>حدث خطأ أثناء تسجيل الدخول عبر Google.</value>
   </data>
   <data name="FailedToRetrieveGoogleLogin" xml:space="preserve">
-    <value>Failed to retrieve Google login information.</value>
+    <value>فشل استرداد معلومات تسجيل الدخول من Google.</value>
   </data>
   <data name="CouldNotRetrieveEmailFromGoogle" xml:space="preserve">
-    <value>Could not retrieve email from your Google account.</value>
+    <value>تعذر استرداد البريد الإلكتروني من حساب Google الخاص بك.</value>
   </data>
   <data name="TryShiftPlanningWithGeldimmi" xml:space="preserve">
-    <value>Try Shift Planning with Geldimmi</value>
+    <value>جرب تخطيط المناوبات مع Geldimmi</value>
   </data>
   <data name="CreateFreeAccountStartUsing" xml:space="preserve">
-    <value>Create a free account and start using right away.</value>
+    <value>أنشئ حساباً مجانياً وابدأ الاستخدام فوراً.</value>
   </data>
   <data name="TryNow" xml:space="preserve">
-    <value>🚀 Try Now</value>
+    <value>🚀 جرب الآن</value>
   </data>
   <data name="SimplifyYourShiftPlanning" xml:space="preserve">
-    <value>Simplify Your Shift Planning</value>
+    <value>بسّط تخطيط المناوبات</value>
   </data>
   <data name="AutomaticShiftSchedulingDescription" xml:space="preserve">
-    <value>Automatic shift scheduling, fair distribution, and timesheet tracking with Geldimmi. Designed for hospitals and businesses.</value>
+    <value>جدولة المناوبات التلقائية، التوزيع العادل، وتتبع ورقة الوقت مع Geldimmi. مصمم للمستشفيات والشركات.</value>
   </data>
   <data name="FreeToStart" xml:space="preserve">
-    <value>Free to start</value>
+    <value>مجاني للبدء</value>
   </data>
   <data name="UpTo10Staff" xml:space="preserve">
-    <value>Up to 10 staff</value>
+    <value>حتى 10 موظفين</value>
   </data>
   <data name="NoCreditCard" xml:space="preserve">
-    <value>No credit card</value>
+    <value>لا حاجة لبطاقة ائتمان</value>
   </data>
   <data name="ViewDemo" xml:space="preserve">
-    <value>👀 View Demo</value>
+    <value>👀 عرض التجربة</value>
   </data>
   <data name="BackToAllPosts" xml:space="preserve">
-    <value>← Back to all posts</value>
+    <value>← العودة إلى جميع المقالات</value>
   </data>
   <data name="EmailConfirmation" xml:space="preserve">
-    <value>Email Confirmation</value>
+    <value>تأكيد البريد الإلكتروني</value>
   </data>
   <data name="EmailConfirmationSentTitle" xml:space="preserve">
-    <value>Confirmation Email Sent</value>
+    <value>تم إرسال بريد التأكيد</value>
   </data>
   <data name="EmailConfirmationSentMessage" xml:space="preserve">
-    <value>We've sent a confirmation email to {0}. Please check your inbox and click the link in the email to activate your account.</value>
+    <value>لقد أرسلنا بريد تأكيد إلى {0}. يرجى التحقق من صندوق الوارد والنقر على الرابط في البريد الإلكتروني لتفعيل حسابك.</value>
   </data>
   <data name="DidntReceiveEmail" xml:space="preserve">
-    <value>Didn't receive the email? <a href="{0}">Resend</a> or check your spam folder.</value>
+    <value>لم تستلم البريد الإلكتروني؟ <a href="{0}">إعادة الإرسال</a> أو تحقق من مجلد البريد العشوائي.</value>
   </data>
   <data name="ResendEmail" xml:space="preserve">
-    <value>Resend Email</value>
+    <value>إعادة إرسال البريد الإلكتروني</value>
   </data>
   <data name="BackToLogin" xml:space="preserve">
-    <value>Back to Login</value>
+    <value>العودة إلى تسجيل الدخول</value>
   </data>
   <data name="ResendConfirmationEmail" xml:space="preserve">
-    <value>Resend Confirmation Email</value>
+    <value>إعادة إرسال بريد التأكيد</value>
   </data>
   <data name="WeCanSendYouNewConfirmationLink" xml:space="preserve">
-    <value>We can send you a new confirmation link to your email address.</value>
+    <value>يمكننا إرسال رابط تأكيد جديد إلى عنوان بريدك الإلكتروني.</value>
   </data>
   <data name="EmailAddress" xml:space="preserve">
-    <value>Email Address</value>
+    <value>عنوان البريد الإلكتروني</value>
   </data>
   <data name="SendConfirmationEmail" xml:space="preserve">
-    <value>Send Confirmation Email</value>
+    <value>إرسال بريد التأكيد</value>
   </data>
   <data name="NoEmployeesYet" xml:space="preserve">
-    <value>No employees yet</value>
+    <value>لا يوجد موظفون بعد</value>
   </data>
   <data name="AddEmployeesFirst" xml:space="preserve">
-    <value>Add employees first.</value>
+    <value>أضف الموظفين أولاً.</value>
   </data>
   <data name="GoToCalendar" xml:space="preserve">
-    <value>Go to Calendar</value>
+    <value>انتقل إلى التقويم</value>
   </data>
   <data name="ApplyTemplate" xml:space="preserve">
-    <value>Apply Template</value>
+    <value>تطبيق القالب</value>
   </data>
   <data name="ShiftTime" xml:space="preserve">
-    <value>Shift Time</value>
+    <value>وقت المناوبة</value>
   </data>
   <data name="CheckIn" xml:space="preserve">
-    <value>Check In</value>
+    <value>وقت الدخول</value>
   </data>
   <data name="CheckOut" xml:space="preserve">
-    <value>Check Out</value>
+    <value>وقت الخروج</value>
   </data>
   <data name="CheckOutNextDay" xml:space="preserve">
-    <value>Check out next day</value>
+    <value>الخروج في اليوم التالي</value>
   </data>
   <data name="EnterAtLeastCheckInOrCheckOut" xml:space="preserve">
-    <value>Enter at least check-in or check-out time</value>
+    <value>أدخل على الأقل وقت الدخول أو الخروج</value>
   </data>
   <data name="ConnectionError" xml:space="preserve">
-    <value>Connection error</value>
+    <value>خطأ في الاتصال</value>
   </data>
   <data name="DeleteThisRecord" xml:space="preserve">
-    <value>Delete this record?</value>
+    <value>هل أنت متأكد أنك تريد حذف هذا السجل؟</value>
   </data>
   <data name="SignIn" xml:space="preserve">
-    <value>Sign In</value>
+    <value>تسجيل الدخول</value>
   </data>
   <data name="WelcomeBack" xml:space="preserve">
-    <value>Welcome back</value>
+    <value>مرحباً بعودتك</value>
   </data>
   <data name="SignInToContinue" xml:space="preserve">
-    <value>Sign in to continue to your account</value>
+    <value>قم بتسجيل الدخول للمتابعة إلى حسابك</value>
   </data>
   <data name="CreateRostersInSeconds" xml:space="preserve">
-    <value>Create rosters in seconds</value>
+    <value>إنشاء جداول المناوبات في ثوانٍ</value>
   </data>
   <data name="FairAndBalancedShiftDistribution" xml:space="preserve">
-    <value>Fair and balanced shift distribution</value>
+    <value>توزيع عادل ومتوازن للمناوبات</value>
   </data>
   <data name="AutomaticTimesheetsAndReports" xml:space="preserve">
-    <value>Automatic timesheets and reports</value>
+    <value>أوراق الوقت والتقارير التلقائية</value>
   </data>
   <data name="Or" xml:space="preserve">
-    <value>or</value>
+    <value>أو</value>
   </data>
   <data name="SignInWithGoogle" xml:space="preserve">
-    <value>Sign in with Google</value>
+    <value>تسجيل الدخول باستخدام Google</value>
   </data>
   <data name="DontHaveAccount" xml:space="preserve">
-    <value>Don't have an account?</value>
+    <value>ليس لديك حساب؟</value>
   </data>
   <data name="SignUpForFree" xml:space="preserve">
-    <value>Sign up for free</value>
+    <value>سجل مجاناً</value>
   </data>
   <data name="Password" xml:space="preserve">
-    <value>Password</value>
+    <value>كلمة المرور</value>
   </data>
   <data name="RememberMe" xml:space="preserve">
-    <value>Remember me</value>
+    <value>تذكرني</value>
   </data>
   <data name="ForgotPassword" xml:space="preserve">
-    <value>Forgot password?</value>
+    <value>نسيت كلمة المرور؟</value>
   </data>
   <data name="20EmployeeManagement" xml:space="preserve">
-    <value>20 Employee Management</value>
+    <value>إدارة 20 موظفاً</value>
   </data>
   <data name="Manage20EmployeesInsteadOf7" xml:space="preserve">
-    <value>Manage 20 employees instead of 7 for unregistered users.</value>
+    <value>إدارة 20 موظفاً بدلاً من 7 للمستخدمين غير المسجلين.</value>
   </data>
   <data name="YourDataIsSafe" xml:space="preserve">
-    <value>Your Data is Safe</value>
+    <value>بياناتك آمنة</value>
   </data>
   <data name="YourRostersAndTimesheetsStoredInCloud" xml:space="preserve">
-    <value>Your rosters and timesheets are stored in the cloud.</value>
+    <value>جداول المناوبات وأوراق الوقت الخاصة بك مخزنة في السحابة.</value>
   </data>
   <data name="AdvancedReports" xml:space="preserve">
-    <value>Advanced Reports</value>
+    <value>تقارير متقدمة</value>
   </data>
   <data name="DetailedTimesheetAndOvertimeReports" xml:space="preserve">
-    <value>Detailed timesheet and overtime reports with Excel export.</value>
+    <value>تقارير مفصلة لأوراق الوقت والساعات الإضافية مع تصدير Excel.</value>
   </data>
   <data name="CompletelyFree" xml:space="preserve">
-    <value>Completely Free</value>
+    <value>مجاني تماماً</value>
   </data>
   <data name="CreateYourAccount" xml:space="preserve">
-    <value>Create your account</value>
+    <value>أنشئ حسابك</value>
   </data>
   <data name="GetStartedNowNoCreditCard" xml:space="preserve">
-    <value>Get started now, no credit card required</value>
+    <value>ابدأ الآن، لا حاجة لبطاقة ائتمان</value>
   </data>
   <data name="YourFullName" xml:space="preserve">
-    <value>Your full name</value>
+    <value>اسمك الكامل</value>
   </data>
   <data name="ConfirmPassword" xml:space="preserve">
-    <value>Confirm Password</value>
+    <value>تأكيد كلمة المرور</value>
   </data>
   <data name="BySigningUpYouAgreeToOur" xml:space="preserve">
-    <value>By signing up, you agree to our </value>
+    <value>بالتسجيل، أنت توافق على </value>
   </data>
   <data name="TermsOfService" xml:space="preserve">
-    <value>Terms of Service</value>
+    <value>شروط الخدمة</value>
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
-    <value>Privacy Policy</value>
+    <value>سياسة الخصوصية</value>
   </data>
   <data name="And" xml:space="preserve">
-    <value> and </value>
+    <value> و </value>
   </data>
   <data name="Period" xml:space="preserve">
     <value>.</value>
   </data>
   <data name="AlreadyHaveAccount" xml:space="preserve">
-    <value>Already have an account?</value>
+    <value>هل لديك حساب بالفعل؟</value>
   </data>
   <data name="Payroll" xml:space="preserve">
-    <value>Payroll</value>
+    <value>كشف الرواتب</value>
   </data>
   <data name="DataSource" xml:space="preserve">
-    <value>Data Source</value>
+    <value>مصدر البيانات</value>
   </data>
   <data name="ShiftSchedule" xml:space="preserve">
-    <value>Shift Schedule</value>
+    <value>جدول المناوبة</value>
   </data>
   <data name="NightStart" xml:space="preserve">
-    <value>Night Start</value>
+    <value>بداية الليل</value>
   </data>
   <data name="NightEnd" xml:space="preserve">
-    <value>Night End</value>
+    <value>نهاية الليل</value>
   </data>
   <data name="Calculate" xml:space="preserve">
-    <value>Calculate</value>
+    <value>احسب</value>
   </data>
   <data name="SavedPayrolls" xml:space="preserve">
-    <value>Saved Payrolls</value>
+    <value>كشوف الرواتب المحفوظة</value>
   </data>
   <data name="CalculationResults" xml:space="preserve">
-    <value>Calculation Results</value>
+    <value>نتائج الحساب</value>
   </data>
   <data name="Edited" xml:space="preserve">
-    <value>edited</value>
+    <value>تم التعديل</value>
   </data>
   <data name="Recalculate" xml:space="preserve">
-    <value>Recalculate</value>
+    <value>إعادة الحساب</value>
   </data>
   <data name="TotalWorked" xml:space="preserve">
-    <value>Total Worked</value>
-  </data>
-  <data name="Days" xml:space="preserve">
-    <value>Days</value>
+    <value>إجمالي العمل</value>
   </data>
   <data name="Hours" xml:space="preserve">
-    <value>Hours</value>
+    <value>الساعات</value>
   </data>
   <data name="Target" xml:space="preserve">
-    <value>Target</value>
+    <value>الهدف</value>
   </data>
   <data name="OT" xml:space="preserve">
-    <value>OT</value>
+    <value>س.إ</value>
   </data>
   <data name="Wknd" xml:space="preserve">
-    <value>Wknd</value>
+    <value>ن.أ</value>
   </data>
   <data name="Hol" xml:space="preserve">
-    <value>Hol.</value>
+    <value>عطلة</value>
   </data>
   <data name="NoDataFound" xml:space="preserve">
-    <value>No data found</value>
+    <value>لم يتم العثور على بيانات</value>
   </data>
   <data name="NoAttendanceRecordsForSelectedMonth" xml:space="preserve">
-    <value>No attendance records for selected month.</value>
+    <value>لا توجد سجلات حضور للشهر المحدد.</value>
   </data>
   <data name="NoShiftsAssignedForSelectedMonth" xml:space="preserve">
-    <value>No shifts assigned for selected month.</value>
+    <value>لا توجد مناوبات مخصصة للشهر المحدد.</value>
   </data>
   <data name="CalculatePayroll" xml:space="preserve">
-    <value>Calculate Payroll</value>
+    <value>حساب الرواتب</value>
   </data>
   <data name="SelectDataSourceAndClickCalculate" xml:space="preserve">
-    <value>Select data source and click 'Calculate'.</value>
+    <value>اختر مصدر البيانات وانقر على 'احسب'.</value>
   </data>
   <data name="SavePayroll" xml:space="preserve">
-    <value>Save Payroll</value>
+    <value>حفظ كشف الرواتب</value>
   </data>
   <data name="Name" xml:space="preserve">
-    <value>Name</value>
+    <value>الاسم</value>
   </data>
   <data name="YourEditsWillBeLost" xml:space="preserve">
-    <value>Your edits will be lost. Continue?</value>
-  </data>
-  <data name="NameRequired" xml:space="preserve">
-    <value>Name required</value>
+    <value>سيتم فقدان تعديلاتك. متابعة؟</value>
   </data>
   <data name="PayrollSaved" xml:space="preserve">
-    <value>Payroll saved!</value>
+    <value>تم حفظ كشف الرواتب!</value>
   </data>
   <data name="AreYouSureDeletePayroll" xml:space="preserve">
-    <value>Are you sure you want to delete this payroll?</value>
+    <value>هل أنت متأكد أنك تريد حذف كشف الرواتب هذا؟</value>
   </data>
   <data name="OnlineShiftSchedulingTimeAttendanceAndPayrollSystem" xml:space="preserve">
-    <value>Online shift scheduling, time attendance and payroll system</value>
+    <value>جدولة المناوبات عبر الإنترنت، تتبع الحضور ونظام الرواتب</value>
   </data>
   <data name="HowToCreateShiftSchedule" xml:space="preserve">
-    <value>How to Create a Shift Schedule?</value>
+    <value>كيفية إنشاء جدول المناوبة؟</value>
   </data>
   <data name="GeldimmiIle3AdimdaNobetCizelgesi" xml:space="preserve">
-    <value>Create shift schedule in 3 steps with Geldimmi</value>
+    <value>إنشاء جدول المناوبة في 3 خطوات مع Geldimmi</value>
   </data>
   <data name="PersonelEkleyin" xml:space="preserve">
-    <value>Add Employees</value>
+    <value>إضافة الموظفين</value>
   </data>
   <data name="AdUnvanVeSicilNumaralariGirin" xml:space="preserve">
-    <value>Enter names, titles and employee IDs</value>
+    <value>أدخل الأسماء والألقاب وأرقام الموظفين</value>
   </data>
   <data name="NobetAtayin" xml:space="preserve">
-    <value>Assign Shifts</value>
+    <value>تعيين المناوبات</value>
   </data>
   <data name="TakvimUzerindeTiklayarakVeyaOtomatikAtayin" xml:space="preserve">
-    <value>Click on calendar or auto-assign</value>
+    <value>انقر على التقويم أو التعيين التلقائي</value>
   </data>
   <data name="PuantajAlin" xml:space="preserve">
-    <value>Get Timesheet</value>
+    <value>الحصول على كشف الرواتب</value>
   </data>
   <data name="OtomatikHesaplananPuantajiGorunVeExcelAktarin" xml:space="preserve">
-    <value>View auto-calculated timesheet and export to Excel</value>
+    <value>عرض كشف الرواتب المحسوب تلقائياً وتصديره إلى Excel</value>
   </data>
   <data name="GeldimmiNedir" xml:space="preserve">
-    <value>What is Geldimmi?</value>
+    <value>ما هو Geldimmi؟</value>
   </data>
   <data name="GeldimmiNobetCizelgesiOlusturmaMesaiTakipPuantajHesaplamaVeIzinYonetimiIcinOnlineBirPlatformdur" xml:space="preserve">
-    <value>Geldimmi is an online platform for shift scheduling, time attendance tracking, payroll calculation and leave management. Designed for hospitals, clinics and businesses.</value>
+    <value>Geldimmi هو منصة عبر الإنترنت لجدولة المناوبات، تتبع الحضور، حساب الرواتب وإدارة الإجازات. مصمم للمستشفيات والعيادات والشركات.</value>
   </data>
   <data name="UcretsizMi" xml:space="preserve">
-    <value>Is it free?</value>
+    <value>هل هو مجاني؟</value>
   </data>
   <data name="EvetKayitOlmadan5PersoneleKadarUcretsizKullanabilirsiniz" xml:space="preserve">
-    <value>Yes, you can use it free for up to 5 employees without registration. After registration, free for up to 10 employees with full access to attendance tracking and payroll features.</value>
+    <value>نعم، يمكنك استخدامه مجاناً لما يصل إلى 5 موظفين دون تسجيل. بعد التسجيل، مجاناً لما يصل إلى 10 موظفين مع الوصول الكامل إلى ميزات تتبع الحضور والرواتب.</value>
   </data>
   <data name="GeceMesaisiNasilHesaplanir" xml:space="preserve">
-    <value>How is night shift calculated?</value>
+    <value>كيف يتم حساب المناوبة الليلية؟</value>
   </data>
   <data name="VarsayilanOlarak22000600ArasiGeceCalismasiOlarakHesaplanir" xml:space="preserve">
-    <value>By default, work between 22:00-06:00 is calculated as night shift. You can change these hours in settings.</value>
+    <value>افتراضياً، يتم حساب العمل بين 22:00-06:00 كمناوبة ليلية. يمكنك تغيير هذه الساعات من الإعدادات.</value>
   </data>
   <data name="HangiIzinTurleriDestekleniyor" xml:space="preserve">
-    <value>What leave types are supported?</value>
+    <value>ما هي أنواع الإجازات المدعومة؟</value>
   </data>
   <data name="30danFazlaIzinTuruYillikIzinHastalikRaporuEvlilikIznibabalikIznianalikIzniveDahaFazlasi" xml:space="preserve">
-    <value>Over 30 leave types: Annual leave, sick leave, marriage leave, paternity leave, maternity leave and more.</value>
+    <value>أكثر من 30 نوع إجازة: الإجازة السنوية، إجازة المرض، إجازة الزواج، إجازة الأبوة، إجازة الأمومة والمزيد.</value>
   </data>
   <data name="ExceleAktarabilirMiyim" xml:space="preserve">
-    <value>Can I export to Excel?</value>
+    <value>هل يمكنني التصدير إلى Excel؟</value>
   </data>
   <data name="EvetNobetCizelgesiVePuantajRaporlariniTekTiklaExcelFormatindaIndirebilirsiniz" xml:space="preserve">
-    <value>Yes, you can download shift schedules and timesheet reports in Excel format with one click.</value>
+    <value>نعم، يمكنك تنزيل جداول المناوبة وتقارير كشف الرواتب بتنسيق Excel بنقرة واحدة.</value>
   </data>
   <data name="OnlineShiftSchedulingTimeAttendancePayrollAndLeaveManagementSystem" xml:space="preserve">
-    <value>Online shift scheduling, time attendance, payroll and leave management system</value>
+    <value>جدولة المناوبات عبر الإنترنت، تتبع الحضور، الرواتب ونظام إدارة الإجازات</value>
   </data>
   <data name="Free" xml:space="preserve">
-    <value>Free</value>
+    <value>مجاني</value>
   </data>
   <data name="StartUsingToday" xml:space="preserve">
-    <value>Start using today</value>
+    <value>ابدأ الاستخدام اليوم</value>
   </data>
   <data name="MakeSchedulingEffortless" xml:space="preserve">
-    <value>Make scheduling <span class="highlight">effortless</span></value>
+    <value>اجعل الجدولة <span class="highlight">سهلة</span></value>
   </data>
   <data name="NobetPlanlamayiKolaylastirin" xml:space="preserve">
-    <value>Make scheduling <span class="highlight">effortless</span></value>
+    <value>اجعل الجدولة <span class="highlight">سهلة</span></value>
   </data>
   <data name="HemenBasla" xml:space="preserve">
-    <value>Get Started</value>
+    <value>ابدأ الآن</value>
   </data>
   <data name="GetStarted" xml:space="preserve">
-    <value>Get Started</value>
+    <value>ابدأ الآن</value>
   </data>
   <data name="UrunleriKesfet" xml:space="preserve">
-    <value>Explore Products</value>
+    <value>استكشف المنتجات</value>
   </data>
   <data name="ExploreProducts" xml:space="preserve">
-    <value>Explore Products</value>
+    <value>استكشف المنتجات</value>
   </data>
   <data name="NoInstallation" xml:space="preserve">
-    <value>No installation</value>
+    <value>لا يتطلب التثبيت</value>
   </data>
   <data name="KurulumGerektirmez" xml:space="preserve">
-    <value>No installation</value>
+    <value>لا يتطلب التثبيت</value>
   </data>
   <data name="30IzinTuru" xml:space="preserve">
-    <value>30+ leave types</value>
+    <value>30+ نوع إجازة</value>
   </data>
   <data name="30LeaveTypes" xml:space="preserve">
-    <value>30+ leave types</value>
+    <value>30+ نوع إجازة</value>
   </data>
   <data name="NobetListesi" xml:space="preserve">
-    <value>Shift Schedule</value>
+    <value>جدول المناوبة</value>
   </data>
   <data name="Ocak2026" xml:space="preserve">
-    <value>Jan 2026</value>
+    <value>يناير 2026</value>
   </data>
   <data name="Jan2026" xml:space="preserve">
-    <value>Jan 2026</value>
+    <value>يناير 2026</value>
   </data>
   <data name="Pzt" xml:space="preserve">
-    <value>Mon</value>
+    <value>إث</value>
   </data>
   <data name="Mon" xml:space="preserve">
-    <value>Mon</value>
+    <value>إث</value>
   </data>
   <data name="Sal" xml:space="preserve">
-    <value>Tue</value>
+    <value>ثل</value>
   </data>
   <data name="Tue" xml:space="preserve">
-    <value>Tue</value>
+    <value>ثل</value>
   </data>
   <data name="Car" xml:space="preserve">
-    <value>Wed</value>
+    <value>أر</value>
   </data>
   <data name="Wed" xml:space="preserve">
-    <value>Wed</value>
+    <value>أر</value>
   </data>
   <data name="Per" xml:space="preserve">
-    <value>Thu</value>
+    <value>خم</value>
   </data>
   <data name="Thu" xml:space="preserve">
-    <value>Thu</value>
+    <value>خم</value>
   </data>
   <data name="Cum" xml:space="preserve">
-    <value>Fri</value>
+    <value>جم</value>
   </data>
   <data name="Fri" xml:space="preserve">
-    <value>Fri</value>
+    <value>جم</value>
   </data>
   <data name="Cmt" xml:space="preserve">
-    <value>Sat</value>
+    <value>سب</value>
   </data>
   <data name="Sat" xml:space="preserve">
-    <value>Sat</value>
+    <value>سب</value>
   </data>
   <data name="Paz" xml:space="preserve">
-    <value>Sun</value>
+    <value>أح</value>
   </data>
   <data name="Sun" xml:space="preserve">
-    <value>Sun</value>
+    <value>أح</value>
   </data>
   <!-- Months -->
   <data name="MonthJanuary" xml:space="preserve">
-    <value>January</value>
+    <value>يناير</value>
   </data>
   <data name="MonthFebruary" xml:space="preserve">
-    <value>February</value>
+    <value>فبراير</value>
   </data>
   <data name="MonthMarch" xml:space="preserve">
-    <value>March</value>
+    <value>مارس</value>
   </data>
   <data name="MonthApril" xml:space="preserve">
-    <value>April</value>
+    <value>أبريل</value>
   </data>
   <data name="MonthMay" xml:space="preserve">
-    <value>May</value>
+    <value>مايو</value>
   </data>
   <data name="MonthJune" xml:space="preserve">
-    <value>June</value>
+    <value>يونيو</value>
   </data>
   <data name="MonthJuly" xml:space="preserve">
-    <value>July</value>
+    <value>يوليو</value>
   </data>
   <data name="MonthAugust" xml:space="preserve">
-    <value>August</value>
+    <value>أغسطس</value>
   </data>
   <data name="MonthSeptember" xml:space="preserve">
-    <value>September</value>
+    <value>سبتمبر</value>
   </data>
   <data name="MonthOctober" xml:space="preserve">
-    <value>October</value>
+    <value>أكتوبر</value>
   </data>
   <data name="MonthNovember" xml:space="preserve">
-    <value>November</value>
+    <value>نوفمبر</value>
   </data>
   <data name="MonthDecember" xml:space="preserve">
-    <value>December</value>
+    <value>ديسمبر</value>
   </data>
   <data name="NobetCizelgesiOlusturunMesaiTakibiYapinPuantajHesaplayinVeIzinleriYonetin" xml:space="preserve">
-    <value>Create shift schedules, track attendance, calculate payroll and manage leaves. Complete workforce management in one platform.</value>
+    <value>إنشاء جداول المناوبات، تتبع الحضور، حساب الرواتب وإدارة الإجازات. إدارة القوى العاملة الكاملة في منصة واحدة.</value>
   </data>
   <data name="CreateShiftSchedulesTrackAttendanceCalculatePayrollAndManageLeaves" xml:space="preserve">
-    <value>Create shift schedules, track attendance, calculate payroll and manage leaves. Complete workforce management in one platform.</value>
+    <value>إنشاء جداول المناوبات، تتبع الحضور، حساب الرواتب وإدارة الإجازات. إدارة القوى العاملة الكاملة في منصة واحدة.</value>
   </data>
   <data name="TimesheetReportJanuary2026" xml:space="preserve">
-    <value>Timesheet Report — January 2026</value>
+    <value>تقرير الرواتب — يناير 2026</value>
   </data>
   <data name="OurProducts" xml:space="preserve">
-    <value>Our Products</value>
+    <value>منتجاتنا</value>
   </data>
   <data name="ComprehensiveSolutionsForWorkforceManagement" xml:space="preserve">
-    <value>Comprehensive solutions for workforce management</value>
+    <value>حلول شاملة لإدارة القوى العاملة</value>
   </data>
   <data name="ShiftPlanningTimeAttendancePayrollAndLeaveManagementAllInOnePlatform" xml:space="preserve">
-    <value>Shift planning, time attendance, payroll and leave management - all in one platform.</value>
+    <value>تخطيط المناوبات، تتبع الحضور، الرواتب وإدارة الإجازات - كل ذلك في منصة واحدة.</value>
   </data>
   <data name="MostPopular" xml:space="preserve">
-    <value>Most Popular</value>
+    <value>الأكثر شعبية</value>
   </data>
   <data name="CreateProfessionalShiftSchedulesInMinutes" xml:space="preserve">
-    <value>Create professional shift schedules in minutes. Nurse, doctor or staff duty roster preparation is now very easy.</value>
+    <value>أنشئ جداول المناوبات المهنية في دقائق. إعداد قائمة مناوبات الممرضات أو الأطباء أو الموظفين أصبح سهلاً للغاية.</value>
   </data>
   <data name="DragDropEasyAssignment" xml:space="preserve">
-    <value>Drag &amp; drop easy assignment</value>
+    <value>تعيين سهل بالسحب والإفلات</value>
   </data>
   <data name="CustomizableShiftTemplates" xml:space="preserve">
-    <value>Customizable shift templates</value>
+    <value>قوالب المناوبة القابلة للتخصيص</value>
   </data>
   <data name="OvernightShiftSupport" xml:space="preserve">
-    <value>Overnight shift support</value>
-  </data>
-  <data name="FairShiftDistribution" xml:space="preserve">
-    <value>Fair shift distribution</value>
-  </data>
-  <data name="ExcelExport" xml:space="preserve">
-    <value>Excel export</value>
+    <value>دعم المناوبة الليلية</value>
   </data>
   <data name="RecordEmployeeCheckInCheckOutTimes" xml:space="preserve">
-    <value>Record employee check-in/check-out times. Compare planned shifts with actual attendance, see differences instantly.</value>
+    <value>سجل أوقات الدخول والخروج للموظفين. قارن المناوبات المخططة مع الحضور الفعلي، واطلع على الاختلافات فوراً.</value>
   </data>
   <data name="ManualOrAPIRecording" xml:space="preserve">
-    <value>Manual or API recording</value>
+    <value>تسجيل يدوي أو عبر API</value>
   </data>
   <data name="NightShiftSupport" xml:space="preserve">
-    <value>Night shift support</value>
+    <value>دعم المناوبة الليلية</value>
   </data>
   <data name="BreakTimeCalculation" xml:space="preserve">
-    <value>Break time calculation</value>
+    <value>حساب وقت الراحة</value>
   </data>
   <data name="JWTBasedAPIIntegration" xml:space="preserve">
-    <value>JWT-based API integration</value>
+    <value>تكامل API قائم على JWT</value>
   </data>
   <data name="RealTimeMonitoring" xml:space="preserve">
-    <value>Real-time monitoring</value>
+    <value>مراقبة في الوقت الفعلي</value>
   </data>
   <data name="Explore" xml:space="preserve">
-    <value>Explore</value>
+    <value>استكشف</value>
   </data>
   <data name="AutomaticPayrollCalculation" xml:space="preserve">
-    <value>Automatic payroll calculation. Regular hours, night work, weekends and overtime calculated and reported separately.</value>
+    <value>حساب الرواتب التلقائي. الساعات العادية، العمل الليلي، عطلة نهاية الأسبوع والعمل الإضافي يتم حسابها وإعداد تقاريرها بشكل منفصل.</value>
   </data>
   <data name="NightHoursCalculation22000600" xml:space="preserve">
-    <value>Night hours calculation (22:00-06:00)</value>
+    <value>حساب ساعات الليل (22:00-06:00)</value>
   </data>
   <data name="OvertimeTracking" xml:space="preserve">
-    <value>Overtime tracking</value>
+    <value>تتبع العمل الإضافي</value>
   </data>
   <data name="30DayDetailedBreakdown" xml:space="preserve">
-    <value>30-day detailed breakdown</value>
+    <value>تفصيل لمدة 30 يوماً</value>
   </data>
   <data name="SaveAndEditPayroll" xml:space="preserve">
-    <value>Save and edit payroll</value>
+    <value>حفظ وتعديل الرواتب</value>
   </data>
   <data name="ExcelReport" xml:space="preserve">
-    <value>Excel report</value>
+    <value>تقرير Excel</value>
   </data>
   <data name="AnnualLeaveSickLeaveMarriageLeaveMaternityLeaveAndMore" xml:space="preserve">
-    <value>Annual leave, sick leave, marriage leave, maternity leave and more. Manage all leave types from one place.</value>
+    <value>الإجازة السنوية، إجازة المرض، إجازة الزواج، إجازة الأمومة والمزيد. إدارة جميع أنواع الإجازات من مكان واحد.</value>
   </data>
   <data name="30LeaveTypesSupported" xml:space="preserve">
-    <value>30+ leave types supported</value>
+    <value>دعم 30+ نوع إجازة</value>
   </data>
   <data name="CalendarBasedLeaveAssignment" xml:space="preserve">
-    <value>Calendar-based leave assignment</value>
+    <value>تعيين الإجازة على التقويم</value>
   </data>
   <data name="AutomaticHourDeduction" xml:space="preserve">
-    <value>Automatic hour deduction</value>
+    <value>خصم الساعات تلقائياً</value>
   </data>
   <data name="PaidUnpaidLeaveDistinction" xml:space="preserve">
-    <value>Paid/unpaid leave distinction</value>
+    <value>تمييز الإجازة المدفوعة/غير المدفوعة</value>
   </data>
   <data name="AutoReflectInPayroll" xml:space="preserve">
-    <value>Auto-reflect in payroll</value>
+    <value>انعكاس تلقائي في الرواتب</value>
   </data>
   <data name="EverythingYouNeedInOnePlace" xml:space="preserve">
-    <value>Everything you need in one place</value>
+    <value>كل ما تحتاجه في مكان واحد</value>
   </data>
   <data name="SimplifyAllYourProcessesFromShiftPlanningToTimesheetCalculation" xml:space="preserve">
-    <value>Simplify all your processes from shift planning to timesheet calculation.</value>
+    <value>بسط جميع عملياتك من تخطيط المناوبات إلى حساب الرواتب.</value>
   </data>
   <data name="NightOvertime" xml:space="preserve">
-    <value>Night &amp; Overtime</value>
+    <value>الليل والعمل الإضافي</value>
   </data>
   <data name="NightHoursAndOvertimeCalculatedAutomatically" xml:space="preserve">
-    <value>Night hours and overtime calculated automatically.</value>
-  </data>
-  <data name="HolidayManagement" xml:space="preserve">
-    <value>Holiday Management</value>
+    <value>يتم حساب ساعات الليل والعمل الإضافي تلقائياً.</value>
   </data>
   <data name="DefineHolidaysAndEmployeeLeavesEasily" xml:space="preserve">
-    <value>Define holidays and employee leaves easily.</value>
+    <value>حدد العطلات الرسمية وإجازات الموظفين بسهولة.</value>
   </data>
   <data name="HowItWorks" xml:space="preserve">
-    <value>How It Works?</value>
+    <value>كيف يعمل؟</value>
   </data>
   <data name="GetStartedIn3Steps" xml:space="preserve">
-    <value>Get started in 3 steps</value>
+    <value>ابدأ في 3 خطوات</value>
   </data>
   <data name="EnterNamesTitlesAndIDs" xml:space="preserve">
-    <value>Enter names, titles and IDs. Paste from Excel.</value>
+    <value>أدخل الأسماء والألقاب والأرقام. يمكنك اللصق من Excel.</value>
   </data>
   <data name="Normal" xml:space="preserve">
-    <value>Regular</value>
+    <value>عادي</value>
   </data>
   <data name="Regular" xml:space="preserve">
-    <value>Regular</value>
+    <value>عادي</value>
   </data>
   <data name="Total" xml:space="preserve">
-    <value>Total</value>
+    <value>المجموع</value>
   </data>
   <data name="TimesheetSystem" xml:space="preserve">
-    <value>Timesheet System</value>
+    <value>نظام الرواتب</value>
   </data>
   <data name="DetailedTimesheetCalculation" xml:space="preserve">
-    <value>Detailed timesheet calculation</value>
+    <value>حساب الرواتب التفصيلي</value>
   </data>
   <data name="RegularHours" xml:space="preserve">
-    <value>Regular Hours</value>
+    <value>ساعات عادية</value>
   </data>
   <data name="StandardWorkingHours" xml:space="preserve">
-    <value>Standard working hours</value>
+    <value>ساعات العمل القياسية</value>
   </data>
   <data name="Between20000600" xml:space="preserve">
-    <value>Between 20:00 - 06:00</value>
+    <value>بين 20:00 - 06:00</value>
   </data>
   <data name="SaturdayAndSunday" xml:space="preserve">
-    <value>Saturday and Sunday</value>
+    <value>السبت والأحد</value>
   </data>
   <data name="DailyOrMonthlyCalculation" xml:space="preserve">
-    <value>Daily or monthly calculation</value>
+    <value>حساب يومي أو شهري</value>
   </data>
   <data name="FrequentlyAskedQuestions" xml:space="preserve">
-    <value>Frequently Asked Questions</value>
+    <value>الأسئلة الشائعة</value>
   </data>
   <data name="CommonQuestions" xml:space="preserve">
-    <value>Common Questions</value>
+    <value>الأسئلة الشائعة</value>
   </data>
   <data name="IsThereAMobileApp" xml:space="preserve">
-    <value>Is there a mobile app?</value>
+    <value>هل هناك تطبيق للهاتف المحمول؟</value>
   </data>
   <data name="WebApplicationIsMobileFriendly" xml:space="preserve">
-    <value>The web application is designed to be mobile-friendly. You can easily use it from your phone or tablet. Additionally, with our API support, you can integrate your own mobile application.</value>
+    <value>تم تصميم التطبيق الويب ليكون متوافقاً مع الأجهزة المحمولة. يمكنك استخدامه بسهولة من هاتفك أو جهازك اللوحي. بالإضافة إلى ذلك، بفضل دعم API الخاص بنا، يمكنك دمج تطبيقك المحمول الخاص.</value>
   </data>
   <data name="StartFreeToday" xml:space="preserve">
-    <value>Start free today</value>
+    <value>ابدأ مجاناً اليوم</value>
   </data>
   <data name="FreeForUpTo5EmployeesWithoutRegistration" xml:space="preserve">
-    <value>Free for up to 5 employees without registration, 10 employees for registered users. No credit card required.</value>
+    <value>مجاناً لما يصل إلى 5 موظفين دون تسجيل، 10 موظفين للمستخدمين المسجلين. لا حاجة لبطاقة ائتمان.</value>
   </data>
   <data name="GeldimmiNobetCizelgesiOlusturmaMesaiTakipPuantajHesaplamaVeIzinYonetimiIcinOnlineBirPlatformdurHastaneKlinikEczaneVeDigerIsletmelerIcinTasarlanmistir" xml:space="preserve">
-    <value>Geldimmi is an online platform for shift scheduling, time attendance tracking, payroll calculation and leave management. Designed for hospitals, clinics, pharmacies and other businesses. Creating nurse duty schedules, doctor shift plans and staff work schedules is now very easy.</value>
+    <value>Geldimmi هو منصة عبر الإنترنت لجدولة المناوبات، تتبع الحضور، حساب الرواتب وإدارة الإجازات. مصمم للمستشفيات والعيادات والصيدليات والشركات الأخرى. إنشاء برامج مناوبات الممرضات، خطط مناوبات الأطباء وجداول عمل الموظفين أصبح سهلاً للغاية.</value>
   </data>
   <data name="EvetKayitOlmadan5PersoneleKadarUcretsizKullanabilirsinizGoogleHesabinizlaKayitOldugunuzda10PersoneleKadarUcretsizVeMesaiTakipPuantajOzellikleriniDeKullanabilirsiniz" xml:space="preserve">
-    <value>Yes, you can use it free for up to 5 employees without registration. When you sign up with your Google account, it's free for up to 10 employees with full access to attendance tracking and payroll features. No credit card required, no trial period.</value>
+    <value>نعم، يمكنك استخدامه مجاناً لما يصل إلى 5 موظفين دون تسجيل. عند التسجيل بحساب Google الخاص بك، يكون مجاناً لما يصل إلى 10 موظفين مع الوصول الكامل إلى ميزات تتبع الحضور والرواتب. لا حاجة لبطاقة ائتمان، ولا توجد فترة تجريبية.</value>
   </data>
   <data name="30danFazlaIzinTuruDesteklenmektedirYillikUcretliIzinHastalikRaporuEvlilikIznibabalikIznianalikIznidogumOncesisonrasiSutIznirefakatIzniegitimIzniaskerlikIzniveDahaFazlasi" xml:space="preserve">
-    <value>Over 30 leave types are supported: Annual paid leave, sick leave, marriage leave, paternity leave, maternity leave (prenatal/postnatal), nursing leave, accompanying leave, education leave, military leave and more. All leave types can be displayed in Turkish and English.</value>
+    <value>يتم دعم أكثر من 30 نوع إجازة: الإجازة السنوية المدفوعة، إجازة المرض، إجازة الزواج، إجازة الأبوة، إجازة الأمومة (قبل/بعد الولادة)، إجازة الرضاعة، إجازة المرافقة، إجازة التعليم، إجازة الخدمة العسكرية والمزيد. يمكن عرض جميع أنواع الإجازات بالتركية والإنجليزية.</value>
   </data>
   <data name="EvetNobetCizelgesiVePuantajRaporlariniTekTiklaExcelFormatindaxlsxIndirebilirsiniz" xml:space="preserve">
-    <value>Yes, you can download shift schedules and timesheet reports in Excel format (.xlsx) with one click. The Excel file includes all details (night hours, weekend, overtime, 30-day breakdown).</value>
+    <value>نعم، يمكنك تنزيل جداول المناوبة وتقارير الرواتب بتنسيق Excel (.xlsx) بنقرة واحدة. يتضمن ملف Excel جميع التفاصيل (ساعات الليل، عطلة نهاية الأسبوع، العمل الإضافي، تفصيل لمدة 30 يوماً).</value>
   </data>
   <data name="HomeMetaDescription" xml:space="preserve">
-    <value>Online shift scheduling, time attendance tracking, payroll calculation and leave management system. Create nurse duty rosters, calculate timesheets and overtime automatically. Start free!</value>
+    <value>إنشاء جداول المناوبات عبر الإنترنت، نظام تتبع الحضور، حساب الرواتب وإدارة الإجازات. برنامج مناوبات الممرضات، خطة المناوبة، الرواتب التلقائية وحساب العمل الإضافي. ابدأ مجاناً!</value>
   </data>
   <data name="HomeMetaKeywords" xml:space="preserve">
-    <value>shift scheduling, duty roster, time attendance, payroll system, leave management, nurse scheduling, shift planning, overtime calculation, night shift, weekend duty</value>
+    <value>جدول المناوبة، برنامج المناوبة، تتبع الحضور، نظام الرواتب، إدارة الإجازات، قائمة مناوبات الممرضات، خطة المناوبة، حساب العمل الإضافي، العمل الليلي، مناوبة نهاية الأسبوع</value>
   </data>
   <data name="ShiftScheduleWithMonth" xml:space="preserve">
-    <value>Shift Schedule - {0}</value>
+    <value>جدول المناوبة - {0}</value>
   </data>
   <data name="PayrollReport" xml:space="preserve">
-    <value>Payroll Report</value>
+    <value>تقرير الرواتب</value>
   </data>
   <data name="Record" xml:space="preserve">
-    <value>Record</value>
+    <value>السجل</value>
   </data>
   <data name="Summary" xml:space="preserve">
-    <value>Summary</value>
+    <value>الملخص</value>
   </data>
   <data name="Details" xml:space="preserve">
-    <value>Details</value>
+    <value>التفاصيل</value>
   </data>
   <data name="Source" xml:space="preserve">
-    <value>Source</value>
+    <value>المصدر</value>
   </data>
   <data name="Night" xml:space="preserve">
-    <value>Night</value>
+    <value>الليل</value>
   </data>
   <data name="HoursAbbrev" xml:space="preserve">
-    <value>h</value>
+    <value>س</value>
   </data>
   <data name="PayrollWithMonth" xml:space="preserve">
-    <value>Payroll - {0}</value>
+    <value>كشف الرواتب - {0}</value>
   </data>
   <data name="PayrollHeader_Employee" xml:space="preserve">
-    <value>Employee</value>
+    <value>الموظف</value>
   </data>
   <data name="PayrollHeader_Title" xml:space="preserve">
-    <value>Title</value>
+    <value>المسمى الوظيفي</value>
   </data>
   <data name="PayrollHeader_DaysWorked" xml:space="preserve">
-    <value>Days Worked</value>
+    <value>الأيام العملية</value>
   </data>
   <data name="PayrollHeader_HoursWorked" xml:space="preserve">
-    <value>Hours Worked</value>
+    <value>الساعات العملية</value>
   </data>
   <data name="PayrollHeader_TargetHours" xml:space="preserve">
-    <value>Target Hours</value>
+    <value>الساعات المستهدفة</value>
   </data>
   <data name="PayrollHeader_Overtime" xml:space="preserve">
-    <value>Overtime</value>
+    <value>الساعات الإضافية</value>
   </data>
   <data name="PayrollHeader_NightHours" xml:space="preserve">
-    <value>Night Hours</value>
+    <value>العمل الليلي</value>
   </data>
   <data name="PayrollHeader_WeekendHours" xml:space="preserve">
-    <value>Weekend Hours</value>
+    <value>عطلة نهاية الأسبوع</value>
   </data>
   <data name="PayrollHeader_HolidayHours" xml:space="preserve">
-    <value>Holiday Hours</value>
+    <value>العطل الرسمية</value>
   </data>
   <data name="PayrollHeader_DaysOff" xml:space="preserve">
-    <value>Days Off</value>
+    <value>أيام الإجازة</value>
   </data>
   <data name="Day" xml:space="preserve">
-    <value>Day</value>
+    <value>اليوم</value>
   </data>
   <data name="In" xml:space="preserve">
-    <value>In</value>
+    <value>دخول</value>
   </data>
   <data name="Out" xml:space="preserve">
-    <value>Out</value>
+    <value>خروج</value>
   </data>
   <data name="Note" xml:space="preserve">
-    <value>Note</value>
+    <value>ملاحظة</value>
   </data>
   <data name="Created" xml:space="preserve">
-    <value>Created</value>
+    <value>تم الإنشاء</value>
   </data>
   <data name="PayrollNamePlaceholder" xml:space="preserve">
-    <value>e.g., January 2026 Final</value>
+    <value>مثال: يناير 2026 النهائي</value>
   </data>
   <data name="OgLocale" xml:space="preserve">
-    <value>en_US</value>
+    <value>ar_SA</value>
   </data>
   <data name="CurrentLanguageFlag" xml:space="preserve">
-    <value>🇬🇧 EN</value>
+    <value>🇸🇦 AR</value>
   </data>
   <data name="BlogTitle" xml:space="preserve">
-    <value>Online Nurse Scheduling and Smart Rostering Guide</value>
+    <value>دليل جدولة ممرضات عبر الإنترنت والورديات الذكية</value>
   </data>
   <data name="BlogDescription" xml:space="preserve">
-    <value>Deep dives into online nurse scheduling, AI-powered planning, fairness, and great mobile experiences.</value>
+    <value>غوص عميق في جدولة الممرضات عبر الإنترنت، والتخطيط المدعوم بالذكاء الاصطناعي، والعدالة، وتجارب الهاتف المحمول الرائعة.</value>
   </data>
   <data name="ReadMore" xml:space="preserve">
-    <value>Read More</value>
+    <value>اقرأ المزيد</value>
   </data>
   <data name="EmailPlaceholder" xml:space="preserve">
-    <value>example@email.com</value>
+    <value>مثال@البريد.com</value>
   </data>
   <data name="PasswordPlaceholder" xml:space="preserve">
     <value>••••••••</value>
   </data>
   <data name="MinuteAbbr" xml:space="preserve">
-    <value>min</value>
+    <value>د</value>
   </data>
   <data name="RegisterBrandHeadline" xml:space="preserve">
-    <value>Do <span>more</span> with a free account</value>
+    <value>افعل <span>المزيد</span> بحساب مجاني</value>
   </data>
   <data name="LoginBrandHeadline" xml:space="preserve">
-    <value>Make scheduling <span>effortless</span></value>
+    <value>اجعل الجدولة <span>بدون جهد</span></value>
   </data>
   <data name="LoginBrandDesc" xml:space="preserve">
-    <value>Smart shift scheduling for hospitals and businesses. Automatic timesheets, fair distribution, and real-time tracking.</value>
+    <value>جدولة المناوبات الذكية للمستشفيات والشركات. أوراق الوقت التلقائية، التوزيع العادل، والتتبع في الوقت الفعلي.</value>
   </data>
   <data name="EmailWelcomeBody" xml:space="preserve">
     <value>&lt;div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;"&gt;
-                        &lt;h2 style="color: #16a34a;"&gt;Welcome!&lt;/h2&gt;
-                        &lt;p&gt;Hello {0},&lt;/p&gt;
-                        &lt;p&gt;Thank you for signing up for Geldimmi. Please verify your email address to activate your account.&lt;/p&gt;
+                        &lt;h2 style="color: #16a34a;"&gt;مرحباً!&lt;/h2&gt;
+                        &lt;p&gt;مرحباً {0},&lt;/p&gt;
+                        &lt;p&gt;شكراً لك على التسجيل في Geldimmi. يرجى التحقق من عنوان بريدك الإلكتروني لتفعيل حسابك.&lt;/p&gt;
                         &lt;p style="margin: 30px 0;"&gt;
-                            &lt;a href="{1}" style="background-color: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;"&gt;Verify My Email Address&lt;/a&gt;
+                            &lt;a href="{1}" style="background-color: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;"&gt;التحقق من عنوان بريدي الإلكتروني&lt;/a&gt;
                         &lt;/p&gt;
-                        &lt;p&gt;Or you can paste the following link into your browser:&lt;/p&gt;
+                        &lt;p&gt;أو يمكنك لصق الرابط التالي في متصفحك:&lt;/p&gt;
                         &lt;p style="word-break: break-all; color: #6b7280;"&gt;{1}&lt;/p&gt;
                         &lt;p style="margin-top: 30px; color: #6b7280; font-size: 14px;"&gt;
-                            If you did not request this email, please ignore it.
+                            إذا لم تطلب هذا البريد الإلكتروني، يرجى تجاهله.
                         &lt;/p&gt;
                     &lt;/div&gt;</value>
   </data>
   <data name="EmailVerificationBody" xml:space="preserve">
     <value>&lt;div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;"&gt;
-                        &lt;h2 style="color: #16a34a;"&gt;Email Verification&lt;/h2&gt;
-                        &lt;p&gt;Hello {0},&lt;/p&gt;
-                        &lt;p&gt;Click the link below to verify your email address:&lt;/p&gt;
+                        &lt;h2 style="color: #16a34a;"&gt;التحقق من البريد الإلكتروني&lt;/h2&gt;
+                        &lt;p&gt;مرحباً {0},&lt;/p&gt;
+                        &lt;p&gt;انقر على الرابط أدناه للتحقق من عنوان بريدك الإلكتروني:&lt;/p&gt;
                         &lt;p style="margin: 30px 0;"&gt;
-                            &lt;a href="{1}" style="background-color: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;"&gt;Verify My Email Address&lt;/a&gt;
+                            &lt;a href="{1}" style="background-color: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;"&gt;التحقق من عنوان بريدي الإلكتروني&lt;/a&gt;
                         &lt;/p&gt;
-                        &lt;p&gt;Or you can paste the following link into your browser:&lt;/p&gt;
+                        &lt;p&gt;أو يمكنك لصق الرابط التالي في متصفحك:&lt;/p&gt;
                         &lt;p style="word-break: break-all; color: #6b7280;"&gt;{1}&lt;/p&gt;
                         &lt;p style="margin-top: 30px; color: #6b7280; font-size: 14px;"&gt;
-                            If you did not request this email, please ignore it.
+                            إذا لم تطلب هذا البريد الإلكتروني، يرجى تجاهله.
                         &lt;/p&gt;
                     &lt;/div&gt;</value>
   </data>
 </root>
-
-

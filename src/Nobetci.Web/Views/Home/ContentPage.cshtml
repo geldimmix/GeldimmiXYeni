@@ -37,19 +37,13 @@
                 <div class="card border-0 shadow-sm sticky-top" style="top: 100px;">
                     <div class="card-body p-4">
                         <h5 class="card-title fw-bold">
-                            @(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr" 
-                                ? "Hemen Deneyin" 
-                                : "Try It Now")
+                            @Localizer["TryItNow"]
                         </h5>
                         <p class="card-text text-muted small">
-                            @(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr" 
-                                ? "Kayıt olmadan ücretsiz kullanmaya başlayın" 
-                                : "Start using for free without registration")
+                            @Localizer["StartUsingForFree"]
                         </p>
                         <a href="/app" class="btn btn-primary w-100">
-                            @(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr" 
-                                ? "Ücretsiz Başla" 
-                                : "Start Free")
+                            @Localizer["StartFree"]
                         </a>
                     </div>
                 </div>
