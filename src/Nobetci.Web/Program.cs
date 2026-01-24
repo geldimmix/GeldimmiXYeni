@@ -489,11 +489,26 @@ using (var scope = app.Services.CreateScope())
                 ""Color"" VARCHAR(20) NULL,
                 ""IsDefault"" BOOLEAN NOT NULL DEFAULT FALSE,
                 ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
-                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+                ""SortOrder"" INTEGER NOT NULL DEFAULT 0,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                ""UpdatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
             );
             CREATE INDEX IF NOT EXISTS ""IX_Units_OrganizationId"" ON ""Units"" (""OrganizationId"");
             CREATE INDEX IF NOT EXISTS ""IX_Units_UnitTypeId"" ON ""Units"" (""UnitTypeId"");
         ", "Units");
+        
+        // Add missing columns to Units if table exists
+        await SafeExecuteSql(@"
+            DO $$
+            BEGIN
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Units' AND column_name = 'SortOrder') THEN
+                    ALTER TABLE ""Units"" ADD COLUMN ""SortOrder"" INTEGER NOT NULL DEFAULT 0;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Units' AND column_name = 'UpdatedAt') THEN
+                    ALTER TABLE ""Units"" ADD COLUMN ""UpdatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW();
+                END IF;
+            END $$;
+        ", "UnitsColumns");
         
         // Run migrations - but don't let failures prevent seeding
         try

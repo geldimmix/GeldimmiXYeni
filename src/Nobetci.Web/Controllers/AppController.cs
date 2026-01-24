@@ -109,8 +109,9 @@ public class AppController : Controller
         {
             try
             {
-                // Initialize default unit types if needed
+                // Initialize defaults if needed
                 await InitializeDefaultUnitTypesAsync(organization.Id);
+                await InitializeDefaultUnitAsync(organization.Id);
                 
                 unitTypes = await _context.UnitTypes
                     .Where(ut => ut.OrganizationId == organization.Id && ut.IsActive)
@@ -119,8 +120,8 @@ public class AppController : Controller
                     
                 units = await _context.Units
                     .Include(u => u.UnitType)
-                    .Where(u => u.OrganizationId == organization.Id)
-                    .OrderBy(u => u.Name)
+                    .Where(u => u.OrganizationId == organization.Id && u.IsActive)
+                    .OrderBy(u => u.SortOrder)
                     .ToListAsync();
             }
             catch (Exception ex)
@@ -2584,6 +2585,40 @@ public class AppController : Controller
         };
         
         _context.UnitTypes.AddRange(defaultTypes);
+        await _context.SaveChangesAsync();
+    }
+    
+    /// <summary>
+    /// Initialize default unit for organization (Premium feature)
+    /// Creates "Genel Birim" if no units exist
+    /// </summary>
+    private async Task InitializeDefaultUnitAsync(int organizationId)
+    {
+        var existingUnits = await _context.Units
+            .AnyAsync(u => u.OrganizationId == organizationId);
+            
+        if (existingUnits)
+            return;
+            
+        // Get first unit type (Poliklinik/Servis)
+        var defaultType = await _context.UnitTypes
+            .Where(ut => ut.OrganizationId == organizationId)
+            .OrderBy(ut => ut.SortOrder)
+            .FirstOrDefaultAsync();
+            
+        var defaultUnit = new Unit
+        {
+            OrganizationId = organizationId,
+            UnitTypeId = defaultType?.Id,
+            Name = "Genel Birim",
+            Description = "Varsayılan birim - tüm personel burada başlar",
+            Coefficient = 1.0m,
+            Color = "#3B82F6",
+            IsDefault = true,
+            SortOrder = 1
+        };
+        
+        _context.Units.Add(defaultUnit);
         await _context.SaveChangesAsync();
     }
     
