@@ -504,36 +504,16 @@ public class AccountController : Controller
         
         if (existingUser != null)
         {
-            // User exists but doesn't have this external login, add it
-            var addLoginResult = await _userManager.AddLoginAsync(existingUser, info);
-            if (addLoginResult.Succeeded)
-            {
-                await _signInManager.SignInAsync(existingUser, isPersistent: false);
-                existingUser.LastLoginAt = DateTime.UtcNow;
-                await _userManager.UpdateAsync(existingUser);
-                await TransferGuestDataToUser(existingUser);
-                return LocalRedirect(returnUrl ?? "/app");
-            }
-            else
-            {
-                // External login already exists or other error
-                var errors = string.Join(", ", addLoginResult.Errors.Select(e => e.Description));
-                _logger.LogWarning("AddLoginAsync failed for existing user {Email}: {Errors}", email, errors);
-                
-                // Maybe this Google account is already linked, try to sign in directly
-                var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
-                if (signInResult.Succeeded)
-                {
-                    existingUser.LastLoginAt = DateTime.UtcNow;
-                    await _userManager.UpdateAsync(existingUser);
-                    await TransferGuestDataToUser(existingUser);
-                    return LocalRedirect(returnUrl ?? "/app");
-                }
-                
-                TempData["GoogleError"] = isTurkish 
-                    ? $"Google hesabı bağlanamadı: {errors}" 
-                    : $"Failed to link Google account: {errors}";
-            }
+            // User exists - sign in directly (Google auth already verified the email)
+            // Try to add login if not already linked (ignore errors - login might already be linked)
+            await _userManager.AddLoginAsync(existingUser, info);
+            
+            await _signInManager.SignInAsync(existingUser, isPersistent: false);
+            existingUser.LastLoginAt = DateTime.UtcNow;
+            await _userManager.UpdateAsync(existingUser);
+            await TransferGuestDataToUser(existingUser);
+            _logger.LogInformation("Existing user {Email} signed in with Google", email);
+            return LocalRedirect(returnUrl ?? "/app");
         }
         else
         {
