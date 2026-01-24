@@ -98,28 +98,12 @@ public class AppController : Controller
         var employeeLimit = await GetEmployeeLimitAsync();
         var (canAccessAttendance, canAccessPayroll) = await GetFeatureAccessAsync();
         var isRegistered = User.Identity?.IsAuthenticated == true;
-        var isPremium = await IsPremiumUserAsync();
         
-        // Load units and unit types for premium users
+        // Premium feature temporarily disabled until database migration is applied
+        // var isPremium = await IsPremiumUserAsync();
+        var isPremium = false;
         var units = new List<Unit>();
         var unitTypes = new List<UnitType>();
-        if (isPremium)
-        {
-            // Initialize default unit types if needed
-            await InitializeDefaultUnitTypesAsync(organization.Id);
-            
-            units = await _context.Units
-                .Include(u => u.UnitType)
-                .Where(u => u.OrganizationId == organization.Id && u.IsActive)
-                .OrderBy(u => u.SortOrder)
-                .ThenBy(u => u.Name)
-                .ToListAsync();
-                
-            unitTypes = await _context.UnitTypes
-                .Where(ut => ut.OrganizationId == organization.Id && ut.IsActive)
-                .OrderBy(ut => ut.SortOrder)
-                .ToListAsync();
-        }
         
         var viewModel = new AppViewModel
         {
@@ -144,7 +128,7 @@ public class AppController : Controller
             CanExportExcel = isRegistered,
             CanAccessAttendance = canAccessAttendance,
             CanAccessPayroll = canAccessPayroll,
-            CanManageUnits = isPremium
+            CanManageUnits = false // Disabled until migration
         };
 
         return View(viewModel);
@@ -158,7 +142,6 @@ public class AppController : Controller
     {
         var organization = await GetOrCreateOrganizationAsync();
         var employees = await _context.Employees
-            .Include(e => e.Unit)
             .Where(e => e.OrganizationId == organization.Id && e.IsActive)
             .OrderBy(e => e.FullName)
             .Select(e => new {
@@ -169,10 +152,7 @@ public class AppController : Controller
                 e.Color,
                 e.DailyWorkHours,
                 e.WeekendWorkMode,
-                e.SaturdayWorkHours,
-                e.UnitId,
-                UnitName = e.Unit != null ? e.Unit.Name : null,
-                UnitColor = e.Unit != null ? e.Unit.Color : null
+                e.SaturdayWorkHours
             })
             .ToListAsync();
             
@@ -195,23 +175,6 @@ public class AppController : Controller
             return BadRequest(new { error = _localizer["EmployeeLimitReached"].Value });
         }
         
-        // Validate unit if provided (only for premium users)
-        if (dto.UnitId.HasValue)
-        {
-            var isPremium = await IsPremiumUserAsync();
-            if (!isPremium)
-            {
-                dto.UnitId = null; // Non-premium users can't assign units
-            }
-            else
-            {
-                var unitExists = await _context.Units
-                    .AnyAsync(u => u.Id == dto.UnitId && u.OrganizationId == organization.Id && u.IsActive);
-                if (!unitExists)
-                    dto.UnitId = null;
-            }
-        }
-        
         var employee = new Employee
         {
             OrganizationId = organization.Id,
@@ -225,22 +188,11 @@ public class AppController : Controller
             PositionType = dto.PositionType,
             AcademicTitle = dto.PositionType == "Academic" ? dto.AcademicTitle : null,
             ShiftScore = dto.ShiftScore > 0 ? dto.ShiftScore : 100,
-            IsNonHealthServices = dto.IsNonHealthServices,
-            UnitId = dto.UnitId
+            IsNonHealthServices = dto.IsNonHealthServices
         };
         
         _context.Employees.Add(employee);
         await _context.SaveChangesAsync();
-        
-        // Load unit info if assigned
-        string? unitName = null;
-        string? unitColor = null;
-        if (employee.UnitId.HasValue)
-        {
-            var unit = await _context.Units.FindAsync(employee.UnitId);
-            unitName = unit?.Name;
-            unitColor = unit?.Color;
-        }
         
         return Json(new { 
             id = employee.Id, 
@@ -250,10 +202,7 @@ public class AppController : Controller
             color = employee.Color,
             dailyWorkHours = employee.DailyWorkHours,
             weekendWorkMode = employee.WeekendWorkMode,
-            saturdayWorkHours = employee.SaturdayWorkHours,
-            unitId = employee.UnitId,
-            unitName,
-            unitColor
+            saturdayWorkHours = employee.SaturdayWorkHours
         });
     }
 
@@ -273,23 +222,6 @@ public class AppController : Controller
         employee.IdentityNo = dto.IdentityNo;
         if (!string.IsNullOrEmpty(dto.Color))
             employee.Color = dto.Color;
-        
-        // Update unit assignment (only for premium users)
-        var isPremium = await IsPremiumUserAsync();
-        if (isPremium)
-        {
-            if (dto.UnitId.HasValue)
-            {
-                var unitExists = await _context.Units
-                    .AnyAsync(u => u.Id == dto.UnitId && u.OrganizationId == organization.Id && u.IsActive);
-                if (unitExists)
-                    employee.UnitId = dto.UnitId;
-            }
-            else
-            {
-                employee.UnitId = null;
-            }
-        }
         
         employee.UpdatedAt = DateTime.UtcNow;
         
