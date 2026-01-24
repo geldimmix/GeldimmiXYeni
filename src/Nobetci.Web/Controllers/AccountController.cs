@@ -440,19 +440,24 @@ public class AccountController : Controller
     [HttpGet]
     public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = null, string? remoteError = null)
     {
+        var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+        
         if (remoteError != null)
         {
             _logger.LogError("Error from external provider: {RemoteError}", remoteError);
-            var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
-            ModelState.AddModelError(string.Empty, isTurkish ? "Google ile giriş yapılırken bir hata oluştu." : "An error occurred during Google sign-in.");
+            TempData["GoogleError"] = isTurkish 
+                ? $"Google ile giriş yapılırken bir hata oluştu: {remoteError}" 
+                : $"An error occurred during Google sign-in: {remoteError}";
             return RedirectToAction(nameof(Login));
         }
 
         var info = await _signInManager.GetExternalLoginInfoAsync();
         if (info == null)
         {
-            var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
-            ModelState.AddModelError(string.Empty, isTurkish ? "Google ile giriş bilgileri alınamadı." : "Failed to retrieve Google login information.");
+            _logger.LogError("ExternalLoginInfoAsync returned null");
+            TempData["GoogleError"] = isTurkish 
+                ? "Google ile giriş bilgileri alınamadı. Lütfen tekrar deneyin." 
+                : "Failed to retrieve Google login information. Please try again.";
             return RedirectToAction(nameof(Login));
         }
 
@@ -476,8 +481,9 @@ public class AccountController : Controller
 
         if (result.IsLockedOut)
         {
-            var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
-            ModelState.AddModelError(string.Empty, isTurkish ? "Hesap kilitlendi. Lütfen daha sonra tekrar deneyin." : "Account locked. Please try again later.");
+            TempData["GoogleError"] = isTurkish 
+                ? "Hesap kilitlendi. Lütfen daha sonra tekrar deneyin." 
+                : "Account locked. Please try again later.";
             return RedirectToAction(nameof(Login));
         }
 
@@ -487,8 +493,9 @@ public class AccountController : Controller
         
         if (string.IsNullOrEmpty(email))
         {
-            var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
-            ModelState.AddModelError(string.Empty, isTurkish ? "Google hesabınızdan e-posta bilgisi alınamadı." : "Could not retrieve email from your Google account.");
+            TempData["GoogleError"] = isTurkish 
+                ? "Google hesabınızdan e-posta bilgisi alınamadı." 
+                : "Could not retrieve email from your Google account.";
             return RedirectToAction(nameof(Login));
         }
 
@@ -532,11 +539,21 @@ public class AccountController : Controller
                     _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
                     return LocalRedirect(returnUrl ?? "/app");
                 }
+                else
+                {
+                    _logger.LogError("Failed to add external login for user {Email}", email);
+                    TempData["GoogleError"] = isTurkish 
+                        ? "Google hesabı bağlanamadı. Lütfen tekrar deneyin." 
+                        : "Failed to link Google account. Please try again.";
+                }
             }
-
-            foreach (var error in createResult.Errors)
+            else
             {
-                ModelState.AddModelError(string.Empty, error.Description);
+                var errors = string.Join(", ", createResult.Errors.Select(e => e.Description));
+                _logger.LogError("Failed to create user {Email}: {Errors}", email, errors);
+                TempData["GoogleError"] = isTurkish 
+                    ? $"Hesap oluşturulamadı: {errors}" 
+                    : $"Failed to create account: {errors}";
             }
         }
 
