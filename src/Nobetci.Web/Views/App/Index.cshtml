@@ -95,19 +95,16 @@
             }
         </div>
         
-        <!-- Tools - Bottom -->
+        <!-- Selected Indicator -->
         <div class="sidebar-tools">
-            <label class="multi-toggle">
-                <input type="checkbox" id="multiSelectMode">
-                <span class="toggle-track"><span class="toggle-thumb"></span></span>
-                <span>@(isTurkish ? "Çoklu" : "Multi")</span>
-            </label>
-            
             <div class="selected-indicator" id="selectedIndicator" style="display:none;">
                 <div class="indicator-color"></div>
                 <span class="indicator-time" id="selectedTime"></span>
             </div>
         </div>
+        
+        <!-- Hidden multiselect for compatibility -->
+        <input type="checkbox" id="multiSelectMode" style="display:none;">
     </aside>
     
     <!-- Main Content -->
