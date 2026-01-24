@@ -74,8 +74,11 @@ public class AppController : Controller
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to initialize default unit");
-                unitLoadError = "Varsayılan birim oluşturulamadı: " + (ex.InnerException?.Message ?? ex.Message);
+                var innerEx = ex;
+                while (innerEx.InnerException != null)
+                    innerEx = innerEx.InnerException;
+                _logger.LogWarning(ex, "Failed to initialize default unit: {Error}", innerEx.Message);
+                unitLoadError = "Varsayılan birim oluşturulamadı: " + innerEx.Message;
             }
             
             try
@@ -107,8 +110,11 @@ public class AppController : Controller
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to load units");
-                unitLoadError = "Birimler yüklenemedi: " + (ex.InnerException?.Message ?? ex.Message);
+                var innerEx = ex;
+                while (innerEx.InnerException != null)
+                    innerEx = innerEx.InnerException;
+                _logger.LogWarning(ex, "Failed to load units: {Error}", innerEx.Message);
+                unitLoadError = "Birimler yüklenemedi: " + innerEx.Message;
             }
         }
         
@@ -2955,9 +2961,14 @@ public class AppController : Controller
         }
         catch (Exception ex)
         {
-            var innerMessage = ex.InnerException?.Message ?? ex.Message;
-            _logger.LogError(ex, "Error creating unit: {InnerMessage}", innerMessage);
-            return StatusCode(500, new { error = "Birim oluşturulurken bir hata oluştu: " + innerMessage });
+            // Get the deepest inner exception
+            var innerEx = ex;
+            while (innerEx.InnerException != null)
+                innerEx = innerEx.InnerException;
+            
+            var errorMessage = innerEx.Message;
+            _logger.LogError(ex, "Error creating unit: {ErrorMessage}", errorMessage);
+            return StatusCode(500, new { error = "Birim oluşturulurken bir hata oluştu: " + errorMessage });
         }
     }
     
