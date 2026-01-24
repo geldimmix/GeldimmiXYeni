@@ -41,14 +41,45 @@ public class AppController : Controller
     /// <summary>
     /// Main application page
     /// </summary>
-    public async Task<IActionResult> Index(int? year, int? month)
+    public async Task<IActionResult> Index(int? year, int? month, int? unitId)
     {
         var selectedYear = year ?? DateTime.Now.Year;
         var selectedMonth = month ?? DateTime.Now.Month;
         
         var organization = await GetOrCreateOrganizationAsync();
-        var employees = await _context.Employees
-            .Where(e => e.OrganizationId == organization.Id && e.IsActive)
+        
+        // Check if premium and initialize units
+        var isPremium = await IsPremiumUserAsync();
+        int? selectedUnitId = null;
+        Unit? defaultUnit = null;
+        
+        if (isPremium)
+        {
+            try
+            {
+                await InitializeDefaultUnitTypesAsync(organization.Id);
+                await InitializeDefaultUnitAsync(organization.Id);
+                
+                // Get default unit if no unit selected
+                defaultUnit = await _context.Units
+                    .Where(u => u.OrganizationId == organization.Id && u.IsDefault && u.IsActive)
+                    .FirstOrDefaultAsync();
+                    
+                selectedUnitId = unitId ?? defaultUnit?.Id;
+            }
+            catch { }
+        }
+        
+        // Filter employees by unit for premium users
+        var employeesQuery = _context.Employees
+            .Where(e => e.OrganizationId == organization.Id && e.IsActive);
+            
+        if (isPremium && selectedUnitId.HasValue)
+        {
+            employeesQuery = employeesQuery.Where(e => e.UnitId == selectedUnitId);
+        }
+        
+        var employees = await employeesQuery
             .OrderBy(e => e.FullName)
             .ToListAsync();
             
@@ -63,22 +94,34 @@ public class AppController : Controller
             .Where(h => h.Date.Year == selectedYear && h.Date.Month == selectedMonth)
             .ToListAsync();
         
-        // Get shifts for current month
-        var shifts = await _context.Shifts
+        // Get shifts for current month (filtered by unit for premium users)
+        var shiftsQuery = _context.Shifts
             .Include(s => s.Employee)
             .Include(s => s.ShiftTemplate)
             .Where(s => s.Employee.OrganizationId == organization.Id)
-            .Where(s => s.Date.Year == selectedYear && s.Date.Month == selectedMonth)
-            .ToListAsync();
+            .Where(s => s.Date.Year == selectedYear && s.Date.Month == selectedMonth);
+            
+        if (isPremium && selectedUnitId.HasValue)
+        {
+            shiftsQuery = shiftsQuery.Where(s => s.Employee.UnitId == selectedUnitId);
+        }
+        
+        var shifts = await shiftsQuery.ToListAsync();
         
         // Get overnight shifts from previous month's last day that span into current month
         var previousMonthLastDay = new DateOnly(selectedYear, selectedMonth, 1).AddDays(-1);
-        var previousMonthShifts = await _context.Shifts
+        var previousMonthQuery = _context.Shifts
             .Include(s => s.Employee)
             .Include(s => s.ShiftTemplate)
             .Where(s => s.Employee.OrganizationId == organization.Id)
-            .Where(s => s.Date == previousMonthLastDay && s.SpansNextDay)
-            .ToListAsync();
+            .Where(s => s.Date == previousMonthLastDay && s.SpansNextDay);
+            
+        if (isPremium && selectedUnitId.HasValue)
+        {
+            previousMonthQuery = previousMonthQuery.Where(s => s.Employee.UnitId == selectedUnitId);
+        }
+        
+        var previousMonthShifts = await previousMonthQuery.ToListAsync();
             
         // Get leave types (system-wide + organization-specific)
         var leaveTypes = await _context.LeaveTypes
@@ -87,32 +130,32 @@ public class AppController : Controller
             .OrderBy(lt => lt.SortOrder)
             .ToListAsync();
             
-        // Get leaves for current month
-        var leaves = await _context.Leaves
+        // Get leaves for current month (filtered by unit for premium users)
+        var leavesQuery = _context.Leaves
             .Include(l => l.LeaveType)
             .Include(l => l.Employee)
             .Where(l => l.Employee.OrganizationId == organization.Id)
-            .Where(l => l.Date.Year == selectedYear && l.Date.Month == selectedMonth)
-            .ToListAsync();
+            .Where(l => l.Date.Year == selectedYear && l.Date.Month == selectedMonth);
+            
+        if (isPremium && selectedUnitId.HasValue)
+        {
+            leavesQuery = leavesQuery.Where(l => l.Employee.UnitId == selectedUnitId);
+        }
+        
+        var leaves = await leavesQuery.ToListAsync();
 
         var employeeLimit = await GetEmployeeLimitAsync();
         var (canAccessAttendance, canAccessPayroll) = await GetFeatureAccessAsync();
         var isRegistered = User.Identity?.IsAuthenticated == true;
         
-        // Check if user is premium
-        var canManageUnits = await IsPremiumUserAsync();
+        // Load units and unit types for premium users
         var units = new List<Unit>();
         var unitTypes = new List<UnitType>();
         
-        // Load units and unit types for premium users
-        if (canManageUnits)
+        if (isPremium)
         {
             try
             {
-                // Initialize defaults if needed
-                await InitializeDefaultUnitTypesAsync(organization.Id);
-                await InitializeDefaultUnitAsync(organization.Id);
-                
                 unitTypes = await _context.UnitTypes
                     .Where(ut => ut.OrganizationId == organization.Id && ut.IsActive)
                     .OrderBy(ut => ut.SortOrder)
@@ -120,6 +163,7 @@ public class AppController : Controller
                     
                 units = await _context.Units
                     .Include(u => u.UnitType)
+                    .Include(u => u.Employees.Where(e => e.IsActive))
                     .Where(u => u.OrganizationId == organization.Id && u.IsActive)
                     .OrderBy(u => u.SortOrder)
                     .ToListAsync();
@@ -127,7 +171,6 @@ public class AppController : Controller
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Units/UnitTypes could not be loaded");
-                // Keep canManageUnits true so modal opens, just with empty lists
             }
         }
         
@@ -143,18 +186,19 @@ public class AppController : Controller
             Leaves = leaves,
             Units = units,
             UnitTypes = unitTypes,
+            SelectedUnitId = selectedUnitId,
             SelectedYear = selectedYear,
             SelectedMonth = selectedMonth,
             EmployeeLimit = employeeLimit,
             IsRegistered = isRegistered,
-            IsPremium = canManageUnits,
+            IsPremium = isPremium,
             // Feature access based on registration and admin settings
             CanUseSmartScheduling = isRegistered,
             CanUseTimesheet = isRegistered,
             CanExportExcel = isRegistered,
             CanAccessAttendance = canAccessAttendance,
             CanAccessPayroll = canAccessPayroll,
-            CanManageUnits = canManageUnits
+            CanManageUnits = isPremium
         };
 
         return View(viewModel);
@@ -2862,6 +2906,7 @@ public class AppController : Controller
             Coefficient = coefficient,
             Color = dto.Color ?? GetRandomColor(),
             IsDefault = dto.IsDefault,
+            EmployeeLimit = dto.EmployeeLimit,
             SortOrder = maxOrder + 1
         };
         
@@ -2924,6 +2969,7 @@ public class AppController : Controller
         unit.Description = dto.Description;
         unit.UnitTypeId = dto.UnitTypeId;
         unit.Coefficient = dto.Coefficient > 0 ? dto.Coefficient : 1.0m;
+        unit.EmployeeLimit = dto.EmployeeLimit;
         if (!string.IsNullOrEmpty(dto.Color))
             unit.Color = dto.Color;
         unit.UpdatedAt = DateTime.UtcNow;
@@ -2989,6 +3035,16 @@ public class AppController : Controller
             
         if (unit == null)
             return NotFound(new { error = "Birim bulunamadı" });
+        
+        // Check unit employee limit
+        if (unit.EmployeeLimit > 0)
+        {
+            var currentCount = await _context.Employees
+                .CountAsync(e => e.UnitId == id && e.IsActive);
+            
+            if (currentCount + dto.EmployeeIds.Count > unit.EmployeeLimit)
+                return BadRequest(new { error = $"Birim personel limiti aşıldı (Limit: {unit.EmployeeLimit}, Mevcut: {currentCount})" });
+        }
         
         // Update employees
         var employees = await _context.Employees
@@ -3179,6 +3235,7 @@ public class UnitDto
     public decimal Coefficient { get; set; } = 1.0m;
     public string? Color { get; set; }
     public bool IsDefault { get; set; }
+    public int EmployeeLimit { get; set; } = 0;
 }
 
 public class AssignEmployeesDto

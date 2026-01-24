@@ -507,6 +507,9 @@ using (var scope = app.Services.CreateScope())
                 IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Units' AND column_name = 'UpdatedAt') THEN
                     ALTER TABLE ""Units"" ADD COLUMN ""UpdatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW();
                 END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Units' AND column_name = 'EmployeeLimit') THEN
+                    ALTER TABLE ""Units"" ADD COLUMN ""EmployeeLimit"" INTEGER NOT NULL DEFAULT 0;
+                END IF;
             END $$;
         ", "UnitsColumns");
         

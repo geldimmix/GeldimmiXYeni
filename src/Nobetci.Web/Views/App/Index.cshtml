@@ -113,15 +113,44 @@
         <!-- Toolbar -->
         <div class="app-toolbar">
             <div class="toolbar-nav">
-                <a href="@Url.Action("Index", new { year = Model.SelectedMonth == 1 ? Model.SelectedYear - 1 : Model.SelectedYear, month = Model.SelectedMonth == 1 ? 12 : Model.SelectedMonth - 1 })" 
+                <a href="@Url.Action("Index", new { year = Model.SelectedMonth == 1 ? Model.SelectedYear - 1 : Model.SelectedYear, month = Model.SelectedMonth == 1 ? 12 : Model.SelectedMonth - 1, unitId = Model.SelectedUnitId })" 
                    class="nav-arrow">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
                 </a>
                 <h4 class="month-title">@Model.MonthName</h4>
-                <a href="@Url.Action("Index", new { year = Model.SelectedMonth == 12 ? Model.SelectedYear + 1 : Model.SelectedYear, month = Model.SelectedMonth == 12 ? 1 : Model.SelectedMonth + 1 })" 
+                <a href="@Url.Action("Index", new { year = Model.SelectedMonth == 12 ? Model.SelectedYear + 1 : Model.SelectedYear, month = Model.SelectedMonth == 12 ? 1 : Model.SelectedMonth + 1, unitId = Model.SelectedUnitId })" 
                    class="nav-arrow">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
                 </a>
+                
+                @if (Model.IsPremium && Model.Units.Any())
+                {
+                    <div class="unit-selector">
+                        <select id="unitSelector" class="unit-select" onchange="changeUnit(this.value)">
+                            @foreach (var unit in Model.Units)
+                            {
+                                if (unit.Id == Model.SelectedUnitId)
+                                {
+                                    <option value="@unit.Id" selected
+                                            data-color="@unit.Color"
+                                            data-employee-count="@unit.Employees.Count"
+                                            data-employee-limit="@unit.EmployeeLimit">
+                                        @unit.Name (@unit.Employees.Count @(isTurkish ? "personel" : "employees"))
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@unit.Id"
+                                            data-color="@unit.Color"
+                                            data-employee-count="@unit.Employees.Count"
+                                            data-employee-limit="@unit.EmployeeLimit">
+                                        @unit.Name (@unit.Employees.Count @(isTurkish ? "personel" : "employees"))
+                                    </option>
+                                }
+                            }
+                        </select>
+                    </div>
+                }
             </div>
             
             <div class="toolbar-actions">
@@ -508,6 +537,7 @@
                                         }
                                     </select>
                                     <input type="number" id="newUnitCoefficient" class="form-input coefficient-input" value="1.0" step="0.25" min="0.5" max="3" placeholder="@(isTurkish ? "Katsayı" : "Coefficient")">
+                                    <input type="number" id="newUnitEmployeeLimit" class="form-input limit-input" value="0" min="0" max="100" placeholder="@(isTurkish ? "Personel Limiti (0=Sınırsız)" : "Employee Limit (0=Unlimited)")">
                                     <button type="button" class="btn btn-primary" id="addUnitBtn">
                                         <span class="btn-icon">+</span>
                                         @(isTurkish ? "Birim Ekle" : "Add Unit")
@@ -556,7 +586,7 @@
                                                 </div>
                                             </div>
                                             <div class="unit-actions">
-                                                <button class="unit-action-btn edit-btn" title="@(isTurkish ? "Düzenle" : "Edit")" onclick="editUnit(@unit.Id, '@Html.Raw(unit.Name.Replace("'", "\\'"))', @(unit.UnitTypeId?.ToString() ?? "null"), @unit.Coefficient, '@(unit.Color ?? "#3B82F6")', @unit.IsDefault.ToString().ToLower())">
+                                                <button class="unit-action-btn edit-btn" title="@(isTurkish ? "Düzenle" : "Edit")" onclick="editUnit(@unit.Id, '@Html.Raw(unit.Name.Replace("'", "\\'"))', @(unit.UnitTypeId?.ToString() ?? "null"), @unit.Coefficient, '@(unit.Color ?? "#3B82F6")', @unit.IsDefault.ToString().ToLower(), @unit.EmployeeLimit)">
                                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                                 </button>
                                                 <button class="unit-action-btn assign-btn" title="@(isTurkish ? "Personel Ata" : "Assign Employees")" onclick="openAssignEmployees(@unit.Id, '@Html.Raw(unit.Name.Replace("'", "\\'"))')">
@@ -672,6 +702,10 @@
                 <div class="form-group">
                     <label>@(isTurkish ? "Katsayı" : "Coefficient")</label>
                     <input type="number" id="editUnitCoefficient" class="form-input" step="0.25" min="0.5" max="3">
+                </div>
+                <div class="form-group">
+                    <label>@(isTurkish ? "Personel Limiti" : "Employee Limit") <small style="color: #6b7280;">(0 = @(isTurkish ? "Sınırsız" : "Unlimited"))</small></label>
+                    <input type="number" id="editUnitEmployeeLimit" class="form-input" min="0" max="100">
                 </div>
                 <div class="form-group">
                     <label>@(isTurkish ? "Renk" : "Color")</label>
@@ -2744,6 +2778,7 @@
     }
     .add-unit-form .form-input::placeholder { color: #9ca3af; }
     .add-unit-form .coefficient-input { max-width: 80px; min-width: 70px; text-align: center; }
+    .add-unit-form .limit-input { max-width: 100px; min-width: 80px; text-align: center; }
     .add-unit-form .color-input { 
         width: 40px; 
         min-width: 40px; 
@@ -4303,6 +4338,38 @@
         display: flex;
         align-items: center;
         gap: 8px;
+    }
+    
+    .unit-selector {
+        margin-left: 16px;
+        padding-left: 16px;
+        border-left: 1px solid var(--border-color);
+    }
+    
+    .unit-select {
+        padding: 6px 32px 6px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        min-width: 180px;
+    }
+    
+    .unit-select:hover {
+        border-color: var(--primary);
+    }
+    
+    .unit-select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     }
     
     .nav-arrow {
@@ -8409,6 +8476,14 @@
     }
     
     // ===== Unit Management Functions (Premium Feature) =====
+    
+    // Change unit filter - navigates to show employees from selected unit
+    function changeUnit(unitId) {
+        const year = @Model.SelectedYear;
+        const month = @Model.SelectedMonth;
+        window.location.href = `/app?year=${year}&month=${month}&unitId=${unitId}`;
+    }
+    
     function initUnitManagement() {
         // Add Unit button
         document.getElementById('addUnitBtn')?.addEventListener('click', addUnit);
@@ -8442,6 +8517,7 @@
         const name = document.getElementById('newUnitName').value.trim();
         const typeId = document.getElementById('newUnitType').value || null;
         const coefficient = parseFloat(document.getElementById('newUnitCoefficient').value) || 1.0;
+        const employeeLimit = parseInt(document.getElementById('newUnitEmployeeLimit').value) || 0;
         
         if (!name) {
             alert(texts.unitNameRequired);
@@ -8456,6 +8532,7 @@
                     name,
                     unitTypeId: typeId ? parseInt(typeId) : null,
                     coefficient,
+                    employeeLimit,
                     isDefault: false
                 })
             });
@@ -8469,6 +8546,7 @@
             document.getElementById('newUnitName').value = '';
             document.getElementById('newUnitType').value = '';
             document.getElementById('newUnitCoefficient').value = '1.0';
+            document.getElementById('newUnitEmployeeLimit').value = '0';
             
             showToast(texts.unitAdded, 'success');
             location.reload();
@@ -8511,11 +8589,12 @@
         }
     }
     
-    function editUnit(id, name, typeId, coefficient, color, isDefault) {
+    function editUnit(id, name, typeId, coefficient, color, isDefault, employeeLimit) {
         document.getElementById('editUnitId').value = id;
         document.getElementById('editUnitName').value = name;
         document.getElementById('editUnitTypeId').value = typeId || '';
         document.getElementById('editUnitCoefficient').value = coefficient;
+        document.getElementById('editUnitEmployeeLimit').value = employeeLimit || 0;
         document.getElementById('editUnitColor').value = color;
         document.getElementById('editUnitIsDefault').checked = isDefault;
         
@@ -8528,6 +8607,7 @@
         const name = document.getElementById('editUnitName').value.trim();
         const typeId = document.getElementById('editUnitTypeId').value || null;
         const coefficient = parseFloat(document.getElementById('editUnitCoefficient').value) || 1.0;
+        const employeeLimit = parseInt(document.getElementById('editUnitEmployeeLimit').value) || 0;
         const color = document.getElementById('editUnitColor').value;
         const isDefault = document.getElementById('editUnitIsDefault').checked;
         
@@ -8544,6 +8624,7 @@
                     name,
                     unitTypeId: typeId ? parseInt(typeId) : null,
                     coefficient,
+                    employeeLimit,
                     color,
                     isDefault
                 })

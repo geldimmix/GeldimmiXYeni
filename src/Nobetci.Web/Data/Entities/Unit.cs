@@ -45,6 +45,11 @@ public class Unit
     public bool IsDefault { get; set; }
     
     /// <summary>
+    /// Maximum number of employees allowed in this unit (0 = unlimited)
+    /// </summary>
+    public int EmployeeLimit { get; set; } = 0;
+    
+    /// <summary>
     /// Whether this unit is active
     /// </summary>
     public bool IsActive { get; set; } = true;
