@@ -52,22 +52,39 @@ public class AppController : Controller
         var isPremium = await IsPremiumUserAsync();
         int? selectedUnitId = null;
         Unit? defaultUnit = null;
+        var units = new List<Unit>();
+        var unitTypes = new List<UnitType>();
         
         if (isPremium)
         {
             try
             {
+                // Initialize defaults if needed
                 await InitializeDefaultUnitTypesAsync(organization.Id);
                 await InitializeDefaultUnitAsync(organization.Id);
                 
+                // Load unit types
+                unitTypes = await _context.UnitTypes
+                    .Where(ut => ut.OrganizationId == organization.Id && ut.IsActive)
+                    .OrderBy(ut => ut.SortOrder)
+                    .ToListAsync();
+                
+                // Load units with employees
+                units = await _context.Units
+                    .Include(u => u.UnitType)
+                    .Include(u => u.Employees.Where(e => e.IsActive))
+                    .Where(u => u.OrganizationId == organization.Id && u.IsActive)
+                    .OrderBy(u => u.SortOrder)
+                    .ToListAsync();
+                
                 // Get default unit if no unit selected
-                defaultUnit = await _context.Units
-                    .Where(u => u.OrganizationId == organization.Id && u.IsDefault && u.IsActive)
-                    .FirstOrDefaultAsync();
-                    
+                defaultUnit = units.FirstOrDefault(u => u.IsDefault);
                 selectedUnitId = unitId ?? defaultUnit?.Id;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Units/UnitTypes could not be loaded");
+            }
         }
         
         // Filter employees by unit for premium users
@@ -147,32 +164,6 @@ public class AppController : Controller
         var employeeLimit = await GetEmployeeLimitAsync();
         var (canAccessAttendance, canAccessPayroll) = await GetFeatureAccessAsync();
         var isRegistered = User.Identity?.IsAuthenticated == true;
-        
-        // Load units and unit types for premium users
-        var units = new List<Unit>();
-        var unitTypes = new List<UnitType>();
-        
-        if (isPremium)
-        {
-            try
-            {
-                unitTypes = await _context.UnitTypes
-                    .Where(ut => ut.OrganizationId == organization.Id && ut.IsActive)
-                    .OrderBy(ut => ut.SortOrder)
-                    .ToListAsync();
-                    
-                units = await _context.Units
-                    .Include(u => u.UnitType)
-                    .Include(u => u.Employees.Where(e => e.IsActive))
-                    .Where(u => u.OrganizationId == organization.Id && u.IsActive)
-                    .OrderBy(u => u.SortOrder)
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Units/UnitTypes could not be loaded");
-            }
-        }
         
         var viewModel = new AppViewModel
         {
