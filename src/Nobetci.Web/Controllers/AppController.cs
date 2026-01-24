@@ -1811,6 +1811,7 @@ public class AppController : Controller
 
     /// <summary>
     /// Calculate required work hours for an employee
+    /// Leave on weekends only reduces hours if the employee actually works weekends
     /// </summary>
     private decimal CalculateRequiredHours(Employee employee, int year, int month, List<Holiday> holidays, List<int> weekendDays, List<Leave>? leaves = null)
     {
@@ -1823,21 +1824,19 @@ public class AppController : Controller
             var dayOfWeek = date.DayOfWeek;
             var isSaturday = dayOfWeek == DayOfWeek.Saturday;
             var isWeekend = weekendDays.Contains((int)dayOfWeek);
-            
-            // Skip if employee has leave on this date
-            if (leaves != null && leaves.Any(l => l.Date == date))
-                continue;
+            var hasLeaveOnThisDay = leaves != null && leaves.Any(l => l.Date == date);
             
             var holiday = holidays.FirstOrDefault(h => h.Date == date);
             
-            // Full holiday
+            // Full holiday - no work required
             if (holiday != null && !holiday.IsHalfDay)
                 continue;
             
             // Half-day holiday
             if (holiday != null && holiday.IsHalfDay && holiday.HalfDayWorkHours.HasValue)
             {
-                if (!isWeekend || employee.WeekendWorkMode > 0)
+                // Only add half-day hours if employee should work this day AND no leave
+                if ((!isWeekend || employee.WeekendWorkMode > 0) && !hasLeaveOnThisDay)
                 {
                     requiredHours += holiday.HalfDayWorkHours.Value;
                 }
@@ -1846,23 +1845,33 @@ public class AppController : Controller
 
             if (isWeekend)
             {
+                // Weekend work depends on WeekendWorkMode
                 switch (employee.WeekendWorkMode)
                 {
-                    case 1: // Works both days
-                        requiredHours += employee.DailyWorkHours;
+                    case 0: // Doesn't work weekends
+                        // Leave on weekend doesn't affect required hours (already 0 for this day)
                         break;
-                    case 2: // Only Saturday
-                        if (isSaturday) requiredHours += employee.DailyWorkHours;
+                    case 1: // Works both Saturday and Sunday
+                        if (!hasLeaveOnThisDay)
+                            requiredHours += employee.DailyWorkHours;
+                        break;
+                    case 2: // Only Saturday (full day)
+                        if (isSaturday && !hasLeaveOnThisDay)
+                            requiredHours += employee.DailyWorkHours;
+                        // Sunday leave doesn't affect (doesn't work Sundays)
                         break;
                     case 3: // Saturday specific hours
-                        if (isSaturday && employee.SaturdayWorkHours.HasValue)
+                        if (isSaturday && employee.SaturdayWorkHours.HasValue && !hasLeaveOnThisDay)
                             requiredHours += employee.SaturdayWorkHours.Value;
+                        // Sunday leave doesn't affect (doesn't work Sundays)
                         break;
                 }
             }
             else
             {
-                requiredHours += employee.DailyWorkHours;
+                // Weekday - leave reduces required hours
+                if (!hasLeaveOnThisDay)
+                    requiredHours += employee.DailyWorkHours;
             }
         }
 
