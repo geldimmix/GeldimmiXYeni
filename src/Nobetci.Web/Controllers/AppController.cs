@@ -99,16 +99,15 @@ public class AppController : Controller
         var (canAccessAttendance, canAccessPayroll) = await GetFeatureAccessAsync();
         var isRegistered = User.Identity?.IsAuthenticated == true;
         
-        // Check if user can manage units (Premium OR admin granted CanManageUnits)
-        var canManageUnits = false;
+        // Check if user is premium
+        var canManageUnits = await IsPremiumUserAsync();
         var units = new List<Unit>();
         var unitTypes = new List<UnitType>();
         
-        // Load units and unit types for premium users (with error handling)
-        try
+        // Load units and unit types for premium users
+        if (canManageUnits)
         {
-            canManageUnits = await IsPremiumUserAsync();
-            if (canManageUnits)
+            try
             {
                 // Initialize default unit types if needed
                 await InitializeDefaultUnitTypesAsync(organization.Id);
@@ -124,11 +123,11 @@ public class AppController : Controller
                     .OrderBy(u => u.Name)
                     .ToListAsync();
             }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "Units/UnitTypes could not be loaded - tables may not exist yet");
-            canManageUnits = false;
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Units/UnitTypes could not be loaded");
+                // Keep canManageUnits true so modal opens, just with empty lists
+            }
         }
         
         var viewModel = new AppViewModel
@@ -2545,41 +2544,25 @@ public class AppController : Controller
     #region Unit Management (Premium Feature)
     
     /// <summary>
-    /// Check if current user has premium access (Premium plan OR CanManageUnits granted by admin)
+    /// Check if current user has premium access
     /// </summary>
     private async Task<bool> IsPremiumUserAsync()
     {
-        try
-        {
-            if (User.Identity?.IsAuthenticated != true)
-                return false;
-                
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-                return false;
-                
-            // Check if premium and not expired
-            if (user.Plan == UserPlan.Premium)
-            {
-                if (user.PremiumExpiresAt == null || user.PremiumExpiresAt > DateTime.UtcNow)
-                    return true;
-            }
-            
-            // Check if user has CanManageUnits granted by admin (may fail if column doesn't exist)
-            try
-            {
-                if (user.CanManageUnits)
-                    return true;
-            }
-            catch { /* Column may not exist yet */ }
-            
+        if (User.Identity?.IsAuthenticated != true)
             return false;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "Error checking premium status");
+            
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
             return false;
+            
+        // Check if premium and not expired
+        if (user.Plan == UserPlan.Premium)
+        {
+            if (user.PremiumExpiresAt == null || user.PremiumExpiresAt > DateTime.UtcNow)
+                return true;
         }
+        
+        return false;
     }
     
     /// <summary>
