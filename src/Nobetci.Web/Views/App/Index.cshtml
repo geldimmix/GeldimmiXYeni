@@ -3068,83 +3068,62 @@
         background: #f1f5f9;
     }
     
-    /* Sidebar - Modern & Enhanced */
+    /* Sidebar - Compact & Clean */
     .app-sidebar {
-        width: 248px;
-        min-width: 248px;
+        width: 200px;
+        min-width: 200px;
         max-height: calc(100vh - 60px);
-        background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+        background: #fafafa;
         border-right: 1px solid #e5e7eb;
         display: flex;
         flex-direction: column;
-        padding: 16px;
-        gap: 12px;
+        padding: 10px;
+        gap: 4px;
         overflow-y: auto;
         overflow-x: hidden;
-        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.02);
     }
     
     .app-sidebar::-webkit-scrollbar {
-        width: 8px;
+        width: 4px;
     }
     
     .app-sidebar::-webkit-scrollbar-track {
-        background: #f1f5f9;
-        border-radius: 4px;
+        background: transparent;
     }
     
     .app-sidebar::-webkit-scrollbar-thumb {
-        background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
-        border-radius: 4px;
+        background: #d1d5db;
+        border-radius: 2px;
     }
     
     .app-sidebar::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+        background: #9ca3af;
     }
     
-    /* Sidebar Actions - Enhanced */
+    /* Sidebar Actions - Minimal */
     .sidebar-actions {
         display: flex;
         flex-direction: column;
-        gap: 6px;
-        margin-bottom: 4px;
+        gap: 2px;
     }
     
     .action-btn {
         display: flex;
         align-items: center;
         gap: 8px;
-        padding: 9px 12px;
-        background: #f9fafb;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
+        padding: 8px 10px;
+        background: transparent;
+        border: none;
+        border-radius: 6px;
         cursor: pointer;
-        transition: background 0.15s, border-color 0.15s;
+        transition: background 0.12s;
         width: 100%;
         text-align: left;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-    }
-    
-    .action-btn::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-        transition: left 0.5s;
-    }
-    
-    .action-btn:hover::before {
-        left: 100%;
+        color: #374151;
     }
     
     .action-btn:hover {
         background: #f3f4f6;
-        border-color: #d1d5db;
     }
     
     .action-btn:active {
@@ -3152,135 +3131,95 @@
     }
     
     .action-icon {
-        font-size: 1.1rem;
+        font-size: 1rem;
+        width: 20px;
+        text-align: center;
     }
     
     .action-label {
         flex: 1;
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: #1e293b;
-        letter-spacing: -0.01em;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #374151;
     }
     
     .action-badge {
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        background: #3b82f6;
         color: white;
         font-size: 0.65rem;
         font-weight: 600;
-        padding: 3px 8px;
-        border-radius: 10px;
+        padding: 2px 6px;
+        border-radius: 8px;
+        min-width: 18px;
+        text-align: center;
     }
     
-    .action-btn.holidays-btn .action-badge {
-        background: #f59e0b;
-    }
-    
-    .action-btn.payroll-btn {
-        text-decoration: none;
-    }
-    
-    .action-btn.payroll-btn .action-badge {
-        background: #22c55e;
-    }
-    
-    .action-btn.payroll-btn.disabled {
-        opacity: 0.6;
+    .action-btn.holidays-btn .action-badge { background: #f59e0b; }
+    .action-btn.payroll-btn { text-decoration: none; }
+    .action-btn.payroll-btn .action-badge { background: #22c55e; }
+    .action-btn.payroll-btn.disabled,
+    .action-btn.attendance-btn.disabled,
+    .action-btn.units-btn.disabled {
+        opacity: 0.5;
         cursor: not-allowed;
     }
+    .action-btn.payroll-btn.disabled .action-badge,
+    .action-btn.attendance-btn.disabled .action-badge,
+    .action-btn.units-btn.disabled .action-badge { background: #9ca3af; }
+    .action-btn.attendance-btn { text-decoration: none; }
+    .action-btn.attendance-btn .action-badge { background: #8b5cf6; }
+    .action-btn.templates-btn .action-badge { background: #f59e0b; }
+    .action-btn.leaves-btn .action-badge { background: #8b5cf6; }
+    .action-btn.units-btn .action-badge { background: #10b981; }
     
-    .action-btn.payroll-btn.disabled .action-badge {
-        background: #9ca3af;
-    }
-    
-    .action-btn.attendance-btn {
-        text-decoration: none;
-    }
-    
-    .action-btn.attendance-btn .action-badge {
-        background: #8b5cf6;
-    }
-    
-    .action-btn.attendance-btn.disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-    
-    .action-btn.attendance-btn.disabled .action-badge {
-        background: #9ca3af;
-    }
-    
-    .action-btn.templates-btn .action-badge {
-        background: #f59e0b;
-    }
-    
-    .action-btn.leaves-btn .action-badge {
-        background: #8b5cf6;
-    }
-    
-    /* Templates */
+    /* Templates - Minimal */
     .templates-compact {
-        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
-        padding: 12px;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
-        transition: all 0.2s ease;
-        margin-bottom: 0;
-    }
-    
-    .templates-compact:hover {
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-        border-color: #cbd5e1;
+        background: #fff;
+        border-radius: 6px;
+        border: 1px solid #e5e7eb;
+        padding: 8px;
+        margin-top: 4px;
     }
     
     .templates-header {
-        font-size: 0.7rem;
-        font-weight: 700;
-        color: #475569;
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: #6b7280;
         text-transform: uppercase;
-        letter-spacing: 0.8px;
-        margin-bottom: 10px;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 8px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid #e2e8f0;
+        gap: 6px;
     }
     
     .templates-header > span {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 4px;
     }
     
     .tpl-manage-btn {
-        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-        border: 1px solid #cbd5e1;
+        background: #f3f4f6;
+        border: none;
         cursor: pointer;
-        font-size: 0.85rem;
-        padding: 4px 6px;
-        border-radius: 4px;
+        font-size: 0.75rem;
+        padding: 2px 4px;
+        border-radius: 3px;
         opacity: 0.6;
-        transition: opacity 0.15s, background 0.15s;
+        transition: opacity 0.12s;
     }
     
     .tpl-manage-btn:hover {
         opacity: 1;
-        background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
-        transform: scale(1.05);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    }
-    
-    .tpl-manage-btn:active {
-        transform: scale(0.98);
+        background: #e5e7eb;
     }
     
     .tpl-divider {
         height: 1px;
         background: #e5e7eb;
-        margin: 8px 0;
+        margin: 6px 0;
     }
     
     /* Leave Section Styles */
@@ -3779,56 +3718,47 @@
     
     /* Multi Toggle */
     .multi-toggle {
-        padding: 10px 12px;
-        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
-        transition: all 0.2s ease;
+        padding: 8px 10px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
         margin-top: 4px;
-    }
-    
-    .multi-toggle:hover {
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-        border-color: #cbd5e1;
     }
     
     .multi-toggle label {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
         cursor: pointer;
     }
     
     .multi-toggle .toggle-track {
-        width: 44px;
-        height: 24px;
-        background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
-        border-radius: 12px;
+        width: 36px;
+        height: 20px;
+        background: #d1d5db;
+        border-radius: 10px;
         position: relative;
-        transition: background 0.2s;
+        transition: background 0.15s;
     }
     
     .multi-toggle .toggle-thumb {
         position: absolute;
-        width: 20px;
-        height: 20px;
-        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        width: 16px;
+        height: 16px;
+        background: #fff;
         border-radius: 50%;
         top: 2px;
         left: 2px;
-        transition: left 0.2s;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        transition: left 0.15s;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.15);
     }
     
     .multi-toggle input:checked + .toggle-track {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        background: #10b981;
     }
     
     .multi-toggle input:checked + .toggle-track .toggle-thumb {
-        left: 22px;
-        box-shadow: 0 3px 8px rgba(16, 185, 129, 0.4);
+        left: 18px;
     }
     
     .multi-toggle input {
@@ -3836,47 +3766,22 @@
     }
     
     .multi-toggle .toggle-text {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         font-weight: 500;
-        color: #374151;
+        color: #6b7280;
     }
     
-    /* Selected Indicator */
+    /* Selected Indicator - Minimal */
     .selected-indicator {
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 10px 12px;
-        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-        border: 1.5px solid #3b82f6;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
-        animation: slideIn 0.3s ease-out;
-        position: relative;
-        overflow: hidden;
+        gap: 8px;
+        padding: 8px 10px;
+        background: #eff6ff;
+        border: 1px solid #3b82f6;
+        border-radius: 6px;
         margin-top: 4px;
     }
-    
-    .selected-indicator::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-        animation: shimmer 2s infinite;
-    }
-    
-    @@keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
     }
     
     @@keyframes shimmer {
@@ -3885,47 +3790,44 @@
     }
     
     .indicator-color {
-        width: 28px;
-        height: 28px;
-        border-radius: 8px;
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        background: #3b82f6;
         flex-shrink: 0;
-        box-shadow: 0 3px 8px rgba(59, 130, 246, 0.4);
-        border: 2px solid rgba(255, 255, 255, 0.3);
     }
     
     .indicator-text {
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 1px;
     }
     
     .indicator-label {
-        font-size: 0.65rem;
-        color: #64748b;
+        font-size: 0.6rem;
+        color: #6b7280;
         text-transform: uppercase;
-        letter-spacing: 0.8px;
-        font-weight: 700;
+        letter-spacing: 0.5px;
+        font-weight: 600;
     }
     
     .indicator-time {
-        font-size: 0.9rem;
-        font-weight: 700;
+        font-size: 0.8rem;
+        font-weight: 600;
         color: #1e40af;
-        letter-spacing: -0.01em;
     }
     
     .sidebar-section {
-        padding: 16px;
-        border-bottom: 1px solid #e2e8f0;
+        padding: 8px 0;
+        border-bottom: 1px solid #e5e7eb;
     }
     
     .section-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
     }
     
     .section-header h6 {
