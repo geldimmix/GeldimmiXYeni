@@ -488,6 +488,7 @@ using (var scope = app.Services.CreateScope())
                 ""Coefficient"" DECIMAL(5,2) NOT NULL DEFAULT 1.0,
                 ""Color"" VARCHAR(20) NULL,
                 ""IsDefault"" BOOLEAN NOT NULL DEFAULT FALSE,
+                ""EmployeeLimit"" INTEGER NOT NULL DEFAULT 0,
                 ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
                 ""SortOrder"" INTEGER NOT NULL DEFAULT 0,
                 ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),

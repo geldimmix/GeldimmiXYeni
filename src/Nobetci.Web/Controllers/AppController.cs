@@ -2928,8 +2928,9 @@ public class AppController : Controller
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating unit");
-            return StatusCode(500, new { error = "Birim oluşturulurken bir hata oluştu: " + ex.Message });
+            var innerMessage = ex.InnerException?.Message ?? ex.Message;
+            _logger.LogError(ex, "Error creating unit: {InnerMessage}", innerMessage);
+            return StatusCode(500, new { error = "Birim oluşturulurken bir hata oluştu: " + innerMessage });
         }
     }
     
