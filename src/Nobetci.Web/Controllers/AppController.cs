@@ -537,10 +537,15 @@ public class AppController : Controller
             }
             
             await _context.SaveChangesAsync();
+            
+            // Get updated employee totals
+            var updateTotals = await GetEmployeeTotalsAsync(dto.EmployeeId, date.Year, date.Month);
+            
             return Json(new { 
                 id = existingShift.Id,
                 totalHours = existingShift.TotalHours,
-                isDayOff = existingShift.IsDayOff
+                isDayOff = existingShift.IsDayOff,
+                employeeTotals = updateTotals
             });
         }
         
@@ -568,10 +573,14 @@ public class AppController : Controller
         _context.Shifts.Add(shift);
         await _context.SaveChangesAsync();
         
+        // Get updated employee totals
+        var totals = await GetEmployeeTotalsAsync(dto.EmployeeId, date.Year, date.Month);
+        
         return Json(new { 
             id = shift.Id,
             totalHours = shift.TotalHours,
-            isDayOff = shift.IsDayOff
+            isDayOff = shift.IsDayOff,
+            employeeTotals = totals
         });
     }
 
@@ -586,11 +595,18 @@ public class AppController : Controller
             
         if (shift == null)
             return NotFound();
+        
+        var employeeId = shift.EmployeeId;
+        var year = shift.Date.Year;
+        var month = shift.Date.Month;
             
         _context.Shifts.Remove(shift);
         await _context.SaveChangesAsync();
         
-        return Ok();
+        // Get updated employee totals
+        var totals = await GetEmployeeTotalsAsync(employeeId, year, month);
+        
+        return Json(new { employeeTotals = totals });
     }
 
     [HttpDelete]
@@ -614,14 +630,20 @@ public class AppController : Controller
         var totalHours = shift.TotalHours;
         var isDayOff = shift.IsDayOff;
         var spansNextDay = shift.SpansNextDay;
+        var year = dateOnly.Year;
+        var month = dateOnly.Month;
             
         _context.Shifts.Remove(shift);
         await _context.SaveChangesAsync();
         
+        // Get updated employee totals
+        var totals = await GetEmployeeTotalsAsync(employeeId, year, month);
+        
         return Json(new { 
             totalHours = totalHours,
             isDayOff = isDayOff,
-            spansNextDay = spansNextDay
+            spansNextDay = spansNextDay,
+            employeeTotals = totals
         });
     }
 
@@ -2017,6 +2039,84 @@ public class AppController : Controller
 
         // Ensure required hours never goes below zero
         return Math.Max(0, requiredHours);
+    }
+
+    /// <summary>
+    /// Get employee totals for a specific month (worked hours, required hours, diff)
+    /// Used to return accurate totals after shift operations
+    /// </summary>
+    private async Task<object> GetEmployeeTotalsAsync(int employeeId, int year, int month)
+    {
+        var organization = await GetOrCreateOrganizationAsync();
+        var employee = await _context.Employees
+            .FirstOrDefaultAsync(e => e.Id == employeeId && e.OrganizationId == organization.Id);
+            
+        if (employee == null)
+            return new { workedHours = 0m, requiredHours = 0m, diff = 0m, dayOffCount = 0 };
+        
+        // Get all shifts for the month
+        var shifts = await _context.Shifts
+            .Where(s => s.EmployeeId == employeeId && s.Date.Year == year && s.Date.Month == month)
+            .ToListAsync();
+        
+        // Get leaves for the month
+        var leaves = await _context.Leaves
+            .Where(l => l.EmployeeId == employeeId && l.Date.Year == year && l.Date.Month == month)
+            .ToListAsync();
+        
+        // Get holidays
+        var holidays = await _context.Holidays
+            .Where(h => h.OrganizationId == organization.Id && h.Date.Year == year && h.Date.Month == month)
+            .ToListAsync();
+        
+        var weekendDays = organization.WeekendDays.Split(',').Select(int.Parse).ToList();
+        
+        // Calculate worked hours
+        decimal workedHours = 0;
+        int dayOffCount = 0;
+        
+        foreach (var shift in shifts)
+        {
+            if (shift.IsDayOff)
+            {
+                dayOffCount++;
+            }
+            else
+            {
+                workedHours += shift.TotalHours;
+            }
+        }
+        
+        // Get previous month's overnight shift spillover
+        var prevMonth = month == 1 ? 12 : month - 1;
+        var prevYear = month == 1 ? year - 1 : year;
+        var lastDayPrevMonth = DateTime.DaysInMonth(prevYear, prevMonth);
+        var prevMonthDate = new DateOnly(prevYear, prevMonth, lastDayPrevMonth);
+        
+        var prevMonthShift = await _context.Shifts
+            .FirstOrDefaultAsync(s => s.EmployeeId == employeeId && s.Date == prevMonthDate && s.SpansNextDay && !s.IsDayOff && s.OvernightHoursMode == 0);
+        
+        if (prevMonthShift != null)
+        {
+            var spilledHours = CalculateHoursAfterMidnight(prevMonthShift);
+            workedHours += spilledHours;
+        }
+        
+        // Calculate required hours (considers leaves, holidays, weekend mode, day offs)
+        var requiredHours = CalculateRequiredHours(employee, year, month, holidays, weekendDays, leaves);
+        
+        // Subtract day off days from required hours
+        requiredHours -= dayOffCount * employee.DailyWorkHours;
+        requiredHours = Math.Max(0, requiredHours);
+        
+        var diff = workedHours - requiredHours;
+        
+        return new {
+            workedHours = Math.Round(workedHours, 1),
+            requiredHours = Math.Round(requiredHours, 1),
+            diff = Math.Round(diff, 1),
+            dayOffCount = dayOffCount
+        };
     }
 
     /// <summary>

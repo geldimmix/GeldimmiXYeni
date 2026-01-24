@@ -7804,6 +7804,12 @@
                     isDayOff: result.isDayOff
                 };
                 updateCellWithShift(cell, templateWithServerHours);
+                
+                // Apply employee totals from backend response (accurate calculation)
+                if (result.employeeTotals) {
+                    applyEmployeeTotals(employeeId, result.employeeTotals);
+                }
+                
                 if (!skipToast) {
                     showToast(texts.shiftAdded, 'success');
                 }
@@ -7838,6 +7844,12 @@
                 const result = await response.json();
                 // Update UI without page reload - use server's totalHours
                 clearCellShift(cell, employeeId, date, result.totalHours, result.isDayOff, result.spansNextDay);
+                
+                // Apply employee totals from backend response (accurate calculation)
+                if (result.employeeTotals) {
+                    applyEmployeeTotals(employeeId, result.employeeTotals);
+                }
+                
                 showToast(texts.shiftDeleted, 'info');
             }
         } catch (error) {
@@ -8097,8 +8109,53 @@
         updateEmployeeTotalHours(employeeId, serverTotalHours, false, wasDayOff);
     }
     
-    // Refresh employee totals from backend - ensures accurate calculations
-    // This replaces complex client-side calculations with server-side accuracy
+    // Apply employee totals from backend response - no extra API call needed
+    // Called directly with data from shift create/delete responses
+    function applyEmployeeTotals(employeeId, totals) {
+        if (!totals) return;
+        
+        const row = document.querySelector(`tr[data-employee-id="${employeeId}"]`);
+        if (!row) return;
+        
+        const totalCell = row.querySelector('.col-total .total-cell');
+        if (!totalCell) return;
+        
+        const workedSpan = totalCell.querySelector('.worked-hours');
+        const requiredSpan = totalCell.querySelector('.required-hours');
+        const diffSpan = totalCell.querySelector('.diff-hours');
+        
+        if (workedSpan) {
+            workedSpan.textContent = formatHours(totals.workedHours);
+        }
+        
+        if (requiredSpan) {
+            requiredSpan.textContent = formatHours(totals.requiredHours);
+        }
+        
+        if (diffSpan) {
+            const diff = totals.diff;
+            if (diff > 0) {
+                diffSpan.textContent = `+${formatHours(diff)}`;
+                diffSpan.className = 'diff-hours positive';
+            } else if (diff < 0) {
+                diffSpan.textContent = formatHours(diff);
+                diffSpan.className = 'diff-hours negative';
+            } else {
+                diffSpan.textContent = '0';
+                diffSpan.className = 'diff-hours';
+            }
+        }
+        
+        // Update total cell class
+        totalCell.classList.remove('overtime', 'undertime');
+        if (totals.diff > 0) {
+            totalCell.classList.add('overtime');
+        } else if (totals.diff < 0) {
+            totalCell.classList.add('undertime');
+        }
+    }
+    
+    // Refresh employee totals from backend - fallback when response doesn't include totals
     async function refreshEmployeeTotals(employeeId) {
         const row = document.querySelector(`tr[data-employee-id="${employeeId}"]`);
         if (!row) return;
@@ -8114,40 +8171,7 @@
             }
             
             const data = await res.json();
-            
-            const workedSpan = totalCell.querySelector('.worked-hours');
-            const requiredSpan = totalCell.querySelector('.required-hours');
-            const diffSpan = totalCell.querySelector('.diff-hours');
-            
-            if (workedSpan) {
-                workedSpan.textContent = formatHours(data.workedHours);
-            }
-            
-            if (requiredSpan) {
-                requiredSpan.textContent = formatHours(data.requiredHours);
-            }
-            
-            if (diffSpan) {
-                const diff = data.diff;
-                if (diff > 0) {
-                    diffSpan.textContent = `+${formatHours(diff)}`;
-                    diffSpan.className = 'diff-hours positive';
-                } else if (diff < 0) {
-                    diffSpan.textContent = formatHours(diff);
-                    diffSpan.className = 'diff-hours negative';
-                } else {
-                    diffSpan.textContent = '0';
-                    diffSpan.className = 'diff-hours';
-                }
-            }
-            
-            // Update total cell class
-            totalCell.classList.remove('overtime', 'undertime');
-            if (data.diff > 0) {
-                totalCell.classList.add('overtime');
-            } else if (data.diff < 0) {
-                totalCell.classList.add('undertime');
-            }
+            applyEmployeeTotals(employeeId, data);
         } catch (e) {
             console.error('Error refreshing employee totals:', e);
         }
