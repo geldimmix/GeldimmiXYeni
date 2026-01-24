@@ -553,6 +553,60 @@ using (var scope = app.Services.CreateScope())
             END $$;
         ", "EmployeesUnitId");
         
+        // Create Modules table (modular system)
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""Modules"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""Name"" VARCHAR(100) NOT NULL,
+                ""Description"" VARCHAR(200) NULL,
+                ""Code"" VARCHAR(50) NOT NULL UNIQUE,
+                ""Icon"" VARCHAR(50) NULL,
+                ""Color"" VARCHAR(7) NULL,
+                ""SortOrder"" INTEGER NOT NULL DEFAULT 0,
+                ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""IsSystem"" BOOLEAN NOT NULL DEFAULT FALSE,
+                ""IsPremium"" BOOLEAN NOT NULL DEFAULT FALSE,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+            );
+        ", "Modules");
+        
+        // Create SubModules table
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""SubModules"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""ModuleId"" INTEGER NOT NULL REFERENCES ""Modules""(""Id"") ON DELETE CASCADE,
+                ""Name"" VARCHAR(100) NOT NULL,
+                ""Description"" VARCHAR(200) NULL,
+                ""Code"" VARCHAR(50) NOT NULL,
+                ""Icon"" VARCHAR(50) NULL,
+                ""RouteUrl"" VARCHAR(200) NULL,
+                ""SortOrder"" INTEGER NOT NULL DEFAULT 0,
+                ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""IsSystem"" BOOLEAN NOT NULL DEFAULT FALSE,
+                ""IsPremium"" BOOLEAN NOT NULL DEFAULT FALSE,
+                ""RequiredPermission"" VARCHAR(100) NULL,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                UNIQUE(""ModuleId"", ""Code"")
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_SubModules_ModuleId"" ON ""SubModules"" (""ModuleId"");
+        ", "SubModules");
+        
+        // Create UserModuleAccesses table
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""UserModuleAccesses"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""UserId"" VARCHAR(450) NOT NULL REFERENCES ""AspNetUsers""(""Id"") ON DELETE CASCADE,
+                ""ModuleId"" INTEGER NOT NULL REFERENCES ""Modules""(""Id"") ON DELETE CASCADE,
+                ""HasAccess"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""AccessStartDate"" TIMESTAMP WITH TIME ZONE NULL,
+                ""AccessEndDate"" TIMESTAMP WITH TIME ZONE NULL,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                UNIQUE(""UserId"", ""ModuleId"")
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_UserModuleAccesses_UserId"" ON ""UserModuleAccesses"" (""UserId"");
+            CREATE INDEX IF NOT EXISTS ""IX_UserModuleAccesses_ModuleId"" ON ""UserModuleAccesses"" (""ModuleId"");
+        ", "UserModuleAccesses");
+        
         // Run migrations - but don't let failures prevent seeding
         try
         {
@@ -575,6 +629,10 @@ using (var scope = app.Services.CreateScope())
         // Seed leave types
         try { await SeedLeaveTypes(context); }
         catch (Exception ex) { Console.WriteLine($"SeedLeaveTypes warning: {ex.Message}"); }
+        
+        // Seed modules
+        try { await SeedModules(context); }
+        catch (Exception ex) { Console.WriteLine($"SeedModules warning: {ex.Message}"); }
         
         // Seed initial content pages
         try { await SeedContentPages(context); }
@@ -734,6 +792,172 @@ static async Task SeedLeaveTypes(ApplicationDbContext context)
     };
 
     context.LeaveTypes.AddRange(leaveTypes);
+    await context.SaveChangesAsync();
+}
+
+// Seed method for modules
+static async Task SeedModules(ApplicationDbContext context)
+{
+    // Check if we already have the main module
+    if (await context.Modules.AnyAsync(m => m.Code == "nurse-shift"))
+        return;
+    
+    // Create "Hemşire Nöbet Sistemi" main module
+    var nurseShiftModule = new Module
+    {
+        Name = "Hemşire Nöbet Sistemi",
+        Description = "Sağlık personeli için kapsamlı nöbet ve mesai yönetim sistemi",
+        Code = "nurse-shift",
+        Icon = "🏥",
+        Color = "#3B82F6",
+        SortOrder = 1,
+        IsActive = true,
+        IsSystem = true,
+        IsPremium = false
+    };
+    
+    context.Modules.Add(nurseShiftModule);
+    await context.SaveChangesAsync();
+    
+    // Create sub-modules
+    var subModules = new List<SubModule>
+    {
+        new SubModule
+        {
+            ModuleId = nurseShiftModule.Id,
+            Name = "Nöbet Yönetimi",
+            Description = "Nöbet listesi oluşturma ve personel atama",
+            Code = "shifts",
+            Icon = "📅",
+            RouteUrl = "/app",
+            SortOrder = 1,
+            IsActive = true,
+            IsSystem = true,
+            IsPremium = false
+        },
+        new SubModule
+        {
+            ModuleId = nurseShiftModule.Id,
+            Name = "Personel Yönetimi",
+            Description = "Personel ekleme, düzenleme ve birim atama",
+            Code = "employees",
+            Icon = "👥",
+            RouteUrl = "/app",
+            SortOrder = 2,
+            IsActive = true,
+            IsSystem = true,
+            IsPremium = false
+        },
+        new SubModule
+        {
+            ModuleId = nurseShiftModule.Id,
+            Name = "Vardiya Şablonları",
+            Description = "Özel vardiya şablonları tanımlama",
+            Code = "templates",
+            Icon = "⏰",
+            RouteUrl = "/app",
+            SortOrder = 3,
+            IsActive = true,
+            IsSystem = true,
+            IsPremium = false
+        },
+        new SubModule
+        {
+            ModuleId = nurseShiftModule.Id,
+            Name = "İzin Yönetimi",
+            Description = "Personel izinlerini takip ve yönetim",
+            Code = "leaves",
+            Icon = "🏖️",
+            RouteUrl = "/app",
+            SortOrder = 4,
+            IsActive = true,
+            IsSystem = true,
+            IsPremium = false
+        },
+        new SubModule
+        {
+            ModuleId = nurseShiftModule.Id,
+            Name = "Resmi Tatiller",
+            Description = "Resmi tatil ve özel gün tanımlama",
+            Code = "holidays",
+            Icon = "🎉",
+            RouteUrl = "/app",
+            SortOrder = 5,
+            IsActive = true,
+            IsSystem = true,
+            IsPremium = false
+        },
+        new SubModule
+        {
+            ModuleId = nurseShiftModule.Id,
+            Name = "Mesai Takip",
+            Description = "Günlük ve aylık mesai saati takibi",
+            Code = "attendance",
+            Icon = "🕐",
+            RouteUrl = "/app/attendance",
+            SortOrder = 6,
+            IsActive = true,
+            IsSystem = true,
+            IsPremium = false,
+            RequiredPermission = "CanAccessAttendance"
+        },
+        new SubModule
+        {
+            ModuleId = nurseShiftModule.Id,
+            Name = "Puantaj",
+            Description = "Aylık puantaj hesaplama ve raporlama",
+            Code = "timesheet",
+            Icon = "📊",
+            RouteUrl = "/app/timesheet",
+            SortOrder = 7,
+            IsActive = true,
+            IsSystem = true,
+            IsPremium = false,
+            RequiredPermission = "CanAccessPayroll"
+        },
+        new SubModule
+        {
+            ModuleId = nurseShiftModule.Id,
+            Name = "Birim Yönetimi",
+            Description = "Birim oluşturma ve personel organizasyonu",
+            Code = "units",
+            Icon = "🏛️",
+            RouteUrl = "/app",
+            SortOrder = 8,
+            IsActive = true,
+            IsSystem = true,
+            IsPremium = true,
+            RequiredPermission = "CanManageUnits"
+        },
+        new SubModule
+        {
+            ModuleId = nurseShiftModule.Id,
+            Name = "Raporlar",
+            Description = "Detaylı nöbet ve mesai raporları",
+            Code = "reports",
+            Icon = "📈",
+            RouteUrl = "/app/reports",
+            SortOrder = 9,
+            IsActive = true,
+            IsSystem = true,
+            IsPremium = false
+        },
+        new SubModule
+        {
+            ModuleId = nurseShiftModule.Id,
+            Name = "Excel Export",
+            Description = "Verileri Excel formatında dışa aktarma",
+            Code = "export",
+            Icon = "📥",
+            RouteUrl = "/app",
+            SortOrder = 10,
+            IsActive = true,
+            IsSystem = true,
+            IsPremium = false
+        }
+    };
+    
+    context.SubModules.AddRange(subModules);
     await context.SaveChangesAsync();
 }
 

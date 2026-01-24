@@ -29,6 +29,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<SavedPayroll> SavedPayrolls => Set<SavedPayroll>();
     public DbSet<SystemSettings> SystemSettings => Set<SystemSettings>();
     public DbSet<AdminUser> AdminUsers => Set<AdminUser>();
+    
+    // Module System
+    public DbSet<Module> Modules => Set<Module>();
+    public DbSet<SubModule> SubModules => Set<SubModule>();
+    public DbSet<UserModuleAccess> UserModuleAccesses => Set<UserModuleAccess>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -252,6 +257,39 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<AdminUser>(entity =>
         {
             entity.HasIndex(e => e.Username).IsUnique();
+        });
+
+        // Module configuration
+        builder.Entity<Module>(entity =>
+        {
+            entity.HasIndex(e => e.Code).IsUnique();
+        });
+
+        // SubModule configuration
+        builder.Entity<SubModule>(entity =>
+        {
+            entity.HasIndex(e => new { e.ModuleId, e.Code }).IsUnique();
+            
+            entity.HasOne(e => e.Module)
+                .WithMany(m => m.SubModules)
+                .HasForeignKey(e => e.ModuleId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // UserModuleAccess configuration
+        builder.Entity<UserModuleAccess>(entity =>
+        {
+            entity.HasIndex(e => new { e.UserId, e.ModuleId }).IsUnique();
+            
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            entity.HasOne(e => e.Module)
+                .WithMany(m => m.UserAccesses)
+                .HasForeignKey(e => e.ModuleId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         // Seed global shift templates
