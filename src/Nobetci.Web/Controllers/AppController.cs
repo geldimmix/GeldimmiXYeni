@@ -1374,10 +1374,21 @@ public class AppController : Controller
         var units = new List<Unit>();
         if (isPremium)
         {
-            units = await _context.Units
-                .Where(u => u.OrganizationId == organization.Id && u.IsActive)
-                .OrderBy(u => u.SortOrder)
-                .ToListAsync();
+            try
+            {
+                // Initialize defaults if needed (same as Index)
+                await InitializeDefaultUnitTypesAsync(organization.Id);
+                await InitializeDefaultUnitAsync(organization.Id);
+                
+                units = await _context.Units
+                    .Where(u => u.OrganizationId == organization.Id && u.IsActive)
+                    .OrderBy(u => u.SortOrder)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to load units for Payroll page");
+            }
         }
         
         // Build employee query with optional unit filter
@@ -2074,10 +2085,21 @@ public class AppController : Controller
         var units = new List<Unit>();
         if (isPremium)
         {
-            units = await _context.Units
-                .Where(u => u.OrganizationId == organization.Id && u.IsActive)
-                .OrderBy(u => u.SortOrder)
-                .ToListAsync();
+            try
+            {
+                // Initialize defaults if needed (same as Index)
+                await InitializeDefaultUnitTypesAsync(organization.Id);
+                await InitializeDefaultUnitAsync(organization.Id);
+                
+                units = await _context.Units
+                    .Where(u => u.OrganizationId == organization.Id && u.IsActive)
+                    .OrderBy(u => u.SortOrder)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to load units for Attendance page");
+            }
         }
         
         // Build employee query with optional unit filter
@@ -2718,7 +2740,7 @@ public class AppController : Controller
     #region Unit Management (Premium Feature)
     
     /// <summary>
-    /// Check if current user has premium access
+    /// Check if current user has premium access (Premium plan OR CanManageUnits permission)
     /// </summary>
     private async Task<bool> IsPremiumUserAsync()
     {
@@ -2728,6 +2750,10 @@ public class AppController : Controller
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
             return false;
+        
+        // Check CanManageUnits permission (admin-granted)
+        if (user.CanManageUnits)
+            return true;
             
         // Check if premium and not expired
         if (user.Plan == UserPlan.Premium)
