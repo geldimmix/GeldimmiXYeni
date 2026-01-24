@@ -176,38 +176,107 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 10px 16px;
+        padding: 12px 16px;
         border-bottom: 1px solid #f0f0f0;
+        transition: background 0.15s ease;
     }
 
     .saved-item:last-child { border-bottom: none; }
-    .saved-item:hover { background: #f9fafb; }
+    .saved-item:hover { background: #f8fafc; }
 
     .saved-item-info {
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 3px;
     }
 
     .saved-item-name {
         font-weight: 600;
-        color: #1a1a2e;
+        color: #1e293b;
+        font-size: 0.9rem;
     }
 
     .saved-item-meta {
         font-size: 0.75rem;
-        color: #999;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .saved-item-meta::before {
+        content: '';
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        background: #94a3b8;
+        border-radius: 50%;
     }
 
     .saved-item-actions {
         display: flex;
-        gap: 8px;
+        gap: 6px;
+        align-items: center;
     }
 
     .btn-sm {
-        padding: 4px 10px;
-        font-size: 0.75rem;
-        border-radius: 5px;
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: all 0.15s ease;
+    }
+
+    .btn-icon {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: all 0.15s ease;
+    }
+
+    .btn-icon:hover {
+        transform: scale(1.05);
+    }
+
+    .btn-excel {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: white;
+        border: none;
+        box-shadow: 0 2px 4px rgba(34, 197, 94, 0.3);
+    }
+
+    .btn-excel:hover {
+        background: linear-gradient(135deg, #16a34a, #15803d);
+        box-shadow: 0 3px 8px rgba(34, 197, 94, 0.4);
+    }
+
+    .btn-delete {
+        background: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+    }
+
+    .btn-delete:hover {
+        background: #fee2e2;
+        border-color: #f87171;
+    }
+
+    .btn-load {
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #bfdbfe;
+    }
+
+    .btn-load:hover {
+        background: #dbeafe;
+        border-color: #93c5fd;
     }
 
     .btn-danger {
@@ -698,14 +767,30 @@
                         </span>
                     </div>
                     <div class="saved-item-actions">
-                        <button class="btn btn-sm btn-outline" onclick="loadSavedPayroll(@saved.Id)">
+                        <button class="btn btn-sm btn-load" onclick="loadSavedPayroll(@saved.Id)" title="@(isTurkish ? "Yükle" : "Load")">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="17 8 12 3 7 8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
                             @(isTurkish ? "Yükle" : "Load")
                         </button>
-                        <button class="btn btn-sm btn-success" onclick="exportSavedPayroll(@saved.Id)">
-                            📥
+                        <button class="btn btn-icon btn-excel" onclick="exportSavedPayroll(@saved.Id)" title="Excel">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                                <polyline points="10 9 9 9 8 9"/>
+                            </svg>
                         </button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteSavedPayroll(@saved.Id)">
-                            🗑
+                        <button class="btn btn-icon btn-delete" onclick="deleteSavedPayroll(@saved.Id)" title="@(isTurkish ? "Sil" : "Delete")">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"/>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                <line x1="10" y1="11" x2="10" y2="17"/>
+                                <line x1="14" y1="11" x2="14" y2="17"/>
+                            </svg>
                         </button>
                     </div>
                 </div>
