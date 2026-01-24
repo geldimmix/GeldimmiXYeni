@@ -559,6 +559,8 @@
                 </button>
             </form>
             
+            @if (ViewData["GoogleEnabled"] is true)
+            {
             <!-- Google Login Button -->
             <div class="social-login">
                 <div class="divider">
@@ -576,6 +578,7 @@
                     </button>
                 </form>
             </div>
+            }
             
             <div class="form-footer">
                 <p>

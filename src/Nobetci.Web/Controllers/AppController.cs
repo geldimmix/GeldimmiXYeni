@@ -2279,7 +2279,6 @@ public class AppController : Controller
             if (user != null)
             {
                 var org = await _context.Organizations
-                    .Include(o => o.Units)
                     .FirstOrDefaultAsync(o => o.UserId == user.Id);
                     
                 if (org == null)
@@ -2289,9 +2288,6 @@ public class AppController : Controller
                         UserId = user.Id,
                         Name = user.FullName ?? "My Organization"
                     };
-                    
-                    // Create default unit
-                    org.Units.Add(new Unit { Name = "Default", IsDefault = true });
                     
                     _context.Organizations.Add(org);
                     await _context.SaveChangesAsync();
@@ -2313,7 +2309,6 @@ public class AppController : Controller
         }
         
         var guestOrg = await _context.Organizations
-            .Include(o => o.Units)
             .FirstOrDefaultAsync(o => o.GuestSessionId == sessionId);
             
         if (guestOrg == null)
@@ -2323,8 +2318,6 @@ public class AppController : Controller
                 GuestSessionId = sessionId,
                 Name = "Guest Organization"
             };
-            
-            guestOrg.Units.Add(new Unit { Name = "Default", IsDefault = true });
             
             _context.Organizations.Add(guestOrg);
             await _context.SaveChangesAsync();

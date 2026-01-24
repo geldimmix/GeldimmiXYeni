@@ -52,6 +52,15 @@ public class AccountController : Controller
         
         ViewData["ReturnUrl"] = returnUrl;
         ViewData["RecaptchaSiteKey"] = _configuration["ReCaptcha:SiteKey"] ?? "";
+        
+        // Check if Google auth is configured
+        var googleClientId = _configuration["Google:ClientId"];
+        var googleClientSecret = _configuration["Google:ClientSecret"];
+        ViewData["GoogleEnabled"] = !string.IsNullOrEmpty(googleClientId) && 
+                                    !string.IsNullOrEmpty(googleClientSecret) &&
+                                    googleClientId != "YOUR_GOOGLE_CLIENT_ID" && 
+                                    googleClientSecret != "YOUR_GOOGLE_CLIENT_SECRET";
+        
         return View();
     }
 
