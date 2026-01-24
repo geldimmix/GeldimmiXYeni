@@ -12,6 +12,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     }
 
     public DbSet<Organization> Organizations => Set<Organization>();
+    public DbSet<UnitType> UnitTypes => Set<UnitType>();
     public DbSet<Unit> Units => Set<Unit>();
     public DbSet<Employee> Employees => Set<Employee>();
     public DbSet<ShiftTemplate> ShiftTemplates => Set<ShiftTemplate>();
@@ -52,6 +53,17 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
+        // UnitType configuration
+        builder.Entity<UnitType>(entity =>
+        {
+            entity.HasIndex(e => new { e.OrganizationId, e.Name }).IsUnique();
+            
+            entity.HasOne(e => e.Organization)
+                .WithMany(o => o.UnitTypes)
+                .HasForeignKey(e => e.OrganizationId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
         // Unit configuration
         builder.Entity<Unit>(entity =>
         {
@@ -61,6 +73,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .WithMany(o => o.Units)
                 .HasForeignKey(e => e.OrganizationId)
                 .OnDelete(DeleteBehavior.Cascade);
+                
+            entity.HasOne(e => e.UnitType)
+                .WithMany(ut => ut.Units)
+                .HasForeignKey(e => e.UnitTypeId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
 
         // Employee configuration

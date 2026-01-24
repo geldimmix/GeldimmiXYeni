@@ -68,6 +68,7 @@ public class Organization
     
     // Navigation properties
     public virtual ApplicationUser? User { get; set; }
+    public virtual ICollection<UnitType> UnitTypes { get; set; } = new List<UnitType>();
     public virtual ICollection<Unit> Units { get; set; } = new List<Unit>();
     public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
     public virtual ICollection<ShiftTemplate> ShiftTemplates { get; set; } = new List<ShiftTemplate>();

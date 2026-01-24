@@ -13,11 +13,17 @@ public class AppViewModel
     public List<LeaveType> LeaveTypes { get; set; } = new();
     public List<Leave> Leaves { get; set; } = new();
     
+    // Premium: Unit Management
+    public List<Unit> Units { get; set; } = new();
+    public List<UnitType> UnitTypes { get; set; } = new();
+    public int? SelectedUnitId { get; set; }
+    
     public int SelectedYear { get; set; }
     public int SelectedMonth { get; set; }
     
     public int EmployeeLimit { get; set; }
     public bool IsRegistered { get; set; }
+    public bool IsPremium { get; set; }
     
     // Feature access - based on registration and admin settings
     public bool CanUseSmartScheduling { get; set; }
@@ -25,6 +31,7 @@ public class AppViewModel
     public bool CanExportExcel { get; set; }
     public bool CanAccessAttendance { get; set; }
     public bool CanAccessPayroll { get; set; }
+    public bool CanManageUnits { get; set; }
     
     // Helper properties
     public int EmployeeCount => Employees.Count;

@@ -71,6 +71,24 @@
             <span class="action-badge">✓</span>
         </button>
         
+        <!-- Units Button (Premium Feature) -->
+        @if (Model.CanManageUnits)
+        {
+            <button class="action-btn units-btn" data-bs-toggle="modal" data-bs-target="#unitsModal">
+                <span class="action-icon">🏥</span>
+                <span class="action-label">@(isTurkish ? "Birimler" : "Units")</span>
+                <span class="action-badge premium-badge">@Model.Units.Count</span>
+            </button>
+        }
+        else if (Model.IsRegistered)
+        {
+            <button class="action-btn units-btn disabled" title="@(isTurkish ? "Premium üyelik gerekli" : "Premium membership required")" disabled>
+                <span class="action-icon">🏥</span>
+                <span class="action-label">@(isTurkish ? "Birimler" : "Units")</span>
+                <span class="action-badge">🔒</span>
+            </button>
+        }
+        
         <!-- Multi-select Toggle -->
         <div class="multi-toggle">
             <label>
@@ -437,6 +455,307 @@
         </div>
     </main>
 </div>
+
+@if (Model.CanManageUnits)
+{
+<!-- Units Modal (Premium Feature) -->
+<div class="modal fade" id="unitsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content custom-modal">
+            <div class="modal-header-custom">
+                <div class="modal-icon">🏥</div>
+                <div class="modal-title-group">
+                    <h5 class="modal-title">@(isTurkish ? "Birim Yönetimi" : "Unit Management")</h5>
+                    <p class="modal-subtitle premium-text">
+                        <span class="premium-icon">⭐</span>
+                        @(isTurkish ? "Premium Özellik" : "Premium Feature")
+                    </p>
+                </div>
+                <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body-custom">
+                <!-- Tabs -->
+                <ul class="nav nav-tabs unit-tabs" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#unitsTab" type="button">
+                            <span class="tab-icon">🏢</span>
+                            @(isTurkish ? "Birimler" : "Units")
+                            <span class="tab-badge" id="unitCountBadge">@Model.Units.Count</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#unitTypesTab" type="button">
+                            <span class="tab-icon">📁</span>
+                            @(isTurkish ? "Birim Tipleri" : "Unit Types")
+                            <span class="tab-badge" id="unitTypeCountBadge">@Model.UnitTypes.Count</span>
+                        </button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content">
+                    <!-- Units Tab -->
+                    <div class="tab-pane fade show active" id="unitsTab">
+                        <div class="units-section">
+                            <!-- Add Unit Form -->
+                            <div class="add-unit-form">
+                                <div class="form-row">
+                                    <input type="text" id="newUnitName" class="form-input" placeholder="@(isTurkish ? "Birim adı..." : "Unit name...")">
+                                    <select id="newUnitType" class="form-select">
+                                        <option value="">@(isTurkish ? "Birim Tipi Seçin" : "Select Unit Type")</option>
+                                        @foreach (var ut in Model.UnitTypes)
+                                        {
+                                            <option value="@ut.Id" data-coefficient="@ut.DefaultCoefficient" data-color="@ut.Color">@ut.Name</option>
+                                        }
+                                    </select>
+                                    <input type="number" id="newUnitCoefficient" class="form-input coefficient-input" value="1.0" step="0.25" min="0.5" max="3" placeholder="@(isTurkish ? "Katsayı" : "Coefficient")">
+                                    <button type="button" class="btn btn-primary" id="addUnitBtn">
+                                        <span class="btn-icon">+</span>
+                                        @(isTurkish ? "Birim Ekle" : "Add Unit")
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Units List -->
+                            <div class="units-list" id="unitsList">
+                                @if (Model.Units.Count == 0)
+                                {
+                                    <div class="empty-state">
+                                        <span class="empty-icon">🏥</span>
+                                        <p>@(isTurkish ? "Henüz birim eklenmemiş" : "No units added yet")</p>
+                                        <small>@(isTurkish ? "Yukarıdan yeni birim ekleyerek başlayın" : "Start by adding a new unit above")</small>
+                                    </div>
+                                }
+                                else
+                                {
+                                    @foreach (var unit in Model.Units)
+                                    {
+                                        var empCount = Model.Employees.Count(e => e.UnitId == unit.Id);
+                                        <div class="unit-card" data-unit-id="@unit.Id">
+                                            <div class="unit-color-bar" style="background-color: @(unit.Color ?? "#3B82F6")"></div>
+                                            <div class="unit-info">
+                                                <div class="unit-header">
+                                                    <h4 class="unit-name">@unit.Name</h4>
+                                                    @if (unit.IsDefault)
+                                                    {
+                                                        <span class="default-badge">@(isTurkish ? "Varsayılan" : "Default")</span>
+                                                    }
+                                                </div>
+                                                @if (unit.UnitType != null)
+                                                {
+                                                    <span class="unit-type-badge" style="background-color: @(unit.UnitType.Color ?? "#6B7280")">@unit.UnitType.Name</span>
+                                                }
+                                                <div class="unit-meta">
+                                                    <span class="meta-item">
+                                                        <span class="meta-icon">👥</span>
+                                                        @empCount @(isTurkish ? "personel" : "employees")
+                                                    </span>
+                                                    <span class="meta-item">
+                                                        <span class="meta-icon">📊</span>
+                                                        @(isTurkish ? "Katsayı" : "Coefficient"): <strong>@unit.Coefficient.ToString("0.00")</strong>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="unit-actions">
+                                                <button class="unit-action-btn edit-btn" title="@(isTurkish ? "Düzenle" : "Edit")" onclick="editUnit(@unit.Id, '@unit.Name.Replace("'", "\\'"))', @unit.UnitTypeId?.ToString() ?? "null", @unit.Coefficient, '@(unit.Color ?? "#3B82F6")', @unit.IsDefault.ToString().ToLower())">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                                </button>
+                                                <button class="unit-action-btn assign-btn" title="@(isTurkish ? "Personel Ata" : "Assign Employees")" onclick="openAssignEmployees(@unit.Id, '@unit.Name.Replace("'", "\\'")')">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                                                </button>
+                                                @if (empCount == 0)
+                                                {
+                                                    <button class="unit-action-btn delete-btn" title="@(isTurkish ? "Sil" : "Delete")" onclick="deleteUnit(@unit.Id)">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                                                    </button>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Unit Types Tab -->
+                    <div class="tab-pane fade" id="unitTypesTab">
+                        <div class="unit-types-section">
+                            <!-- Add Unit Type Form -->
+                            <div class="add-unit-form">
+                                <div class="form-row">
+                                    <input type="text" id="newUnitTypeName" class="form-input" placeholder="@(isTurkish ? "Tip adı..." : "Type name...")">
+                                    <input type="number" id="newUnitTypeCoefficient" class="form-input coefficient-input" value="1.0" step="0.25" min="0.5" max="3" placeholder="@(isTurkish ? "Varsayılan Katsayı" : "Default Coefficient")">
+                                    <input type="color" id="newUnitTypeColor" class="form-input color-input" value="#3B82F6">
+                                    <button type="button" class="btn btn-primary" id="addUnitTypeBtn">
+                                        <span class="btn-icon">+</span>
+                                        @(isTurkish ? "Tip Ekle" : "Add Type")
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Unit Types List -->
+                            <div class="unit-types-list" id="unitTypesList">
+                                @if (Model.UnitTypes.Count == 0)
+                                {
+                                    <div class="empty-state">
+                                        <span class="empty-icon">📁</span>
+                                        <p>@(isTurkish ? "Henüz birim tipi eklenmemiş" : "No unit types added yet")</p>
+                                    </div>
+                                }
+                                else
+                                {
+                                    @foreach (var ut in Model.UnitTypes)
+                                    {
+                                        var unitCount = Model.Units.Count(u => u.UnitTypeId == ut.Id);
+                                        <div class="unit-type-card" data-unit-type-id="@ut.Id">
+                                            <div class="unit-type-color" style="background-color: @(ut.Color ?? "#6B7280")"></div>
+                                            <div class="unit-type-info">
+                                                <h5 class="unit-type-name">
+                                                    @ut.Name
+                                                    @if (ut.IsSystem)
+                                                    {
+                                                        <span class="system-badge">@(isTurkish ? "Sistem" : "System")</span>
+                                                    }
+                                                </h5>
+                                                <div class="unit-type-meta">
+                                                    <span>@(isTurkish ? "Varsayılan Katsayı" : "Default Coefficient"): <strong>@ut.DefaultCoefficient.ToString("0.00")</strong></span>
+                                                    <span class="separator">•</span>
+                                                    <span>@unitCount @(isTurkish ? "birim" : "units")</span>
+                                                </div>
+                                            </div>
+                                            <div class="unit-type-actions">
+                                                <button class="unit-action-btn edit-btn" title="@(isTurkish ? "Düzenle" : "Edit")" onclick="editUnitType(@ut.Id, '@ut.Name.Replace("'", "\\'"))', @ut.DefaultCoefficient, '@(ut.Color ?? "#6B7280")')">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                                </button>
+                                                @if (!ut.IsSystem && unitCount == 0)
+                                                {
+                                                    <button class="unit-action-btn delete-btn" title="@(isTurkish ? "Sil" : "Delete")" onclick="deleteUnitType(@ut.Id)">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                                                    </button>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Unit Modal -->
+<div class="modal fade" id="editUnitModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal">
+            <div class="modal-header-custom">
+                <h5 class="modal-title">@(isTurkish ? "Birimi Düzenle" : "Edit Unit")</h5>
+                <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body-custom">
+                <input type="hidden" id="editUnitId">
+                <div class="form-group">
+                    <label>@(isTurkish ? "Birim Adı" : "Unit Name")</label>
+                    <input type="text" id="editUnitName" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>@(isTurkish ? "Birim Tipi" : "Unit Type")</label>
+                    <select id="editUnitTypeId" class="form-select">
+                        <option value="">@(isTurkish ? "Tip Seçilmedi" : "No Type Selected")</option>
+                        @foreach (var ut in Model.UnitTypes)
+                        {
+                            <option value="@ut.Id" data-coefficient="@ut.DefaultCoefficient">@ut.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>@(isTurkish ? "Katsayı" : "Coefficient")</label>
+                    <input type="number" id="editUnitCoefficient" class="form-input" step="0.25" min="0.5" max="3">
+                </div>
+                <div class="form-group">
+                    <label>@(isTurkish ? "Renk" : "Color")</label>
+                    <input type="color" id="editUnitColor" class="form-input color-input">
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="editUnitIsDefault">
+                        @(isTurkish ? "Varsayılan birim olarak işaretle" : "Mark as default unit")
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer-custom">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@(isTurkish ? "İptal" : "Cancel")</button>
+                <button type="button" class="btn btn-primary" id="saveUnitBtn">@(isTurkish ? "Kaydet" : "Save")</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Unit Type Modal -->
+<div class="modal fade" id="editUnitTypeModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal">
+            <div class="modal-header-custom">
+                <h5 class="modal-title">@(isTurkish ? "Birim Tipini Düzenle" : "Edit Unit Type")</h5>
+                <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body-custom">
+                <input type="hidden" id="editUnitTypeId">
+                <div class="form-group">
+                    <label>@(isTurkish ? "Tip Adı" : "Type Name")</label>
+                    <input type="text" id="editUnitTypeName" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>@(isTurkish ? "Varsayılan Katsayı" : "Default Coefficient")</label>
+                    <input type="number" id="editUnitTypeCoefficient" class="form-input" step="0.25" min="0.5" max="3">
+                </div>
+                <div class="form-group">
+                    <label>@(isTurkish ? "Renk" : "Color")</label>
+                    <input type="color" id="editUnitTypeColor" class="form-input color-input">
+                </div>
+            </div>
+            <div class="modal-footer-custom">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@(isTurkish ? "İptal" : "Cancel")</button>
+                <button type="button" class="btn btn-primary" id="saveUnitTypeBtn">@(isTurkish ? "Kaydet" : "Save")</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Employees Modal -->
+<div class="modal fade" id="assignEmployeesModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content custom-modal">
+            <div class="modal-header-custom">
+                <h5 class="modal-title">
+                    <span id="assignUnitName"></span>
+                    <small>@(isTurkish ? "- Personel Ata" : "- Assign Employees")</small>
+                </h5>
+                <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body-custom">
+                <input type="hidden" id="assignUnitId">
+                
+                <!-- Assigned Employees -->
+                <div class="assigned-section">
+                    <h6>@(isTurkish ? "Bu Birimdeki Personeller" : "Employees in this Unit")</h6>
+                    <div id="assignedEmployeesList" class="employee-chips"></div>
+                </div>
+                
+                <!-- Available Employees -->
+                <div class="available-section">
+                    <h6>@(isTurkish ? "Atanabilir Personeller" : "Available Employees")</h6>
+                    <div id="availableEmployeesList" class="employee-chips"></div>
+                </div>
+            </div>
+            <div class="modal-footer-custom">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@(isTurkish ? "Kapat" : "Close")</button>
+            </div>
+        </div>
+    </div>
+</div>
+}
 
 <!-- Employees Modal -->
 <div class="modal fade" id="employeesModal" tabindex="-1">
@@ -2339,6 +2658,248 @@
 
 @section Styles {
 <style>
+    /* ===== Unit Management Styles (Premium Feature) ===== */
+    .units-btn { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+    .units-btn:hover { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); }
+    .premium-badge { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important; color: #000 !important; font-weight: 600; }
+    .premium-text { color: #f59e0b; display: flex; align-items: center; gap: 4px; }
+    .premium-icon { font-size: 12px; }
+    
+    .unit-tabs {
+        border-bottom: 2px solid rgba(255,255,255,0.1);
+        margin-bottom: 1rem;
+    }
+    .unit-tabs .nav-link {
+        background: transparent;
+        border: none;
+        color: rgba(255,255,255,0.6);
+        padding: 0.75rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+    }
+    .unit-tabs .nav-link:hover {
+        color: rgba(255,255,255,0.9);
+        border-bottom-color: rgba(255,255,255,0.3);
+    }
+    .unit-tabs .nav-link.active {
+        color: #fff;
+        border-bottom-color: #f59e0b;
+        background: rgba(245, 158, 11, 0.1);
+    }
+    .tab-icon { font-size: 1rem; }
+    .tab-badge {
+        background: rgba(255,255,255,0.15);
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.75rem;
+    }
+    
+    .add-unit-form {
+        background: rgba(255,255,255,0.05);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    .add-unit-form .form-row {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .add-unit-form .form-input,
+    .add-unit-form .form-select {
+        background: rgba(0,0,0,0.3);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 8px;
+        color: #fff;
+        padding: 0.5rem 0.75rem;
+        flex: 1;
+        min-width: 150px;
+    }
+    .add-unit-form .coefficient-input { max-width: 100px; min-width: 80px; }
+    .add-unit-form .color-input { width: 50px; min-width: 50px; padding: 4px; cursor: pointer; }
+    
+    .units-list, .unit-types-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    .unit-card, .unit-type-card {
+        display: flex;
+        align-items: center;
+        background: rgba(255,255,255,0.05);
+        border-radius: 12px;
+        padding: 1rem;
+        transition: all 0.2s ease;
+    }
+    .unit-card:hover, .unit-type-card:hover {
+        background: rgba(255,255,255,0.1);
+        transform: translateX(4px);
+    }
+    
+    .unit-color-bar {
+        width: 4px;
+        height: 50px;
+        border-radius: 4px;
+        margin-right: 1rem;
+    }
+    .unit-type-color {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+    
+    .unit-info, .unit-type-info { flex: 1; }
+    .unit-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .unit-name { margin: 0; font-size: 1rem; font-weight: 600; color: #fff; }
+    .unit-type-name { margin: 0; font-size: 0.95rem; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .default-badge, .system-badge {
+        font-size: 0.65rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: 500;
+    }
+    .default-badge { background: #22c55e; color: #000; }
+    .system-badge { background: rgba(255,255,255,0.2); color: #fff; }
+    
+    .unit-type-badge {
+        font-size: 0.7rem;
+        padding: 2px 8px;
+        border-radius: 4px;
+        color: #fff;
+        display: inline-block;
+        margin-bottom: 4px;
+    }
+    
+    .unit-meta, .unit-type-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-size: 0.8rem;
+        color: rgba(255,255,255,0.6);
+    }
+    .meta-item { display: flex; align-items: center; gap: 4px; }
+    .meta-icon { font-size: 0.9rem; }
+    .separator { color: rgba(255,255,255,0.3); }
+    
+    .unit-actions, .unit-type-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    .unit-action-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: none;
+        background: rgba(255,255,255,0.1);
+        color: #fff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+    .unit-action-btn:hover { background: rgba(255,255,255,0.2); }
+    .unit-action-btn.delete-btn:hover { background: #ef4444; }
+    .unit-action-btn.assign-btn:hover { background: #22c55e; }
+    .unit-action-btn.edit-btn:hover { background: #3b82f6; }
+    
+    /* Edit modals */
+    #editUnitModal .modal-dialog, #editUnitTypeModal .modal-dialog, #assignEmployeesModal .modal-dialog {
+        max-width: 500px;
+    }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; margin-bottom: 0.5rem; color: rgba(255,255,255,0.8); font-size: 0.9rem; }
+    .form-group .form-input, .form-group .form-select {
+        width: 100%;
+        background: rgba(0,0,0,0.3);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 8px;
+        color: #fff;
+        padding: 0.6rem 0.75rem;
+    }
+    .form-group .color-input { width: 60px; height: 38px; }
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+    .checkbox-label input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: #f59e0b;
+    }
+    
+    /* Assign Employees Modal */
+    .assigned-section, .available-section { margin-bottom: 1.5rem; }
+    .assigned-section h6, .available-section h6 {
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.7);
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .employee-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        min-height: 40px;
+        padding: 0.5rem;
+        background: rgba(0,0,0,0.2);
+        border-radius: 8px;
+    }
+    .employee-chip {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .employee-chip.assigned {
+        background: rgba(34, 197, 94, 0.2);
+        border: 1px solid #22c55e;
+        color: #22c55e;
+    }
+    .employee-chip.available {
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: rgba(255,255,255,0.8);
+    }
+    .employee-chip:hover {
+        transform: scale(1.05);
+    }
+    .employee-chip.assigned:hover { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; color: #ef4444; }
+    .employee-chip.available:hover { background: rgba(34, 197, 94, 0.2); border-color: #22c55e; color: #22c55e; }
+    .chip-color {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+    .chip-remove, .chip-add {
+        font-size: 1rem;
+        line-height: 1;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: rgba(255,255,255,0.5);
+    }
+    .empty-icon { font-size: 2rem; display: block; margin-bottom: 0.5rem; }
+    
     /* Custom Scrollbar Styles */
     ::-webkit-scrollbar {
         width: 12px;
@@ -5692,8 +6253,20 @@
         dateNameRequired: isTurkish ? 'Tarih ve ad gerekli' : 'Date and name are required',
         shiftAdded: isTurkish ? 'Nöbet eklendi' : 'Shift added',
         shiftDeleted: isTurkish ? 'Nöbet silindi' : 'Shift deleted',
-        employeeDeleted: isTurkish ? 'Personel silindi' : 'Employee deleted'
+        employeeDeleted: isTurkish ? 'Personel silindi' : 'Employee deleted',
+        unitNameRequired: isTurkish ? 'Birim adı gerekli' : 'Unit name is required',
+        unitTypeNameRequired: isTurkish ? 'Tip adı gerekli' : 'Type name is required',
+        unitAdded: isTurkish ? 'Birim eklendi' : 'Unit added',
+        unitUpdated: isTurkish ? 'Birim güncellendi' : 'Unit updated',
+        unitDeleted: isTurkish ? 'Birim silindi' : 'Unit deleted',
+        unitTypeAdded: isTurkish ? 'Birim tipi eklendi' : 'Unit type added',
+        unitTypeUpdated: isTurkish ? 'Birim tipi güncellendi' : 'Unit type updated',
+        unitTypeDeleted: isTurkish ? 'Birim tipi silindi' : 'Unit type deleted',
+        employeeAssigned: isTurkish ? 'Personel atandı' : 'Employee assigned',
+        employeeRemoved: isTurkish ? 'Personel birimden çıkarıldı' : 'Employee removed from unit'
     };
+    
+    const canManageUnits = @(Model.CanManageUnits ? "true" : "false");
     
     // Premium Modal Functions
     function showPremiumModal() {
@@ -5759,6 +6332,7 @@
         restoreSelectedTemplate();
         initTemplateManager();
         initSavedSchedules();
+        if (canManageUnits) initUnitManagement();
         loadUserTemplates();
     });
     
@@ -7737,6 +8311,310 @@
                 }
             });
         });
+    }
+    
+    // ===== Unit Management Functions (Premium Feature) =====
+    function initUnitManagement() {
+        // Add Unit button
+        document.getElementById('addUnitBtn')?.addEventListener('click', addUnit);
+        
+        // Add Unit Type button
+        document.getElementById('addUnitTypeBtn')?.addEventListener('click', addUnitType);
+        
+        // Save Unit button (edit modal)
+        document.getElementById('saveUnitBtn')?.addEventListener('click', saveUnit);
+        
+        // Save Unit Type button (edit modal)
+        document.getElementById('saveUnitTypeBtn')?.addEventListener('click', saveUnitType);
+        
+        // When unit type is selected, update coefficient
+        document.getElementById('newUnitType')?.addEventListener('change', function() {
+            const option = this.selectedOptions[0];
+            if (option && option.dataset.coefficient) {
+                document.getElementById('newUnitCoefficient').value = option.dataset.coefficient;
+            }
+        });
+        
+        document.getElementById('editUnitTypeId')?.addEventListener('change', function() {
+            const option = this.selectedOptions[0];
+            if (option && option.dataset.coefficient) {
+                document.getElementById('editUnitCoefficient').value = option.dataset.coefficient;
+            }
+        });
+    }
+    
+    async function addUnit() {
+        const name = document.getElementById('newUnitName').value.trim();
+        const typeId = document.getElementById('newUnitType').value || null;
+        const coefficient = parseFloat(document.getElementById('newUnitCoefficient').value) || 1.0;
+        
+        if (!name) {
+            alert(texts.unitNameRequired);
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/units', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name,
+                    unitTypeId: typeId ? parseInt(typeId) : null,
+                    coefficient,
+                    isDefault: false
+                })
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || texts.errorOccurred);
+            }
+            
+            // Clear form and reload
+            document.getElementById('newUnitName').value = '';
+            document.getElementById('newUnitType').value = '';
+            document.getElementById('newUnitCoefficient').value = '1.0';
+            
+            showToast(texts.unitAdded, 'success');
+            location.reload();
+        } catch (error) {
+            showToast(error.message, 'error');
+        }
+    }
+    
+    async function addUnitType() {
+        const name = document.getElementById('newUnitTypeName').value.trim();
+        const coefficient = parseFloat(document.getElementById('newUnitTypeCoefficient').value) || 1.0;
+        const color = document.getElementById('newUnitTypeColor').value;
+        
+        if (!name) {
+            alert(texts.unitTypeNameRequired);
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/unit-types', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, defaultCoefficient: coefficient, color })
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || texts.errorOccurred);
+            }
+            
+            // Clear form and reload
+            document.getElementById('newUnitTypeName').value = '';
+            document.getElementById('newUnitTypeCoefficient').value = '1.0';
+            document.getElementById('newUnitTypeColor').value = '#3B82F6';
+            
+            showToast(texts.unitTypeAdded, 'success');
+            location.reload();
+        } catch (error) {
+            showToast(error.message, 'error');
+        }
+    }
+    
+    function editUnit(id, name, typeId, coefficient, color, isDefault) {
+        document.getElementById('editUnitId').value = id;
+        document.getElementById('editUnitName').value = name;
+        document.getElementById('editUnitTypeId').value = typeId || '';
+        document.getElementById('editUnitCoefficient').value = coefficient;
+        document.getElementById('editUnitColor').value = color;
+        document.getElementById('editUnitIsDefault').checked = isDefault;
+        
+        const modal = new bootstrap.Modal(document.getElementById('editUnitModal'));
+        modal.show();
+    }
+    
+    async function saveUnit() {
+        const id = document.getElementById('editUnitId').value;
+        const name = document.getElementById('editUnitName').value.trim();
+        const typeId = document.getElementById('editUnitTypeId').value || null;
+        const coefficient = parseFloat(document.getElementById('editUnitCoefficient').value) || 1.0;
+        const color = document.getElementById('editUnitColor').value;
+        const isDefault = document.getElementById('editUnitIsDefault').checked;
+        
+        if (!name) {
+            alert(texts.unitNameRequired);
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/api/units/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name,
+                    unitTypeId: typeId ? parseInt(typeId) : null,
+                    coefficient,
+                    color,
+                    isDefault
+                })
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || texts.errorOccurred);
+            }
+            
+            bootstrap.Modal.getInstance(document.getElementById('editUnitModal'))?.hide();
+            showToast(texts.unitUpdated, 'success');
+            location.reload();
+        } catch (error) {
+            showToast(error.message, 'error');
+        }
+    }
+    
+    async function deleteUnit(id) {
+        if (!confirm(texts.confirmDelete)) return;
+        
+        try {
+            const response = await fetch(`/api/units/${id}`, { method: 'DELETE' });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || texts.errorOccurred);
+            }
+            
+            showToast(texts.unitDeleted, 'success');
+            location.reload();
+        } catch (error) {
+            showToast(error.message, 'error');
+        }
+    }
+    
+    function editUnitType(id, name, coefficient, color) {
+        document.getElementById('editUnitTypeId').value = id;
+        document.getElementById('editUnitTypeName').value = name;
+        document.getElementById('editUnitTypeCoefficient').value = coefficient;
+        document.getElementById('editUnitTypeColor').value = color;
+        
+        const modal = new bootstrap.Modal(document.getElementById('editUnitTypeModal'));
+        modal.show();
+    }
+    
+    async function saveUnitType() {
+        const id = document.getElementById('editUnitTypeId').value;
+        const name = document.getElementById('editUnitTypeName').value.trim();
+        const coefficient = parseFloat(document.getElementById('editUnitTypeCoefficient').value) || 1.0;
+        const color = document.getElementById('editUnitTypeColor').value;
+        
+        if (!name) {
+            alert(texts.unitTypeNameRequired);
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/api/unit-types/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, defaultCoefficient: coefficient, color })
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || texts.errorOccurred);
+            }
+            
+            bootstrap.Modal.getInstance(document.getElementById('editUnitTypeModal'))?.hide();
+            showToast(texts.unitTypeUpdated, 'success');
+            location.reload();
+        } catch (error) {
+            showToast(error.message, 'error');
+        }
+    }
+    
+    async function deleteUnitType(id) {
+        if (!confirm(texts.confirmDelete)) return;
+        
+        try {
+            const response = await fetch(`/api/unit-types/${id}`, { method: 'DELETE' });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || texts.errorOccurred);
+            }
+            
+            showToast(texts.unitTypeDeleted, 'success');
+            location.reload();
+        } catch (error) {
+            showToast(error.message, 'error');
+        }
+    }
+    
+    // Assign Employees to Unit
+    async function openAssignEmployees(unitId, unitName) {
+        document.getElementById('assignUnitId').value = unitId;
+        document.getElementById('assignUnitName').textContent = unitName;
+        
+        // Load employees
+        try {
+            const response = await fetch('/api/employees');
+            const employees = await response.json();
+            
+            const assignedList = document.getElementById('assignedEmployeesList');
+            const availableList = document.getElementById('availableEmployeesList');
+            
+            assignedList.innerHTML = '';
+            availableList.innerHTML = '';
+            
+            employees.forEach(emp => {
+                const chip = document.createElement('div');
+                chip.className = 'employee-chip ' + (emp.unitId === unitId ? 'assigned' : 'available');
+                chip.innerHTML = `
+                    <span class="chip-color" style="background-color: ${emp.color || '#6B7280'}"></span>
+                    <span>${emp.fullName}</span>
+                    <span class="${emp.unitId === unitId ? 'chip-remove' : 'chip-add'}">${emp.unitId === unitId ? '×' : '+'}</span>
+                `;
+                chip.onclick = () => toggleEmployeeUnit(emp.id, unitId, emp.unitId === unitId);
+                
+                if (emp.unitId === unitId) {
+                    assignedList.appendChild(chip);
+                } else if (!emp.unitId) {
+                    availableList.appendChild(chip);
+                }
+            });
+            
+            if (assignedList.children.length === 0) {
+                assignedList.innerHTML = `<span style="color: rgba(255,255,255,0.4); font-size: 0.85rem;">${isTurkish ? 'Henüz personel atanmamış' : 'No employees assigned yet'}</span>`;
+            }
+            if (availableList.children.length === 0) {
+                availableList.innerHTML = `<span style="color: rgba(255,255,255,0.4); font-size: 0.85rem;">${isTurkish ? 'Tüm personeller birimlere atanmış' : 'All employees are assigned to units'}</span>`;
+            }
+            
+            const modal = new bootstrap.Modal(document.getElementById('assignEmployeesModal'));
+            modal.show();
+        } catch (error) {
+            showToast(texts.errorOccurred, 'error');
+        }
+    }
+    
+    async function toggleEmployeeUnit(employeeId, unitId, isCurrentlyAssigned) {
+        try {
+            if (isCurrentlyAssigned) {
+                // Remove from unit
+                const response = await fetch(`/api/units/${unitId}/employees/${employeeId}`, { method: 'DELETE' });
+                if (!response.ok) throw new Error();
+                showToast(texts.employeeRemoved, 'success');
+            } else {
+                // Assign to unit
+                const response = await fetch(`/api/units/${unitId}/employees`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ employeeIds: [employeeId] })
+                });
+                if (!response.ok) throw new Error();
+                showToast(texts.employeeAssigned, 'success');
+            }
+            
+            // Refresh the list
+            const unitName = document.getElementById('assignUnitName').textContent;
+            openAssignEmployees(unitId, unitName);
+        } catch (error) {
+            showToast(texts.errorOccurred, 'error');
+        }
     }
 </script>
 }
