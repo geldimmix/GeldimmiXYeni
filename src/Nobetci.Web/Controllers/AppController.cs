@@ -2549,25 +2549,37 @@ public class AppController : Controller
     /// </summary>
     private async Task<bool> IsPremiumUserAsync()
     {
-        if (User.Identity?.IsAuthenticated != true)
-            return false;
-            
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null)
-            return false;
-            
-        // Check if user has CanManageUnits granted by admin
-        if (user.CanManageUnits)
-            return true;
-            
-        // Check if premium and not expired
-        if (user.Plan == UserPlan.Premium)
+        try
         {
-            if (user.PremiumExpiresAt == null || user.PremiumExpiresAt > DateTime.UtcNow)
-                return true;
+            if (User.Identity?.IsAuthenticated != true)
+                return false;
+                
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return false;
+                
+            // Check if premium and not expired
+            if (user.Plan == UserPlan.Premium)
+            {
+                if (user.PremiumExpiresAt == null || user.PremiumExpiresAt > DateTime.UtcNow)
+                    return true;
+            }
+            
+            // Check if user has CanManageUnits granted by admin (may fail if column doesn't exist)
+            try
+            {
+                if (user.CanManageUnits)
+                    return true;
+            }
+            catch { /* Column may not exist yet */ }
+            
+            return false;
         }
-        
-        return false;
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Error checking premium status");
+            return false;
+        }
     }
     
     /// <summary>
