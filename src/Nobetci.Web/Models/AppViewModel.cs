@@ -6,6 +6,7 @@ public class AppViewModel
 {
     public Organization Organization { get; set; } = null!;
     public List<Employee> Employees { get; set; } = new();
+    public List<Employee> AllEmployees { get; set; } = new(); // All employees regardless of unit filter
     public List<ShiftTemplate> ShiftTemplates { get; set; } = new();
     public List<Holiday> Holidays { get; set; } = new();
     public List<Shift> Shifts { get; set; } = new();

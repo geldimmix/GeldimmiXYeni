@@ -799,22 +799,22 @@
             <div class="modal-header-custom">
                 <div class="modal-icon">👥</div>
                 <div class="modal-title-group">
-                    <h5 class="modal-title">@(isTurkish ? "Personel Yönetimi" : "Employee Management")</h5>
-                    <p class="modal-subtitle">@Model.EmployeeCount / @Model.EmployeeLimit @(isTurkish ? "personel" : "employees")</p>
+                    <h5 class="modal-title">@(isTurkish ? "Personel Havuzu" : "Employee Pool")</h5>
+                    <p class="modal-subtitle">@Model.AllEmployees.Count / @Model.EmployeeLimit @(isTurkish ? "personel (tüm birimler)" : "employees (all units)")</p>
                 </div>
                 <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
             </div>
             <div class="modal-body-custom">
                 <!-- Employee List -->
                 <div class="employees-list-modal" id="employeeListModal">
-                    @if (!Model.Employees.Any())
+                    @if (!Model.AllEmployees.Any())
                     {
                         <div class="empty-employees">
                             <span>👥</span>
                             <p>@(isTurkish ? "Henüz personel eklenmedi" : "No employees added yet")</p>
                         </div>
                     }
-                    @foreach (var employee in Model.Employees)
+                    @foreach (var employee in Model.AllEmployees)
                     {
                         <div class="emp-row" data-employee-id="@employee.Id" data-daily-hours="@employee.DailyWorkHours" data-weekend-mode="@employee.WeekendWorkMode" data-saturday-hours="@(employee.SaturdayWorkHours ?? 0)">
                             <div class="emp-color" style="background: @(employee.Color ?? "#3B82F6")"></div>
@@ -825,7 +825,27 @@
                                     <span class="emp-title">@employee.Title</span>
                                 }
                             </div>
-                            <div class="emp-hours">@employee.DailyWorkHours @(isTurkish ? "s/g" : "h/d")</div>
+                            @if (Model.IsPremium && Model.Units.Any())
+                            {
+                                <select class="emp-unit-select" onchange="quickAssignUnit(@employee.Id, this.value)" title="@(isTurkish ? "Birime ata" : "Assign to unit")">
+                                    <option value="">@(isTurkish ? "Birim seç..." : "Select unit...")</option>
+                                    @foreach (var unit in Model.Units)
+                                    {
+                                        if (employee.UnitId == unit.Id)
+                                        {
+                                            <option value="@unit.Id" selected>@unit.Name</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@unit.Id">@unit.Name</option>
+                                        }
+                                    }
+                                </select>
+                            }
+                            else
+                            {
+                                <div class="emp-hours">@employee.DailyWorkHours @(isTurkish ? "s/g" : "h/d")</div>
+                            }
                             <button class="emp-delete" data-id="@employee.Id" title="@(isTurkish ? "Sil" : "Delete")">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
                             </button>
@@ -5633,6 +5653,28 @@
         border-radius: 4px;
     }
     
+    .emp-unit-select {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        background: white;
+        color: #374151;
+        cursor: pointer;
+        max-width: 140px;
+        transition: all 0.15s;
+    }
+    
+    .emp-unit-select:hover {
+        border-color: #6366f1;
+    }
+    
+    .emp-unit-select:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+    }
+    
     .emp-delete {
         width: 32px;
         height: 32px;
@@ -8587,6 +8629,46 @@
             openAssignEmployees(unitId, unitName);
         } catch (error) {
             showToast(texts.errorOccurred, 'error');
+        }
+    }
+    
+    // Quick assign employee to unit from employee modal
+    async function quickAssignUnit(employeeId, newUnitId) {
+        try {
+            if (!newUnitId) {
+                // Remove from current unit - find current unit first
+                const empResponse = await fetch('/api/employees');
+                const employees = await empResponse.json();
+                const emp = employees.find(e => e.id === employeeId);
+                
+                if (emp && emp.unitId) {
+                    const response = await fetch(`/api/units/${emp.unitId}/employees/${employeeId}`, { method: 'DELETE' });
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.error || 'Birimden çıkarılamadı');
+                    }
+                    showToast(isTurkish ? 'Personel birimden çıkarıldı' : 'Employee removed from unit', 'success');
+                }
+                return;
+            }
+            
+            // Assign to new unit
+            const response = await fetch(`/api/units/${newUnitId}/employees`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ employeeIds: [employeeId] })
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Birime atanamadı');
+            }
+            
+            showToast(isTurkish ? 'Personel birime atandı' : 'Employee assigned to unit', 'success');
+        } catch (error) {
+            showToast(error.message, 'error');
+            // Revert select to previous value on error
+            setTimeout(() => location.reload(), 1500);
         }
     }
 </script>

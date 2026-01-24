@@ -120,18 +120,22 @@ public class AppController : Controller
         
         ViewBag.UnitLoadError = unitLoadError;
         
-        // Filter employees by unit for premium users
-        var employeesQuery = _context.Employees
-            .Where(e => e.OrganizationId == organization.Id && e.IsActive);
-            
-        if (isPremium && selectedUnitId.HasValue)
-        {
-            employeesQuery = employeesQuery.Where(e => e.UnitId == selectedUnitId);
-        }
-        
-        var employees = await employeesQuery
+        // Get all employees (for employee modal - unfiltered pool)
+        var allEmployees = await _context.Employees
+            .Where(e => e.OrganizationId == organization.Id && e.IsActive)
             .OrderBy(e => e.FullName)
             .ToListAsync();
+        
+        // Filter employees by unit for premium users (for shift calendar)
+        List<Employee> employees;
+        if (isPremium && selectedUnitId.HasValue)
+        {
+            employees = allEmployees.Where(e => e.UnitId == selectedUnitId).ToList();
+        }
+        else
+        {
+            employees = allEmployees;
+        }
             
         var shiftTemplates = await _context.ShiftTemplates
             .Where(t => t.OrganizationId == organization.Id)
@@ -202,6 +206,7 @@ public class AppController : Controller
         {
             Organization = organization,
             Employees = employees,
+            AllEmployees = allEmployees,
             ShiftTemplates = shiftTemplates,
             Holidays = holidays,
             Shifts = shifts,
