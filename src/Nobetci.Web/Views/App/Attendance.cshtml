@@ -547,7 +547,14 @@
                     <option value="">@(isTurkish ? "Tüm Birimler" : "All Units")</option>
                     @foreach (var unit in Model.Units)
                     {
-                        <option value="@unit.Id" @(Model.SelectedUnitId == unit.Id ? "selected" : "")>@unit.Name</option>
+                        if (Model.SelectedUnitId == unit.Id)
+                        {
+                            <option value="@unit.Id" selected>@unit.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@unit.Id">@unit.Name</option>
+                        }
                     }
                 </select>
             }
