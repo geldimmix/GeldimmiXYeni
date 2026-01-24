@@ -99,9 +99,8 @@ public class AppController : Controller
         var (canAccessAttendance, canAccessPayroll) = await GetFeatureAccessAsync();
         var isRegistered = User.Identity?.IsAuthenticated == true;
         
-        // Premium feature temporarily disabled until database migration is applied
-        // var isPremium = await IsPremiumUserAsync();
-        var isPremium = false;
+        // Check if user can manage units (Premium OR admin granted CanManageUnits)
+        var canManageUnits = await IsPremiumUserAsync();
         var units = new List<Unit>();
         var unitTypes = new List<UnitType>();
         
@@ -121,14 +120,14 @@ public class AppController : Controller
             SelectedMonth = selectedMonth,
             EmployeeLimit = employeeLimit,
             IsRegistered = isRegistered,
-            IsPremium = isPremium,
+            IsPremium = canManageUnits,
             // Feature access based on registration and admin settings
             CanUseSmartScheduling = isRegistered,
             CanUseTimesheet = isRegistered,
             CanExportExcel = isRegistered,
             CanAccessAttendance = canAccessAttendance,
             CanAccessPayroll = canAccessPayroll,
-            CanManageUnits = false // Disabled until migration
+            CanManageUnits = canManageUnits
         };
 
         return View(viewModel);
@@ -2519,7 +2518,7 @@ public class AppController : Controller
     #region Unit Management (Premium Feature)
     
     /// <summary>
-    /// Check if current user has premium access
+    /// Check if current user has premium access (Premium plan OR CanManageUnits granted by admin)
     /// </summary>
     private async Task<bool> IsPremiumUserAsync()
     {
@@ -2529,6 +2528,10 @@ public class AppController : Controller
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
             return false;
+            
+        // Check if user has CanManageUnits granted by admin
+        if (user.CanManageUnits)
+            return true;
             
         // Check if premium and not expired
         if (user.Plan == UserPlan.Premium)

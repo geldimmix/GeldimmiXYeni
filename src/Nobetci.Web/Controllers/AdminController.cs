@@ -335,6 +335,7 @@ public class AdminController : Controller
                 CustomEmployeeLimit = u.CustomEmployeeLimit,
                 CanAccessAttendance = u.CanAccessAttendance,
                 CanAccessPayroll = u.CanAccessPayroll,
+                CanManageUnits = u.CanManageUnits,
                 CreatedAt = u.CreatedAt,
                 LastLoginAt = u.LastLoginAt,
                 AdminNotes = u.AdminNotes,
@@ -384,6 +385,7 @@ public class AdminController : Controller
             CustomEmployeeLimit = user.CustomEmployeeLimit,
             CanAccessAttendance = user.CanAccessAttendance,
             CanAccessPayroll = user.CanAccessPayroll,
+            CanManageUnits = user.CanManageUnits,
             AdminNotes = user.AdminNotes,
             CreatedAt = user.CreatedAt,
             LastLoginAt = user.LastLoginAt,
@@ -420,6 +422,7 @@ public class AdminController : Controller
         user.CustomEmployeeLimit = model.CustomEmployeeLimit;
         user.CanAccessAttendance = model.CanAccessAttendance;
         user.CanAccessPayroll = model.CanAccessPayroll;
+        user.CanManageUnits = model.CanManageUnits;
         user.AdminNotes = model.AdminNotes;
 
         var result = await _userManager.UpdateAsync(user);
@@ -467,6 +470,10 @@ public class AdminController : Controller
             {
                 user.Plan = plan;
             }
+        }
+        else if (dto.Field == "canManageUnits")
+        {
+            user.CanManageUnits = dto.BoolValue ?? false;
         }
 
         var result = await _userManager.UpdateAsync(user);

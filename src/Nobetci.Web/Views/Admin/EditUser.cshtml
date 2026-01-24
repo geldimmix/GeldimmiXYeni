@@ -97,6 +97,12 @@
                                style="width: 20px; height: 20px; accent-color: var(--primary);">
                         <span style="font-weight: 500;">📊 Puantaj Erişimi</span>
                     </label>
+                    <label class="form-check" style="cursor: pointer; padding: 12px 16px; border-radius: var(--radius-md); border: 2px solid var(--border-color); transition: all 0.2s; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);">
+                        <input type="checkbox" name="CanManageUnits" value="true"
+                               @(Model.CanManageUnits ? "checked" : "")
+                               style="width: 20px; height: 20px; accent-color: #f59e0b;">
+                        <span style="font-weight: 500;">🏥 Birim Yönetimi <span style="font-size: 0.75rem; color: #92400e;">(Premium)</span></span>
+                    </label>
                 </div>
             </div>
             

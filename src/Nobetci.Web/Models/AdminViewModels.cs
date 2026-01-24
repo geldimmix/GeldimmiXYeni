@@ -54,6 +54,7 @@ public class UserListItem
     public int? CustomEmployeeLimit { get; set; }
     public bool CanAccessAttendance { get; set; }
     public bool CanAccessPayroll { get; set; }
+    public bool CanManageUnits { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? LastLoginAt { get; set; }
     public string? AdminNotes { get; set; }
@@ -82,6 +83,7 @@ public class EditUserViewModel
     public int? CustomEmployeeLimit { get; set; }
     public bool CanAccessAttendance { get; set; } = true;
     public bool CanAccessPayroll { get; set; } = true;
+    public bool CanManageUnits { get; set; } = false;
     public string? AdminNotes { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? LastLoginAt { get; set; }

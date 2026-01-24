@@ -36,6 +36,11 @@ public class ApplicationUser : IdentityUser
     public bool CanAccessPayroll { get; set; } = true;
     
     /// <summary>
+    /// Whether user can manage Units module (Premium feature or admin-granted)
+    /// </summary>
+    public bool CanManageUnits { get; set; } = false;
+    
+    /// <summary>
     /// When the premium subscription expires (null for free)
     /// </summary>
     public DateTime? PremiumExpiresAt { get; set; }
