@@ -510,6 +510,17 @@ using (var scope = app.Services.CreateScope())
             END $$;
         ", "UnitsColumns");
         
+        // Add UnitId column to Employees table for unit assignment
+        await SafeExecuteSql(@"
+            DO $$
+            BEGIN
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Employees' AND column_name = 'UnitId') THEN
+                    ALTER TABLE ""Employees"" ADD COLUMN ""UnitId"" INTEGER NULL REFERENCES ""Units""(""Id"") ON DELETE SET NULL;
+                    CREATE INDEX IF NOT EXISTS ""IX_Employees_UnitId"" ON ""Employees"" (""UnitId"");
+                END IF;
+            END $$;
+        ", "EmployeesUnitId");
+        
         // Run migrations - but don't let failures prevent seeding
         try
         {

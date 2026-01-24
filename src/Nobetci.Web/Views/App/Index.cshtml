@@ -8673,10 +8673,10 @@
             });
             
             if (assignedList.children.length === 0) {
-                assignedList.innerHTML = `<span style="color: rgba(255,255,255,0.4); font-size: 0.85rem;">${isTurkish ? 'Henüz personel atanmamış' : 'No employees assigned yet'}</span>`;
+                assignedList.innerHTML = `<span style="color: #6b7280; font-size: 0.85rem;">${isTurkish ? 'Henüz personel atanmamış' : 'No employees assigned yet'}</span>`;
             }
             if (availableList.children.length === 0) {
-                availableList.innerHTML = `<span style="color: rgba(255,255,255,0.4); font-size: 0.85rem;">${isTurkish ? 'Tüm personeller birimlere atanmış' : 'All employees are assigned to units'}</span>`;
+                availableList.innerHTML = `<span style="color: #6b7280; font-size: 0.85rem;">${isTurkish ? 'Tüm personeller birimlere atanmış' : 'All employees are assigned to units'}</span>`;
             }
             
             const modal = new bootstrap.Modal(document.getElementById('assignEmployeesModal'));

@@ -10,7 +10,11 @@ public class Employee
     public int Id { get; set; }
     
     public int OrganizationId { get; set; }
-    // public int? UnitId { get; set; } // Temporarily disabled - requires DB migration
+    
+    /// <summary>
+    /// Unit assignment (Premium feature)
+    /// </summary>
+    public int? UnitId { get; set; }
     
     [Required]
     [MaxLength(100)]
@@ -84,7 +88,7 @@ public class Employee
     
     // Navigation properties
     public virtual Organization Organization { get; set; } = null!;
-    // public virtual Unit? Unit { get; set; } // Temporarily disabled - requires DB migration
+    public virtual Unit? Unit { get; set; }
     public virtual ICollection<Shift> Shifts { get; set; } = new List<Shift>();
     public virtual ICollection<Leave> Leaves { get; set; } = new List<Leave>();
     public virtual ICollection<EmployeeAvailability> Availabilities { get; set; } = new List<EmployeeAvailability>();

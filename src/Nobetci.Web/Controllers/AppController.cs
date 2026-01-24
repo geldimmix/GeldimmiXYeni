@@ -178,7 +178,8 @@ public class AppController : Controller
                 e.Color,
                 e.DailyWorkHours,
                 e.WeekendWorkMode,
-                e.SaturdayWorkHours
+                e.SaturdayWorkHours,
+                e.UnitId
             })
             .ToListAsync();
             
@@ -2590,7 +2591,7 @@ public class AppController : Controller
     
     /// <summary>
     /// Initialize default unit for organization (Premium feature)
-    /// Creates "Genel Birim" if no units exist
+    /// Creates "Genel Birim" if no units exist and assigns all employees to it
     /// </summary>
     private async Task InitializeDefaultUnitAsync(int organizationId)
     {
@@ -2620,6 +2621,21 @@ public class AppController : Controller
         
         _context.Units.Add(defaultUnit);
         await _context.SaveChangesAsync();
+        
+        // Assign all existing employees to this default unit
+        var employeesWithoutUnit = await _context.Employees
+            .Where(e => e.OrganizationId == organizationId && e.UnitId == null && e.IsActive)
+            .ToListAsync();
+            
+        foreach (var emp in employeesWithoutUnit)
+        {
+            emp.UnitId = defaultUnit.Id;
+        }
+        
+        if (employeesWithoutUnit.Any())
+        {
+            await _context.SaveChangesAsync();
+        }
     }
     
     // GET: /api/unit-types
@@ -2958,98 +2974,89 @@ public class AppController : Controller
         return Json(new { success = true });
     }
     
-    // POST: /api/units/{id}/employees
-    // TEMPORARILY DISABLED - requires DB migration for Unit tables
+    // POST: /api/units/{id}/employees - Assign employees to unit
     [HttpPost]
     [Route("api/units/{id}/employees")]
     public async Task<IActionResult> AssignEmployeesToUnit(int id, [FromBody] AssignEmployeesDto dto)
     {
-        return BadRequest(new { error = "Bu özellik şu anda kullanılamıyor" });
+        if (!await IsPremiumUserAsync())
+            return Unauthorized(new { error = "Premium üyelik gerekli" });
+            
+        var organization = await GetOrCreateOrganizationAsync();
         
-        // if (!await IsPremiumUserAsync())
-        //     return Unauthorized(new { error = "Premium üyelik gerekli" });
-        //     
-        // var organization = await GetOrCreateOrganizationAsync();
-        // 
-        // var unit = await _context.Units
-        //     .FirstOrDefaultAsync(u => u.Id == id && u.OrganizationId == organization.Id && u.IsActive);
-        //     
-        // if (unit == null)
-        //     return NotFound(new { error = "Birim bulunamadı" });
-        // 
-        // // Update employees
-        // var employees = await _context.Employees
-        //     .Where(e => dto.EmployeeIds.Contains(e.Id) && e.OrganizationId == organization.Id)
-        //     .ToListAsync();
-        //     
-        // foreach (var emp in employees)
-        // {
-        //     emp.UnitId = id;
-        //     emp.UpdatedAt = DateTime.UtcNow;
-        // }
-        // 
-        // await _context.SaveChangesAsync();
-        // 
-        // return Json(new { success = true, count = employees.Count });
+        var unit = await _context.Units
+            .FirstOrDefaultAsync(u => u.Id == id && u.OrganizationId == organization.Id && u.IsActive);
+            
+        if (unit == null)
+            return NotFound(new { error = "Birim bulunamadı" });
+        
+        // Update employees
+        var employees = await _context.Employees
+            .Where(e => dto.EmployeeIds.Contains(e.Id) && e.OrganizationId == organization.Id)
+            .ToListAsync();
+            
+        foreach (var emp in employees)
+        {
+            emp.UnitId = id;
+            emp.UpdatedAt = DateTime.UtcNow;
+        }
+        
+        await _context.SaveChangesAsync();
+        
+        return Json(new { success = true, count = employees.Count });
     }
     
-    // DELETE: /api/units/{id}/employees/{employeeId}
-    // TEMPORARILY DISABLED - requires DB migration for Unit tables
+    // DELETE: /api/units/{id}/employees/{employeeId} - Remove employee from unit
     [HttpDelete]
     [Route("api/units/{id}/employees/{employeeId}")]
     public async Task<IActionResult> RemoveEmployeeFromUnit(int id, int employeeId)
     {
-        return BadRequest(new { error = "Bu özellik şu anda kullanılamıyor" });
+        if (!await IsPremiumUserAsync())
+            return Unauthorized(new { error = "Premium üyelik gerekli" });
+            
+        var organization = await GetOrCreateOrganizationAsync();
         
-        // if (!await IsPremiumUserAsync())
-        //     return Unauthorized(new { error = "Premium üyelik gerekli" });
-        //     
-        // var organization = await GetOrCreateOrganizationAsync();
-        // 
-        // var employee = await _context.Employees
-        //     .FirstOrDefaultAsync(e => e.Id == employeeId && e.OrganizationId == organization.Id && e.UnitId == id);
-        //     
-        // if (employee == null)
-        //     return NotFound(new { error = "Personel bulunamadı" });
-        // 
-        // employee.UnitId = null;
-        // employee.UpdatedAt = DateTime.UtcNow;
-        // await _context.SaveChangesAsync();
-        // 
-        // return Json(new { success = true });
+        var employee = await _context.Employees
+            .FirstOrDefaultAsync(e => e.Id == employeeId && e.OrganizationId == organization.Id && e.UnitId == id);
+            
+        if (employee == null)
+            return NotFound(new { error = "Personel bulunamadı" });
+        
+        employee.UnitId = null;
+        employee.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+        
+        return Json(new { success = true });
     }
     
-    // GET: /api/units/{id}/employees
-    // TEMPORARILY DISABLED - requires DB migration for Unit tables
+    // GET: /api/units/{id}/employees - Get employees in a unit
     [HttpGet]
     [Route("api/units/{id}/employees")]
     public async Task<IActionResult> GetUnitEmployees(int id)
     {
-        return BadRequest(new { error = "Bu özellik şu anda kullanılamıyor" });
+        if (!await IsPremiumUserAsync())
+            return Unauthorized(new { error = "Premium üyelik gerekli" });
+            
+        var organization = await GetOrCreateOrganizationAsync();
         
-        // if (!await IsPremiumUserAsync())
-        //     return Unauthorized(new { error = "Premium üyelik gerekli" });
-        //     
-        // var organization = await GetOrCreateOrganizationAsync();
-        // 
-        // var unit = await _context.Units
-        //     .FirstOrDefaultAsync(u => u.Id == id && u.OrganizationId == organization.Id);
-        //     
-        // if (unit == null)
-        //     return NotFound(new { error = "Birim bulunamadı" });
-        // 
-        // var employees = await _context.Employees
-        //     .Where(e => e.UnitId == id && e.IsActive)
-        //     .OrderBy(e => e.FullName)
-        //     .Select(e => new {
-        //         e.Id,
-        //         e.FullName,
-        //         e.Title,
-        //         e.Color
-        //     })
-        //     .ToListAsync();
-        //     
-        // return Json(employees);
+        var unit = await _context.Units
+            .FirstOrDefaultAsync(u => u.Id == id && u.OrganizationId == organization.Id);
+            
+        if (unit == null)
+            return NotFound(new { error = "Birim bulunamadı" });
+        
+        var employees = await _context.Employees
+            .Where(e => e.UnitId == id && e.IsActive)
+            .OrderBy(e => e.FullName)
+            .Select(e => new {
+                e.Id,
+                e.FullName,
+                e.Title,
+                e.Color
+            })
+            .ToListAsync();
+            
+        return Json(employees);
     }
     
     #endregion
