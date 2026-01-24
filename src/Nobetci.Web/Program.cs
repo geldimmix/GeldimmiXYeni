@@ -460,11 +460,22 @@ using (var scope = app.Services.CreateScope())
                 ""Color"" VARCHAR(20) NULL DEFAULT '#3B82F6',
                 ""Icon"" VARCHAR(50) NULL,
                 ""SortOrder"" INTEGER NOT NULL DEFAULT 0,
+                ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
                 ""IsSystem"" BOOLEAN NOT NULL DEFAULT FALSE,
                 ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
             );
             CREATE INDEX IF NOT EXISTS ""IX_UnitTypes_OrganizationId"" ON ""UnitTypes"" (""OrganizationId"");
         ", "UnitTypes");
+        
+        // Add IsActive column to UnitTypes if not exists
+        await SafeExecuteSql(@"
+            DO $$
+            BEGIN
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'UnitTypes' AND column_name = 'IsActive') THEN
+                    ALTER TABLE ""UnitTypes"" ADD COLUMN ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE;
+                END IF;
+            END $$;
+        ", "UnitTypesIsActive");
         
         // Create Units table (Premium feature)
         await SafeExecuteSql(@"

@@ -113,7 +113,7 @@ public class AppController : Controller
                 await InitializeDefaultUnitTypesAsync(organization.Id);
                 
                 unitTypes = await _context.UnitTypes
-                    .Where(ut => ut.OrganizationId == organization.Id)
+                    .Where(ut => ut.OrganizationId == organization.Id && ut.IsActive)
                     .OrderBy(ut => ut.SortOrder)
                     .ToListAsync();
                     
