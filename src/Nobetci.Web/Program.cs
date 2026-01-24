@@ -514,6 +514,25 @@ using (var scope = app.Services.CreateScope())
                 IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Units' AND column_name = 'IsActive') THEN
                     ALTER TABLE ""Units"" ADD COLUMN ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE;
                 END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Units' AND column_name = 'UnitTypeId') THEN
+                    ALTER TABLE ""Units"" ADD COLUMN ""UnitTypeId"" INTEGER NULL REFERENCES ""UnitTypes""(""Id"") ON DELETE SET NULL;
+                    CREATE INDEX IF NOT EXISTS ""IX_Units_UnitTypeId"" ON ""Units"" (""UnitTypeId"");
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Units' AND column_name = 'IsDefault') THEN
+                    ALTER TABLE ""Units"" ADD COLUMN ""IsDefault"" BOOLEAN NOT NULL DEFAULT FALSE;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Units' AND column_name = 'Coefficient') THEN
+                    ALTER TABLE ""Units"" ADD COLUMN ""Coefficient"" DECIMAL(5,2) NOT NULL DEFAULT 1.0;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Units' AND column_name = 'Color') THEN
+                    ALTER TABLE ""Units"" ADD COLUMN ""Color"" VARCHAR(20) NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Units' AND column_name = 'Description') THEN
+                    ALTER TABLE ""Units"" ADD COLUMN ""Description"" VARCHAR(500) NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Units' AND column_name = 'CreatedAt') THEN
+                    ALTER TABLE ""Units"" ADD COLUMN ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW();
+                END IF;
             END $$;
         ", "UnitsColumns");
         
