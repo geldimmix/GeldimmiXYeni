@@ -100,26 +100,35 @@ public class AppController : Controller
         var isRegistered = User.Identity?.IsAuthenticated == true;
         
         // Check if user can manage units (Premium OR admin granted CanManageUnits)
-        var canManageUnits = await IsPremiumUserAsync();
+        var canManageUnits = false;
         var units = new List<Unit>();
         var unitTypes = new List<UnitType>();
         
-        // Load units and unit types for premium users
-        if (canManageUnits)
+        // Load units and unit types for premium users (with error handling)
+        try
         {
-            // Initialize default unit types if needed
-            await InitializeDefaultUnitTypesAsync(organization.Id);
-            
-            unitTypes = await _context.UnitTypes
-                .Where(ut => ut.OrganizationId == organization.Id)
-                .OrderBy(ut => ut.SortOrder)
-                .ToListAsync();
+            canManageUnits = await IsPremiumUserAsync();
+            if (canManageUnits)
+            {
+                // Initialize default unit types if needed
+                await InitializeDefaultUnitTypesAsync(organization.Id);
                 
-            units = await _context.Units
-                .Include(u => u.UnitType)
-                .Where(u => u.OrganizationId == organization.Id)
-                .OrderBy(u => u.Name)
-                .ToListAsync();
+                unitTypes = await _context.UnitTypes
+                    .Where(ut => ut.OrganizationId == organization.Id)
+                    .OrderBy(ut => ut.SortOrder)
+                    .ToListAsync();
+                    
+                units = await _context.Units
+                    .Include(u => u.UnitType)
+                    .Where(u => u.OrganizationId == organization.Id)
+                    .OrderBy(u => u.Name)
+                    .ToListAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Units/UnitTypes could not be loaded - tables may not exist yet");
+            canManageUnits = false;
         }
         
         var viewModel = new AppViewModel
