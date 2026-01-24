@@ -723,6 +723,27 @@
             <a href="@Url.Action("Index")" class="btn btn-save">@(isTurkish ? "Takvime Git" : "Go to Calendar")</a>
         </div>
     }
+
+    <!-- API Management Section -->
+    <div class="att-card" style="margin-top: 20px; border: 2px solid #e2e8f0; border-radius: 12px;">
+        <div style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 10px 10px 0 0;">
+            <h3 style="margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; color: #1e293b;">
+                <span style="font-size: 1.3rem;">🔌</span> 
+                @(isTurkish ? "Mesai API Servisi" : "Attendance API Service")
+            </h3>
+            <p style="margin: 6px 0 0; color: #64748b; font-size: 0.85rem;">
+                @(isTurkish ? "Harici sistemlerden (PDKS, kart okuyucu vb.) mesai kaydı göndermek için API erişimi" : "API access for sending attendance records from external systems")
+            </p>
+        </div>
+        <div style="padding: 20px; background: #fff; border-radius: 0 0 10px 10px;">
+            <div id="apiContainer">
+                <div style="text-align: center; padding: 30px; color: #64748b;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">⏳</div>
+                    @(isTurkish ? "API bilgileri yükleniyor..." : "Loading API info...")
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Modal -->
@@ -788,27 +809,6 @@
             </button>
             <button class="btn btn-cancel" onclick="closeModal()">@(isTurkish ? "İptal" : "Cancel")</button>
             <button class="btn btn-save" onclick="saveRecord()">@(isTurkish ? "Kaydet" : "Save")</button>
-        </div>
-    </div>
-</div>
-
-<!-- API Management Section -->
-<div class="att-card" style="margin-top: 20px; border: 2px solid #e2e8f0; border-radius: 12px;">
-    <div style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 10px 10px 0 0;">
-        <h3 style="margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; color: #1e293b;">
-            <span style="font-size: 1.3rem;">🔌</span> 
-            @(isTurkish ? "Mesai API Servisi" : "Attendance API Service")
-        </h3>
-        <p style="margin: 6px 0 0; color: #64748b; font-size: 0.85rem;">
-            @(isTurkish ? "Harici sistemlerden (PDKS, kart okuyucu vb.) mesai kaydı göndermek için API erişimi" : "API access for sending attendance records from external systems")
-        </p>
-    </div>
-    <div style="padding: 20px; background: #fff; border-radius: 0 0 10px 10px;">
-        <div id="apiContainer">
-            <div style="text-align: center; padding: 30px; color: #64748b;">
-                <div style="font-size: 2rem; margin-bottom: 10px;">⏳</div>
-                @(isTurkish ? "API bilgileri yükleniyor..." : "Loading API info...")
-            </div>
         </div>
     </div>
 </div>
