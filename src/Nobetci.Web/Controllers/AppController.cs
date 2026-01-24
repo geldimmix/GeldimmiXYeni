@@ -104,6 +104,24 @@ public class AppController : Controller
         var units = new List<Unit>();
         var unitTypes = new List<UnitType>();
         
+        // Load units and unit types for premium users
+        if (canManageUnits)
+        {
+            // Initialize default unit types if needed
+            await InitializeDefaultUnitTypesAsync(organization.Id);
+            
+            unitTypes = await _context.UnitTypes
+                .Where(ut => ut.OrganizationId == organization.Id)
+                .OrderBy(ut => ut.SortOrder)
+                .ToListAsync();
+                
+            units = await _context.Units
+                .Include(u => u.UnitType)
+                .Where(u => u.OrganizationId == organization.Id)
+                .OrderBy(u => u.Name)
+                .ToListAsync();
+        }
+        
         var viewModel = new AppViewModel
         {
             Organization = organization,
