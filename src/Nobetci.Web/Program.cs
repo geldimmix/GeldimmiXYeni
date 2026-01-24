@@ -446,6 +446,12 @@ using (var scope = app.Services.CreateScope())
                 IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'AspNetUsers' AND column_name = 'AdminNotes') THEN
                     ALTER TABLE ""AspNetUsers"" ADD COLUMN ""AdminNotes"" VARCHAR(1000) NULL;
                 END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'AspNetUsers' AND column_name = 'UnitLimit') THEN
+                    ALTER TABLE ""AspNetUsers"" ADD COLUMN ""UnitLimit"" INTEGER DEFAULT 5 NOT NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'AspNetUsers' AND column_name = 'UnitEmployeeLimit') THEN
+                    ALTER TABLE ""AspNetUsers"" ADD COLUMN ""UnitEmployeeLimit"" INTEGER DEFAULT 0 NOT NULL;
+                END IF;
             END $$;
         ", "AspNetUsersColumns");
         

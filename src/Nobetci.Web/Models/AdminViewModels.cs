@@ -52,6 +52,8 @@ public class UserListItem
     public string FullName { get; set; } = string.Empty;
     public UserPlan Plan { get; set; }
     public int? CustomEmployeeLimit { get; set; }
+    public int UnitLimit { get; set; }
+    public int UnitEmployeeLimit { get; set; }
     public bool CanAccessAttendance { get; set; }
     public bool CanAccessPayroll { get; set; }
     public bool CanManageUnits { get; set; }
@@ -81,6 +83,8 @@ public class EditUserViewModel
     public string FullName { get; set; } = string.Empty;
     public UserPlan Plan { get; set; }
     public int? CustomEmployeeLimit { get; set; }
+    public int UnitLimit { get; set; } = 5;
+    public int UnitEmployeeLimit { get; set; } = 0;
     public bool CanAccessAttendance { get; set; } = true;
     public bool CanAccessPayroll { get; set; } = true;
     public bool CanManageUnits { get; set; } = false;

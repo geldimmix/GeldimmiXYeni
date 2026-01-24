@@ -41,6 +41,16 @@ public class ApplicationUser : IdentityUser
     public bool CanManageUnits { get; set; } = false;
     
     /// <summary>
+    /// Maximum number of units user can create (0 = unlimited, default 5 for premium)
+    /// </summary>
+    public int UnitLimit { get; set; } = 5;
+    
+    /// <summary>
+    /// Maximum number of employees per unit (0 = unlimited)
+    /// </summary>
+    public int UnitEmployeeLimit { get; set; } = 0;
+    
+    /// <summary>
     /// When the premium subscription expires (null for free)
     /// </summary>
     public DateTime? PremiumExpiresAt { get; set; }

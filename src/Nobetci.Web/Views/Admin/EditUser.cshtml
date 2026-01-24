@@ -82,6 +82,36 @@
             
             <hr style="margin: 28px 0; border: none; border-top: 2px solid var(--border-color);">
             
+            <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); padding: 20px; border-radius: var(--radius-md); margin-bottom: 20px; border: 2px solid #86efac;">
+                <h4 style="margin: 0 0 16px 0; font-size: 1rem; color: #166534; display: flex; align-items: center; gap: 8px;">
+                    <span>🏥</span> Birim Limitleri <span style="font-size: 0.75rem; background: #22c55e; color: white; padding: 2px 8px; border-radius: 4px;">Premium</span>
+                </h4>
+                
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label class="form-label" style="color: #166534;">Birim Ekleme Limiti</label>
+                    <input type="number" name="UnitLimit" class="form-control" 
+                           value="@Model.UnitLimit" 
+                           placeholder="0 = Limitsiz" 
+                           min="0" max="100">
+                    <small style="color: #15803d; font-size: 0.8rem; margin-top: 6px; display: block;">
+                        💡 Kullanıcının oluşturabileceği maksimum birim sayısı (0 = limitsiz, varsayılan: 5)
+                    </small>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" style="color: #166534;">Birime Personel Limiti</label>
+                    <input type="number" name="UnitEmployeeLimit" class="form-control" 
+                           value="@Model.UnitEmployeeLimit" 
+                           placeholder="0 = Limitsiz" 
+                           min="0" max="500">
+                    <small style="color: #15803d; font-size: 0.8rem; margin-top: 6px; display: block;">
+                        💡 Bir birime eklenebilecek maksimum personel sayısı (0 = limitsiz)
+                    </small>
+                </div>
+            </div>
+            
+            <hr style="margin: 28px 0; border: none; border-top: 2px solid var(--border-color);">
+            
             <div class="form-group">
                 <label class="form-label">Özellik Erişimi</label>
                 <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 12px;">

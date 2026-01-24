@@ -2951,6 +2951,16 @@ public class AppController : Controller
                 
             var organization = await GetOrCreateOrganizationAsync();
             
+            // Check unit limit
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null && user.UnitLimit > 0)
+            {
+                var currentUnitCount = await _context.Units
+                    .CountAsync(u => u.OrganizationId == organization.Id && u.IsActive);
+                if (currentUnitCount >= user.UnitLimit)
+                    return BadRequest(new { error = $"Birim limitine ulaşıldı ({user.UnitLimit} birim). Daha fazla birim için yöneticiyle iletişime geçin." });
+            }
+            
             // Check for duplicate name
             var exists = await _context.Units
                 .AnyAsync(u => u.OrganizationId == organization.Id && u.Name == dto.Name && u.IsActive);
@@ -3130,12 +3140,20 @@ public class AppController : Controller
         if (unit == null)
             return NotFound(new { error = "Birim bulunamadı" });
         
-        // Check unit employee limit
+        var currentCount = await _context.Employees
+            .CountAsync(e => e.UnitId == id && e.IsActive);
+        
+        // Check user's unit employee limit
+        var user = await _userManager.GetUserAsync(User);
+        if (user != null && user.UnitEmployeeLimit > 0)
+        {
+            if (currentCount + dto.EmployeeIds.Count > user.UnitEmployeeLimit)
+                return BadRequest(new { error = $"Birime personel ekleme limiti aşıldı (Limit: {user.UnitEmployeeLimit}, Mevcut: {currentCount})" });
+        }
+        
+        // Check unit-specific employee limit (if set by admin in unit settings)
         if (unit.EmployeeLimit > 0)
         {
-            var currentCount = await _context.Employees
-                .CountAsync(e => e.UnitId == id && e.IsActive);
-            
             if (currentCount + dto.EmployeeIds.Count > unit.EmployeeLimit)
                 return BadRequest(new { error = $"Birim personel limiti aşıldı (Limit: {unit.EmployeeLimit}, Mevcut: {currentCount})" });
         }

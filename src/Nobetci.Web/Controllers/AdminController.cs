@@ -383,6 +383,8 @@ public class AdminController : Controller
             FullName = user.FullName ?? "",
             Plan = user.Plan,
             CustomEmployeeLimit = user.CustomEmployeeLimit,
+            UnitLimit = user.UnitLimit,
+            UnitEmployeeLimit = user.UnitEmployeeLimit,
             CanAccessAttendance = user.CanAccessAttendance,
             CanAccessPayroll = user.CanAccessPayroll,
             CanManageUnits = user.CanManageUnits,
@@ -420,6 +422,8 @@ public class AdminController : Controller
         // Update user properties
         user.Plan = model.Plan;
         user.CustomEmployeeLimit = model.CustomEmployeeLimit;
+        user.UnitLimit = model.UnitLimit;
+        user.UnitEmployeeLimit = model.UnitEmployeeLimit;
         user.CanAccessAttendance = model.CanAccessAttendance;
         user.CanAccessPayroll = model.CanAccessPayroll;
         user.CanManageUnits = model.CanManageUnits;
