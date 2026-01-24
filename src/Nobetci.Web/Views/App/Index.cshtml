@@ -6,104 +6,152 @@
 }
 
 <div class="app-wrapper">
-    <!-- Left Sidebar - Compact -->
+    <!-- Left Sidebar - Module Based -->
     <aside class="app-sidebar">
-        <!-- Quick Actions -->
-        <div class="sidebar-actions">
-            <button class="action-btn employees-btn" data-bs-toggle="modal" data-bs-target="#employeesModal">
-                <span class="action-icon">👥</span>
-                <span class="action-label">@(isTurkish ? "Personeller" : "Employees")</span>
-                <span class="action-badge">@Model.EmployeeCount</span>
-            </button>
-            
-            <button class="action-btn holidays-btn" data-bs-toggle="modal" data-bs-target="#addHolidayModal">
-                <span class="action-icon">🗓️</span>
-                <span class="action-label">@(isTurkish ? "Tatiller" : "Holidays")</span>
-                <span class="action-badge">@Model.Holidays.Count</span>
-            </button>
-            
-            @if (Model.CanAccessPayroll)
-            {
-                <a href="@Url.Action("Payroll", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="action-btn payroll-btn">
-                    <span class="action-icon">📊</span>
-                    <span class="action-label">@(isTurkish ? "Puantaj" : "Payroll")</span>
-                    <span class="action-badge">✓</span>
-                </a>
-            }
-            else
-            {
-                <button class="action-btn payroll-btn disabled" title="@(isTurkish ? "Kayıtlı kullanıcılara özel" : "For registered users only")" disabled>
-                    <span class="action-icon">📊</span>
-                    <span class="action-label">@(isTurkish ? "Puantaj" : "Payroll")</span>
-                    <span class="action-badge">🔒</span>
-                </button>
-            }
-            
-            @if (Model.CanAccessAttendance)
-            {
-                <a href="@Url.Action("Attendance", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="action-btn attendance-btn">
-                    <span class="action-icon">🕐</span>
-                    <span class="action-label">@(isTurkish ? "Mesai Takip" : "Attendance")</span>
-                    <span class="action-badge">✓</span>
-                </a>
-            }
-            else
-            {
-                <button class="action-btn attendance-btn disabled" title="@(isTurkish ? "Kayıtlı kullanıcılara özel" : "For registered users only")" disabled>
-                    <span class="action-icon">🕐</span>
-                    <span class="action-label">@(isTurkish ? "Mesai Takip" : "Attendance")</span>
-                    <span class="action-badge">🔒</span>
-                </button>
-            }
+        <!-- Module Header -->
+        <div class="module-header">
+            <span class="module-icon">🏥</span>
+            <div class="module-info">
+                <span class="module-name">@(isTurkish ? "Hemşire Nöbet" : "Nurse Shift")</span>
+                <span class="module-sub">@(isTurkish ? "Sistemi" : "System")</span>
+            </div>
         </div>
         
-        <!-- Templates Button -->
-        <button class="action-btn templates-btn" data-bs-toggle="modal" data-bs-target="#templatesModal">
-            <span class="action-icon">⏰</span>
-            <span class="action-label">@(isTurkish ? "Vardiya Şablonları" : "Shift Templates")</span>
-            <span class="action-badge">✓</span>
-        </button>
-        
-        <!-- Leaves Button -->
-        <button class="action-btn leaves-btn" data-bs-toggle="modal" data-bs-target="#leavesModal">
-            <span class="action-icon">📋</span>
-            <span class="action-label">@(isTurkish ? "İzinler" : "Leaves")</span>
-            <span class="action-badge">✓</span>
-        </button>
-        
-        <!-- Units Button (Premium Feature) -->
-        @if (Model.CanManageUnits)
-        {
-            <button class="action-btn units-btn" data-bs-toggle="modal" data-bs-target="#unitsModal">
-                <span class="action-icon">🏥</span>
-                <span class="action-label">@(isTurkish ? "Birimler" : "Units")</span>
-                <span class="action-badge premium-badge">@Model.Units.Count</span>
-            </button>
-        }
-        else if (Model.IsRegistered)
-        {
-            <button class="action-btn units-btn disabled" title="@(isTurkish ? "Premium üyelik gerekli" : "Premium membership required")" disabled>
-                <span class="action-icon">🏥</span>
-                <span class="action-label">@(isTurkish ? "Birimler" : "Units")</span>
-                <span class="action-badge">🔒</span>
-            </button>
-        }
-        
-        <!-- Multi-select Toggle -->
-        <div class="multi-toggle">
-            <label>
-                <input type="checkbox" id="multiSelectMode">
-                <span class="toggle-track"><span class="toggle-thumb"></span></span>
-                <span class="toggle-text">@(isTurkish ? "Çoklu Seçim" : "Multi-Select")</span>
-            </label>
+        <!-- Module: Nöbet & Personel -->
+        <div class="module-section">
+            <div class="section-title">
+                <span>📅</span>
+                @(isTurkish ? "Nöbet & Personel" : "Shifts & Staff")
+            </div>
+            <div class="section-items">
+                <button class="module-item active" data-bs-toggle="modal" data-bs-target="#employeesModal">
+                    <span class="item-icon">👥</span>
+                    <span class="item-text">@(isTurkish ? "Personeller" : "Employees")</span>
+                    <span class="item-badge">@Model.EmployeeCount</span>
+                </button>
+                <button class="module-item" data-bs-toggle="modal" data-bs-target="#templatesModal">
+                    <span class="item-icon">⏰</span>
+                    <span class="item-text">@(isTurkish ? "Vardiyalar" : "Shifts")</span>
+                </button>
+            </div>
         </div>
         
-        <!-- Selected Template Indicator -->
-        <div class="selected-indicator" id="selectedIndicator" style="display:none;">
-            <div class="indicator-color"></div>
-            <div class="indicator-text">
-                <span class="indicator-label">@(isTurkish ? "Seçili" : "Selected")</span>
-                <span class="indicator-time" id="selectedTime"></span>
+        <!-- Module: İzin & Tatil -->
+        <div class="module-section">
+            <div class="section-title">
+                <span>🏖️</span>
+                @(isTurkish ? "İzin & Tatil" : "Leave & Holiday")
+            </div>
+            <div class="section-items">
+                <button class="module-item" data-bs-toggle="modal" data-bs-target="#leavesModal">
+                    <span class="item-icon">📋</span>
+                    <span class="item-text">@(isTurkish ? "İzinler" : "Leaves")</span>
+                </button>
+                <button class="module-item" data-bs-toggle="modal" data-bs-target="#addHolidayModal">
+                    <span class="item-icon">🎉</span>
+                    <span class="item-text">@(isTurkish ? "Tatiller" : "Holidays")</span>
+                    <span class="item-badge">@Model.Holidays.Count</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Module: Raporlama -->
+        <div class="module-section">
+            <div class="section-title">
+                <span>📊</span>
+                @(isTurkish ? "Raporlama" : "Reports")
+            </div>
+            <div class="section-items">
+                @if (Model.CanAccessPayroll)
+                {
+                    <a href="@Url.Action("Payroll", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="module-item">
+                        <span class="item-icon">📈</span>
+                        <span class="item-text">@(isTurkish ? "Puantaj" : "Payroll")</span>
+                    </a>
+                }
+                else
+                {
+                    <button class="module-item locked" disabled title="@(isTurkish ? "Kayıtlı kullanıcılara özel" : "For registered users only")">
+                        <span class="item-icon">📈</span>
+                        <span class="item-text">@(isTurkish ? "Puantaj" : "Payroll")</span>
+                        <span class="item-lock">🔒</span>
+                    </button>
+                }
+                
+                @if (Model.CanAccessAttendance)
+                {
+                    <a href="@Url.Action("Attendance", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="module-item">
+                        <span class="item-icon">🕐</span>
+                        <span class="item-text">@(isTurkish ? "Mesai Takip" : "Attendance")</span>
+                    </a>
+                }
+                else
+                {
+                    <button class="module-item locked" disabled title="@(isTurkish ? "Kayıtlı kullanıcılara özel" : "For registered users only")">
+                        <span class="item-icon">🕐</span>
+                        <span class="item-text">@(isTurkish ? "Mesai Takip" : "Attendance")</span>
+                        <span class="item-lock">🔒</span>
+                    </button>
+                }
+            </div>
+        </div>
+        
+        <!-- Module: Birimler (Premium) -->
+        @if (Model.IsRegistered)
+        {
+            <div class="module-section premium-section">
+                <div class="section-title premium">
+                    <span>🏛️</span>
+                    @(isTurkish ? "Birimler" : "Units")
+                    <span class="premium-tag">PRO</span>
+                </div>
+                <div class="section-items">
+                    @if (Model.CanManageUnits)
+                    {
+                        <button class="module-item premium" data-bs-toggle="modal" data-bs-target="#unitsModal">
+                            <span class="item-icon">🏥</span>
+                            <span class="item-text">@(isTurkish ? "Birim Yönetimi" : "Unit Management")</span>
+                            <span class="item-badge premium-badge">@Model.Units.Count</span>
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="module-item locked premium" disabled title="@(isTurkish ? "Premium üyelik gerekli" : "Premium membership required")">
+                            <span class="item-icon">🏥</span>
+                            <span class="item-text">@(isTurkish ? "Birim Yönetimi" : "Unit Management")</span>
+                            <span class="item-lock">🔒</span>
+                        </button>
+                    }
+                </div>
+            </div>
+        }
+        
+        <!-- Divider -->
+        <div class="sidebar-divider"></div>
+        
+        <!-- Tools Section -->
+        <div class="tools-section">
+            <div class="section-title small">
+                <span>⚙️</span>
+                @(isTurkish ? "Araçlar" : "Tools")
+            </div>
+            
+            <!-- Multi-select Toggle -->
+            <div class="tool-item">
+                <label class="toggle-label">
+                    <input type="checkbox" id="multiSelectMode">
+                    <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                    <span class="toggle-text">@(isTurkish ? "Çoklu Seçim" : "Multi-Select")</span>
+                </label>
+            </div>
+            
+            <!-- Selected Template Indicator -->
+            <div class="selected-indicator" id="selectedIndicator" style="display:none;">
+                <div class="indicator-color"></div>
+                <div class="indicator-text">
+                    <span class="indicator-label">@(isTurkish ? "Seçili" : "Selected")</span>
+                    <span class="indicator-time" id="selectedTime"></span>
+                </div>
             </div>
         </div>
     </aside>
@@ -3250,17 +3298,17 @@
         background: #f1f5f9;
     }
     
-    /* Sidebar - Compact & Clean */
+    /* Sidebar - Module Based */
     .app-sidebar {
-        width: 200px;
-        min-width: 200px;
+        width: 210px;
+        min-width: 210px;
         max-height: calc(100vh - 60px);
-        background: #fafafa;
+        background: linear-gradient(180deg, #fafbfc 0%, #f3f4f6 100%);
         border-right: 1px solid #e5e7eb;
         display: flex;
         flex-direction: column;
-        padding: 10px;
-        gap: 4px;
+        padding: 12px;
+        gap: 8px;
         overflow-y: auto;
         overflow-x: hidden;
     }
@@ -3282,7 +3330,190 @@
         background: #9ca3af;
     }
     
-    /* Sidebar Actions - Minimal */
+    /* Module Header */
+    .module-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        border-radius: 8px;
+        margin-bottom: 8px;
+    }
+    
+    .module-icon {
+        font-size: 1.4rem;
+    }
+    
+    .module-info {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .module-name {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: white;
+        line-height: 1.1;
+    }
+    
+    .module-sub {
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: rgba(255,255,255,0.8);
+    }
+    
+    /* Module Section */
+    .module-section {
+        background: white;
+        border-radius: 8px;
+        padding: 10px;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .module-section.premium-section {
+        background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%);
+        border-color: #fcd34d;
+    }
+    
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    
+    .section-title.premium {
+        color: #b45309;
+        border-bottom-color: #fcd34d;
+    }
+    
+    .section-title.small {
+        font-size: 0.65rem;
+        border-bottom: none;
+        margin-bottom: 6px;
+        padding-bottom: 0;
+    }
+    
+    .premium-tag {
+        margin-left: auto;
+        font-size: 0.55rem;
+        padding: 2px 5px;
+        background: #f59e0b;
+        color: white;
+        border-radius: 3px;
+        font-weight: 700;
+    }
+    
+    .section-items {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    /* Module Item */
+    .module-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-decoration: none;
+        color: #374151;
+        font-size: 0.8rem;
+    }
+    
+    .module-item:hover {
+        background: #f3f4f6;
+        border-color: #e5e7eb;
+    }
+    
+    .module-item.active {
+        background: #eff6ff;
+        border-color: #3b82f6;
+        color: #1d4ed8;
+    }
+    
+    .module-item.premium:hover {
+        background: #fef3c7;
+        border-color: #fcd34d;
+    }
+    
+    .module-item.locked {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    
+    .item-icon {
+        font-size: 0.95rem;
+        width: 20px;
+        text-align: center;
+    }
+    
+    .item-text {
+        flex: 1;
+        font-weight: 500;
+    }
+    
+    .item-badge {
+        font-size: 0.65rem;
+        padding: 2px 6px;
+        background: #e5e7eb;
+        color: #6b7280;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+    
+    .item-badge.premium-badge {
+        background: #fcd34d;
+        color: #92400e;
+    }
+    
+    .item-lock {
+        font-size: 0.7rem;
+        opacity: 0.7;
+    }
+    
+    /* Sidebar Divider */
+    .sidebar-divider {
+        height: 1px;
+        background: #e5e7eb;
+        margin: 4px 0;
+    }
+    
+    /* Tools Section */
+    .tools-section {
+        background: #f9fafb;
+        border-radius: 8px;
+        padding: 10px;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .tool-item {
+        padding: 4px 0;
+    }
+    
+    .toggle-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        font-size: 0.75rem;
+        color: #6b7280;
+    }
+    
+    /* Legacy - Keep for compatibility */
     .sidebar-actions {
         display: flex;
         flex-direction: column;
@@ -6388,8 +6619,41 @@
             max-height: none;
             flex-direction: row;
             flex-wrap: wrap;
-            padding: 10px;
-            gap: 8px;
+            padding: 8px;
+            gap: 6px;
+        }
+        
+        .module-header {
+            width: 100%;
+            margin-bottom: 4px;
+            padding: 8px 12px;
+        }
+        
+        .module-section {
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        .section-title {
+            font-size: 0.6rem;
+            margin-bottom: 6px;
+        }
+        
+        .module-item {
+            padding: 6px 8px;
+            font-size: 0.75rem;
+        }
+        
+        .item-icon {
+            font-size: 0.85rem;
+        }
+        
+        .tools-section {
+            width: 100%;
+        }
+        
+        .sidebar-divider {
+            width: 100%;
         }
         
         .sidebar-actions {
@@ -6405,7 +6669,7 @@
             width: 100%;
         }
         
-        .multi-toggle, .selected-indicator {
+        .tool-item, .selected-indicator {
             display: none;
         }
         
