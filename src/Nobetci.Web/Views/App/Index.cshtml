@@ -537,7 +537,6 @@
                                         }
                                     </select>
                                     <input type="number" id="newUnitCoefficient" class="form-input coefficient-input" value="1.0" step="0.25" min="0.5" max="3" placeholder="@(isTurkish ? "Katsayı" : "Coefficient")">
-                                    <input type="number" id="newUnitEmployeeLimit" class="form-input limit-input" value="0" min="0" max="100" placeholder="@(isTurkish ? "Personel Limiti (0=Sınırsız)" : "Employee Limit (0=Unlimited)")">
                                     <button type="button" class="btn btn-primary" id="addUnitBtn">
                                         <span class="btn-icon">+</span>
                                         @(isTurkish ? "Birim Ekle" : "Add Unit")
@@ -592,7 +591,7 @@
                                                 </div>
                                             </div>
                                             <div class="unit-actions">
-                                                <button class="unit-action-btn edit-btn" title="@(isTurkish ? "Düzenle" : "Edit")" onclick="editUnit(@unit.Id, '@Html.Raw(unit.Name.Replace("'", "\\'"))', @(unit.UnitTypeId?.ToString() ?? "null"), @unit.Coefficient, '@(unit.Color ?? "#3B82F6")', @unit.IsDefault.ToString().ToLower(), @unit.EmployeeLimit)">
+                                                <button class="unit-action-btn edit-btn" title="@(isTurkish ? "Düzenle" : "Edit")" onclick="editUnit(@unit.Id, '@Html.Raw(unit.Name.Replace("'", "\\'"))', @(unit.UnitTypeId?.ToString() ?? "null"), @unit.Coefficient, '@(unit.Color ?? "#3B82F6")', @unit.IsDefault.ToString().ToLower())">
                                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                                 </button>
                                                 <button class="unit-action-btn assign-btn" title="@(isTurkish ? "Personel Ata" : "Assign Employees")" onclick="openAssignEmployees(@unit.Id, '@Html.Raw(unit.Name.Replace("'", "\\'"))')">
@@ -708,10 +707,6 @@
                 <div class="form-group">
                     <label>@(isTurkish ? "Katsayı" : "Coefficient")</label>
                     <input type="number" id="editUnitCoefficient" class="form-input" step="0.25" min="0.5" max="3">
-                </div>
-                <div class="form-group">
-                    <label>@(isTurkish ? "Personel Limiti" : "Employee Limit") <small style="color: #6b7280;">(0 = @(isTurkish ? "Sınırsız" : "Unlimited"))</small></label>
-                    <input type="number" id="editUnitEmployeeLimit" class="form-input" min="0" max="100">
                 </div>
                 <div class="form-group">
                     <label>@(isTurkish ? "Renk" : "Color")</label>
@@ -2784,7 +2779,6 @@
     }
     .add-unit-form .form-input::placeholder { color: #9ca3af; }
     .add-unit-form .coefficient-input { max-width: 80px; min-width: 70px; text-align: center; }
-    .add-unit-form .limit-input { max-width: 100px; min-width: 80px; text-align: center; }
     .add-unit-form .color-input { 
         width: 40px; 
         min-width: 40px; 
@@ -8523,7 +8517,6 @@
         const name = document.getElementById('newUnitName').value.trim();
         const typeId = document.getElementById('newUnitType').value || null;
         const coefficient = parseFloat(document.getElementById('newUnitCoefficient').value) || 1.0;
-        const employeeLimit = parseInt(document.getElementById('newUnitEmployeeLimit').value) || 0;
         
         if (!name) {
             alert(texts.unitNameRequired);
@@ -8538,7 +8531,6 @@
                     name,
                     unitTypeId: typeId ? parseInt(typeId) : null,
                     coefficient,
-                    employeeLimit,
                     isDefault: false
                 })
             });
@@ -8552,7 +8544,6 @@
             document.getElementById('newUnitName').value = '';
             document.getElementById('newUnitType').value = '';
             document.getElementById('newUnitCoefficient').value = '1.0';
-            document.getElementById('newUnitEmployeeLimit').value = '0';
             
             showToast(texts.unitAdded, 'success');
             location.reload();
@@ -8595,12 +8586,11 @@
         }
     }
     
-    function editUnit(id, name, typeId, coefficient, color, isDefault, employeeLimit) {
+    function editUnit(id, name, typeId, coefficient, color, isDefault) {
         document.getElementById('editUnitId').value = id;
         document.getElementById('editUnitName').value = name;
         document.getElementById('editUnitTypeId').value = typeId || '';
         document.getElementById('editUnitCoefficient').value = coefficient;
-        document.getElementById('editUnitEmployeeLimit').value = employeeLimit || 0;
         document.getElementById('editUnitColor').value = color;
         document.getElementById('editUnitIsDefault').checked = isDefault;
         
@@ -8613,7 +8603,6 @@
         const name = document.getElementById('editUnitName').value.trim();
         const typeId = document.getElementById('editUnitTypeId').value || null;
         const coefficient = parseFloat(document.getElementById('editUnitCoefficient').value) || 1.0;
-        const employeeLimit = parseInt(document.getElementById('editUnitEmployeeLimit').value) || 0;
         const color = document.getElementById('editUnitColor').value;
         const isDefault = document.getElementById('editUnitIsDefault').checked;
         
@@ -8630,7 +8619,6 @@
                     name,
                     unitTypeId: typeId ? parseInt(typeId) : null,
                     coefficient,
-                    employeeLimit,
                     color,
                     isDefault
                 })
