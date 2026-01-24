@@ -12,6 +12,11 @@ public class PayrollViewModel
     public List<Shift> PreviousMonthOvernightShifts { get; set; } = new();
     public List<Leave> Leaves { get; set; } = new();
     
+    // Unit filtering (Premium feature)
+    public List<Unit> Units { get; set; } = new();
+    public int? SelectedUnitId { get; set; }
+    public bool IsPremium { get; set; }
+    
     public int SelectedYear { get; set; }
     public int SelectedMonth { get; set; }
     

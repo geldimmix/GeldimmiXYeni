@@ -1339,7 +1339,7 @@ public class AppController : Controller
     /// Payroll/Timesheet page - only for registered users
     /// </summary>
     [HttpGet]
-    public async Task<IActionResult> Payroll(int? year, int? month, int? nightStartHour, int? nightEndHour, string? source, bool calculate = false, int? loadId = null)
+    public async Task<IActionResult> Payroll(int? year, int? month, int? nightStartHour, int? nightEndHour, string? source, bool calculate = false, int? loadId = null, int? unitId = null)
     {
         // Only registered users can access payroll
         if (User.Identity?.IsAuthenticated != true)
@@ -1360,6 +1360,7 @@ public class AppController : Controller
         var dataSource = source ?? "shift"; // "shift" or "attendance"
         
         var organization = await GetOrCreateOrganizationAsync();
+        var isPremium = await IsPremiumUserAsync();
         
         // Use custom night hours or organization defaults
         var nightStart = nightStartHour.HasValue 
@@ -1369,43 +1370,63 @@ public class AppController : Controller
             ? new TimeOnly(nightEndHour.Value, 0) 
             : organization.NightEndTime;
         
-        var employees = await _context.Employees
-            .Where(e => e.OrganizationId == organization.Id && e.IsActive)
+        // Load units for premium users
+        var units = new List<Unit>();
+        if (isPremium)
+        {
+            units = await _context.Units
+                .Where(u => u.OrganizationId == organization.Id && u.IsActive)
+                .OrderBy(u => u.SortOrder)
+                .ToListAsync();
+        }
+        
+        // Build employee query with optional unit filter
+        var employeeQuery = _context.Employees
+            .Where(e => e.OrganizationId == organization.Id && e.IsActive);
+            
+        if (isPremium && unitId.HasValue)
+        {
+            employeeQuery = employeeQuery.Where(e => e.UnitId == unitId.Value);
+        }
+        
+        var employees = await employeeQuery
             .OrderBy(e => e.FullName)
             .ToListAsync();
+        
+        var employeeIds = employees.Select(e => e.Id).ToList();
             
         var holidays = await _context.Holidays
             .Where(h => h.OrganizationId == organization.Id)
             .Where(h => h.Date.Year == selectedYear && h.Date.Month == selectedMonth)
             .ToListAsync();
         
-        // Get shifts for current month
+        // Get shifts for current month (filtered by employees)
         var shifts = await _context.Shifts
             .Include(s => s.Employee)
-            .Where(s => s.Employee.OrganizationId == organization.Id)
+            .Where(s => employeeIds.Contains(s.EmployeeId))
             .Where(s => s.Date.Year == selectedYear && s.Date.Month == selectedMonth)
             .ToListAsync();
         
-        // Get attendance for current month
+        // Get attendance for current month (filtered by employees)
         var attendances = await _context.TimeAttendances
             .Include(a => a.Employee)
-            .Where(a => a.Employee.OrganizationId == organization.Id)
+            .Where(a => employeeIds.Contains(a.EmployeeId))
             .Where(a => a.Date.Year == selectedYear && a.Date.Month == selectedMonth)
             .ToListAsync();
         
-        // Get leaves for current month
+        // Get leaves for current month (filtered by employees)
         var leaves = await _context.Leaves
             .Include(l => l.Employee)
             .Include(l => l.LeaveType)
-            .Where(l => l.Employee.OrganizationId == organization.Id)
+            .Where(l => employeeIds.Contains(l.EmployeeId))
             .Where(l => l.Date.Year == selectedYear && l.Date.Month == selectedMonth)
             .ToListAsync();
         
-        // Get overnight shifts from previous month
+        // Get overnight shifts from previous month (filtered by employees)
         var previousMonthLastDay = new DateOnly(selectedYear, selectedMonth, 1).AddDays(-1);
         var previousMonthShifts = await _context.Shifts
             .Include(s => s.Employee)
-            .Where(s => s.Employee.OrganizationId == organization.Id)
+            .Where(s => employeeIds.Contains(s.EmployeeId))
             .Where(s => s.Date == previousMonthLastDay && s.SpansNextDay)
             .ToListAsync();
         
@@ -1425,6 +1446,9 @@ public class AppController : Controller
             PreviousMonthOvernightShifts = previousMonthShifts,
             Leaves = leaves,
             SavedPayrolls = savedPayrolls,
+            Units = units,
+            SelectedUnitId = unitId,
+            IsPremium = isPremium,
             SelectedYear = selectedYear,
             SelectedMonth = selectedMonth,
             NightStartTime = nightStart,
@@ -2024,7 +2048,7 @@ public class AppController : Controller
     /// Attendance tracking page - only for registered users with access
     /// </summary>
     [HttpGet]
-    public async Task<IActionResult> Attendance(int? year, int? month)
+    public async Task<IActionResult> Attendance(int? year, int? month, int? unitId)
     {
         // Only registered users can access attendance
         if (User.Identity?.IsAuthenticated != true)
@@ -2044,19 +2068,40 @@ public class AppController : Controller
         var selectedMonth = month ?? DateTime.Now.Month;
         
         var organization = await GetOrCreateOrganizationAsync();
+        var isPremium = await IsPremiumUserAsync();
         
-        var employees = await _context.Employees
-            .Where(e => e.OrganizationId == organization.Id && e.IsActive)
+        // Load units for premium users
+        var units = new List<Unit>();
+        if (isPremium)
+        {
+            units = await _context.Units
+                .Where(u => u.OrganizationId == organization.Id && u.IsActive)
+                .OrderBy(u => u.SortOrder)
+                .ToListAsync();
+        }
+        
+        // Build employee query with optional unit filter
+        var employeeQuery = _context.Employees
+            .Where(e => e.OrganizationId == organization.Id && e.IsActive);
+            
+        if (isPremium && unitId.HasValue)
+        {
+            employeeQuery = employeeQuery.Where(e => e.UnitId == unitId.Value);
+        }
+        
+        var employees = await employeeQuery
             .OrderBy(e => e.FullName)
             .ToListAsync();
+        
+        var employeeIds = employees.Select(e => e.Id).ToList();
             
         var attendances = await _context.TimeAttendances
-            .Where(a => a.Employee.OrganizationId == organization.Id)
+            .Where(a => employeeIds.Contains(a.EmployeeId))
             .Where(a => a.Date.Year == selectedYear && a.Date.Month == selectedMonth)
             .ToListAsync();
             
         var shifts = await _context.Shifts
-            .Where(s => s.Employee.OrganizationId == organization.Id)
+            .Where(s => employeeIds.Contains(s.EmployeeId))
             .Where(s => s.Date.Year == selectedYear && s.Date.Month == selectedMonth)
             .ToListAsync();
             
@@ -2078,6 +2123,9 @@ public class AppController : Controller
             Attendances = attendances,
             Shifts = shifts,
             Holidays = holidays,
+            Units = units,
+            SelectedUnitId = unitId,
+            IsPremium = isPremium,
             SelectedYear = selectedYear,
             SelectedMonth = selectedMonth
         };
@@ -3228,6 +3276,181 @@ public class AppController : Controller
     }
     
     #endregion
+    
+    #region API Credentials Management (Mesai API)
+    
+    /// <summary>
+    /// Get current API credentials info
+    /// </summary>
+    [HttpGet]
+    [Route("api/credentials")]
+    public async Task<IActionResult> GetApiCredentials()
+    {
+        if (User.Identity?.IsAuthenticated != true)
+            return Unauthorized(new { error = "Giriş yapmanız gerekiyor" });
+            
+        var organization = await GetOrCreateOrganizationAsync();
+        var user = await _userManager.GetUserAsync(User);
+        
+        var credential = await _context.UserApiCredentials
+            .FirstOrDefaultAsync(c => c.UserId == user!.Id && c.OrganizationId == organization.Id);
+        
+        // Calculate monthly limit based on employee count
+        var employeeCount = await _context.Employees
+            .CountAsync(e => e.OrganizationId == organization.Id && e.IsActive);
+        var daysInMonth = DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month);
+        var monthlyLimit = employeeCount * daysInMonth * 2; // employees x days x 2
+        
+        if (credential == null)
+        {
+            return Json(new {
+                hasCredentials = false,
+                monthlyLimit = monthlyLimit,
+                employeeCount = employeeCount
+            });
+        }
+        
+        // Reset counter if needed
+        if (DateTime.UtcNow >= credential.MonthlyResetDate)
+        {
+            credential.CurrentMonthRequests = 0;
+            credential.MonthlyResetDate = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1).AddMonths(1);
+            credential.MonthlyRequestLimit = monthlyLimit;
+            await _context.SaveChangesAsync();
+        }
+        
+        return Json(new {
+            hasCredentials = true,
+            username = credential.ApiUsername,
+            isActive = credential.IsActive,
+            monthlyLimit = credential.MonthlyRequestLimit,
+            usedThisMonth = credential.CurrentMonthRequests,
+            remainingThisMonth = Math.Max(0, credential.MonthlyRequestLimit - credential.CurrentMonthRequests),
+            resetDate = credential.MonthlyResetDate.ToString("yyyy-MM-dd"),
+            totalRequestsAllTime = credential.TotalRequests,
+            lastUsed = credential.LastUsedAt?.ToString("yyyy-MM-dd HH:mm"),
+            employeeCount = employeeCount
+        });
+    }
+    
+    /// <summary>
+    /// Create or update API credentials
+    /// </summary>
+    [HttpPost]
+    [Route("api/credentials")]
+    public async Task<IActionResult> CreateOrUpdateApiCredentials([FromBody] ApiCredentialDto dto)
+    {
+        if (User.Identity?.IsAuthenticated != true)
+            return Unauthorized(new { error = "Giriş yapmanız gerekiyor" });
+            
+        if (string.IsNullOrWhiteSpace(dto.Username) || dto.Username.Length < 3)
+            return BadRequest(new { error = "Kullanıcı adı en az 3 karakter olmalı" });
+            
+        if (string.IsNullOrWhiteSpace(dto.Password) || dto.Password.Length < 6)
+            return BadRequest(new { error = "Şifre en az 6 karakter olmalı" });
+        
+        // Check username availability
+        var organization = await GetOrCreateOrganizationAsync();
+        var user = await _userManager.GetUserAsync(User);
+        
+        var usernameExists = await _context.UserApiCredentials
+            .AnyAsync(c => c.ApiUsername == dto.Username && c.UserId != user!.Id);
+        if (usernameExists)
+            return BadRequest(new { error = "Bu kullanıcı adı zaten kullanılıyor" });
+        
+        var credential = await _context.UserApiCredentials
+            .FirstOrDefaultAsync(c => c.UserId == user!.Id && c.OrganizationId == organization.Id);
+        
+        // Calculate monthly limit
+        var employeeCount = await _context.Employees
+            .CountAsync(e => e.OrganizationId == organization.Id && e.IsActive);
+        var daysInMonth = DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month);
+        var monthlyLimit = employeeCount * daysInMonth * 2;
+        
+        if (credential == null)
+        {
+            credential = new UserApiCredential
+            {
+                UserId = user!.Id,
+                OrganizationId = organization.Id,
+                ApiUsername = dto.Username,
+                ApiPasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                MonthlyRequestLimit = monthlyLimit,
+                MonthlyResetDate = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1).AddMonths(1),
+                IsActive = true
+            };
+            _context.UserApiCredentials.Add(credential);
+        }
+        else
+        {
+            credential.ApiUsername = dto.Username;
+            credential.ApiPasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+            credential.MonthlyRequestLimit = monthlyLimit;
+            credential.UpdatedAt = DateTime.UtcNow;
+        }
+        
+        await _context.SaveChangesAsync();
+        
+        return Json(new { 
+            success = true, 
+            message = "API kimlik bilgileri oluşturuldu",
+            username = credential.ApiUsername,
+            monthlyLimit = credential.MonthlyRequestLimit
+        });
+    }
+    
+    /// <summary>
+    /// Toggle API credentials active state
+    /// </summary>
+    [HttpPatch]
+    [Route("api/credentials/toggle")]
+    public async Task<IActionResult> ToggleApiCredentials()
+    {
+        if (User.Identity?.IsAuthenticated != true)
+            return Unauthorized(new { error = "Giriş yapmanız gerekiyor" });
+            
+        var organization = await GetOrCreateOrganizationAsync();
+        var user = await _userManager.GetUserAsync(User);
+        
+        var credential = await _context.UserApiCredentials
+            .FirstOrDefaultAsync(c => c.UserId == user!.Id && c.OrganizationId == organization.Id);
+            
+        if (credential == null)
+            return NotFound(new { error = "API kimlik bilgisi bulunamadı" });
+        
+        credential.IsActive = !credential.IsActive;
+        credential.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+        
+        return Json(new { success = true, isActive = credential.IsActive });
+    }
+    
+    /// <summary>
+    /// Delete API credentials
+    /// </summary>
+    [HttpDelete]
+    [Route("api/credentials")]
+    public async Task<IActionResult> DeleteApiCredentials()
+    {
+        if (User.Identity?.IsAuthenticated != true)
+            return Unauthorized(new { error = "Giriş yapmanız gerekiyor" });
+            
+        var organization = await GetOrCreateOrganizationAsync();
+        var user = await _userManager.GetUserAsync(User);
+        
+        var credential = await _context.UserApiCredentials
+            .FirstOrDefaultAsync(c => c.UserId == user!.Id && c.OrganizationId == organization.Id);
+            
+        if (credential == null)
+            return NotFound(new { error = "API kimlik bilgisi bulunamadı" });
+        
+        _context.UserApiCredentials.Remove(credential);
+        await _context.SaveChangesAsync();
+        
+        return Json(new { success = true, message = "API kimlik bilgileri silindi" });
+    }
+    
+    #endregion
 }
 
 // DTOs
@@ -3353,5 +3576,11 @@ public class UnitDto
 public class AssignEmployeesDto
 {
     public List<int> EmployeeIds { get; set; } = new();
+}
+
+public class ApiCredentialDto
+{
+    public string Username { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
 }
 

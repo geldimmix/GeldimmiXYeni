@@ -540,10 +540,21 @@
         <h1 class="att-title">🕐 @(isTurkish ? "Mesai Takip" : "Attendance")</h1>
         
         <div class="att-nav">
+            @if (Model.IsPremium && Model.Units.Any())
+            {
+                <select class="form-select" style="padding: 8px 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.85rem; min-width: 150px;"
+                        onchange="location.href='@Url.Action("Attendance")?year=@Model.SelectedYear&month=@Model.SelectedMonth&unitId=' + this.value">
+                    <option value="">@(isTurkish ? "Tüm Birimler" : "All Units")</option>
+                    @foreach (var unit in Model.Units)
+                    {
+                        <option value="@unit.Id" @(Model.SelectedUnitId == unit.Id ? "selected" : "")>@unit.Name</option>
+                    }
+                </select>
+            }
             <div class="month-picker">
-                <a href="@Url.Action("Attendance", new { year = Model.SelectedMonth == 1 ? Model.SelectedYear - 1 : Model.SelectedYear, month = Model.SelectedMonth == 1 ? 12 : Model.SelectedMonth - 1 })">‹</a>
+                <a href="@Url.Action("Attendance", new { year = Model.SelectedMonth == 1 ? Model.SelectedYear - 1 : Model.SelectedYear, month = Model.SelectedMonth == 1 ? 12 : Model.SelectedMonth - 1, unitId = Model.SelectedUnitId })">‹</a>
                 <span class="month-text">@Model.MonthName</span>
-                <a href="@Url.Action("Attendance", new { year = Model.SelectedMonth == 12 ? Model.SelectedYear + 1 : Model.SelectedYear, month = Model.SelectedMonth == 12 ? 1 : Model.SelectedMonth + 1 })">›</a>
+                <a href="@Url.Action("Attendance", new { year = Model.SelectedMonth == 12 ? Model.SelectedYear + 1 : Model.SelectedYear, month = Model.SelectedMonth == 12 ? 1 : Model.SelectedMonth + 1, unitId = Model.SelectedUnitId })">›</a>
             </div>
             <a href="@Url.Action("Index", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="btn-back">← @(isTurkish ? "Takvim" : "Calendar")</a>
         </div>
@@ -770,12 +781,230 @@
     </div>
 </div>
 
+<!-- API Management Section -->
+<div class="att-card" style="margin-top: 20px;">
+    <div class="att-card-header" style="padding: 16px 20px; border-bottom: 1px solid #e0e0e0; background: #f8f9fa;">
+        <h3 style="margin: 0; font-size: 1rem; display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 1.2rem;">🔌</span> 
+            @(isTurkish ? "Mesai API Servisi" : "Attendance API Service")
+        </h3>
+        <p style="margin: 4px 0 0; color: #666; font-size: 0.85rem;">
+            @(isTurkish ? "Harici sistemlerden mesai kaydı göndermek için API erişimi" : "API access for sending attendance records from external systems")
+        </p>
+    </div>
+    <div class="att-card-body" style="padding: 20px;">
+        <div id="apiContainer">
+            <div id="apiLoading" style="text-align: center; padding: 20px; color: #666;">
+                @(isTurkish ? "Yükleniyor..." : "Loading...")
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- API Credential Modal -->
+<div id="apiModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h4 class="modal-title">@(isTurkish ? "API Kimlik Bilgileri" : "API Credentials")</h4>
+            <button class="modal-close" onclick="closeApiModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group" style="margin-bottom: 16px;">
+                <label class="form-label" style="font-weight: 600; margin-bottom: 4px;">@(isTurkish ? "API Kullanıcı Adı" : "API Username")</label>
+                <input type="text" class="form-input" id="apiUsername" placeholder="@(isTurkish ? "En az 3 karakter" : "Min 3 characters")" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+            </div>
+            <div class="form-group" style="margin-bottom: 16px;">
+                <label class="form-label" style="font-weight: 600; margin-bottom: 4px;">@(isTurkish ? "API Şifre" : "API Password")</label>
+                <input type="password" class="form-input" id="apiPassword" placeholder="@(isTurkish ? "En az 6 karakter" : "Min 6 characters")" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+            </div>
+            <div style="background: #fffbeb; border: 1px solid #fcd34d; border-radius: 6px; padding: 12px; font-size: 0.85rem;">
+                <strong>⚠️ @(isTurkish ? "Önemli:" : "Important:")</strong>
+                @(isTurkish ? "Şifrenizi bir yere kaydedin. Şifre bir daha gösterilmeyecek." : "Save your password. It won't be shown again.")
+            </div>
+        </div>
+        <div class="modal-footer" style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button class="btn btn-cancel" onclick="closeApiModal()">@(isTurkish ? "İptal" : "Cancel")</button>
+            <button class="btn btn-save" onclick="saveApiCredentials()">@(isTurkish ? "Kaydet" : "Save")</button>
+        </div>
+    </div>
+</div>
+
 <script>
     let currentShiftStart = '';
     let currentShiftEnd = '';
     let currentShiftSpans = false;
     let originalCheckIn = '';
     let originalCheckOut = '';
+    
+    // API Management Functions
+    async function loadApiStatus() {
+        try {
+            const res = await fetch('/api/credentials');
+            const data = await res.json();
+            renderApiPanel(data);
+        } catch (e) {
+            document.getElementById('apiContainer').innerHTML = 
+                '<p style="color: #ef4444;">@(isTurkish ? "API bilgileri yüklenemedi" : "Failed to load API info")</p>';
+        }
+    }
+    
+    function renderApiPanel(data) {
+        const container = document.getElementById('apiContainer');
+        const isTurkish = '@(isTurkish ? "true" : "false")' === 'true';
+        
+        if (!data.hasCredentials) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">🔐</div>
+                    <h4 style="margin: 0 0 10px;">${isTurkish ? 'API Erişimi Henüz Aktif Değil' : 'API Access Not Active'}</h4>
+                    <p style="color: #666; margin-bottom: 20px;">
+                        ${isTurkish ? 'Harici sistemlerden mesai kaydı göndermek için API kimlik bilgileri oluşturun.' : 'Create API credentials to send attendance records from external systems.'}
+                    </p>
+                    <p style="font-size: 0.85rem; color: #666; margin-bottom: 20px;">
+                        <strong>${isTurkish ? 'Aylık Limit:' : 'Monthly Limit:'}</strong> ${data.monthlyLimit} ${isTurkish ? 'istek' : 'requests'} 
+                        (${data.employeeCount} ${isTurkish ? 'personel' : 'employees'} × ${isTurkish ? 'ay günü' : 'days'} × 2)
+                    </p>
+                    <button onclick="openApiModal()" class="btn btn-save" style="padding: 10px 24px;">
+                        ${isTurkish ? '🔑 API Oluştur' : '🔑 Create API'}
+                    </button>
+                </div>
+            `;
+        } else {
+            const usagePercent = Math.round((data.usedThisMonth / data.monthlyLimit) * 100);
+            const statusColor = data.isActive ? '#22c55e' : '#ef4444';
+            const statusText = data.isActive ? (isTurkish ? 'Aktif' : 'Active') : (isTurkish ? 'Devre Dışı' : 'Disabled');
+            
+            container.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                    <div style="background: #f8f9fa; padding: 16px; border-radius: 8px;">
+                        <div style="font-size: 0.75rem; color: #666; text-transform: uppercase; margin-bottom: 4px;">${isTurkish ? 'Durum' : 'Status'}</div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="width: 10px; height: 10px; border-radius: 50%; background: ${statusColor};"></span>
+                            <strong>${statusText}</strong>
+                        </div>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 16px; border-radius: 8px;">
+                        <div style="font-size: 0.75rem; color: #666; text-transform: uppercase; margin-bottom: 4px;">${isTurkish ? 'Kullanıcı Adı' : 'Username'}</div>
+                        <code style="background: #e5e7eb; padding: 2px 6px; border-radius: 4px;">${data.username}</code>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 16px; border-radius: 8px;">
+                        <div style="font-size: 0.75rem; color: #666; text-transform: uppercase; margin-bottom: 4px;">${isTurkish ? 'Bu Ay Kullanım' : 'This Month Usage'}</div>
+                        <strong>${data.usedThisMonth} / ${data.monthlyLimit}</strong>
+                        <div style="background: #e5e7eb; height: 4px; border-radius: 2px; margin-top: 6px;">
+                            <div style="background: ${usagePercent > 80 ? '#ef4444' : '#22c55e'}; height: 100%; width: ${usagePercent}%; border-radius: 2px;"></div>
+                        </div>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 16px; border-radius: 8px;">
+                        <div style="font-size: 0.75rem; color: #666; text-transform: uppercase; margin-bottom: 4px;">${isTurkish ? 'Sıfırlanma' : 'Resets'}</div>
+                        <strong>${data.resetDate}</strong>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 16px; background: #f1f5f9; border-radius: 8px;">
+                    <h5 style="margin: 0 0 10px; font-size: 0.9rem;">${isTurkish ? 'API Kullanımı' : 'API Usage'}</h5>
+                    <div style="font-family: monospace; font-size: 0.85rem; background: #1e293b; color: #e2e8f0; padding: 12px; border-radius: 6px; overflow-x: auto;">
+                        <div style="color: #94a3b8; margin-bottom: 4px;"># ${isTurkish ? 'Mesai kaydı gönderme' : 'Send attendance record'}</div>
+                        <div>curl -X POST \\</div>
+                        <div style="padding-left: 20px;">-u "${data.username}:YOUR_PASSWORD" \\</div>
+                        <div style="padding-left: 20px;">-H "Content-Type: application/json" \\</div>
+                        <div style="padding-left: 20px;">-d '{"identityNo":"12345","date":"2026-01-24","action":"checkin","time":"08:00"}' \\</div>
+                        <div style="padding-left: 20px;">${window.location.origin}/api/v1/workhours/record</div>
+                    </div>
+                    <p style="font-size: 0.8rem; color: #666; margin: 10px 0 0;">
+                        <strong>${isTurkish ? 'Parametreler:' : 'Parameters:'}</strong> 
+                        identityNo (${isTurkish ? 'sicil no' : 'employee ID'}), 
+                        date (YYYY-MM-DD), 
+                        action (checkin/checkout), 
+                        time (HH:mm)
+                    </p>
+                </div>
+                
+                <div style="margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button onclick="openApiModal()" class="btn" style="padding: 8px 16px; background: #f1f5f9; border: 1px solid #e0e0e0; border-radius: 6px;">
+                        🔑 ${isTurkish ? 'Şifre Değiştir' : 'Change Password'}
+                    </button>
+                    <button onclick="toggleApi()" class="btn" style="padding: 8px 16px; background: ${data.isActive ? '#fef2f2' : '#f0fdf4'}; border: 1px solid ${data.isActive ? '#fecaca' : '#bbf7d0'}; border-radius: 6px; color: ${data.isActive ? '#dc2626' : '#16a34a'};">
+                        ${data.isActive ? '⏸️ ' + (isTurkish ? 'Devre Dışı Bırak' : 'Disable') : '▶️ ' + (isTurkish ? 'Aktif Et' : 'Enable')}
+                    </button>
+                    <button onclick="deleteApiCredentials()" class="btn" style="padding: 8px 16px; background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; color: #666;">
+                        🗑️ ${isTurkish ? 'Sil' : 'Delete'}
+                    </button>
+                </div>
+            `;
+        }
+    }
+    
+    function openApiModal() {
+        document.getElementById('apiUsername').value = '';
+        document.getElementById('apiPassword').value = '';
+        document.getElementById('apiModal').classList.add('active');
+    }
+    
+    function closeApiModal() {
+        document.getElementById('apiModal').classList.remove('active');
+    }
+    
+    async function saveApiCredentials() {
+        const username = document.getElementById('apiUsername').value.trim();
+        const password = document.getElementById('apiPassword').value;
+        
+        if (username.length < 3) {
+            alert('@(isTurkish ? "Kullanıcı adı en az 3 karakter olmalı" : "Username must be at least 3 characters")');
+            return;
+        }
+        if (password.length < 6) {
+            alert('@(isTurkish ? "Şifre en az 6 karakter olmalı" : "Password must be at least 6 characters")');
+            return;
+        }
+        
+        try {
+            const res = await fetch('/api/credentials', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+            if (data.success) {
+                closeApiModal();
+                loadApiStatus();
+            } else {
+                alert(data.error || '@(isTurkish ? "Hata oluştu" : "Error occurred")');
+            }
+        } catch (e) {
+            alert('@(isTurkish ? "Bağlantı hatası" : "Connection error")');
+        }
+    }
+    
+    async function toggleApi() {
+        if (!confirm('@(isTurkish ? "API durumunu değiştirmek istediğinizden emin misiniz?" : "Are you sure you want to toggle API status?")')) return;
+        
+        try {
+            const res = await fetch('/api/credentials/toggle', { method: 'PATCH' });
+            const data = await res.json();
+            if (data.success) {
+                loadApiStatus();
+            }
+        } catch (e) {
+            alert('@(isTurkish ? "Hata" : "Error")');
+        }
+    }
+    
+    async function deleteApiCredentials() {
+        if (!confirm('@(isTurkish ? "API kimlik bilgilerini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz." : "Are you sure you want to delete API credentials? This cannot be undone.")')) return;
+        
+        try {
+            const res = await fetch('/api/credentials', { method: 'DELETE' });
+            const data = await res.json();
+            if (data.success) {
+                loadApiStatus();
+            }
+        } catch (e) {
+            alert('@(isTurkish ? "Hata" : "Error")');
+        }
+    }
+    
+    // Load API status on page load
+    document.addEventListener('DOMContentLoaded', loadApiStatus);
 
     function closeModal() {
         document.getElementById('modal').classList.remove('active');

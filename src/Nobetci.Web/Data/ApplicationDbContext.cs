@@ -34,6 +34,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Module> Modules => Set<Module>();
     public DbSet<SubModule> SubModules => Set<SubModule>();
     public DbSet<UserModuleAccess> UserModuleAccesses => Set<UserModuleAccess>();
+    
+    // User API Credentials
+    public DbSet<UserApiCredential> UserApiCredentials => Set<UserApiCredential>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -289,6 +292,23 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasOne(e => e.Module)
                 .WithMany(m => m.UserAccesses)
                 .HasForeignKey(e => e.ModuleId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // UserApiCredential configuration
+        builder.Entity<UserApiCredential>(entity =>
+        {
+            entity.HasIndex(e => new { e.UserId, e.OrganizationId }).IsUnique();
+            entity.HasIndex(e => e.ApiUsername).IsUnique();
+            
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            entity.HasOne(e => e.Organization)
+                .WithMany()
+                .HasForeignKey(e => e.OrganizationId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 

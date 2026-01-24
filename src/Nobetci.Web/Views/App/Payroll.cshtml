@@ -592,10 +592,21 @@
         <h1 class="payroll-title">📊 @(isTurkish ? "Puantaj" : "Payroll")</h1>
         
         <div class="nav-row">
+            @if (Model.IsPremium && Model.Units.Any())
+            {
+                <select class="form-select" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.85rem; min-width: 150px;"
+                        onchange="location.href='@Url.Action("Payroll")?year=@Model.SelectedYear&month=@Model.SelectedMonth&unitId=' + this.value">
+                    <option value="">@(isTurkish ? "Tüm Birimler" : "All Units")</option>
+                    @foreach (var unit in Model.Units)
+                    {
+                        <option value="@unit.Id" @(Model.SelectedUnitId == unit.Id ? "selected" : "")>@unit.Name</option>
+                    }
+                </select>
+            }
             <div class="month-picker">
-                <a href="@Url.Action("Payroll", new { year = Model.SelectedMonth == 1 ? Model.SelectedYear - 1 : Model.SelectedYear, month = Model.SelectedMonth == 1 ? 12 : Model.SelectedMonth - 1 })">‹</a>
+                <a href="@Url.Action("Payroll", new { year = Model.SelectedMonth == 1 ? Model.SelectedYear - 1 : Model.SelectedYear, month = Model.SelectedMonth == 1 ? 12 : Model.SelectedMonth - 1, unitId = Model.SelectedUnitId })">‹</a>
                 <span class="month-text">@Model.MonthName</span>
-                <a href="@Url.Action("Payroll", new { year = Model.SelectedMonth == 12 ? Model.SelectedYear + 1 : Model.SelectedYear, month = Model.SelectedMonth == 12 ? 1 : Model.SelectedMonth + 1 })">›</a>
+                <a href="@Url.Action("Payroll", new { year = Model.SelectedMonth == 12 ? Model.SelectedYear + 1 : Model.SelectedYear, month = Model.SelectedMonth == 12 ? 1 : Model.SelectedMonth + 1, unitId = Model.SelectedUnitId })">›</a>
             </div>
             <a href="@Url.Action("Index", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="btn btn-outline">
                 ← @(isTurkish ? "Takvim" : "Calendar")
@@ -608,6 +619,10 @@
         <form method="get" class="settings-row" id="settingsForm">
             <input type="hidden" name="year" value="@Model.SelectedYear" />
             <input type="hidden" name="month" value="@Model.SelectedMonth" />
+            @if (Model.SelectedUnitId.HasValue)
+            {
+                <input type="hidden" name="unitId" value="@Model.SelectedUnitId" />
+            }
             
             <div class="setting-group">
                 <label>@(isTurkish ? "Veri Kaynağı" : "Data Source")</label>

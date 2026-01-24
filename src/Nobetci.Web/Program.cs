@@ -607,6 +607,29 @@ using (var scope = app.Services.CreateScope())
             CREATE INDEX IF NOT EXISTS ""IX_UserModuleAccesses_ModuleId"" ON ""UserModuleAccesses"" (""ModuleId"");
         ", "UserModuleAccesses");
         
+        // Create UserApiCredentials table for API access
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""UserApiCredentials"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""UserId"" VARCHAR(450) NOT NULL REFERENCES ""AspNetUsers""(""Id"") ON DELETE CASCADE,
+                ""OrganizationId"" INTEGER NOT NULL REFERENCES ""Organizations""(""Id"") ON DELETE CASCADE,
+                ""ApiUsername"" VARCHAR(50) NOT NULL,
+                ""ApiPasswordHash"" VARCHAR(100) NOT NULL,
+                ""MonthlyRequestLimit"" INTEGER NOT NULL DEFAULT 0,
+                ""CurrentMonthRequests"" INTEGER NOT NULL DEFAULT 0,
+                ""MonthlyResetDate"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""LastUsedAt"" TIMESTAMP WITH TIME ZONE NULL,
+                ""TotalRequests"" INTEGER NOT NULL DEFAULT 0,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                ""UpdatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                UNIQUE(""UserId"", ""OrganizationId""),
+                UNIQUE(""ApiUsername"")
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_UserApiCredentials_UserId"" ON ""UserApiCredentials"" (""UserId"");
+            CREATE INDEX IF NOT EXISTS ""IX_UserApiCredentials_ApiUsername"" ON ""UserApiCredentials"" (""ApiUsername"");
+        ", "UserApiCredentials");
+        
         // Run migrations - but don't let failures prevent seeding
         try
         {
