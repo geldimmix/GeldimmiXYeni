@@ -529,7 +529,7 @@
                                 {
                                     @foreach (var unit in Model.Units)
                                     {
-                                        var empCount = Model.Employees.Count(e => e.UnitId == unit.Id);
+                                        var empCount = 0; // Model.Employees.Count(e => e.UnitId == unit.Id); - temporarily disabled
                                         <div class="unit-card" data-unit-id="@unit.Id">
                                             <div class="unit-color-bar" style="background-color: @(unit.Color ?? "#3B82F6")"></div>
                                             <div class="unit-info">

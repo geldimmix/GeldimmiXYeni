@@ -514,6 +514,26 @@ public class AccountController : Controller
                 await TransferGuestDataToUser(existingUser);
                 return LocalRedirect(returnUrl ?? "/app");
             }
+            else
+            {
+                // External login already exists or other error
+                var errors = string.Join(", ", addLoginResult.Errors.Select(e => e.Description));
+                _logger.LogWarning("AddLoginAsync failed for existing user {Email}: {Errors}", email, errors);
+                
+                // Maybe this Google account is already linked, try to sign in directly
+                var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+                if (signInResult.Succeeded)
+                {
+                    existingUser.LastLoginAt = DateTime.UtcNow;
+                    await _userManager.UpdateAsync(existingUser);
+                    await TransferGuestDataToUser(existingUser);
+                    return LocalRedirect(returnUrl ?? "/app");
+                }
+                
+                TempData["GoogleError"] = isTurkish 
+                    ? $"Google hesabı bağlanamadı: {errors}" 
+                    : $"Failed to link Google account: {errors}";
+            }
         }
         else
         {

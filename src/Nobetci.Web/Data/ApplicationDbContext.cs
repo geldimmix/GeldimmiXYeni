@@ -90,10 +90,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .HasForeignKey(e => e.OrganizationId)
                 .OnDelete(DeleteBehavior.Cascade);
                 
-            entity.HasOne(e => e.Unit)
-                .WithMany(u => u.Employees)
-                .HasForeignKey(e => e.UnitId)
-                .OnDelete(DeleteBehavior.SetNull);
+            // Unit relationship temporarily disabled - requires DB migration
+            // entity.HasOne(e => e.Unit)
+            //     .WithMany(u => u.Employees)
+            //     .HasForeignKey(e => e.UnitId)
+            //     .OnDelete(DeleteBehavior.SetNull);
         });
 
         // ShiftTemplate configuration
