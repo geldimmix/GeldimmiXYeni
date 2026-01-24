@@ -2855,74 +2855,82 @@ public class AppController : Controller
     [Route("api/units")]
     public async Task<IActionResult> CreateUnit([FromBody] UnitDto dto)
     {
-        if (!await IsPremiumUserAsync())
-            return Unauthorized(new { error = "Premium üyelik gerekli" });
+        try
+        {
+            if (!await IsPremiumUserAsync())
+                return Unauthorized(new { error = "Premium üyelik gerekli" });
+                
+            var organization = await GetOrCreateOrganizationAsync();
             
-        var organization = await GetOrCreateOrganizationAsync();
-        
-        // Check for duplicate name
-        var exists = await _context.Units
-            .AnyAsync(u => u.OrganizationId == organization.Id && u.Name == dto.Name && u.IsActive);
-        if (exists)
-            return BadRequest(new { error = "Bu isimde bir birim zaten mevcut" });
-        
-        // Validate unit type if provided
-        if (dto.UnitTypeId.HasValue)
-        {
-            var typeExists = await _context.UnitTypes
-                .AnyAsync(ut => ut.Id == dto.UnitTypeId && ut.OrganizationId == organization.Id);
-            if (!typeExists)
-                return BadRequest(new { error = "Geçersiz birim tipi" });
+            // Check for duplicate name
+            var exists = await _context.Units
+                .AnyAsync(u => u.OrganizationId == organization.Id && u.Name == dto.Name && u.IsActive);
+            if (exists)
+                return BadRequest(new { error = "Bu isimde bir birim zaten mevcut" });
+            
+            // Validate unit type if provided
+            if (dto.UnitTypeId.HasValue)
+            {
+                var typeExists = await _context.UnitTypes
+                    .AnyAsync(ut => ut.Id == dto.UnitTypeId && ut.OrganizationId == organization.Id);
+                if (!typeExists)
+                    return BadRequest(new { error = "Geçersiz birim tipi" });
+            }
+            
+            var maxOrder = await _context.Units
+                .Where(u => u.OrganizationId == organization.Id)
+                .MaxAsync(u => (int?)u.SortOrder) ?? 0;
+            
+            // Get default coefficient from unit type if not specified
+            decimal coefficient = dto.Coefficient;
+            if (coefficient <= 0 && dto.UnitTypeId.HasValue)
+            {
+                var unitType = await _context.UnitTypes.FindAsync(dto.UnitTypeId.Value);
+                coefficient = unitType?.DefaultCoefficient ?? 1.0m;
+            }
+            if (coefficient <= 0) coefficient = 1.0m;
+            
+            var unit = new Unit
+            {
+                OrganizationId = organization.Id,
+                UnitTypeId = dto.UnitTypeId,
+                Name = dto.Name,
+                Description = dto.Description,
+                Coefficient = coefficient,
+                Color = dto.Color ?? GetRandomColor(),
+                IsDefault = dto.IsDefault,
+                EmployeeLimit = dto.EmployeeLimit,
+                SortOrder = maxOrder + 1
+            };
+            
+            // If this is marked as default, unset other defaults
+            if (dto.IsDefault)
+            {
+                await _context.Units
+                    .Where(u => u.OrganizationId == organization.Id && u.IsDefault)
+                    .ExecuteUpdateAsync(s => s.SetProperty(u => u.IsDefault, false));
+            }
+            
+            _context.Units.Add(unit);
+            await _context.SaveChangesAsync();
+            
+            return Json(new { 
+                unit.Id, 
+                unit.Name, 
+                unit.Description,
+                unit.UnitTypeId,
+                unit.Coefficient,
+                unit.Color,
+                unit.IsDefault,
+                unit.SortOrder,
+                EmployeeCount = 0
+            });
         }
-        
-        var maxOrder = await _context.Units
-            .Where(u => u.OrganizationId == organization.Id)
-            .MaxAsync(u => (int?)u.SortOrder) ?? 0;
-        
-        // Get default coefficient from unit type if not specified
-        decimal coefficient = dto.Coefficient;
-        if (coefficient <= 0 && dto.UnitTypeId.HasValue)
+        catch (Exception ex)
         {
-            var unitType = await _context.UnitTypes.FindAsync(dto.UnitTypeId.Value);
-            coefficient = unitType?.DefaultCoefficient ?? 1.0m;
+            _logger.LogError(ex, "Error creating unit");
+            return StatusCode(500, new { error = "Birim oluşturulurken bir hata oluştu: " + ex.Message });
         }
-        if (coefficient <= 0) coefficient = 1.0m;
-        
-        var unit = new Unit
-        {
-            OrganizationId = organization.Id,
-            UnitTypeId = dto.UnitTypeId,
-            Name = dto.Name,
-            Description = dto.Description,
-            Coefficient = coefficient,
-            Color = dto.Color ?? GetRandomColor(),
-            IsDefault = dto.IsDefault,
-            EmployeeLimit = dto.EmployeeLimit,
-            SortOrder = maxOrder + 1
-        };
-        
-        // If this is marked as default, unset other defaults
-        if (dto.IsDefault)
-        {
-            await _context.Units
-                .Where(u => u.OrganizationId == organization.Id && u.IsDefault)
-                .ExecuteUpdateAsync(s => s.SetProperty(u => u.IsDefault, false));
-        }
-        
-        _context.Units.Add(unit);
-        await _context.SaveChangesAsync();
-        
-        return Json(new { 
-            unit.Id, 
-            unit.Name, 
-            unit.Description,
-            unit.UnitTypeId,
-            unit.Coefficient,
-            unit.Color,
-            unit.IsDefault,
-            unit.SortOrder,
-            EmployeeCount = 0
-        });
     }
     
     // PUT: /api/units/{id}
