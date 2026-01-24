@@ -6,152 +6,106 @@
 }
 
 <div class="app-wrapper">
-    <!-- Left Sidebar - Module Based -->
+    <!-- Left Sidebar - Compact Module Based -->
     <aside class="app-sidebar">
-        <!-- Module Header -->
+        <!-- Module Header - Minimal -->
         <div class="module-header">
-            <span class="module-icon">🏥</span>
-            <div class="module-info">
-                <span class="module-name">@(isTurkish ? "Hemşire Nöbet" : "Nurse Shift")</span>
-                <span class="module-sub">@(isTurkish ? "Sistemi" : "System")</span>
-            </div>
+            <span>🏥</span>
+            <span class="module-title">@(isTurkish ? "Nöbet Sistemi" : "Shift System")</span>
         </div>
         
-        <!-- Module: Nöbet & Personel -->
-        <div class="module-section">
-            <div class="section-title">
-                <span>📅</span>
-                @(isTurkish ? "Nöbet & Personel" : "Shifts & Staff")
-            </div>
-            <div class="section-items">
-                <button class="module-item active" data-bs-toggle="modal" data-bs-target="#employeesModal">
-                    <span class="item-icon">👥</span>
-                    <span class="item-text">@(isTurkish ? "Personeller" : "Employees")</span>
-                    <span class="item-badge">@Model.EmployeeCount</span>
+        <!-- All Items in Flat List -->
+        <div class="sidebar-items">
+            <button class="sidebar-item" data-bs-toggle="modal" data-bs-target="#employeesModal">
+                <span class="si-icon">👥</span>
+                <span class="si-text">@(isTurkish ? "Personeller" : "Employees")</span>
+                <span class="si-badge">@Model.EmployeeCount</span>
+            </button>
+            
+            <button class="sidebar-item" data-bs-toggle="modal" data-bs-target="#templatesModal">
+                <span class="si-icon">⏰</span>
+                <span class="si-text">@(isTurkish ? "Vardiyalar" : "Shifts")</span>
+            </button>
+            
+            <button class="sidebar-item" data-bs-toggle="modal" data-bs-target="#leavesModal">
+                <span class="si-icon">📋</span>
+                <span class="si-text">@(isTurkish ? "İzinler" : "Leaves")</span>
+            </button>
+            
+            <button class="sidebar-item" data-bs-toggle="modal" data-bs-target="#addHolidayModal">
+                <span class="si-icon">🎉</span>
+                <span class="si-text">@(isTurkish ? "Tatiller" : "Holidays")</span>
+                <span class="si-badge">@Model.Holidays.Count</span>
+            </button>
+            
+            <div class="sidebar-sep"></div>
+            
+            @if (Model.CanAccessPayroll)
+            {
+                <a href="@Url.Action("Payroll", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="sidebar-item">
+                    <span class="si-icon">📊</span>
+                    <span class="si-text">@(isTurkish ? "Puantaj" : "Payroll")</span>
+                </a>
+            }
+            else
+            {
+                <button class="sidebar-item locked" disabled>
+                    <span class="si-icon">📊</span>
+                    <span class="si-text">@(isTurkish ? "Puantaj" : "Payroll")</span>
+                    <span class="si-lock">🔒</span>
                 </button>
-                <button class="module-item" data-bs-toggle="modal" data-bs-target="#templatesModal">
-                    <span class="item-icon">⏰</span>
-                    <span class="item-text">@(isTurkish ? "Vardiyalar" : "Shifts")</span>
+            }
+            
+            @if (Model.CanAccessAttendance)
+            {
+                <a href="@Url.Action("Attendance", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="sidebar-item">
+                    <span class="si-icon">🕐</span>
+                    <span class="si-text">@(isTurkish ? "Mesai" : "Attendance")</span>
+                </a>
+            }
+            else
+            {
+                <button class="sidebar-item locked" disabled>
+                    <span class="si-icon">🕐</span>
+                    <span class="si-text">@(isTurkish ? "Mesai" : "Attendance")</span>
+                    <span class="si-lock">🔒</span>
                 </button>
-            </div>
-        </div>
-        
-        <!-- Module: İzin & Tatil -->
-        <div class="module-section">
-            <div class="section-title">
-                <span>🏖️</span>
-                @(isTurkish ? "İzin & Tatil" : "Leave & Holiday")
-            </div>
-            <div class="section-items">
-                <button class="module-item" data-bs-toggle="modal" data-bs-target="#leavesModal">
-                    <span class="item-icon">📋</span>
-                    <span class="item-text">@(isTurkish ? "İzinler" : "Leaves")</span>
-                </button>
-                <button class="module-item" data-bs-toggle="modal" data-bs-target="#addHolidayModal">
-                    <span class="item-icon">🎉</span>
-                    <span class="item-text">@(isTurkish ? "Tatiller" : "Holidays")</span>
-                    <span class="item-badge">@Model.Holidays.Count</span>
-                </button>
-            </div>
-        </div>
-        
-        <!-- Module: Raporlama -->
-        <div class="module-section">
-            <div class="section-title">
-                <span>📊</span>
-                @(isTurkish ? "Raporlama" : "Reports")
-            </div>
-            <div class="section-items">
-                @if (Model.CanAccessPayroll)
-                {
-                    <a href="@Url.Action("Payroll", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="module-item">
-                        <span class="item-icon">📈</span>
-                        <span class="item-text">@(isTurkish ? "Puantaj" : "Payroll")</span>
-                    </a>
-                }
-                else
-                {
-                    <button class="module-item locked" disabled title="@(isTurkish ? "Kayıtlı kullanıcılara özel" : "For registered users only")">
-                        <span class="item-icon">📈</span>
-                        <span class="item-text">@(isTurkish ? "Puantaj" : "Payroll")</span>
-                        <span class="item-lock">🔒</span>
-                    </button>
-                }
+            }
+            
+            @if (Model.IsRegistered)
+            {
+                <div class="sidebar-sep"></div>
                 
-                @if (Model.CanAccessAttendance)
+                @if (Model.CanManageUnits)
                 {
-                    <a href="@Url.Action("Attendance", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="module-item">
-                        <span class="item-icon">🕐</span>
-                        <span class="item-text">@(isTurkish ? "Mesai Takip" : "Attendance")</span>
-                    </a>
+                    <button class="sidebar-item premium" data-bs-toggle="modal" data-bs-target="#unitsModal">
+                        <span class="si-icon">🏛️</span>
+                        <span class="si-text">@(isTurkish ? "Birimler" : "Units")</span>
+                        <span class="si-badge pro">@Model.Units.Count</span>
+                    </button>
                 }
                 else
                 {
-                    <button class="module-item locked" disabled title="@(isTurkish ? "Kayıtlı kullanıcılara özel" : "For registered users only")">
-                        <span class="item-icon">🕐</span>
-                        <span class="item-text">@(isTurkish ? "Mesai Takip" : "Attendance")</span>
-                        <span class="item-lock">🔒</span>
+                    <button class="sidebar-item locked" disabled>
+                        <span class="si-icon">🏛️</span>
+                        <span class="si-text">@(isTurkish ? "Birimler" : "Units")</span>
+                        <span class="si-lock">🔒</span>
                     </button>
                 }
-            </div>
+            }
         </div>
         
-        <!-- Module: Birimler (Premium) -->
-        @if (Model.IsRegistered)
-        {
-            <div class="module-section premium-section">
-                <div class="section-title premium">
-                    <span>🏛️</span>
-                    @(isTurkish ? "Birimler" : "Units")
-                    <span class="premium-tag">PRO</span>
-                </div>
-                <div class="section-items">
-                    @if (Model.CanManageUnits)
-                    {
-                        <button class="module-item premium" data-bs-toggle="modal" data-bs-target="#unitsModal">
-                            <span class="item-icon">🏥</span>
-                            <span class="item-text">@(isTurkish ? "Birim Yönetimi" : "Unit Management")</span>
-                            <span class="item-badge premium-badge">@Model.Units.Count</span>
-                        </button>
-                    }
-                    else
-                    {
-                        <button class="module-item locked premium" disabled title="@(isTurkish ? "Premium üyelik gerekli" : "Premium membership required")">
-                            <span class="item-icon">🏥</span>
-                            <span class="item-text">@(isTurkish ? "Birim Yönetimi" : "Unit Management")</span>
-                            <span class="item-lock">🔒</span>
-                        </button>
-                    }
-                </div>
-            </div>
-        }
-        
-        <!-- Divider -->
-        <div class="sidebar-divider"></div>
-        
-        <!-- Tools Section -->
-        <div class="tools-section">
-            <div class="section-title small">
-                <span>⚙️</span>
-                @(isTurkish ? "Araçlar" : "Tools")
-            </div>
+        <!-- Tools - Bottom -->
+        <div class="sidebar-tools">
+            <label class="multi-toggle">
+                <input type="checkbox" id="multiSelectMode">
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                <span>@(isTurkish ? "Çoklu" : "Multi")</span>
+            </label>
             
-            <!-- Multi-select Toggle -->
-            <div class="tool-item">
-                <label class="toggle-label">
-                    <input type="checkbox" id="multiSelectMode">
-                    <span class="toggle-track"><span class="toggle-thumb"></span></span>
-                    <span class="toggle-text">@(isTurkish ? "Çoklu Seçim" : "Multi-Select")</span>
-                </label>
-            </div>
-            
-            <!-- Selected Template Indicator -->
             <div class="selected-indicator" id="selectedIndicator" style="display:none;">
                 <div class="indicator-color"></div>
-                <div class="indicator-text">
-                    <span class="indicator-label">@(isTurkish ? "Seçili" : "Selected")</span>
-                    <span class="indicator-time" id="selectedTime"></span>
-                </div>
+                <span class="indicator-time" id="selectedTime"></span>
             </div>
         </div>
     </aside>
@@ -3298,23 +3252,22 @@
         background: #f1f5f9;
     }
     
-    /* Sidebar - Module Based */
+    /* Sidebar - Compact */
     .app-sidebar {
-        width: 210px;
-        min-width: 210px;
+        width: 160px;
+        min-width: 160px;
         max-height: calc(100vh - 60px);
-        background: linear-gradient(180deg, #fafbfc 0%, #f3f4f6 100%);
+        background: #fafafa;
         border-right: 1px solid #e5e7eb;
         display: flex;
         flex-direction: column;
-        padding: 12px;
-        gap: 8px;
+        padding: 8px;
         overflow-y: auto;
         overflow-x: hidden;
     }
     
     .app-sidebar::-webkit-scrollbar {
-        width: 4px;
+        width: 3px;
     }
     
     .app-sidebar::-webkit-scrollbar-track {
@@ -3326,191 +3279,177 @@
         border-radius: 2px;
     }
     
-    .app-sidebar::-webkit-scrollbar-thumb:hover {
-        background: #9ca3af;
-    }
-    
-    /* Module Header */
+    /* Module Header - Minimal */
     .module-header {
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 10px 12px;
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-        border-radius: 8px;
-        margin-bottom: 8px;
-    }
-    
-    .module-icon {
-        font-size: 1.4rem;
-    }
-    
-    .module-info {
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .module-name {
-        font-size: 0.85rem;
-        font-weight: 700;
-        color: white;
-        line-height: 1.1;
-    }
-    
-    .module-sub {
-        font-size: 0.7rem;
-        font-weight: 500;
-        color: rgba(255,255,255,0.8);
-    }
-    
-    /* Module Section */
-    .module-section {
-        background: white;
-        border-radius: 8px;
-        padding: 10px;
-        border: 1px solid #e5e7eb;
-    }
-    
-    .module-section.premium-section {
-        background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%);
-        border-color: #fcd34d;
-    }
-    
-    .section-title {
-        display: flex;
-        align-items: center;
         gap: 6px;
-        font-size: 0.7rem;
-        font-weight: 600;
-        color: #6b7280;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        padding: 8px;
+        background: #3b82f6;
+        border-radius: 6px;
         margin-bottom: 8px;
-        padding-bottom: 6px;
-        border-bottom: 1px solid #f3f4f6;
-    }
-    
-    .section-title.premium {
-        color: #b45309;
-        border-bottom-color: #fcd34d;
-    }
-    
-    .section-title.small {
-        font-size: 0.65rem;
-        border-bottom: none;
-        margin-bottom: 6px;
-        padding-bottom: 0;
-    }
-    
-    .premium-tag {
-        margin-left: auto;
-        font-size: 0.55rem;
-        padding: 2px 5px;
-        background: #f59e0b;
         color: white;
-        border-radius: 3px;
-        font-weight: 700;
+        font-size: 0.75rem;
+        font-weight: 600;
     }
     
-    .section-items {
+    .module-title {
+        white-space: nowrap;
+    }
+    
+    /* Sidebar Items */
+    .sidebar-items {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 2px;
+        flex: 1;
     }
     
-    /* Module Item */
-    .module-item {
+    .sidebar-item {
         display: flex;
         align-items: center;
         gap: 8px;
-        padding: 8px 10px;
+        padding: 7px 8px;
         background: transparent;
-        border: 1px solid transparent;
-        border-radius: 6px;
+        border: none;
+        border-radius: 5px;
         cursor: pointer;
-        transition: all 0.15s;
+        transition: all 0.1s;
         text-decoration: none;
         color: #374151;
-        font-size: 0.8rem;
+        font-size: 0.78rem;
+        width: 100%;
+        text-align: left;
     }
     
-    .module-item:hover {
+    .sidebar-item:hover {
         background: #f3f4f6;
-        border-color: #e5e7eb;
     }
     
-    .module-item.active {
-        background: #eff6ff;
-        border-color: #3b82f6;
-        color: #1d4ed8;
-    }
-    
-    .module-item.premium:hover {
-        background: #fef3c7;
-        border-color: #fcd34d;
-    }
-    
-    .module-item.locked {
-        opacity: 0.6;
+    .sidebar-item.locked {
+        opacity: 0.5;
         cursor: not-allowed;
     }
     
-    .item-icon {
-        font-size: 0.95rem;
-        width: 20px;
-        text-align: center;
+    .sidebar-item.premium {
+        background: #fefce8;
     }
     
-    .item-text {
+    .sidebar-item.premium:hover {
+        background: #fef3c7;
+    }
+    
+    .si-icon {
+        font-size: 0.9rem;
+        width: 18px;
+        text-align: center;
+        flex-shrink: 0;
+    }
+    
+    .si-text {
         flex: 1;
         font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
-    .item-badge {
-        font-size: 0.65rem;
-        padding: 2px 6px;
+    .si-badge {
+        font-size: 0.6rem;
+        padding: 1px 5px;
         background: #e5e7eb;
         color: #6b7280;
-        border-radius: 10px;
+        border-radius: 8px;
         font-weight: 600;
     }
     
-    .item-badge.premium-badge {
+    .si-badge.pro {
         background: #fcd34d;
         color: #92400e;
     }
     
-    .item-lock {
-        font-size: 0.7rem;
-        opacity: 0.7;
+    .si-lock {
+        font-size: 0.65rem;
+        opacity: 0.6;
     }
     
-    /* Sidebar Divider */
-    .sidebar-divider {
+    /* Separator */
+    .sidebar-sep {
         height: 1px;
         background: #e5e7eb;
-        margin: 4px 0;
+        margin: 6px 0;
     }
     
-    /* Tools Section */
-    .tools-section {
-        background: #f9fafb;
-        border-radius: 8px;
-        padding: 10px;
-        border: 1px solid #e5e7eb;
+    /* Tools */
+    .sidebar-tools {
+        margin-top: auto;
+        padding-top: 8px;
+        border-top: 1px solid #e5e7eb;
     }
     
-    .tool-item {
-        padding: 4px 0;
-    }
-    
-    .toggle-label {
+    .multi-toggle {
         display: flex;
         align-items: center;
-        gap: 8px;
-        cursor: pointer;
-        font-size: 0.75rem;
+        gap: 6px;
+        font-size: 0.7rem;
         color: #6b7280;
+        cursor: pointer;
+    }
+    
+    .multi-toggle input {
+        display: none;
+    }
+    
+    .toggle-track {
+        width: 28px;
+        height: 14px;
+        background: #d1d5db;
+        border-radius: 7px;
+        position: relative;
+        transition: background 0.2s;
+    }
+    
+    .toggle-thumb {
+        width: 10px;
+        height: 10px;
+        background: white;
+        border-radius: 50%;
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        transition: left 0.2s;
+    }
+    
+    .multi-toggle input:checked + .toggle-track {
+        background: #3b82f6;
+    }
+    
+    .multi-toggle input:checked + .toggle-track .toggle-thumb {
+        left: 16px;
+    }
+    
+    /* Selected Indicator - Compact */
+    .selected-indicator {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 6px;
+        padding: 5px 8px;
+        background: #eff6ff;
+        border-radius: 4px;
+    }
+    
+    .indicator-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+        background: #3b82f6;
+    }
+    
+    .indicator-time {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #1e40af;
     }
     
     /* Legacy - Keep for compatibility */
@@ -6619,41 +6558,32 @@
             max-height: none;
             flex-direction: row;
             flex-wrap: wrap;
-            padding: 8px;
-            gap: 6px;
+            padding: 6px;
+            gap: 4px;
         }
         
         .module-header {
-            width: 100%;
-            margin-bottom: 4px;
-            padding: 8px 12px;
+            padding: 6px 10px;
+            font-size: 0.7rem;
         }
         
-        .module-section {
-            flex: 1;
-            min-width: 140px;
+        .sidebar-items {
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 4px;
         }
         
-        .section-title {
-            font-size: 0.6rem;
-            margin-bottom: 6px;
-        }
-        
-        .module-item {
+        .sidebar-item {
             padding: 6px 8px;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
         }
         
-        .item-icon {
-            font-size: 0.85rem;
+        .sidebar-sep {
+            display: none;
         }
         
-        .tools-section {
-            width: 100%;
-        }
-        
-        .sidebar-divider {
-            width: 100%;
+        .sidebar-tools {
+            display: none;
         }
         
         .sidebar-actions {
@@ -6663,14 +6593,6 @@
         
         .action-btn {
             flex: 1;
-        }
-        
-        .templates-compact {
-            width: 100%;
-        }
-        
-        .tool-item, .selected-indicator {
-            display: none;
         }
         
         .toolbar-nav,
