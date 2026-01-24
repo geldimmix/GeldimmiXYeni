@@ -449,6 +449,41 @@ using (var scope = app.Services.CreateScope())
             END $$;
         ", "AspNetUsersColumns");
         
+        // Create UnitTypes table (Premium feature)
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""UnitTypes"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""OrganizationId"" INTEGER NOT NULL REFERENCES ""Organizations""(""Id"") ON DELETE CASCADE,
+                ""Name"" VARCHAR(100) NOT NULL,
+                ""Description"" VARCHAR(500) NULL,
+                ""DefaultCoefficient"" DECIMAL(5,2) NOT NULL DEFAULT 1.0,
+                ""Color"" VARCHAR(20) NULL DEFAULT '#3B82F6',
+                ""Icon"" VARCHAR(50) NULL,
+                ""SortOrder"" INTEGER NOT NULL DEFAULT 0,
+                ""IsSystem"" BOOLEAN NOT NULL DEFAULT FALSE,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_UnitTypes_OrganizationId"" ON ""UnitTypes"" (""OrganizationId"");
+        ", "UnitTypes");
+        
+        // Create Units table (Premium feature)
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""Units"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""OrganizationId"" INTEGER NOT NULL REFERENCES ""Organizations""(""Id"") ON DELETE CASCADE,
+                ""UnitTypeId"" INTEGER NULL REFERENCES ""UnitTypes""(""Id"") ON DELETE SET NULL,
+                ""Name"" VARCHAR(100) NOT NULL,
+                ""Description"" VARCHAR(500) NULL,
+                ""Coefficient"" DECIMAL(5,2) NOT NULL DEFAULT 1.0,
+                ""Color"" VARCHAR(20) NULL,
+                ""IsDefault"" BOOLEAN NOT NULL DEFAULT FALSE,
+                ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_Units_OrganizationId"" ON ""Units"" (""OrganizationId"");
+            CREATE INDEX IF NOT EXISTS ""IX_Units_UnitTypeId"" ON ""Units"" (""UnitTypeId"");
+        ", "Units");
+        
         // Run migrations - but don't let failures prevent seeding
         try
         {
