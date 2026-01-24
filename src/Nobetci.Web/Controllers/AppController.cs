@@ -3321,18 +3321,17 @@ public class AppController : Controller
         var credential = await _context.UserApiCredentials
             .FirstOrDefaultAsync(c => c.UserId == user!.Id && c.OrganizationId == organization.Id);
         
-        // Calculate monthly limit based on employee count
-        var employeeCount = await _context.Employees
-            .CountAsync(e => e.OrganizationId == organization.Id && e.IsActive);
+        // Calculate monthly limit based on user's employee limit (not current count)
+        var employeeLimit = user!.GetEffectiveEmployeeLimit();
         var daysInMonth = DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month);
-        var monthlyLimit = employeeCount * daysInMonth * 2; // employees x days x 2
+        var monthlyLimit = employeeLimit * daysInMonth * 2; // employee limit x days x 2
         
         if (credential == null)
         {
             return Json(new {
                 hasCredentials = false,
                 monthlyLimit = monthlyLimit,
-                employeeCount = employeeCount
+                employeeLimit = employeeLimit
             });
         }
         
@@ -3355,7 +3354,7 @@ public class AppController : Controller
             resetDate = credential.MonthlyResetDate.ToString("yyyy-MM-dd"),
             totalRequestsAllTime = credential.TotalRequests,
             lastUsed = credential.LastUsedAt?.ToString("yyyy-MM-dd HH:mm"),
-            employeeCount = employeeCount
+            employeeLimit = employeeLimit
         });
     }
     
@@ -3387,11 +3386,10 @@ public class AppController : Controller
         var credential = await _context.UserApiCredentials
             .FirstOrDefaultAsync(c => c.UserId == user!.Id && c.OrganizationId == organization.Id);
         
-        // Calculate monthly limit
-        var employeeCount = await _context.Employees
-            .CountAsync(e => e.OrganizationId == organization.Id && e.IsActive);
+        // Calculate monthly limit based on user's employee limit
+        var employeeLimit = user!.GetEffectiveEmployeeLimit();
         var daysInMonth = DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month);
-        var monthlyLimit = employeeCount * daysInMonth * 2;
+        var monthlyLimit = employeeLimit * daysInMonth * 2;
         
         if (credential == null)
         {
