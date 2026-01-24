@@ -978,12 +978,16 @@ public class AppController : Controller
             existingLeave.Notes = dto.Notes;
             await _context.SaveChangesAsync();
             
+            // Get updated employee totals
+            var updateTotals = await GetEmployeeTotalsAsync(dto.EmployeeId, date.Year, date.Month);
+            
             return Ok(new { 
                 success = true, 
                 id = existingLeave.Id,
                 leaveCode = leaveType.Code,
                 leaveCodeEn = leaveType.CodeEn,
-                leaveColor = leaveType.Color
+                leaveColor = leaveType.Color,
+                employeeTotals = updateTotals
             });
         }
         
@@ -1006,12 +1010,16 @@ public class AppController : Controller
         _context.Leaves.Add(leave);
         await _context.SaveChangesAsync();
         
+        // Get updated employee totals
+        var totals = await GetEmployeeTotalsAsync(dto.EmployeeId, date.Year, date.Month);
+        
         return Ok(new { 
             success = true, 
             id = leave.Id,
             leaveCode = leaveType.Code,
             leaveCodeEn = leaveType.CodeEn,
-            leaveColor = leaveType.Color
+            leaveColor = leaveType.Color,
+            employeeTotals = totals
         });
     }
 
@@ -1026,11 +1034,18 @@ public class AppController : Controller
             
         if (leave == null)
             return NotFound(new { error = "İzin kaydı bulunamadı" });
+        
+        var employeeId = leave.EmployeeId;
+        var year = leave.Date.Year;
+        var month = leave.Date.Month;
             
         _context.Leaves.Remove(leave);
         await _context.SaveChangesAsync();
         
-        return Ok(new { success = true });
+        // Get updated employee totals
+        var totals = await GetEmployeeTotalsAsync(employeeId, year, month);
+        
+        return Ok(new { success = true, employeeTotals = totals });
     }
 
     [HttpDelete]
@@ -1052,7 +1067,10 @@ public class AppController : Controller
         _context.Leaves.Remove(leave);
         await _context.SaveChangesAsync();
         
-        return Ok(new { success = true });
+        // Get updated employee totals
+        var totals = await GetEmployeeTotalsAsync(employeeId, parsedDate.Year, parsedDate.Month);
+        
+        return Ok(new { success = true, employeeTotals = totals });
     }
 
     /// <summary>
