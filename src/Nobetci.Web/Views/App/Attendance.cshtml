@@ -1054,15 +1054,30 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
             });
+            
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.error('API Error:', res.status, errorText);
+                try {
+                    const errorJson = JSON.parse(errorText);
+                    alert(errorJson.error || '@(isTurkish ? "Hata oluştu" : "Error occurred"): ' + res.status);
+                } catch {
+                    alert('@(isTurkish ? "Sunucu hatası" : "Server error"): ' + res.status);
+                }
+                return;
+            }
+            
             const data = await res.json();
             if (data.success) {
                 closeApiModal();
                 loadApiStatus();
+                alert('@(isTurkish ? "API kimlik bilgileri başarıyla oluşturuldu!" : "API credentials created successfully!")');
             } else {
                 alert(data.error || '@(isTurkish ? "Hata oluştu" : "Error occurred")');
             }
         } catch (e) {
-            alert('@(isTurkish ? "Bağlantı hatası" : "Connection error")');
+            console.error('Fetch error:', e);
+            alert('@(isTurkish ? "Bağlantı hatası: " : "Connection error: ")' + e.message);
         }
     }
     

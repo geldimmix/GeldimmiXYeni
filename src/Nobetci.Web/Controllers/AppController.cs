@@ -3391,36 +3391,44 @@ public class AppController : Controller
         var daysInMonth = DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month);
         var monthlyLimit = employeeLimit * daysInMonth * 2;
         
-        if (credential == null)
+        try
         {
-            credential = new UserApiCredential
+            if (credential == null)
             {
-                UserId = user!.Id,
-                OrganizationId = organization.Id,
-                ApiUsername = dto.Username,
-                ApiPasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-                MonthlyRequestLimit = monthlyLimit,
-                MonthlyResetDate = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1).AddMonths(1),
-                IsActive = true
-            };
-            _context.UserApiCredentials.Add(credential);
+                credential = new UserApiCredential
+                {
+                    UserId = user!.Id,
+                    OrganizationId = organization.Id,
+                    ApiUsername = dto.Username,
+                    ApiPasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                    MonthlyRequestLimit = monthlyLimit,
+                    MonthlyResetDate = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1).AddMonths(1),
+                    IsActive = true
+                };
+                _context.UserApiCredentials.Add(credential);
+            }
+            else
+            {
+                credential.ApiUsername = dto.Username;
+                credential.ApiPasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+                credential.MonthlyRequestLimit = monthlyLimit;
+                credential.UpdatedAt = DateTime.UtcNow;
+            }
+            
+            await _context.SaveChangesAsync();
+            
+            return Json(new { 
+                success = true, 
+                message = "API kimlik bilgileri oluşturuldu",
+                username = credential.ApiUsername,
+                monthlyLimit = credential.MonthlyRequestLimit
+            });
         }
-        else
+        catch (Exception ex)
         {
-            credential.ApiUsername = dto.Username;
-            credential.ApiPasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
-            credential.MonthlyRequestLimit = monthlyLimit;
-            credential.UpdatedAt = DateTime.UtcNow;
+            var innerMsg = ex.InnerException?.Message ?? ex.Message;
+            return StatusCode(500, new { error = $"Veritabanı hatası: {innerMsg}" });
         }
-        
-        await _context.SaveChangesAsync();
-        
-        return Json(new { 
-            success = true, 
-            message = "API kimlik bilgileri oluşturuldu",
-            username = credential.ApiUsername,
-            monthlyLimit = credential.MonthlyRequestLimit
-        });
     }
     
     /// <summary>
