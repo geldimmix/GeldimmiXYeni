@@ -306,6 +306,34 @@ public class AppController : Controller
         });
     }
 
+    [HttpGet]
+    [Route("api/employees/{id}")]
+    public async Task<IActionResult> GetEmployee(int id)
+    {
+        var organization = await GetOrCreateOrganizationAsync();
+        var employee = await _context.Employees
+            .FirstOrDefaultAsync(e => e.Id == id && e.OrganizationId == organization.Id && e.IsActive);
+            
+        if (employee == null)
+            return NotFound();
+            
+        return Json(new {
+            employee.Id,
+            employee.FullName,
+            employee.Title,
+            employee.IdentityNo,
+            employee.Color,
+            employee.DailyWorkHours,
+            employee.WeekendWorkMode,
+            employee.SaturdayWorkHours,
+            employee.PositionType,
+            employee.AcademicTitle,
+            employee.ShiftScore,
+            employee.IsNonHealthServices,
+            employee.UnitId
+        });
+    }
+    
     [HttpPut]
     [Route("api/employees/{id}")]
     public async Task<IActionResult> UpdateEmployee(int id, [FromBody] EmployeeDto dto)
@@ -323,11 +351,34 @@ public class AppController : Controller
         if (!string.IsNullOrEmpty(dto.Color))
             employee.Color = dto.Color;
         
+        // Extended fields
+        employee.DailyWorkHours = dto.DailyWorkHours;
+        employee.WeekendWorkMode = dto.WeekendWorkMode;
+        employee.SaturdayWorkHours = dto.SaturdayWorkHours;
+        employee.PositionType = dto.PositionType;
+        employee.AcademicTitle = dto.AcademicTitle;
+        employee.ShiftScore = dto.ShiftScore;
+        employee.IsNonHealthServices = dto.IsNonHealthServices;
+        
         employee.UpdatedAt = DateTime.UtcNow;
         
         await _context.SaveChangesAsync();
         
-        return Ok();
+        return Json(new {
+            employee.Id,
+            employee.FullName,
+            employee.Title,
+            employee.IdentityNo,
+            employee.Color,
+            employee.DailyWorkHours,
+            employee.WeekendWorkMode,
+            employee.SaturdayWorkHours,
+            employee.PositionType,
+            employee.AcademicTitle,
+            employee.ShiftScore,
+            employee.IsNonHealthServices,
+            employee.UnitId
+        });
     }
 
     [HttpDelete]

@@ -846,6 +846,9 @@
                             {
                                 <div class="emp-hours">@employee.DailyWorkHours @(isTurkish ? "s/g" : "h/d")</div>
                             }
+                            <button class="emp-edit" onclick="openEditEmployee(@employee.Id)" title="@(isTurkish ? "Düzenle" : "Edit")">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            </button>
                             <button class="emp-delete" data-id="@employee.Id" title="@(isTurkish ? "Sil" : "Delete")">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
                             </button>
@@ -1029,6 +1032,165 @@
                 <button type="button" class="btn-modal-save" id="saveEmployeeBtn">
                     <span class="btn-icon">✓</span>
                     @(isTurkish ? "Personel Ekle" : "Add Employee")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Employee Modal -->
+<div class="modal fade" id="editEmployeeModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content custom-modal">
+            <div class="modal-header-custom">
+                <div class="modal-icon">✏️</div>
+                <div class="modal-title-group">
+                    <h5 class="modal-title">@(isTurkish ? "Personel Düzenle" : "Edit Employee")</h5>
+                    <p class="modal-subtitle" id="editEmployeeSubtitle">@(isTurkish ? "Personel bilgilerini güncelleyin" : "Update employee information")</p>
+                </div>
+                <button type="button" class="btn-close-custom" data-bs-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body-custom">
+                <input type="hidden" id="editEmployeeId">
+                
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-icon">📋</span>
+                        @(isTurkish ? "Temel Bilgiler" : "Basic Information")
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating-custom">
+                                <input type="text" class="form-input" id="editEmployeeFullName" placeholder=" " required>
+                                <label>@(isTurkish ? "Ad Soyad" : "Full Name") *</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating-custom">
+                                <input type="text" class="form-input" id="editEmployeeTitle" placeholder=" ">
+                                <label>@(isTurkish ? "Unvan" : "Title")</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating-custom">
+                                <input type="text" class="form-input" id="editEmployeeIdentityNo" placeholder=" ">
+                                <label>@(isTurkish ? "Sicil No" : "ID Number")</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating-custom">
+                                <input type="number" class="form-input" id="editEmployeeDailyHours" min="1" max="24" step="0.5" placeholder=" ">
+                                <label>@(isTurkish ? "Günlük Çalışma (saat)" : "Daily Hours")</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-icon">🏛️</span>
+                        @(isTurkish ? "Kadro ve Nöbet Bilgileri" : "Position & Shift Info")
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating-custom">
+                                <select class="form-input" id="editEmployeePositionType" onchange="toggleEditAcademicTitle()">
+                                    <option value="">@(isTurkish ? "Seçiniz..." : "Select...")</option>
+                                    <option value="4A">4A (@(isTurkish ? "Memur" : "Civil Servant"))</option>
+                                    <option value="4B">4B (@(isTurkish ? "Sözleşmeli" : "Contracted"))</option>
+                                    <option value="4D">4D (696 KHK)</option>
+                                    <option value="Academic">@(isTurkish ? "Akademik" : "Academic")</option>
+                                </select>
+                                <label>@(isTurkish ? "Kadro Tipi" : "Position Type")</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6" id="editAcademicTitleGroup" style="display: none;">
+                            <div class="form-floating-custom">
+                                <select class="form-input" id="editEmployeeAcademicTitle">
+                                    <option value="">@(isTurkish ? "Seçiniz..." : "Select...")</option>
+                                    <option value="Prof">@(isTurkish ? "Profesör" : "Professor")</option>
+                                    <option value="Doçent">@(isTurkish ? "Doçent" : "Associate Prof.")</option>
+                                    <option value="Dr. Öğretim Üyesi">@(isTurkish ? "Dr. Öğretim Üyesi" : "Assistant Prof.")</option>
+                                    <option value="Araştırma Görevlisi">@(isTurkish ? "Araştırma Görevlisi" : "Research Asst.")</option>
+                                    <option value="Araştırma Görevlisi (Dr.)">@(isTurkish ? "Araştırma Görevlisi (Dr.)" : "Research Asst. (PhD)")</option>
+                                </select>
+                                <label>@(isTurkish ? "Akademik Unvan" : "Academic Title")</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating-custom">
+                                <input type="number" class="form-input" id="editEmployeeShiftScore" min="0" max="1000" step="1" placeholder=" ">
+                                <label>@(isTurkish ? "Nöbet Puanı" : "Shift Score")</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="checkbox-wrapper">
+                                <label class="custom-checkbox">
+                                    <input type="checkbox" id="editEmployeeIsNonHealthServices">
+                                    <span class="checkmark"></span>
+                                    <span class="checkbox-label">@(isTurkish ? "SH Dışı (Sağlık Hizmetleri Sınıfı Dışı)" : "Non-Health Services Class")</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-icon">📅</span>
+                        @(isTurkish ? "Hafta Sonu Ayarları" : "Weekend Settings")
+                    </div>
+                    <div class="weekend-options">
+                        <label class="weekend-option">
+                            <input type="radio" name="editWeekendMode" value="0" onchange="document.getElementById('editEmployeeWeekendMode').value='0'; document.getElementById('editSaturdayHoursGroup').style.display='none';">
+                            <span class="option-card">
+                                <span class="option-icon">🚫</span>
+                                <span class="option-text">@(isTurkish ? "Hafta sonu çalışmaz" : "No weekends")</span>
+                            </span>
+                        </label>
+                        <label class="weekend-option">
+                            <input type="radio" name="editWeekendMode" value="1" onchange="document.getElementById('editEmployeeWeekendMode').value='1'; document.getElementById('editSaturdayHoursGroup').style.display='none';">
+                            <span class="option-card">
+                                <span class="option-icon">✅</span>
+                                <span class="option-text">@(isTurkish ? "Cmt + Paz çalışır" : "Sat + Sun")</span>
+                            </span>
+                        </label>
+                        <label class="weekend-option">
+                            <input type="radio" name="editWeekendMode" value="2" onchange="document.getElementById('editEmployeeWeekendMode').value='2'; document.getElementById('editSaturdayHoursGroup').style.display='none';">
+                            <span class="option-card">
+                                <span class="option-icon">📆</span>
+                                <span class="option-text">@(isTurkish ? "Sadece Cumartesi" : "Saturday only")</span>
+                            </span>
+                        </label>
+                        <label class="weekend-option">
+                            <input type="radio" name="editWeekendMode" value="3" onchange="document.getElementById('editEmployeeWeekendMode').value='3'; document.getElementById('editSaturdayHoursGroup').style.display='block';">
+                            <span class="option-card">
+                                <span class="option-icon">⏱️</span>
+                                <span class="option-text">@(isTurkish ? "Özel saat" : "Custom hours")</span>
+                            </span>
+                        </label>
+                    </div>
+                    <select class="d-none" id="editEmployeeWeekendMode">
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                    </select>
+                    <div class="saturday-hours-input" id="editSaturdayHoursGroup" style="display: none;">
+                        <div class="form-floating-custom">
+                            <input type="number" class="form-input" id="editEmployeeSaturdayHours" value="4" min="1" max="24" step="0.5" placeholder=" ">
+                            <label>@(isTurkish ? "Cumartesi Saat" : "Saturday Hours")</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer-custom">
+                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
+                    @(isTurkish ? "İptal" : "Cancel")
+                </button>
+                <button type="button" class="btn-modal-save" id="saveEditEmployeeBtn">
+                    <span class="btn-icon">✓</span>
+                    @(isTurkish ? "Kaydet" : "Save")
                 </button>
             </div>
         </div>
@@ -5675,13 +5837,32 @@
         box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
     }
     
-    .emp-delete {
-        width: 32px;
-        height: 32px;
+    .emp-edit {
+        width: 28px;
+        height: 28px;
         border: none;
         background: transparent;
         color: #9ca3af;
-        border-radius: 6px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+    }
+    
+    .emp-edit:hover {
+        background: #dbeafe;
+        color: #3b82f6;
+    }
+    
+    .emp-delete {
+        width: 28px;
+        height: 28px;
+        border: none;
+        background: transparent;
+        color: #9ca3af;
+        border-radius: 4px;
         cursor: pointer;
         display: flex;
         align-items: center;
@@ -6311,6 +6492,72 @@
                 const academicTitleSelect = document.getElementById('employeeAcademicTitle');
                 if (academicTitleSelect) academicTitleSelect.value = '';
             }
+        }
+    }
+    
+    // Toggle academic title dropdown for edit modal
+    function toggleEditAcademicTitle() {
+        const positionType = document.getElementById('editEmployeePositionType')?.value;
+        const academicTitleGroup = document.getElementById('editAcademicTitleGroup');
+        if (academicTitleGroup) {
+            academicTitleGroup.style.display = positionType === 'Academic' ? 'block' : 'none';
+            if (positionType !== 'Academic') {
+                const academicTitleSelect = document.getElementById('editEmployeeAcademicTitle');
+                if (academicTitleSelect) academicTitleSelect.value = '';
+            }
+        }
+    }
+    
+    // Open edit employee modal
+    async function openEditEmployee(employeeId) {
+        try {
+            const response = await fetch(`/api/employees/${employeeId}`);
+            if (!response.ok) {
+                showToast(isTurkish ? 'Personel bilgileri alınamadı' : 'Failed to load employee data', 'error');
+                return;
+            }
+            
+            const emp = await response.json();
+            
+            // Populate form fields
+            document.getElementById('editEmployeeId').value = emp.id;
+            document.getElementById('editEmployeeFullName').value = emp.fullName || '';
+            document.getElementById('editEmployeeTitle').value = emp.title || '';
+            document.getElementById('editEmployeeIdentityNo').value = emp.identityNo || '';
+            document.getElementById('editEmployeeDailyHours').value = emp.dailyWorkHours || 8;
+            document.getElementById('editEmployeeShiftScore').value = emp.shiftScore || 100;
+            document.getElementById('editEmployeeIsNonHealthServices').checked = emp.isNonHealthServices || false;
+            
+            // Position type
+            document.getElementById('editEmployeePositionType').value = emp.positionType || '';
+            toggleEditAcademicTitle();
+            if (emp.positionType === 'Academic') {
+                document.getElementById('editEmployeeAcademicTitle').value = emp.academicTitle || '';
+            }
+            
+            // Weekend mode
+            const weekendMode = emp.weekendWorkMode || 0;
+            document.getElementById('editEmployeeWeekendMode').value = weekendMode;
+            document.querySelectorAll('input[name="editWeekendMode"]').forEach(radio => {
+                radio.checked = parseInt(radio.value) === weekendMode;
+            });
+            
+            // Saturday hours
+            if (weekendMode === 3) {
+                document.getElementById('editSaturdayHoursGroup').style.display = 'block';
+                document.getElementById('editEmployeeSaturdayHours').value = emp.saturdayWorkHours || 4;
+            } else {
+                document.getElementById('editSaturdayHoursGroup').style.display = 'none';
+            }
+            
+            // Update subtitle with employee name
+            document.getElementById('editEmployeeSubtitle').textContent = emp.fullName;
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('editEmployeeModal'));
+            modal.show();
+        } catch (error) {
+            showToast(isTurkish ? 'Bir hata oluştu' : 'An error occurred', 'error');
         }
     }
     
@@ -7922,6 +8169,62 @@
                 } catch (err) {
                     alert(texts.errorOccurred);
                     // Re-enable button on error
+                    this.disabled = false;
+                    this.innerHTML = originalText;
+                }
+            });
+        }
+        
+        // Save Edit Employee
+        const saveEditEmployeeBtn = document.getElementById('saveEditEmployeeBtn');
+        if (saveEditEmployeeBtn) {
+            saveEditEmployeeBtn.addEventListener('click', async function() {
+                if (this.disabled) return;
+                
+                const employeeId = document.getElementById('editEmployeeId')?.value;
+                const fullName = document.getElementById('editEmployeeFullName')?.value?.trim();
+                
+                if (!fullName) {
+                    alert(texts.nameRequired);
+                    return;
+                }
+                
+                this.disabled = true;
+                const originalText = this.innerHTML;
+                this.innerHTML = '<span class="btn-icon">⏳</span> ' + (isTurkish ? 'Kaydediliyor...' : 'Saving...');
+                
+                try {
+                    const positionType = document.getElementById('editEmployeePositionType')?.value || '';
+                    const data = {
+                        fullName: fullName,
+                        title: document.getElementById('editEmployeeTitle')?.value?.trim() || '',
+                        identityNo: document.getElementById('editEmployeeIdentityNo')?.value?.trim() || '',
+                        dailyWorkHours: parseFloat(document.getElementById('editEmployeeDailyHours')?.value) || 8,
+                        weekendWorkMode: parseInt(document.getElementById('editEmployeeWeekendMode')?.value) || 0,
+                        saturdayWorkHours: parseFloat(document.getElementById('editEmployeeSaturdayHours')?.value) || null,
+                        positionType: positionType || null,
+                        academicTitle: positionType === 'Academic' ? (document.getElementById('editEmployeeAcademicTitle')?.value || null) : null,
+                        shiftScore: parseInt(document.getElementById('editEmployeeShiftScore')?.value) || 100,
+                        isNonHealthServices: document.getElementById('editEmployeeIsNonHealthServices')?.checked || false
+                    };
+                    
+                    const response = await fetch(`/api/employees/${employeeId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    if (response.ok) {
+                        showToast(isTurkish ? 'Personel güncellendi' : 'Employee updated', 'success');
+                        location.reload();
+                    } else {
+                        const error = await response.json();
+                        alert(error.error || texts.errorOccurred);
+                        this.disabled = false;
+                        this.innerHTML = originalText;
+                    }
+                } catch (err) {
+                    alert(texts.errorOccurred);
                     this.disabled = false;
                     this.innerHTML = originalText;
                 }
