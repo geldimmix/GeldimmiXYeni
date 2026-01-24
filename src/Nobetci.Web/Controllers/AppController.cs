@@ -55,20 +55,44 @@ public class AppController : Controller
         var units = new List<Unit>();
         var unitTypes = new List<UnitType>();
         
+        string? unitLoadError = null;
         if (isPremium)
         {
             try
             {
                 // Initialize defaults if needed
                 await InitializeDefaultUnitTypesAsync(organization.Id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to initialize default unit types");
+            }
+            
+            try
+            {
                 await InitializeDefaultUnitAsync(organization.Id);
-                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to initialize default unit");
+                unitLoadError = "Varsayılan birim oluşturulamadı: " + (ex.InnerException?.Message ?? ex.Message);
+            }
+            
+            try
+            {
                 // Load unit types
                 unitTypes = await _context.UnitTypes
                     .Where(ut => ut.OrganizationId == organization.Id && ut.IsActive)
                     .OrderBy(ut => ut.SortOrder)
                     .ToListAsync();
-                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to load unit types");
+            }
+            
+            try
+            {
                 // Load units with employees
                 units = await _context.Units
                     .Include(u => u.UnitType)
@@ -83,9 +107,12 @@ public class AppController : Controller
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Units/UnitTypes could not be loaded");
+                _logger.LogWarning(ex, "Failed to load units");
+                unitLoadError = "Birimler yüklenemedi: " + (ex.InnerException?.Message ?? ex.Message);
             }
         }
+        
+        ViewBag.UnitLoadError = unitLoadError;
         
         // Filter employees by unit for premium users
         var employeesQuery = _context.Employees

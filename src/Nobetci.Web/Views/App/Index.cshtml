@@ -547,6 +547,12 @@
                             
                             <!-- Units List -->
                             <div class="units-list" id="unitsList">
+                                @if (ViewBag.UnitLoadError != null)
+                                {
+                                    <div class="error-state" style="padding: 20px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; color: #dc2626; margin-bottom: 16px;">
+                                        <strong>⚠️ Hata:</strong> @ViewBag.UnitLoadError
+                                    </div>
+                                }
                                 @if (Model.Units.Count == 0)
                                 {
                                     <div class="empty-state">
