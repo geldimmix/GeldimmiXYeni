@@ -1033,6 +1033,146 @@ public class AppController : Controller
         return Ok(new { success = true });
     }
 
+    /// <summary>
+    /// Get employee totals (worked hours, required hours) for a specific month
+    /// Called after shift operations to sync UI with backend calculations
+    /// </summary>
+    [HttpGet]
+    [Route("api/employee/{employeeId}/totals")]
+    public async Task<IActionResult> GetEmployeeTotals(int employeeId, int year, int month)
+    {
+        var organization = await GetOrCreateOrganizationAsync();
+        
+        var employee = await _context.Employees
+            .FirstOrDefaultAsync(e => e.Id == employeeId && e.OrganizationId == organization.Id);
+            
+        if (employee == null)
+            return NotFound(new { error = "Personel bulunamadı" });
+        
+        // Get shifts for this employee in the specified month
+        var startDate = new DateOnly(year, month, 1);
+        var endDate = startDate.AddMonths(1).AddDays(-1);
+        
+        var shifts = await _context.Shifts
+            .Include(s => s.ShiftTemplate)
+            .Where(s => s.EmployeeId == employeeId && s.Date >= startDate && s.Date <= endDate)
+            .ToListAsync();
+        
+        // Get leaves for this employee
+        var leaves = await _context.Leaves
+            .Where(l => l.EmployeeId == employeeId && l.Date >= startDate && l.Date <= endDate)
+            .ToListAsync();
+        
+        // Get holidays
+        var holidays = await _context.Holidays
+            .Where(h => h.OrganizationId == organization.Id && h.Date >= startDate && h.Date <= endDate)
+            .ToListAsync();
+        
+        // Get weekend days
+        var weekendDays = organization.WeekendDays.Split(',').Select(int.Parse).ToList();
+        
+        // Get previous month's last shift for overnight calculation
+        var prevMonthEnd = startDate.AddDays(-1);
+        var prevMonthStart = new DateOnly(prevMonthEnd.Year, prevMonthEnd.Month, 1);
+        var prevMonthLastShift = await _context.Shifts
+            .Include(s => s.ShiftTemplate)
+            .Where(s => s.EmployeeId == employeeId && s.Date >= prevMonthStart && s.Date <= prevMonthEnd)
+            .OrderByDescending(s => s.Date)
+            .FirstOrDefaultAsync();
+        
+        // Calculate required hours
+        var requiredHours = CalculateRequiredHours(employee, year, month, holidays, weekendDays, leaves);
+        
+        // Calculate worked hours
+        decimal workedHours = 0;
+        int dayOffCount = 0;
+        
+        // Add spillover from previous month overnight shift
+        if (prevMonthLastShift != null && !prevMonthLastShift.IsDayOff && prevMonthLastShift.SpansNextDay && prevMonthLastShift.OvernightHoursMode == 0)
+        {
+            var spilledHours = CalculateHoursAfterMidnight(prevMonthLastShift);
+            workedHours += spilledHours;
+        }
+        
+        foreach (var shift in shifts)
+        {
+            if (shift.IsDayOff)
+            {
+                dayOffCount++;
+                continue;
+            }
+            
+            // Handle overnight mode - don't double count
+            if (shift.SpansNextDay && shift.OvernightHoursMode == 0)
+            {
+                // Split mode: only count hours until midnight
+                var hoursBeforeMidnight = CalculateHoursBeforeMidnight(shift);
+                workedHours += hoursBeforeMidnight;
+            }
+            else if (shift.TotalHours > 0)
+            {
+                // Use pre-calculated total hours
+                workedHours += shift.TotalHours;
+            }
+            else
+            {
+                // Fallback calculation if TotalHours is 0
+                var hours = CalculateShiftHours(shift);
+                workedHours += hours;
+            }
+        }
+        
+        // Subtract day offs from required hours
+        requiredHours = Math.Max(0, requiredHours - (dayOffCount * employee.DailyWorkHours));
+        
+        var diff = workedHours - requiredHours;
+        
+        return Json(new {
+            employeeId = employeeId,
+            workedHours = Math.Round(workedHours, 1),
+            requiredHours = Math.Round(requiredHours, 1),
+            diff = Math.Round(diff, 1),
+            dayOffCount = dayOffCount
+        });
+    }
+    
+    /// <summary>
+    /// Calculate hours before midnight for split overnight shifts
+    /// </summary>
+    private decimal CalculateHoursBeforeMidnight(Shift shift)
+    {
+        if (!shift.SpansNextDay)
+            return shift.TotalHours;
+        
+        var startMinutes = shift.StartTime.Hour * 60 + shift.StartTime.Minute;
+        var midnightMinutes = 24 * 60;
+        var minutesBeforeMidnight = midnightMinutes - startMinutes;
+        
+        // Subtract break if applicable (assume half before midnight)
+        var breakMinutes = shift.BreakMinutes > 0 ? shift.BreakMinutes : (shift.ShiftTemplate?.BreakMinutes ?? 0);
+        minutesBeforeMidnight -= breakMinutes / 2;
+        
+        return Math.Max(0, minutesBeforeMidnight / 60m);
+    }
+    
+    /// <summary>
+    /// Calculate basic shift hours (fallback when TotalHours is 0)
+    /// </summary>
+    private decimal CalculateShiftHours(Shift shift)
+    {
+        var startMinutes = shift.StartTime.Hour * 60 + shift.StartTime.Minute;
+        var endMinutes = shift.EndTime.Hour * 60 + shift.EndTime.Minute;
+        
+        if (shift.SpansNextDay || endMinutes < startMinutes)
+            endMinutes += 24 * 60;
+        
+        var totalMinutes = endMinutes - startMinutes;
+        var breakMinutes = shift.BreakMinutes > 0 ? shift.BreakMinutes : (shift.ShiftTemplate?.BreakMinutes ?? 0);
+        totalMinutes -= breakMinutes;
+        
+        return Math.Max(0, totalMinutes / 60m);
+    }
+
     #endregion
 
     #region Saved Schedules API (Registered Users Only)

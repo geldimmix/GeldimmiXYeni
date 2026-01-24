@@ -8097,77 +8097,77 @@
         updateEmployeeTotalHours(employeeId, serverTotalHours, false, wasDayOff);
     }
     
-    // Update employee total hours display
-    // For adding: templateOrHours is a template object
-    // For removing: templateOrHours is the hours to subtract (number)
-    function updateEmployeeTotalHours(employeeId, templateOrHours, isAdding, wasDayOff = false) {
+    // Refresh employee totals from backend - ensures accurate calculations
+    // This replaces complex client-side calculations with server-side accuracy
+    async function refreshEmployeeTotals(employeeId) {
         const row = document.querySelector(`tr[data-employee-id="${employeeId}"]`);
         if (!row) return;
         
         const totalCell = row.querySelector('.col-total .total-cell');
         if (!totalCell) return;
         
-        const workedSpan = totalCell.querySelector('.worked-hours');
-        const requiredSpan = totalCell.querySelector('.required-hours');
-        const diffSpan = totalCell.querySelector('.diff-hours');
-        
-        if (!workedSpan || !requiredSpan) return;
-        
-        let worked = parseFloat(workedSpan.textContent) || 0;
-        let required = parseFloat(requiredSpan.textContent) || 0;
-        
-        // Get employee daily hours from data attribute
-        const employeeItem = document.querySelector(`.employee-item[data-employee-id="${employeeId}"]`);
-        const dailyHours = employeeItem ? parseFloat(employeeItem.dataset.dailyHours) || 8 : 8;
-        
-        if (isAdding) {
-            if (templateOrHours && typeof templateOrHours === 'object') {
-                // Adding a shift
-                if (templateOrHours.isDayOff) {
-                    // Day off - reduce required hours by daily work hours
-                    required -= dailyHours;
+        try {
+            const res = await fetch(`/api/employee/${employeeId}/totals?year=${selectedYear}&month=${selectedMonth}`);
+            if (!res.ok) {
+                console.error('Failed to fetch employee totals:', res.status);
+                return;
+            }
+            
+            const data = await res.json();
+            
+            const workedSpan = totalCell.querySelector('.worked-hours');
+            const requiredSpan = totalCell.querySelector('.required-hours');
+            const diffSpan = totalCell.querySelector('.diff-hours');
+            
+            if (workedSpan) {
+                workedSpan.textContent = formatHours(data.workedHours);
+            }
+            
+            if (requiredSpan) {
+                requiredSpan.textContent = formatHours(data.requiredHours);
+            }
+            
+            if (diffSpan) {
+                const diff = data.diff;
+                if (diff > 0) {
+                    diffSpan.textContent = `+${formatHours(diff)}`;
+                    diffSpan.className = 'diff-hours positive';
+                } else if (diff < 0) {
+                    diffSpan.textContent = formatHours(diff);
+                    diffSpan.className = 'diff-hours negative';
                 } else {
-                    // Normal shift - use server calculated hours if available, otherwise calculate
-                    const hours = templateOrHours.serverTotalHours !== undefined 
-                        ? templateOrHours.serverTotalHours 
-                        : calculateShiftHours(templateOrHours.start, templateOrHours.end, templateOrHours.spans, templateOrHours.breakMinutes);
-                    worked += hours;
+                    diffSpan.textContent = '0';
+                    diffSpan.className = 'diff-hours';
                 }
             }
-        } else {
-            // Removing a shift
-            if (wasDayOff) {
-                // Removing day off - add back required hours
-                required += dailyHours;
-            } else if (typeof templateOrHours === 'number' && templateOrHours > 0) {
-                // Removing normal shift - subtract worked hours
-                worked -= templateOrHours;
-                worked = Math.max(0, worked); // Don't go negative
+            
+            // Update total cell class
+            totalCell.classList.remove('overtime', 'undertime');
+            if (data.diff > 0) {
+                totalCell.classList.add('overtime');
+            } else if (data.diff < 0) {
+                totalCell.classList.add('undertime');
             }
+        } catch (e) {
+            console.error('Error refreshing employee totals:', e);
         }
-        
-        // Update worked hours
-        workedSpan.textContent = worked.toFixed(1).replace('.0', '');
-        
-        // Update required hours
-        requiredSpan.textContent = required.toFixed(1).replace('.0', '');
-        
-        // Update diff
-        const diff = worked - required;
-        if (diffSpan) {
-            if (diff > 0) {
-                diffSpan.textContent = `+${diff.toFixed(1).replace('.0', '')}`;
-                diffSpan.className = 'diff-hours positive';
-            } else if (diff < 0) {
-                diffSpan.textContent = diff.toFixed(1).replace('.0', '');
-                diffSpan.className = 'diff-hours negative';
-            } else {
-                diffSpan.textContent = '0';
-                diffSpan.className = 'diff-hours';
-            }
-        }
-        
-        // Update total cell class
+    }
+    
+    // Format hours for display (remove unnecessary decimals)
+    function formatHours(hours) {
+        const formatted = parseFloat(hours).toFixed(1);
+        return formatted.endsWith('.0') ? formatted.slice(0, -2) : formatted;
+    }
+    
+    // Legacy function - now just calls refreshEmployeeTotals
+    // Kept for backward compatibility with existing code
+    function updateEmployeeTotalHours(employeeId, templateOrHours, isAdding, wasDayOff = false) {
+        // Instead of complex client-side calculations, just refresh from backend
+        refreshEmployeeTotals(employeeId);
+    }
+    
+    // Update total cell class based on values (used for initial render)
+    function updateTotalCellClass(totalCell, diff) {
         totalCell.classList.remove('overtime', 'undertime');
         if (diff > 0) {
             totalCell.classList.add('overtime');
