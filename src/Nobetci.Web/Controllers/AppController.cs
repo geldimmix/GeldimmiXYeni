@@ -2556,12 +2556,9 @@ public class AppController : Controller
             
         var defaultTypes = new[]
         {
-            new UnitType { OrganizationId = organizationId, Name = "Normal Birim", DefaultCoefficient = 1.0m, Color = "#3B82F6", Icon = "building", SortOrder = 1, IsSystem = true },
-            new UnitType { OrganizationId = organizationId, Name = "Klinik", DefaultCoefficient = 1.0m, Color = "#22C55E", Icon = "hospital", SortOrder = 2, IsSystem = true },
-            new UnitType { OrganizationId = organizationId, Name = "Poliklinik", DefaultCoefficient = 1.0m, Color = "#8B5CF6", Icon = "stethoscope", SortOrder = 3, IsSystem = true },
-            new UnitType { OrganizationId = organizationId, Name = "Radyasyonlu Birim", DefaultCoefficient = 1.5m, Color = "#F59E0B", Icon = "radiation", SortOrder = 4, IsSystem = true },
-            new UnitType { OrganizationId = organizationId, Name = "Yoğun Bakım", DefaultCoefficient = 1.5m, Color = "#EF4444", Icon = "heart-pulse", SortOrder = 5, IsSystem = true },
-            new UnitType { OrganizationId = organizationId, Name = "Ameliyathane", DefaultCoefficient = 1.75m, Color = "#EC4899", Icon = "scissors", SortOrder = 6, IsSystem = true }
+            new UnitType { OrganizationId = organizationId, Name = "Poliklinik/Servis", DefaultCoefficient = 1.0m, Color = "#3B82F6", Icon = "hospital", SortOrder = 1, IsSystem = true },
+            new UnitType { OrganizationId = organizationId, Name = "Yoğun Bakım", DefaultCoefficient = 1.5m, Color = "#EF4444", Icon = "heart-pulse", SortOrder = 2, IsSystem = true },
+            new UnitType { OrganizationId = organizationId, Name = "Radyasyon Birimi", DefaultCoefficient = 1.5m, Color = "#F59E0B", Icon = "radiation", SortOrder = 3, IsSystem = true }
         };
         
         _context.UnitTypes.AddRange(defaultTypes);
