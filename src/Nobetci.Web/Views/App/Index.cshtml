@@ -536,7 +536,7 @@
                                         <option value="">@(isTurkish ? "Birim Tipi Seçin" : "Select Unit Type")</option>
                                         @foreach (var ut in Model.UnitTypes)
                                         {
-                                            <option value="@ut.Id" data-coefficient="@ut.DefaultCoefficient" data-color="@ut.Color">@ut.Name</option>
+                                            <option value="@ut.Id" data-coefficient="@ut.DefaultCoefficient" data-color="@ut.Color">@(isTurkish ? ut.Name : (ut.NameEn ?? ut.Name))</option>
                                         }
                                     </select>
                                     <input type="number" id="newUnitCoefficient" class="form-input coefficient-input" value="1.0" step="0.25" min="0.5" max="3" placeholder="@(isTurkish ? "Katsayı" : "Coefficient")">
@@ -703,7 +703,7 @@
                         <option value="">@(isTurkish ? "Tip Seçilmedi" : "No Type Selected")</option>
                         @foreach (var ut in Model.UnitTypes)
                         {
-                            <option value="@ut.Id" data-coefficient="@ut.DefaultCoefficient">@ut.Name</option>
+                            <option value="@ut.Id" data-coefficient="@ut.DefaultCoefficient">@(isTurkish ? ut.Name : (ut.NameEn ?? ut.Name))</option>
                         }
                     </select>
                 </div>
