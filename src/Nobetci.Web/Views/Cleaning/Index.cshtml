@@ -21,14 +21,14 @@
             </p>
         </div>
         <div class="header-actions">
-            @if (Model.PendingRecordsCount > 0)
-            {
-                <button class="btn-pending" onclick="showPendingRecords()">
-                    <span>⏳</span>
-                    @(isTurkish ? "Onay Bekleyen" : "Pending")
+            <button class="btn-pending @(Model.PendingRecordsCount > 0 ? "has-pending" : "")" onclick="showPendingRecords()">
+                <span>⏳</span>
+                @(isTurkish ? "Onay Bekleyen" : "Pending")
+                @if (Model.PendingRecordsCount > 0)
+                {
                     <span class="badge">@Model.PendingRecordsCount</span>
-                </button>
-            }
+                }
+            </button>
         </div>
     </div>
 
@@ -367,13 +367,33 @@
         align-items: center;
         gap: 8px;
         padding: 8px 16px;
-        background: linear-gradient(135deg, #fef3c7, #fde68a);
-        color: #92400e;
+        background: #f3f4f6;
+        color: #6b7280;
         border: none;
         border-radius: 8px;
-        font-weight: 600;
+        font-weight: 500;
         cursor: pointer;
         transition: all 0.2s;
+    }
+    
+    .btn-pending:hover {
+        background: #e5e7eb;
+    }
+    
+    .btn-pending.has-pending {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        color: #92400e;
+        font-weight: 600;
+        animation: pulse-pending 2s infinite;
+    }
+    
+    .btn-pending.has-pending:hover {
+        background: linear-gradient(135deg, #fde68a, #fcd34d);
+    }
+    
+    @@keyframes pulse-pending {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+        50% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
     }
     
     .btn-pending .badge {
@@ -382,6 +402,7 @@
         padding: 2px 8px;
         border-radius: 12px;
         font-size: 0.8rem;
+        font-weight: 600;
     }
     
     /* Limits Bar */
