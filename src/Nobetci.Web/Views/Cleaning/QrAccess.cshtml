@@ -245,6 +245,22 @@
             cursor: not-allowed;
         }
         
+        .btn-retry {
+            padding: 8px 16px;
+            background: #f59e0b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-retry:hover {
+            background: #d97706;
+        }
+        
         .status-note {
             font-size: 0.75rem;
             color: #991b1b;
@@ -404,17 +420,22 @@
                 
                 if (hasRecord) {
                     if (status === 0) {
+                        // Pending - waiting for approval
                         cardClass = 'pending';
                         statusHtml = `<span class="item-status status-pending">${statusLabels[0]}</span>`;
                     } else if (status === 1) {
+                        // Approved - completed successfully
                         cardClass = 'completed';
                         statusHtml = `<span class="item-status status-approved">✓ ${statusLabels[1]}</span>`;
                     } else if (status === 2) {
+                        // Rejected - can try again
                         cardClass = 'rejected';
                         statusHtml = `<span class="item-status status-rejected">✕ ${statusLabels[2]}</span>`;
                         if (item.todayRecord.note) {
                             statusHtml += `<div class="status-note">💬 ${item.todayRecord.note}</div>`;
                         }
+                        // Allow retry for rejected items
+                        actionHtml = `<button class="btn-retry" onclick="completeItem(${item.id})">${isTurkish ? 'Tekrar Dene' : 'Try Again'}</button>`;
                     }
                 } else {
                     actionHtml = `<button class="btn-complete" onclick="completeItem(${item.id})">${isTurkish ? 'Tamamla' : 'Complete'}</button>`;
