@@ -44,6 +44,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<CleaningItem> CleaningItems => Set<CleaningItem>();
     public DbSet<CleaningRecord> CleaningRecords => Set<CleaningRecord>();
     public DbSet<CleaningQrAccess> CleaningQrAccesses => Set<CleaningQrAccess>();
+    public DbSet<ActivityLog> ActivityLogs => Set<ActivityLog>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -317,6 +318,26 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .WithMany()
                 .HasForeignKey(e => e.OrganizationId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ActivityLog configuration
+        builder.Entity<ActivityLog>(entity =>
+        {
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.OrganizationId);
+            entity.HasIndex(e => e.CreatedAt);
+            entity.HasIndex(e => e.ActivityType);
+            entity.HasIndex(e => new { e.EntityType, e.EntityId });
+            
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
+                
+            entity.HasOne(e => e.Organization)
+                .WithMany()
+                .HasForeignKey(e => e.OrganizationId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
 
         // Seed global shift templates

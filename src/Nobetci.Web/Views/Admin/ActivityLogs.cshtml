@@ -1,0 +1,631 @@
+@model Nobetci.Web.Models.ActivityLogsViewModel
+@{
+    ViewData["Title"] = "Aktivite Logları";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .logs-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    
+    .logs-header {
+        padding: 20px;
+        border-bottom: 1px solid #e2e8f0;
+        background: #f8fafc;
+    }
+    
+    .logs-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin: 0 0 15px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .filters-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: end;
+    }
+    
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .filter-group label {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #64748b;
+    }
+    
+    .filter-group select,
+    .filter-group input {
+        padding: 8px 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        min-width: 160px;
+    }
+    
+    .filter-group input[type="date"] {
+        min-width: 140px;
+    }
+    
+    .btn-filter {
+        padding: 8px 16px;
+        background: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-filter:hover {
+        background: #2563eb;
+    }
+    
+    .btn-clear {
+        padding: 8px 16px;
+        background: #f1f5f9;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-clear:hover {
+        background: #e2e8f0;
+    }
+    
+    .logs-stats {
+        display: flex;
+        gap: 20px;
+        padding: 12px 20px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 0.85rem;
+        color: #64748b;
+    }
+    
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .stat-value {
+        font-weight: 600;
+        color: #1e293b;
+    }
+    
+    .logs-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .logs-table th {
+        padding: 12px 16px;
+        text-align: left;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #64748b;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .logs-table td {
+        padding: 12px 16px;
+        font-size: 0.85rem;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+    }
+    
+    .logs-table tr:hover {
+        background: #f8fafc;
+    }
+    
+    .activity-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+    
+    .activity-icon {
+        font-size: 0.9rem;
+    }
+    
+    .user-info {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .user-name {
+        font-weight: 500;
+        color: #1e293b;
+    }
+    
+    .user-id {
+        font-size: 0.7rem;
+        color: #94a3b8;
+    }
+    
+    .entity-info {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+    
+    .entity-type {
+        font-weight: 500;
+        color: #475569;
+    }
+    
+    .ip-address {
+        font-family: 'Monaco', 'Consolas', monospace;
+        font-size: 0.75rem;
+        color: #64748b;
+        background: #f1f5f9;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+    
+    .time-info {
+        display: flex;
+        flex-direction: column;
+        font-size: 0.8rem;
+    }
+    
+    .time-date {
+        font-weight: 500;
+        color: #1e293b;
+    }
+    
+    .time-hour {
+        color: #64748b;
+    }
+    
+    .btn-details {
+        padding: 4px 8px;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-details:hover {
+        background: #e2e8f0;
+    }
+    
+    .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px;
+        background: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+    }
+    
+    .pagination-info {
+        font-size: 0.85rem;
+        color: #64748b;
+    }
+    
+    .pagination-links {
+        display: flex;
+        gap: 4px;
+    }
+    
+    .page-link {
+        padding: 6px 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        color: #475569;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    
+    .page-link:hover {
+        background: #e2e8f0;
+    }
+    
+    .page-link.active {
+        background: #3b82f6;
+        border-color: #3b82f6;
+        color: white;
+    }
+    
+    .page-link.disabled {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #64748b;
+    }
+    
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 10px;
+    }
+    
+    /* Modal */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .modal-overlay.active {
+        display: flex;
+    }
+    
+    .modal-content {
+        background: white;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 80vh;
+        overflow: auto;
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .modal-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: #1e293b;
+    }
+    
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #64748b;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .detail-row {
+        display: flex;
+        padding: 10px 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+    
+    .detail-label {
+        flex: 0 0 120px;
+        font-weight: 500;
+        color: #64748b;
+        font-size: 0.85rem;
+    }
+    
+    .detail-value {
+        flex: 1;
+        color: #1e293b;
+        font-size: 0.85rem;
+        word-break: break-word;
+    }
+    
+    .detail-json {
+        background: #1e293b;
+        color: #e2e8f0;
+        padding: 12px;
+        border-radius: 6px;
+        font-family: 'Monaco', 'Consolas', monospace;
+        font-size: 0.75rem;
+        white-space: pre-wrap;
+        overflow-x: auto;
+    }
+</style>
+
+<div class="logs-container">
+    <div class="logs-header">
+        <h1 class="logs-title">
+            <span>📜</span>
+            Aktivite Logları
+        </h1>
+        
+        <form method="get" class="filters-form">
+            <div class="filter-group">
+                <label>Kullanıcı</label>
+                <select name="userId">
+                    <option value="">Tümü</option>
+                    @foreach (var user in Model.Users)
+                    {
+                        var userSelected = Model.SelectedUserId == user.Value;
+                        if (userSelected)
+                        {
+                            <option value="@user.Value" selected>@user.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@user.Value">@user.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label>İşlem Türü</label>
+                <select name="activityType">
+                    <option value="">Tümü</option>
+                    @foreach (var type in Model.ActivityTypes)
+                    {
+                        var typeSelected = Model.SelectedActivityType?.ToString() == type.Value;
+                        if (typeSelected)
+                        {
+                            <option value="@type.Value" selected>@type.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@type.Value">@type.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label>Başlangıç</label>
+                <input type="date" name="fromDate" value="@Model.FromDate">
+            </div>
+            
+            <div class="filter-group">
+                <label>Bitiş</label>
+                <input type="date" name="toDate" value="@Model.ToDate">
+            </div>
+            
+            <button type="submit" class="btn-filter">🔍 Filtrele</button>
+            <a href="@Url.Action("ActivityLogs")" class="btn-clear">Temizle</a>
+        </form>
+    </div>
+    
+    <div class="logs-stats">
+        <div class="stat-item">
+            <span>Toplam:</span>
+            <span class="stat-value">@Model.TotalCount kayıt</span>
+        </div>
+        <div class="stat-item">
+            <span>Sayfa:</span>
+            <span class="stat-value">@Model.CurrentPage / @Model.TotalPages</span>
+        </div>
+    </div>
+    
+    @if (Model.Logs.Count == 0)
+    {
+        <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <p>Henüz aktivite kaydı bulunmuyor.</p>
+        </div>
+    }
+    else
+    {
+        <table class="logs-table">
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>Kullanıcı</th>
+                    <th>İşlem</th>
+                    <th>Açıklama</th>
+                    <th>IP</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var log in Model.Logs)
+                {
+                    <tr>
+                        <td>
+                            <div class="time-info">
+                                <span class="time-date">@log.CreatedAt.ToString("dd.MM.yyyy")</span>
+                                <span class="time-hour">@log.CreatedAt.ToString("HH:mm:ss")</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="user-info">
+                                <span class="user-name">@log.UserName</span>
+                                @if (!string.IsNullOrEmpty(log.UserId))
+                                {
+                                    <span class="user-id">@log.UserId[..8]...</span>
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            <span class="activity-badge" style="background: @(log.ActivityTypeColor)20; color: @log.ActivityTypeColor;">
+                                <span class="activity-icon">@log.ActivityTypeIcon</span>
+                                @log.ActivityTypeName
+                            </span>
+                        </td>
+                        <td>
+                            <div>@log.Description</div>
+                            @if (!string.IsNullOrEmpty(log.EntityType))
+                            {
+                                <div class="entity-info">
+                                    <span class="entity-type">@log.EntityType</span>
+                                    @if (log.EntityId.HasValue)
+                                    {
+                                        <span>#@log.EntityId</span>
+                                    }
+                                </div>
+                            }
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(log.IpAddress))
+                            {
+                                <span class="ip-address">@log.IpAddress</span>
+                            }
+                        </td>
+                        <td>
+                            <button class="btn-details" onclick="showDetails(@log.Id)">Detay</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        
+        <div class="pagination-container">
+            <div class="pagination-info">
+                @{
+                    var start = (Model.CurrentPage - 1) * 50 + 1;
+                    var end = Math.Min(Model.CurrentPage * 50, Model.TotalCount);
+                }
+                @start - @end arası gösteriliyor (@Model.TotalCount toplam)
+            </div>
+            <div class="pagination-links">
+                @if (Model.CurrentPage > 1)
+                {
+                    <a href="@Url.Action("ActivityLogs", new { userId = Model.SelectedUserId, activityType = Model.SelectedActivityType, fromDate = Model.FromDate, toDate = Model.ToDate, page = Model.CurrentPage - 1 })" class="page-link">← Önceki</a>
+                }
+                else
+                {
+                    <span class="page-link disabled">← Önceki</span>
+                }
+                
+                @for (var i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
+                {
+                    <a href="@Url.Action("ActivityLogs", new { userId = Model.SelectedUserId, activityType = Model.SelectedActivityType, fromDate = Model.FromDate, toDate = Model.ToDate, page = i })" class="page-link @(i == Model.CurrentPage ? "active" : "")">@i</a>
+                }
+                
+                @if (Model.CurrentPage < Model.TotalPages)
+                {
+                    <a href="@Url.Action("ActivityLogs", new { userId = Model.SelectedUserId, activityType = Model.SelectedActivityType, fromDate = Model.FromDate, toDate = Model.ToDate, page = Model.CurrentPage + 1 })" class="page-link">Sonraki →</a>
+                }
+                else
+                {
+                    <span class="page-link disabled">Sonraki →</span>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Details Modal -->
+<div class="modal-overlay" id="detailsModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Log Detayı</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody">
+            Yükleniyor...
+        </div>
+    </div>
+</div>
+
+<script>
+    async function showDetails(id) {
+        document.getElementById('detailsModal').classList.add('active');
+        document.getElementById('modalBody').innerHTML = 'Yükleniyor...';
+        
+        try {
+            const res = await fetch(`/admin/api/activity-logs/${id}`);
+            const data = await res.json();
+            
+            let detailsHtml = '';
+            if (data.Details) {
+                try {
+                    const json = JSON.parse(data.Details);
+                    detailsHtml = `<pre class="detail-json">${JSON.stringify(json, null, 2)}</pre>`;
+                } catch {
+                    detailsHtml = `<pre class="detail-json">${data.Details}</pre>`;
+                }
+            }
+            
+            document.getElementById('modalBody').innerHTML = `
+                <div class="detail-row">
+                    <span class="detail-label">Tarih</span>
+                    <span class="detail-value">${data.CreatedAt}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Kullanıcı</span>
+                    <span class="detail-value">${data.UserName} ${data.UserEmail ? '(' + data.UserEmail + ')' : ''}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">İşlem</span>
+                    <span class="detail-value">${data.ActivityType}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Açıklama</span>
+                    <span class="detail-value">${data.Description}</span>
+                </div>
+                ${data.EntityType ? `
+                <div class="detail-row">
+                    <span class="detail-label">Varlık</span>
+                    <span class="detail-value">${data.EntityType} #${data.EntityId || '-'}</span>
+                </div>
+                ` : ''}
+                <div class="detail-row">
+                    <span class="detail-label">IP Adresi</span>
+                    <span class="detail-value">${data.IpAddress || '-'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">User Agent</span>
+                    <span class="detail-value" style="font-size: 0.75rem;">${data.UserAgent || '-'}</span>
+                </div>
+                ${detailsHtml ? `
+                <div class="detail-row">
+                    <span class="detail-label">Detaylar</span>
+                    <span class="detail-value">${detailsHtml}</span>
+                </div>
+                ` : ''}
+            `;
+        } catch (err) {
+            document.getElementById('modalBody').innerHTML = 'Hata oluştu: ' + err.message;
+        }
+    }
+    
+    function closeModal() {
+        document.getElementById('detailsModal').classList.remove('active');
+    }
+    
+    document.getElementById('detailsModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+    
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal();
+    });
+</script>
+

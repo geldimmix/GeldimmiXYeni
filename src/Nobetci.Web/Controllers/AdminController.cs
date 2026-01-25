@@ -14,6 +14,7 @@ public class AdminController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IConfiguration _configuration;
     private readonly ISystemSettingsService _settingsService;
+    private readonly IActivityLogService _activityLog;
     private const string AdminSessionKey = "IsAdmin";
     private const string AdminUserIdKey = "AdminUserId";
     private const string AdminRoleKey = "AdminRole";
@@ -22,12 +23,14 @@ public class AdminController : Controller
         ApplicationDbContext context, 
         UserManager<ApplicationUser> userManager, 
         IConfiguration configuration,
-        ISystemSettingsService settingsService)
+        ISystemSettingsService settingsService,
+        IActivityLogService activityLog)
     {
         _context = context;
         _userManager = userManager;
         _configuration = configuration;
         _settingsService = settingsService;
+        _activityLog = activityLog;
     }
 
     private bool IsAdminLoggedIn()
@@ -729,6 +732,113 @@ public class AdminController : Controller
         await _context.SaveChangesAsync();
         
         return Json(new { success = true });
+    }
+    
+    #endregion
+    
+    #region Activity Logs
+    
+    [HttpGet]
+    public async Task<IActionResult> ActivityLogs(string? userId, int? activityType, string? fromDate, string? toDate, int page = 1)
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction(nameof(Login));
+        
+        var pageSize = 50;
+        DateTime? from = null;
+        DateTime? to = null;
+        
+        if (!string.IsNullOrEmpty(fromDate) && DateTime.TryParse(fromDate, out var parsedFrom))
+            from = parsedFrom;
+        
+        if (!string.IsNullOrEmpty(toDate) && DateTime.TryParse(toDate, out var parsedTo))
+            to = parsedTo.AddDays(1); // Include the whole day
+        
+        ActivityType? type = activityType.HasValue ? (ActivityType)activityType.Value : null;
+        
+        var logs = await _activityLog.GetLogsAsync(
+            organizationId: null, 
+            userId: userId, 
+            type: type, 
+            from: from, 
+            to: to, 
+            page: page, 
+            pageSize: pageSize);
+        
+        var totalCount = await _activityLog.GetLogCountAsync(
+            organizationId: null, 
+            userId: userId, 
+            type: type, 
+            from: from, 
+            to: to);
+        
+        // Get users for filter dropdown
+        var users = await _context.Users
+            .OrderBy(u => u.FullName)
+            .Select(u => new { u.Id, u.FullName, u.Email })
+            .ToListAsync();
+        
+        var model = new ActivityLogsViewModel
+        {
+            Logs = logs.Select(l => new ActivityLogItem
+            {
+                Id = l.Id,
+                UserId = l.UserId,
+                UserName = l.User?.FullName ?? l.User?.Email ?? "Sistem",
+                ActivityType = l.ActivityType,
+                ActivityTypeName = l.ActivityType.GetDisplayName(true),
+                ActivityTypeIcon = l.ActivityType.GetIcon(),
+                ActivityTypeColor = l.ActivityType.GetColor(),
+                EntityType = l.EntityType,
+                EntityId = l.EntityId,
+                Description = l.Description,
+                Details = l.Details,
+                IpAddress = l.IpAddress,
+                CreatedAt = l.CreatedAt
+            }).ToList(),
+            Users = users.Select(u => new SelectListItem { Value = u.Id, Text = $"{u.FullName} ({u.Email})" }).ToList(),
+            ActivityTypes = Enum.GetValues<ActivityType>()
+                .Select(t => new SelectListItem { Value = ((int)t).ToString(), Text = t.GetDisplayName(true) })
+                .ToList(),
+            SelectedUserId = userId,
+            SelectedActivityType = activityType,
+            FromDate = fromDate,
+            ToDate = toDate,
+            CurrentPage = page,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+            TotalCount = totalCount
+        };
+        
+        return View(model);
+    }
+    
+    [HttpGet]
+    [Route("admin/api/activity-logs/{id}")]
+    public async Task<IActionResult> GetActivityLogDetails(long id)
+    {
+        if (!IsAdminLoggedIn())
+            return Unauthorized();
+        
+        var log = await _context.ActivityLogs
+            .Include(l => l.User)
+            .FirstOrDefaultAsync(l => l.Id == id);
+        
+        if (log == null)
+            return NotFound();
+        
+        return Json(new {
+            log.Id,
+            UserName = log.User?.FullName ?? log.User?.Email ?? "Sistem",
+            UserEmail = log.User?.Email,
+            ActivityType = log.ActivityType.GetDisplayName(true),
+            log.EntityType,
+            log.EntityId,
+            log.Description,
+            log.Details,
+            log.IpAddress,
+            log.UserAgent,
+            CreatedAt = log.CreatedAt.ToString("dd.MM.yyyy HH:mm:ss")
+        });
     }
     
     #endregion

@@ -107,6 +107,7 @@ builder.Services.AddScoped<IVisitorLogService, VisitorLogService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<ISystemSettingsService, SystemSettingsService>();
 builder.Services.AddScoped<IEmailSender, EmailService>();
+builder.Services.AddScoped<IActivityLogService, ActivityLogService>();
 
 // Session for guest users
 builder.Services.AddDistributedMemoryCache();
@@ -744,6 +745,28 @@ using (var scope = app.Services.CreateScope())
             CREATE INDEX IF NOT EXISTS ""IX_CleaningQrAccesses_ScheduleId"" ON ""CleaningQrAccesses"" (""ScheduleId"");
             CREATE INDEX IF NOT EXISTS ""IX_CleaningQrAccesses_MonthKey"" ON ""CleaningQrAccesses"" (""MonthKey"");
         ", "CleaningQrAccesses");
+        
+        // Create ActivityLogs table (for audit logging)
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""ActivityLogs"" (
+                ""Id"" BIGSERIAL PRIMARY KEY,
+                ""UserId"" VARCHAR(450) NULL REFERENCES ""AspNetUsers""(""Id"") ON DELETE SET NULL,
+                ""OrganizationId"" INTEGER NULL REFERENCES ""Organizations""(""Id"") ON DELETE SET NULL,
+                ""ActivityType"" INTEGER NOT NULL,
+                ""EntityType"" VARCHAR(100) NULL,
+                ""EntityId"" INTEGER NULL,
+                ""Description"" VARCHAR(500) NOT NULL,
+                ""Details"" TEXT NULL,
+                ""IpAddress"" VARCHAR(50) NULL,
+                ""UserAgent"" VARCHAR(500) NULL,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_ActivityLogs_UserId"" ON ""ActivityLogs"" (""UserId"");
+            CREATE INDEX IF NOT EXISTS ""IX_ActivityLogs_OrganizationId"" ON ""ActivityLogs"" (""OrganizationId"");
+            CREATE INDEX IF NOT EXISTS ""IX_ActivityLogs_CreatedAt"" ON ""ActivityLogs"" (""CreatedAt"");
+            CREATE INDEX IF NOT EXISTS ""IX_ActivityLogs_ActivityType"" ON ""ActivityLogs"" (""ActivityType"");
+            CREATE INDEX IF NOT EXISTS ""IX_ActivityLogs_EntityType_EntityId"" ON ""ActivityLogs"" (""EntityType"", ""EntityId"");
+        ", "ActivityLogs");
         
         // Run migrations - but don't let failures prevent seeding
         try

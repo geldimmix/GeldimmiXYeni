@@ -21,6 +21,7 @@ public class AppController : Controller
     private readonly IConfiguration _configuration;
     private readonly ILogger<AppController> _logger;
     private readonly ISystemSettingsService _settingsService;
+    private readonly IActivityLogService _activityLog;
 
     public AppController(
         ApplicationDbContext context,
@@ -28,7 +29,8 @@ public class AppController : Controller
         IStringLocalizer<SharedResource> localizer,
         IConfiguration configuration,
         ILogger<AppController> logger,
-        ISystemSettingsService settingsService)
+        ISystemSettingsService settingsService,
+        IActivityLogService activityLog)
     {
         _context = context;
         _userManager = userManager;
@@ -36,6 +38,7 @@ public class AppController : Controller
         _configuration = configuration;
         _logger = logger;
         _settingsService = settingsService;
+        _activityLog = activityLog;
     }
 
     /// <summary>
@@ -310,6 +313,11 @@ public class AppController : Controller
         _context.Employees.Add(employee);
         await _context.SaveChangesAsync();
         
+        await _activityLog.LogAsync(ActivityType.EmployeeCreated, 
+            $"Personel eklendi: {employee.FullName}", 
+            "Employee", employee.Id,
+            new { employee.FullName, employee.Title, employee.IdentityNo });
+        
         return Json(new { 
             id = employee.Id, 
             fullName = employee.FullName,
@@ -386,6 +394,11 @@ public class AppController : Controller
         
         await _context.SaveChangesAsync();
         
+        await _activityLog.LogAsync(ActivityType.EmployeeUpdated, 
+            $"Personel güncellendi: {employee.FullName}", 
+            "Employee", employee.Id,
+            new { employee.FullName, employee.Title, employee.IdentityNo });
+        
         return Json(new {
             employee.Id,
             employee.FullName,
@@ -417,10 +430,16 @@ public class AppController : Controller
             return NotFound();
             
         // Soft delete
+        var employeeName = employee.FullName;
         employee.IsActive = false;
         employee.UpdatedAt = DateTime.UtcNow;
         
         await _context.SaveChangesAsync();
+        
+        await _activityLog.LogAsync(ActivityType.EmployeeDeleted, 
+            $"Personel silindi: {employeeName}", 
+            "Employee", id,
+            new { FullName = employeeName });
         
         return Ok();
     }
@@ -597,6 +616,11 @@ public class AppController : Controller
         _context.Shifts.Add(shift);
         await _context.SaveChangesAsync();
         
+        await _activityLog.LogAsync(ActivityType.ShiftCreated, 
+            $"Nöbet eklendi: {employee.FullName} - {date:dd.MM.yyyy}", 
+            "Shift", shift.Id,
+            new { EmployeeName = employee.FullName, Date = date.ToString("yyyy-MM-dd"), StartTime = startTime.ToString(), EndTime = endTime.ToString() });
+        
         // Get updated employee totals
         var totals = await GetEmployeeTotalsAsync(dto.EmployeeId, date.Year, date.Month);
         
@@ -623,9 +647,16 @@ public class AppController : Controller
         var employeeId = shift.EmployeeId;
         var year = shift.Date.Year;
         var month = shift.Date.Month;
+        var employeeName = shift.Employee?.FullName ?? "Unknown";
+        var shiftDate = shift.Date;
             
         _context.Shifts.Remove(shift);
         await _context.SaveChangesAsync();
+        
+        await _activityLog.LogAsync(ActivityType.ShiftDeleted, 
+            $"Nöbet silindi: {employeeName} - {shiftDate:dd.MM.yyyy}", 
+            "Shift", id,
+            new { EmployeeName = employeeName, Date = shiftDate.ToString("yyyy-MM-dd") });
         
         // Get updated employee totals
         var totals = await GetEmployeeTotalsAsync(employeeId, year, month);

@@ -130,3 +130,39 @@ public class AdminUserViewModel
     public bool IsActive { get; set; } = true;
 }
 
+public class SelectListItem
+{
+    public string Value { get; set; } = string.Empty;
+    public string Text { get; set; } = string.Empty;
+}
+
+public class ActivityLogsViewModel
+{
+    public List<ActivityLogItem> Logs { get; set; } = new();
+    public List<SelectListItem> Users { get; set; } = new();
+    public List<SelectListItem> ActivityTypes { get; set; } = new();
+    public string? SelectedUserId { get; set; }
+    public int? SelectedActivityType { get; set; }
+    public string? FromDate { get; set; }
+    public string? ToDate { get; set; }
+    public int CurrentPage { get; set; } = 1;
+    public int TotalPages { get; set; } = 1;
+    public int TotalCount { get; set; } = 0;
+}
+
+public class ActivityLogItem
+{
+    public long Id { get; set; }
+    public string? UserId { get; set; }
+    public string? UserName { get; set; }
+    public Nobetci.Web.Data.Entities.ActivityType ActivityType { get; set; }
+    public string ActivityTypeName { get; set; } = string.Empty;
+    public string ActivityTypeIcon { get; set; } = string.Empty;
+    public string ActivityTypeColor { get; set; } = string.Empty;
+    public string? EntityType { get; set; }
+    public int? EntityId { get; set; }
+    public string Description { get; set; } = string.Empty;
+    public string? Details { get; set; }
+    public string? IpAddress { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
