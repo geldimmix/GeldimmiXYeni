@@ -99,6 +99,7 @@ public class CleaningController : Controller
         var user = await _userManager.GetUserAsync(User);
         var isRegistered = User.Identity?.IsAuthenticated == true;
         var isPremium = user?.Plan == UserPlan.Premium;
+        var isTr = await IsTurkishAsync();
         
         var limits = GetCleaningLimits(user, isRegistered, isPremium);
         
@@ -108,7 +109,7 @@ public class CleaningController : Controller
         
         if (currentCount >= limits.MaxSchedules)
         {
-            return BadRequest(new { error = $"Maksimum çizelge sayısına ulaştınız ({limits.MaxSchedules})" });
+            return BadRequest(new { error = T(isTr, $"Maksimum çizelge sayısına ulaştınız ({limits.MaxSchedules})", $"Maximum schedule limit reached ({limits.MaxSchedules})") });
         }
         
         var schedule = new CleaningSchedule
@@ -150,12 +151,13 @@ public class CleaningController : Controller
         var organization = await GetOrCreateOrganizationAsync();
         var user = await _userManager.GetUserAsync(User);
         var isPremium = user?.Plan == UserPlan.Premium;
+        var isTr = await IsTurkishAsync();
         
         var schedule = await _context.CleaningSchedules
             .FirstOrDefaultAsync(s => s.Id == id && s.OrganizationId == organization.Id);
         
         if (schedule == null)
-            return NotFound(new { error = "Çizelge bulunamadı" });
+            return NotFound(new { error = T(isTr, "Çizelge bulunamadı", "Schedule not found") });
         
         schedule.Name = request.Name;
         schedule.Location = request.Location;
@@ -177,12 +179,13 @@ public class CleaningController : Controller
     public async Task<IActionResult> DeleteSchedule(int id)
     {
         var organization = await GetOrCreateOrganizationAsync();
+        var isTr = await IsTurkishAsync();
         
         var schedule = await _context.CleaningSchedules
             .FirstOrDefaultAsync(s => s.Id == id && s.OrganizationId == organization.Id);
         
         if (schedule == null)
-            return NotFound(new { error = "Çizelge bulunamadı" });
+            return NotFound(new { error = T(isTr, "Çizelge bulunamadı", "Schedule not found") });
         
         schedule.IsActive = false;
         await _context.SaveChangesAsync();
@@ -198,6 +201,7 @@ public class CleaningController : Controller
     public async Task<IActionResult> GetSchedule(int id)
     {
         var organization = await GetOrCreateOrganizationAsync();
+        var isTr = await IsTurkishAsync();
         
         var schedule = await _context.CleaningSchedules
             .Include(s => s.Items.Where(i => i.IsActive).OrderBy(i => i.SortOrder))
@@ -205,7 +209,7 @@ public class CleaningController : Controller
             .FirstOrDefaultAsync(s => s.Id == id && s.OrganizationId == organization.Id);
         
         if (schedule == null)
-            return NotFound(new { error = "Çizelge bulunamadı" });
+            return NotFound(new { error = T(isTr, "Çizelge bulunamadı", "Schedule not found") });
         
         return Json(new {
             schedule.Id,
@@ -243,6 +247,7 @@ public class CleaningController : Controller
         var user = await _userManager.GetUserAsync(User);
         var isRegistered = User.Identity?.IsAuthenticated == true;
         var isPremium = user?.Plan == UserPlan.Premium;
+        var isTr = await IsTurkishAsync();
         
         var limits = GetCleaningLimits(user, isRegistered, isPremium);
         
@@ -252,12 +257,12 @@ public class CleaningController : Controller
             .FirstOrDefaultAsync(s => s.Id == request.ScheduleId && s.OrganizationId == organization.Id);
         
         if (schedule == null)
-            return NotFound(new { error = "Çizelge bulunamadı" });
+            return NotFound(new { error = T(isTr, "Çizelge bulunamadı", "Schedule not found") });
         
         // Check item limit
         if (schedule.Items.Count >= limits.MaxItemsPerSchedule)
         {
-            return BadRequest(new { error = $"Maksimum madde sayısına ulaştınız ({limits.MaxItemsPerSchedule})" });
+            return BadRequest(new { error = T(isTr, $"Maksimum madde sayısına ulaştınız ({limits.MaxItemsPerSchedule})", $"Maximum item limit reached ({limits.MaxItemsPerSchedule})") });
         }
         
         // Check frequency permission
@@ -302,6 +307,7 @@ public class CleaningController : Controller
         var user = await _userManager.GetUserAsync(User);
         var isRegistered = User.Identity?.IsAuthenticated == true;
         var isPremium = user?.Plan == UserPlan.Premium;
+        var isTr = await IsTurkishAsync();
         
         var limits = GetCleaningLimits(user, isRegistered, isPremium);
         
@@ -310,7 +316,7 @@ public class CleaningController : Controller
             .FirstOrDefaultAsync(i => i.Id == id && i.Schedule.OrganizationId == organization.Id);
         
         if (item == null)
-            return NotFound(new { error = "Madde bulunamadı" });
+            return NotFound(new { error = T(isTr, "Madde bulunamadı", "Item not found") });
         
         item.Name = request.Name;
         item.Description = request.Description;
@@ -330,13 +336,14 @@ public class CleaningController : Controller
     public async Task<IActionResult> DeleteItem(int id)
     {
         var organization = await GetOrCreateOrganizationAsync();
+        var isTr = await IsTurkishAsync();
         
         var item = await _context.CleaningItems
             .Include(i => i.Schedule)
             .FirstOrDefaultAsync(i => i.Id == id && i.Schedule.OrganizationId == organization.Id);
         
         if (item == null)
-            return NotFound(new { error = "Madde bulunamadı" });
+            return NotFound(new { error = T(isTr, "Madde bulunamadı", "Item not found") });
         
         item.IsActive = false;
         await _context.SaveChangesAsync();
@@ -356,8 +363,9 @@ public class CleaningController : Controller
     public async Task<IActionResult> CreateGroup([FromBody] CreateGroupRequest request)
     {
         var user = await _userManager.GetUserAsync(User);
+        var isTr = await IsTurkishAsync();
         if (user?.Plan != UserPlan.Premium || !user.CanGroupCleaningSchedules)
-            return BadRequest(new { error = "Bu özellik premium üyelik gerektirir" });
+            return BadRequest(new { error = T(isTr, "Bu özellik premium üyelik gerektirir", "This feature requires premium membership") });
         
         var organization = await GetOrCreateOrganizationAsync();
         
@@ -381,8 +389,9 @@ public class CleaningController : Controller
     public async Task<IActionResult> DeleteGroup(int id)
     {
         var user = await _userManager.GetUserAsync(User);
+        var isTr = await IsTurkishAsync();
         if (user?.Plan != UserPlan.Premium)
-            return BadRequest(new { error = "Bu özellik premium üyelik gerektirir" });
+            return BadRequest(new { error = T(isTr, "Bu özellik premium üyelik gerektirir", "This feature requires premium membership") });
         
         var organization = await GetOrCreateOrganizationAsync();
         
@@ -390,7 +399,7 @@ public class CleaningController : Controller
             .FirstOrDefaultAsync(g => g.Id == id && g.OrganizationId == organization.Id);
         
         if (group == null)
-            return NotFound(new { error = "Grup bulunamadı" });
+            return NotFound(new { error = T(isTr, "Grup bulunamadı", "Group not found") });
         
         // Remove group from schedules
         var schedules = await _context.CleaningSchedules
@@ -446,6 +455,7 @@ public class CleaningController : Controller
     {
         var organization = await GetOrCreateOrganizationAsync();
         var user = await _userManager.GetUserAsync(User);
+        var isTr = await IsTurkishAsync();
         
         var record = await _context.CleaningRecords
             .Include(r => r.Item)
@@ -453,7 +463,7 @@ public class CleaningController : Controller
             .FirstOrDefaultAsync(r => r.Id == id && r.Item.Schedule.OrganizationId == organization.Id);
         
         if (record == null)
-            return NotFound(new { error = "Kayıt bulunamadı" });
+            return NotFound(new { error = T(isTr, "Kayıt bulunamadı", "Record not found") });
         
         record.Status = CleaningRecordStatus.Approved;
         record.ReviewedAt = DateTime.UtcNow;
@@ -473,6 +483,7 @@ public class CleaningController : Controller
     {
         var organization = await GetOrCreateOrganizationAsync();
         var user = await _userManager.GetUserAsync(User);
+        var isTr = await IsTurkishAsync();
         
         var record = await _context.CleaningRecords
             .Include(r => r.Item)
@@ -480,7 +491,7 @@ public class CleaningController : Controller
             .FirstOrDefaultAsync(r => r.Id == id && r.Item.Schedule.OrganizationId == organization.Id);
         
         if (record == null)
-            return NotFound(new { error = "Kayıt bulunamadı" });
+            return NotFound(new { error = T(isTr, "Kayıt bulunamadı", "Record not found") });
         
         record.Status = CleaningRecordStatus.Rejected;
         record.ReviewedAt = DateTime.UtcNow;
@@ -549,18 +560,20 @@ public class CleaningController : Controller
     [Route("api/cleaning/qr/verify")]
     public async Task<IActionResult> VerifyQrAccess([FromBody] VerifyQrRequest request)
     {
+        var isTr = await IsTurkishAsync();
+        
         var schedule = await _context.CleaningSchedules
             .Include(s => s.Items.Where(i => i.IsActive).OrderBy(i => i.SortOrder))
             .FirstOrDefaultAsync(s => s.QrAccessCode == request.QrCode && s.IsActive);
         
         if (schedule == null)
-            return NotFound(new { error = "Çizelge bulunamadı" });
+            return NotFound(new { error = T(isTr, "Çizelge bulunamadı", "Schedule not found") });
         
         // Verify access code if set
         if (!string.IsNullOrEmpty(schedule.AccessCode))
         {
             if (request.AccessCode != schedule.AccessCode)
-                return BadRequest(new { error = "Yanlış şifre" });
+                return BadRequest(new { error = T(isTr, "Yanlış şifre", "Wrong password") });
         }
         
         // Check and log QR access
@@ -575,7 +588,7 @@ public class CleaningController : Controller
         
         if (monthlyAccessCount >= limits.MaxQrAccessPerMonth)
         {
-            return BadRequest(new { error = "Aylık erişim limitine ulaşıldı" });
+            return BadRequest(new { error = T(isTr, "Aylık erişim limitine ulaşıldı", "Monthly access limit reached") });
         }
         
         // Log access
@@ -624,21 +637,23 @@ public class CleaningController : Controller
     [Route("api/cleaning/qr/complete")]
     public async Task<IActionResult> CompleteItem([FromBody] CompleteItemRequest request)
     {
+        var isTr = await IsTurkishAsync();
+        
         var schedule = await _context.CleaningSchedules
             .FirstOrDefaultAsync(s => s.QrAccessCode == request.QrCode && s.IsActive);
         
         if (schedule == null)
-            return NotFound(new { error = "Çizelge bulunamadı" });
+            return NotFound(new { error = T(isTr, "Çizelge bulunamadı", "Schedule not found") });
         
         // Verify access code if set
         if (!string.IsNullOrEmpty(schedule.AccessCode) && request.AccessCode != schedule.AccessCode)
-            return BadRequest(new { error = "Yanlış şifre" });
+            return BadRequest(new { error = T(isTr, "Yanlış şifre", "Wrong password") });
         
         var item = await _context.CleaningItems
             .FirstOrDefaultAsync(i => i.Id == request.ItemId && i.ScheduleId == schedule.Id && i.IsActive);
         
         if (item == null)
-            return NotFound(new { error = "Madde bulunamadı" });
+            return NotFound(new { error = T(isTr, "Madde bulunamadı", "Item not found") });
         
         // Check if already completed today
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
@@ -647,7 +662,7 @@ public class CleaningController : Controller
                                      DateOnly.FromDateTime(r.CompletedAt) == today);
         
         if (existingRecord != null)
-            return BadRequest(new { error = "Bu madde bugün zaten işaretlenmiş" });
+            return BadRequest(new { error = T(isTr, "Bu madde bugün zaten işaretlenmiş", "This item is already marked today") });
         
         var record = new CleaningRecord
         {
@@ -676,15 +691,17 @@ public class CleaningController : Controller
     [Route("api/cleaning/qr/{qrCode}/status")]
     public async Task<IActionResult> GetCleanerStatus(string qrCode, [FromQuery] string? accessCode)
     {
+        var isTr = await IsTurkishAsync();
+        
         var schedule = await _context.CleaningSchedules
             .Include(s => s.Items.Where(i => i.IsActive))
             .FirstOrDefaultAsync(s => s.QrAccessCode == qrCode && s.IsActive);
         
         if (schedule == null)
-            return NotFound(new { error = "Çizelge bulunamadı" });
+            return NotFound(new { error = T(isTr, "Çizelge bulunamadı", "Schedule not found") });
         
         if (!string.IsNullOrEmpty(schedule.AccessCode) && accessCode != schedule.AccessCode)
-            return BadRequest(new { error = "Yanlış şifre" });
+            return BadRequest(new { error = T(isTr, "Yanlış şifre", "Wrong password") });
         
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         var todayRecords = await _context.CleaningRecords
@@ -798,6 +815,26 @@ public class CleaningController : Controller
             CanGroupSchedules = false
         };
     }
+
+    /// <summary>
+    /// Check if current user prefers Turkish
+    /// </summary>
+    private async Task<bool> IsTurkishAsync()
+    {
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            return (user?.Language ?? "tr") == "tr";
+        }
+        // Check Accept-Language header for anonymous users
+        var acceptLang = Request.Headers["Accept-Language"].ToString();
+        return string.IsNullOrEmpty(acceptLang) || acceptLang.StartsWith("tr");
+    }
+
+    /// <summary>
+    /// Translate message based on user language
+    /// </summary>
+    private string T(bool isTurkish, string tr, string en) => isTurkish ? tr : en;
 
     #endregion
 }
