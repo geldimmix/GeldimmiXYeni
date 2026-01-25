@@ -605,10 +605,19 @@ public class CleaningController : Controller
         
         // Get today's records for items
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var now = DateTime.UtcNow;
         var todayRecords = await _context.CleaningRecords
             .Where(r => r.Item.ScheduleId == schedule.Id && 
                        DateOnly.FromDateTime(r.CompletedAt) == today)
             .ToListAsync();
+        
+        // Get last approved records for each item (for frequency check display)
+        var itemIds = schedule.Items.Select(i => i.Id).ToList();
+        var lastApprovedRecords = await _context.CleaningRecords
+            .Where(r => itemIds.Contains(r.ItemId) && r.Status == CleaningRecordStatus.Approved)
+            .GroupBy(r => r.ItemId)
+            .Select(g => g.OrderByDescending(r => r.CompletedAt).First())
+            .ToDictionaryAsync(r => r.ItemId, r => r);
         
         return Json(new {
             success = true,
@@ -617,15 +626,41 @@ public class CleaningController : Controller
                 schedule.Name,
                 schedule.Location,
                 schedule.CleanerName,
-                Items = schedule.Items.Select(i => new {
-                    i.Id,
-                    i.Name,
-                    i.Description,
-                    i.Frequency,
-                    i.FrequencyDays,
-                    TodayRecord = todayRecords.FirstOrDefault(r => r.ItemId == i.Id) is var rec && rec != null 
-                        ? new { rec.Id, rec.CompletedAt, rec.Status, rec.Note } 
-                        : null
+                Items = schedule.Items.Select(i => {
+                    var todayRec = todayRecords.FirstOrDefault(r => r.ItemId == i.Id);
+                    var lastApproved = lastApprovedRecords.GetValueOrDefault(i.Id);
+                    
+                    // Calculate next available date based on frequency
+                    var requiredDays = i.Frequency switch
+                    {
+                        CleaningFrequency.Daily => 1,
+                        CleaningFrequency.Weekly => 7,
+                        CleaningFrequency.Monthly => 30,
+                        CleaningFrequency.Yearly => 365,
+                        CleaningFrequency.Custom => i.FrequencyDays ?? 1,
+                        _ => 1
+                    };
+                    
+                    DateTime? nextAvailableDate = lastApproved != null 
+                        ? lastApproved.CompletedAt.AddDays(requiredDays) 
+                        : null;
+                    
+                    bool canComplete = lastApproved == null || 
+                                       (now - lastApproved.CompletedAt).TotalDays >= requiredDays;
+                    
+                    return new {
+                        i.Id,
+                        i.Name,
+                        i.Description,
+                        i.Frequency,
+                        i.FrequencyDays,
+                        TodayRecord = todayRec != null 
+                            ? new { todayRec.Id, todayRec.CompletedAt, todayRec.Status, todayRec.Note } 
+                            : null,
+                        LastApprovedAt = lastApproved?.CompletedAt,
+                        NextAvailableAt = nextAvailableDate,
+                        CanComplete = canComplete
+                    };
                 })
             }
         });
@@ -657,14 +692,48 @@ public class CleaningController : Controller
         if (item == null)
             return NotFound(new { error = T(isTr, "Madde bulunamadı", "Item not found") });
         
-        // Check if already completed today
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
-        var existingRecord = await _context.CleaningRecords
-            .FirstOrDefaultAsync(r => r.ItemId == request.ItemId && 
-                                     DateOnly.FromDateTime(r.CompletedAt) == today);
+        // Get the last APPROVED record for this item
+        var lastApprovedRecord = await _context.CleaningRecords
+            .Where(r => r.ItemId == request.ItemId && r.Status == CleaningRecordStatus.Approved)
+            .OrderByDescending(r => r.CompletedAt)
+            .FirstOrDefaultAsync();
         
-        if (existingRecord != null)
-            return BadRequest(new { error = T(isTr, "Bu madde bugün zaten işaretlenmiş", "This item is already marked today") });
+        // Check frequency-based completion
+        var now = DateTime.UtcNow;
+        if (lastApprovedRecord != null)
+        {
+            var daysSinceLastApproved = (now - lastApprovedRecord.CompletedAt).TotalDays;
+            var requiredDays = item.Frequency switch
+            {
+                CleaningFrequency.Daily => 1,
+                CleaningFrequency.Weekly => 7,
+                CleaningFrequency.Monthly => 30,
+                CleaningFrequency.Yearly => 365,
+                CleaningFrequency.Custom => item.FrequencyDays ?? 1,
+                _ => 1
+            };
+            
+            if (daysSinceLastApproved < requiredDays)
+            {
+                var nextDate = lastApprovedRecord.CompletedAt.AddDays(requiredDays);
+                var nextDateStr = nextDate.ToString("dd.MM.yyyy");
+                return BadRequest(new { 
+                    error = T(isTr, 
+                        $"Bu madde {requiredDays} günde bir yapılabilir. Sonraki tarih: {nextDateStr}", 
+                        $"This item can be done every {requiredDays} days. Next date: {nextDateStr}") 
+                });
+            }
+        }
+        
+        // Check if there's already a PENDING record today (don't allow duplicate pending)
+        var today = DateOnly.FromDateTime(now);
+        var existingPendingRecord = await _context.CleaningRecords
+            .FirstOrDefaultAsync(r => r.ItemId == request.ItemId && 
+                                     DateOnly.FromDateTime(r.CompletedAt) == today &&
+                                     r.Status == CleaningRecordStatus.Pending);
+        
+        if (existingPendingRecord != null)
+            return BadRequest(new { error = T(isTr, "Bu madde bugün zaten işaretlenmiş ve onay bekliyor", "This item is already marked today and pending approval") });
         
         var record = new CleaningRecord
         {

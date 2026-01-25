@@ -267,6 +267,41 @@
             margin-top: 4px;
         }
         
+        .date-info-row {
+            display: flex;
+            gap: 8px;
+            margin: 6px 0;
+            flex-wrap: wrap;
+        }
+        
+        .date-info {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .date-info.last {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .date-info.next {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .item-card.locked {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+            opacity: 0.7;
+        }
+        
+        .status-locked {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+        
         .refresh-btn {
             display: block;
             width: 100%;
@@ -413,10 +448,24 @@
             list.innerHTML = items.map(item => {
                 const hasRecord = item.todayRecord != null;
                 const status = hasRecord ? item.todayRecord.status : null;
+                const canComplete = item.canComplete !== false; // default true if not specified
                 
                 let cardClass = '';
                 let statusHtml = '';
                 let actionHtml = '';
+                let dateInfoHtml = '';
+                
+                // Show last approved date and next date for non-daily items
+                if (item.frequency > 0) { // Not daily
+                    if (item.lastApprovedAt) {
+                        const lastDate = new Date(item.lastApprovedAt).toLocaleDateString(isTurkish ? 'tr-TR' : 'en-US', { day: 'numeric', month: 'short' });
+                        dateInfoHtml += `<span class="date-info last">✓ ${isTurkish ? 'Son' : 'Last'}: ${lastDate}</span>`;
+                    }
+                    if (item.nextAvailableAt && !canComplete) {
+                        const nextDate = new Date(item.nextAvailableAt).toLocaleDateString(isTurkish ? 'tr-TR' : 'en-US', { day: 'numeric', month: 'short' });
+                        dateInfoHtml += `<span class="date-info next">⏭ ${isTurkish ? 'Sonraki' : 'Next'}: ${nextDate}</span>`;
+                    }
+                }
                 
                 if (hasRecord) {
                     if (status === 0) {
@@ -435,10 +484,16 @@
                             statusHtml += `<div class="status-note">💬 ${item.todayRecord.note}</div>`;
                         }
                         // Allow retry for rejected items
-                        actionHtml = `<button class="btn-retry" onclick="completeItem(${item.id})">${isTurkish ? 'Tekrar Dene' : 'Try Again'}</button>`;
+                        if (canComplete) {
+                            actionHtml = `<button class="btn-retry" onclick="completeItem(${item.id})">${isTurkish ? 'Tekrar Dene' : 'Try Again'}</button>`;
+                        }
                     }
-                } else {
+                } else if (canComplete) {
                     actionHtml = `<button class="btn-complete" onclick="completeItem(${item.id})">${isTurkish ? 'Tamamla' : 'Complete'}</button>`;
+                } else {
+                    // Can't complete yet (frequency not met)
+                    cardClass = 'locked';
+                    statusHtml = `<span class="item-status status-locked">🔒 ${isTurkish ? 'Henüz zamanı gelmedi' : 'Not yet due'}</span>`;
                 }
                 
                 const freqText = freqLabels[item.frequency] || freqLabels[0];
@@ -449,6 +504,7 @@
                         <div class="item-info">
                             <h3>${item.name}</h3>
                             <p>${freqText}${customDays}</p>
+                            ${dateInfoHtml ? `<div class="date-info-row">${dateInfoHtml}</div>` : ''}
                             ${statusHtml}
                         </div>
                         ${actionHtml}
