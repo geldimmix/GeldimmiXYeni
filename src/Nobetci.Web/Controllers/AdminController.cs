@@ -450,6 +450,11 @@ public class AdminController : Controller
         
         if (result.Succeeded)
         {
+            await _activityLog.LogAsync(ActivityType.AdminUserUpdated, 
+                $"Kullanıcı güncellendi (Admin): {user.Email}", 
+                "User", null,
+                new { user.Email, user.Plan, user.CustomEmployeeLimit, user.CanManageUnits });
+            
             TempData["Success"] = "Kullanıcı ayarları güncellendi";
             return RedirectToAction(nameof(Users));
         }
@@ -498,6 +503,14 @@ public class AdminController : Controller
         }
 
         var result = await _userManager.UpdateAsync(user);
+        
+        if (result.Succeeded)
+        {
+            await _activityLog.LogAsync(ActivityType.AdminUserUpdated, 
+                $"Kullanıcı hızlı güncelleme (Admin): {user.Email} - {dto.Field}", 
+                "User", null,
+                new { user.Email, Field = dto.Field, dto.IntValue, dto.BoolValue, dto.StringValue });
+        }
         
         return Json(new { success = result.Succeeded });
     }

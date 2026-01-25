@@ -866,6 +866,11 @@ public class AppController : Controller
         _context.ShiftTemplates.Add(template);
         await _context.SaveChangesAsync();
         
+        await _activityLog.LogAsync(ActivityType.ShiftTemplateCreated, 
+            $"Vardiya şablonu eklendi: {template.Name}", 
+            "ShiftTemplate", template.Id,
+            new { template.Name, StartTime = template.StartTime.ToString(), EndTime = template.EndTime.ToString() });
+        
         return Json(new {
             id = template.Id,
             name = template.Name,
@@ -907,6 +912,11 @@ public class AppController : Controller
         
         await _context.SaveChangesAsync();
         
+        await _activityLog.LogAsync(ActivityType.ShiftTemplateUpdated, 
+            $"Vardiya şablonu güncellendi: {template.Name}", 
+            "ShiftTemplate", template.Id,
+            new { template.Name, StartTime = template.StartTime.ToString(), EndTime = template.EndTime.ToString() });
+        
         return Json(new {
             id = template.Id,
             name = template.Name,
@@ -938,9 +948,16 @@ public class AppController : Controller
             return NotFound(new { error = "Şablon bulunamadı" });
         }
         
+        var templateName = template.Name;
+        
         // Soft delete
         template.IsActive = false;
         await _context.SaveChangesAsync();
+        
+        await _activityLog.LogAsync(ActivityType.ShiftTemplateDeleted, 
+            $"Vardiya şablonu silindi: {templateName}", 
+            "ShiftTemplate", id,
+            new { Name = templateName });
         
         return Ok(new { success = true });
     }
@@ -1033,6 +1050,11 @@ public class AppController : Controller
             existingLeave.Notes = dto.Notes;
             await _context.SaveChangesAsync();
             
+            await _activityLog.LogAsync(ActivityType.LeaveUpdated, 
+                $"İzin güncellendi: {employee.FullName} - {date:dd.MM.yyyy} ({leaveType.Code})", 
+                "Leave", existingLeave.Id,
+                new { EmployeeName = employee.FullName, Date = date.ToString("yyyy-MM-dd"), LeaveType = leaveType.Code });
+            
             // Get updated employee totals
             var updateTotals = await GetEmployeeTotalsAsync(dto.EmployeeId, date.Year, date.Month);
             
@@ -1065,6 +1087,11 @@ public class AppController : Controller
         _context.Leaves.Add(leave);
         await _context.SaveChangesAsync();
         
+        await _activityLog.LogAsync(ActivityType.LeaveCreated, 
+            $"İzin eklendi: {employee.FullName} - {date:dd.MM.yyyy} ({leaveType.Code})", 
+            "Leave", leave.Id,
+            new { EmployeeName = employee.FullName, Date = date.ToString("yyyy-MM-dd"), LeaveType = leaveType.Code });
+        
         // Get updated employee totals
         var totals = await GetEmployeeTotalsAsync(dto.EmployeeId, date.Year, date.Month);
         
@@ -1093,9 +1120,16 @@ public class AppController : Controller
         var employeeId = leave.EmployeeId;
         var year = leave.Date.Year;
         var month = leave.Date.Month;
+        var employeeName = leave.Employee?.FullName ?? "Unknown";
+        var leaveDate = leave.Date;
             
         _context.Leaves.Remove(leave);
         await _context.SaveChangesAsync();
+        
+        await _activityLog.LogAsync(ActivityType.LeaveDeleted, 
+            $"İzin silindi: {employeeName} - {leaveDate:dd.MM.yyyy}", 
+            "Leave", id,
+            new { EmployeeName = employeeName, Date = leaveDate.ToString("yyyy-MM-dd") });
         
         // Get updated employee totals
         var totals = await GetEmployeeTotalsAsync(employeeId, year, month);
@@ -1118,9 +1152,17 @@ public class AppController : Controller
             
         if (leave == null)
             return NotFound(new { error = "İzin kaydı bulunamadı" });
+        
+        var employeeName = leave.Employee?.FullName ?? "Unknown";
+        var leaveId = leave.Id;
             
         _context.Leaves.Remove(leave);
         await _context.SaveChangesAsync();
+        
+        await _activityLog.LogAsync(ActivityType.LeaveDeleted, 
+            $"İzin silindi: {employeeName} - {parsedDate:dd.MM.yyyy}", 
+            "Leave", leaveId,
+            new { EmployeeName = employeeName, Date = parsedDate.ToString("yyyy-MM-dd") });
         
         // Get updated employee totals
         var totals = await GetEmployeeTotalsAsync(employeeId, parsedDate.Year, parsedDate.Month);

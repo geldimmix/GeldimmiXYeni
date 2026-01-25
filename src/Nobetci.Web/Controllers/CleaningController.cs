@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Nobetci.Web.Data;
 using Nobetci.Web.Data.Entities;
 using Nobetci.Web.Models;
+using Nobetci.Web.Services;
 
 namespace Nobetci.Web.Controllers;
 
@@ -16,15 +17,18 @@ public class CleaningController : Controller
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<CleaningController> _logger;
+    private readonly IActivityLogService _activityLog;
 
     public CleaningController(
         ApplicationDbContext context, 
         UserManager<ApplicationUser> userManager,
-        ILogger<CleaningController> logger)
+        ILogger<CleaningController> logger,
+        IActivityLogService activityLog)
     {
         _context = context;
         _userManager = userManager;
         _logger = logger;
+        _activityLog = activityLog;
     }
 
     #region Main Page
@@ -128,6 +132,11 @@ public class CleaningController : Controller
         _context.CleaningSchedules.Add(schedule);
         await _context.SaveChangesAsync();
         
+        await _activityLog.LogAsync(ActivityType.CleaningScheduleCreated, 
+            $"Temizlik çizelgesi eklendi: {schedule.Name}", 
+            "CleaningSchedule", schedule.Id,
+            new { schedule.Name, schedule.Location });
+        
         return Json(new { 
             success = true, 
             schedule = new {
@@ -170,6 +179,11 @@ public class CleaningController : Controller
         
         await _context.SaveChangesAsync();
         
+        await _activityLog.LogAsync(ActivityType.CleaningScheduleUpdated, 
+            $"Temizlik çizelgesi güncellendi: {schedule.Name}", 
+            "CleaningSchedule", schedule.Id,
+            new { schedule.Name, schedule.Location });
+        
         return Json(new { success = true });
     }
 
@@ -189,8 +203,14 @@ public class CleaningController : Controller
         if (schedule == null)
             return NotFound(new { error = T(isTr, "Çizelge bulunamadı", "Schedule not found") });
         
+        var scheduleName = schedule.Name;
         schedule.IsActive = false;
         await _context.SaveChangesAsync();
+        
+        await _activityLog.LogAsync(ActivityType.CleaningScheduleDeleted, 
+            $"Temizlik çizelgesi silindi: {scheduleName}", 
+            "CleaningSchedule", id,
+            new { Name = scheduleName });
         
         return Json(new { success = true });
     }
@@ -577,6 +597,11 @@ public class CleaningController : Controller
         
         await _context.SaveChangesAsync();
         
+        await _activityLog.LogAsync(ActivityType.CleaningRecordApproved, 
+            $"Temizlik kaydı onaylandı: {record.Item?.Name}", 
+            "CleaningRecord", record.Id,
+            new { ItemName = record.Item?.Name, ScheduleName = record.Item?.Schedule?.Name });
+        
         return Json(new { success = true });
     }
 
@@ -605,6 +630,11 @@ public class CleaningController : Controller
         record.Note = request.Note;
         
         await _context.SaveChangesAsync();
+        
+        await _activityLog.LogAsync(ActivityType.CleaningRecordRejected, 
+            $"Temizlik kaydı reddedildi: {record.Item?.Name}", 
+            "CleaningRecord", record.Id,
+            new { ItemName = record.Item?.Name, ScheduleName = record.Item?.Schedule?.Name, Note = request.Note });
         
         return Json(new { success = true });
     }
