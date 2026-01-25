@@ -922,59 +922,87 @@
         </div>
         
         <ul class="admin-nav">
+            @{
+                var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+            }
             <li>
-                <a href="/admin" class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")">
+                <a href="/admin" class="@(currentAction == "Index" ? "active" : "")">
                     <span class="nav-icon">📊</span>
                     <span>Dashboard</span>
                 </a>
             </li>
             <li>
-                <a href="/admin/stats" class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Stats" ? "active" : "")">
+                <a href="/admin/stats" class="@(currentAction == "Stats" ? "active" : "")">
                     <span class="nav-icon">📈</span>
                     <span>İstatistikler</span>
                 </a>
             </li>
+            
             <li class="divider"></li>
+            
             <li>
-                <a href="/admin/pages" class="@(ViewContext.RouteData.Values["action"]?.ToString()?.Contains("Page") == true ? "active" : "")">
-                    <span class="nav-icon">📄</span>
-                    <span>Sayfalar</span>
-                </a>
-            </li>
-            <li>
-                <a href="/admin/logs" class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Logs" ? "active" : "")">
-                    <span class="nav-icon">📋</span>
-                    <span>Loglar</span>
-                </a>
-            </li>
-            <li class="divider"></li>
-            <li>
-                <a href="/admin/users" class="@(ViewContext.RouteData.Values["action"]?.ToString()?.Contains("User") == true ? "active" : "")">
+                <a href="/admin/users" class="@(currentAction.Contains("User") ? "active" : "")">
                     <span class="nav-icon">👥</span>
                     <span>Kullanıcılar</span>
                 </a>
             </li>
+            <li>
+                <a href="/admin/pages" class="@(currentAction.Contains("Page") ? "active" : "")">
+                    <span class="nav-icon">📄</span>
+                    <span>Sayfalar</span>
+                </a>
+            </li>
+            
+            <li class="divider"></li>
+            
+            <li>
+                <a href="/admin/logs" class="@(currentAction == "Logs" ? "active" : "")">
+                    <span class="nav-icon">📋</span>
+                    <span>Ziyaretçi Logları</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/activitylogs" class="@(currentAction == "ActivityLogs" ? "active" : "")">
+                    <span class="nav-icon">📜</span>
+                    <span>Aktivite Logları</span>
+                </a>
+            </li>
+            
             @if (ViewBag.IsSuperAdmin == true)
             {
                 <li class="divider"></li>
                 <li>
-                    <a href="/admin/settings" class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Settings" ? "active" : "")">
+                    <a href="/admin/settings" class="@(currentAction == "Settings" ? "active" : "")">
                         <span class="nav-icon">⚙️</span>
                         <span>Sistem Ayarları</span>
                     </a>
                 </li>
                 <li>
-                    <a href="/admin/admins" class="@(ViewContext.RouteData.Values["action"]?.ToString()?.Contains("Admin") == true ? "active" : "")">
+                    <a href="/admin/admins" class="@(currentAction.Contains("Admin") && currentAction != "Index" ? "active" : "")">
                         <span class="nav-icon">🔐</span>
                         <span>Admin Yönetimi</span>
                     </a>
                 </li>
             }
+            
             <li class="divider"></li>
+            
             <li>
                 <a href="/" target="_blank">
                     <span class="nav-icon">🌐</span>
                     <span>Siteyi Görüntüle</span>
+                </a>
+            </li>
+            <li>
+                <a href="/app" target="_blank">
+                    <span class="nav-icon">📅</span>
+                    <span>Nöbet Uygulaması</span>
+                </a>
+            </li>
+            <li>
+                <a href="/cleaning" target="_blank">
+                    <span class="nav-icon">🧹</span>
+                    <span>Temizlik Çizelgesi</span>
                 </a>
             </li>
         </ul>
