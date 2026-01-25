@@ -281,6 +281,8 @@ public class AppController : Controller
             FullName = dto.FullName,
             Title = dto.Title,
             IdentityNo = dto.IdentityNo,
+            Email = dto.Email,
+            Phone = dto.Phone,
             Color = dto.Color ?? GetRandomColor(),
             DailyWorkHours = dto.DailyWorkHours > 0 ? dto.DailyWorkHours : 8,
             WeekendWorkMode = dto.WeekendWorkMode,
@@ -299,6 +301,8 @@ public class AppController : Controller
             fullName = employee.FullName,
             title = employee.Title,
             identityNo = employee.IdentityNo,
+            email = employee.Email,
+            phone = employee.Phone,
             color = employee.Color,
             dailyWorkHours = employee.DailyWorkHours,
             weekendWorkMode = employee.WeekendWorkMode,
@@ -322,6 +326,8 @@ public class AppController : Controller
             employee.FullName,
             employee.Title,
             employee.IdentityNo,
+            employee.Email,
+            employee.Phone,
             employee.Color,
             employee.DailyWorkHours,
             employee.WeekendWorkMode,
@@ -348,6 +354,8 @@ public class AppController : Controller
         employee.FullName = dto.FullName;
         employee.Title = dto.Title;
         employee.IdentityNo = dto.IdentityNo;
+        employee.Email = dto.Email;
+        employee.Phone = dto.Phone;
         if (!string.IsNullOrEmpty(dto.Color))
             employee.Color = dto.Color;
         
@@ -369,6 +377,8 @@ public class AppController : Controller
             employee.FullName,
             employee.Title,
             employee.IdentityNo,
+            employee.Email,
+            employee.Phone,
             employee.Color,
             employee.DailyWorkHours,
             employee.WeekendWorkMode,
@@ -3759,6 +3769,8 @@ public class EmployeeDto
     public string FullName { get; set; } = string.Empty;
     public string? Title { get; set; }
     public string? IdentityNo { get; set; }
+    public string? Email { get; set; }
+    public string? Phone { get; set; }
     public string? Color { get; set; }
     public decimal DailyWorkHours { get; set; } = 8;
     public int WeekendWorkMode { get; set; } = 0; // 0=No weekend, 1=Both days, 2=Saturday only, 3=Saturday specific hours

@@ -909,8 +909,20 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating-custom">
-                                <input type="text" class="form-input" id="employeeIdentityNo" placeholder=" ">
-                                <label>@(isTurkish ? "Sicil No" : "ID Number")</label>
+                                <input type="text" class="form-input" id="employeeIdentityNo" placeholder=" " maxlength="11">
+                                <label>@(isTurkish ? "TC Kimlik / Sicil No" : "National ID / Employee ID")</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating-custom">
+                                <input type="email" class="form-input" id="employeeEmail" placeholder=" ">
+                                <label>@(isTurkish ? "E-posta Adresi" : "Email Address")</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating-custom">
+                                <input type="tel" class="form-input" id="employeePhone" placeholder=" " maxlength="20">
+                                <label>@(isTurkish ? "Telefon Numarası" : "Phone Number")</label>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -1076,8 +1088,20 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating-custom">
-                                <input type="text" class="form-input" id="editEmployeeIdentityNo" placeholder=" ">
-                                <label>@(isTurkish ? "Sicil No" : "ID Number")</label>
+                                <input type="text" class="form-input" id="editEmployeeIdentityNo" placeholder=" " maxlength="11">
+                                <label>@(isTurkish ? "TC Kimlik / Sicil No" : "National ID / Employee ID")</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating-custom">
+                                <input type="email" class="form-input" id="editEmployeeEmail" placeholder=" ">
+                                <label>@(isTurkish ? "E-posta Adresi" : "Email Address")</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating-custom">
+                                <input type="tel" class="form-input" id="editEmployeePhone" placeholder=" " maxlength="20">
+                                <label>@(isTurkish ? "Telefon Numarası" : "Phone Number")</label>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -6711,6 +6735,8 @@
             document.getElementById('editEmployeeFullName').value = emp.fullName || '';
             document.getElementById('editEmployeeTitle').value = emp.title || '';
             document.getElementById('editEmployeeIdentityNo').value = emp.identityNo || '';
+            document.getElementById('editEmployeeEmail').value = emp.email || '';
+            document.getElementById('editEmployeePhone').value = emp.phone || '';
             document.getElementById('editEmployeeDailyHours').value = emp.dailyWorkHours || 8;
             document.getElementById('editEmployeeShiftScore').value = emp.shiftScore || 100;
             document.getElementById('editEmployeeIsNonHealthServices').checked = emp.isNonHealthServices || false;
@@ -8351,6 +8377,8 @@
                         fullName: fullName,
                         title: document.getElementById('employeeTitle')?.value?.trim() || '',
                         identityNo: document.getElementById('employeeIdentityNo')?.value?.trim() || '',
+                        email: document.getElementById('employeeEmail')?.value?.trim() || '',
+                        phone: document.getElementById('employeePhone')?.value?.trim() || '',
                         dailyWorkHours: parseFloat(document.getElementById('employeeDailyHours')?.value) || 8,
                         weekendWorkMode: parseInt(document.getElementById('employeeWeekendMode')?.value) || 0,
                         saturdayWorkHours: parseFloat(document.getElementById('employeeSaturdayHours')?.value) || null,
@@ -8408,6 +8436,8 @@
                         fullName: fullName,
                         title: document.getElementById('editEmployeeTitle')?.value?.trim() || '',
                         identityNo: document.getElementById('editEmployeeIdentityNo')?.value?.trim() || '',
+                        email: document.getElementById('editEmployeeEmail')?.value?.trim() || '',
+                        phone: document.getElementById('editEmployeePhone')?.value?.trim() || '',
                         dailyWorkHours: parseFloat(document.getElementById('editEmployeeDailyHours')?.value) || 8,
                         weekendWorkMode: parseInt(document.getElementById('editEmployeeWeekendMode')?.value) || 0,
                         saturdayWorkHours: parseFloat(document.getElementById('editEmployeeSaturdayHours')?.value) || null,

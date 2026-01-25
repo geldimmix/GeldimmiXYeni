@@ -33,6 +33,18 @@ public class Employee
     public string? IdentityNo { get; set; }
     
     /// <summary>
+    /// Email address
+    /// </summary>
+    [MaxLength(100)]
+    public string? Email { get; set; }
+    
+    /// <summary>
+    /// Phone number
+    /// </summary>
+    [MaxLength(20)]
+    public string? Phone { get; set; }
+    
+    /// <summary>
     /// Daily work hours requirement
     /// </summary>
     public decimal DailyWorkHours { get; set; } = 8;
