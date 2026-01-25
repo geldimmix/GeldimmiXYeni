@@ -580,7 +580,7 @@
                                                 </div>
                                                 @if (unit.UnitType != null)
                                                 {
-                                                    <span class="unit-type-badge" style="background-color: @(unit.UnitType.Color ?? "#6B7280")">@unit.UnitType.Name</span>
+                                                    <span class="unit-type-badge" style="background-color: @(unit.UnitType.Color ?? "#6B7280")">@(isTurkish ? unit.UnitType.Name : (unit.UnitType.NameEn ?? unit.UnitType.Name))</span>
                                                 }
                                                 <div class="unit-meta">
                                                     <span class="meta-item">
@@ -648,7 +648,7 @@
                                             <div class="unit-type-color" style="background-color: @(ut.Color ?? "#6B7280")"></div>
                                             <div class="unit-type-info">
                                                 <h5 class="unit-type-name">
-                                                    @ut.Name
+                                                    @(isTurkish ? ut.Name : (ut.NameEn ?? ut.Name))
                                                     @if (ut.IsSystem)
                                                     {
                                                         <span class="system-badge">@(isTurkish ? "Sistem" : "System")</span>

@@ -3045,9 +3045,9 @@ public class AppController : Controller
             
         var defaultTypes = new[]
         {
-            new UnitType { OrganizationId = organizationId, Name = "Poliklinik/Servis", DefaultCoefficient = 1.0m, Color = "#3B82F6", Icon = "hospital", SortOrder = 1, IsSystem = true },
-            new UnitType { OrganizationId = organizationId, Name = "Yoğun Bakım", DefaultCoefficient = 1.5m, Color = "#EF4444", Icon = "heart-pulse", SortOrder = 2, IsSystem = true },
-            new UnitType { OrganizationId = organizationId, Name = "Radyasyon Birimi", DefaultCoefficient = 1.5m, Color = "#F59E0B", Icon = "radiation", SortOrder = 3, IsSystem = true }
+            new UnitType { OrganizationId = organizationId, Name = "Poliklinik/Servis", NameEn = "Polyclinic/Service", DefaultCoefficient = 1.0m, Color = "#3B82F6", Icon = "hospital", SortOrder = 1, IsSystem = true },
+            new UnitType { OrganizationId = organizationId, Name = "Yoğun Bakım", NameEn = "Intensive Care Unit", DefaultCoefficient = 1.5m, Color = "#EF4444", Icon = "heart-pulse", SortOrder = 2, IsSystem = true },
+            new UnitType { OrganizationId = organizationId, Name = "Radyasyon Birimi", NameEn = "Radiation Unit", DefaultCoefficient = 1.5m, Color = "#F59E0B", Icon = "radiation", SortOrder = 3, IsSystem = true }
         };
         
         _context.UnitTypes.AddRange(defaultTypes);
@@ -3122,6 +3122,7 @@ public class AppController : Controller
             .Select(ut => new {
                 ut.Id,
                 ut.Name,
+                ut.NameEn,
                 ut.Description,
                 ut.DefaultCoefficient,
                 ut.Color,

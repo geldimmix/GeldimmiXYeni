@@ -483,6 +483,24 @@ using (var scope = app.Services.CreateScope())
             END $$;
         ", "UnitTypesIsActive");
         
+        // Add NameEn column to UnitTypes if not exists (for English localization)
+        await SafeExecuteSql(@"
+            DO $$
+            BEGIN
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'UnitTypes' AND column_name = 'NameEn') THEN
+                    ALTER TABLE ""UnitTypes"" ADD COLUMN ""NameEn"" VARCHAR(100) NULL;
+                END IF;
+            END $$;
+        ", "UnitTypesNameEn");
+        
+        // Update existing default unit types with English names
+        await SafeExecuteSql(@"
+            UPDATE ""UnitTypes"" SET ""NameEn"" = 'Polyclinic/Service' WHERE ""Name"" = 'Poliklinik/Servis' AND ""NameEn"" IS NULL;
+            UPDATE ""UnitTypes"" SET ""NameEn"" = 'Intensive Care Unit' WHERE ""Name"" = 'Yoğun Bakım' AND ""NameEn"" IS NULL;
+            UPDATE ""UnitTypes"" SET ""NameEn"" = 'Radiation Unit' WHERE ""Name"" = 'Radyasyon Birimi' AND ""NameEn"" IS NULL;
+            UPDATE ""UnitTypes"" SET ""NameEn"" = 'General Unit' WHERE ""Name"" = 'Genel Birim' AND ""NameEn"" IS NULL;
+        ", "UnitTypesDefaultNameEn");
+        
         // Create Units table (Premium feature)
         await SafeExecuteSql(@"
             CREATE TABLE IF NOT EXISTS ""Units"" (

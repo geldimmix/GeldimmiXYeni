@@ -17,6 +17,12 @@ public class UnitType
     public string Name { get; set; } = string.Empty;
     
     /// <summary>
+    /// English name for the unit type (for localization)
+    /// </summary>
+    [MaxLength(100)]
+    public string? NameEn { get; set; }
+    
+    /// <summary>
     /// Description of this unit type
     /// </summary>
     [MaxLength(500)]
