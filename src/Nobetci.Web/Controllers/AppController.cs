@@ -3226,6 +3226,11 @@ public class AppController : Controller
         _context.UnitTypes.Add(unitType);
         await _context.SaveChangesAsync();
         
+        await _activityLog.LogAsync(ActivityType.UnitTypeCreated, 
+            $"Birim tipi eklendi: {unitType.Name}", 
+            "UnitType", unitType.Id,
+            new { unitType.Name, unitType.Description });
+        
         return Json(new { 
             unitType.Id, 
             unitType.Name, 
@@ -3270,6 +3275,11 @@ public class AppController : Controller
         
         await _context.SaveChangesAsync();
         
+        await _activityLog.LogAsync(ActivityType.UnitTypeUpdated, 
+            $"Birim tipi güncellendi: {unitType.Name}", 
+            "UnitType", unitType.Id,
+            new { unitType.Name, unitType.Description });
+        
         return Json(new { success = true });
     }
     
@@ -3297,8 +3307,14 @@ public class AppController : Controller
         if (unitType.Units.Any(u => u.IsActive))
             return BadRequest(new { error = "Bu birim tipine atanmış birimler var. Önce birimlerin tiplerini değiştirin." });
         
+        var typeName = unitType.Name;
         unitType.IsActive = false;
         await _context.SaveChangesAsync();
+        
+        await _activityLog.LogAsync(ActivityType.UnitTypeDeleted, 
+            $"Birim tipi silindi: {typeName}", 
+            "UnitType", id,
+            new { Name = typeName });
         
         return Json(new { success = true });
     }
@@ -3410,6 +3426,11 @@ public class AppController : Controller
             _context.Units.Add(unit);
             await _context.SaveChangesAsync();
             
+            await _activityLog.LogAsync(ActivityType.UnitCreated, 
+                $"Birim eklendi: {unit.Name}", 
+                "Unit", unit.Id,
+                new { unit.Name, unit.Description, unit.Coefficient });
+            
             return Json(new { 
                 unit.Id, 
                 unit.Name, 
@@ -3490,6 +3511,11 @@ public class AppController : Controller
         
         await _context.SaveChangesAsync();
         
+        await _activityLog.LogAsync(ActivityType.UnitUpdated, 
+            $"Birim güncellendi: {unit.Name}", 
+            "Unit", unit.Id,
+            new { unit.Name, unit.Description, unit.Coefficient });
+        
         return Json(new { success = true });
     }
     
@@ -3514,9 +3540,15 @@ public class AppController : Controller
         if (unit.Employees.Any())
             return BadRequest(new { error = "Bu birimde personel bulunmakta. Önce personelleri başka birime taşıyın." });
         
+        var unitName = unit.Name;
         unit.IsActive = false;
         unit.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
+        
+        await _activityLog.LogAsync(ActivityType.UnitDeleted, 
+            $"Birim silindi: {unitName}", 
+            "Unit", id,
+            new { Name = unitName });
         
         return Json(new { success = true });
     }
