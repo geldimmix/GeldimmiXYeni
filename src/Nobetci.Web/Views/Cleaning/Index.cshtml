@@ -923,8 +923,15 @@
         const container = document.getElementById('qrCodeContainer');
         container.innerHTML = '';
         
-        QRCode.toCanvas(container, url, { width: 200 }, function(error) {
-            if (error) console.error(error);
+        // Create a canvas element for QRCode
+        const canvas = document.createElement('canvas');
+        container.appendChild(canvas);
+        
+        QRCode.toCanvas(canvas, url, { width: 200, margin: 2 }, function(error) {
+            if (error) {
+                console.error('QR Code error:', error);
+                container.innerHTML = '<p style="color: red;">QR kod oluşturulamadı</p>';
+            }
         });
         
         new bootstrap.Modal(document.getElementById('qrModal')).show();
