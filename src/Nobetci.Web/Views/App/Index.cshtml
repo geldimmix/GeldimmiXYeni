@@ -8,6 +8,16 @@
 <div class="app-wrapper">
     <!-- Left Sidebar - Compact Module Based -->
     <aside class="app-sidebar">
+        <!-- Module Selector -->
+        <div class="module-selector">
+            <button class="module-btn active" data-module="shift" title="@(isTurkish ? "Nöbet Sistemi" : "Shift System")">
+                🏥
+            </button>
+            <a href="@Url.Action("Index", "Cleaning")" class="module-btn" title="@(isTurkish ? "Temizlik Çizelgesi" : "Cleaning Schedule")">
+                🧹
+            </a>
+        </div>
+        
         <!-- Module Header - Minimal -->
         <div class="module-header">
             <span>🏥</span>
@@ -3025,6 +3035,41 @@
     .app-sidebar::-webkit-scrollbar-thumb {
         background: #d1d5db;
         border-radius: 2px;
+    }
+    
+    /* Module Selector */
+    .module-selector {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 8px;
+        padding: 4px;
+        background: #f1f5f9;
+        border-radius: 8px;
+    }
+    
+    .module-btn {
+        flex: 1;
+        padding: 8px;
+        background: transparent;
+        border: none;
+        border-radius: 6px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .module-btn:hover {
+        background: #e2e8f0;
+    }
+    
+    .module-btn.active {
+        background: #3b82f6;
+        box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
     }
     
     /* Module Header - Minimal */

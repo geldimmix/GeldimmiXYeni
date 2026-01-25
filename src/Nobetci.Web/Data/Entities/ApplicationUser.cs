@@ -50,6 +50,38 @@ public class ApplicationUser : IdentityUser
     /// </summary>
     public int UnitEmployeeLimit { get; set; } = 0;
     
+    // ============ Temizlik Çizelgesi Modülü Limitleri ============
+    
+    /// <summary>
+    /// Temizlik modülüne erişim hakkı
+    /// </summary>
+    public bool CanAccessCleaning { get; set; } = true;
+    
+    /// <summary>
+    /// Maksimum çizelge sayısı (Free: 1, Premium: sınırsız)
+    /// </summary>
+    public int CleaningScheduleLimit { get; set; } = 1;
+    
+    /// <summary>
+    /// Çizelge başına maksimum madde sayısı (Free: 5, Registered: 10, Premium: 25)
+    /// </summary>
+    public int CleaningItemLimit { get; set; } = 10;
+    
+    /// <summary>
+    /// Aylık QR erişim limiti (Unregistered: 100, Free: 500, Premium: 3000)
+    /// </summary>
+    public int CleaningQrAccessLimit { get; set; } = 500;
+    
+    /// <summary>
+    /// Frekans seçimi yapabilme hakkı (Unregistered: false)
+    /// </summary>
+    public bool CanSelectCleaningFrequency { get; set; } = true;
+    
+    /// <summary>
+    /// Çizelge gruplama hakkı (sadece Premium)
+    /// </summary>
+    public bool CanGroupCleaningSchedules { get; set; } = false;
+    
     /// <summary>
     /// When the premium subscription expires (null for free)
     /// </summary>

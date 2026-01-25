@@ -240,7 +240,8 @@ public class AppController : Controller
             CanExportExcel = isRegistered,
             CanAccessAttendance = canAccessAttendance,
             CanAccessPayroll = canAccessPayroll,
-            CanManageUnits = isPremium
+            CanManageUnits = isPremium,
+            CanAccessCleaning = true // Always accessible, limits apply inside
         };
 
         return View(viewModel);

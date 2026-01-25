@@ -35,6 +35,7 @@ public class AppViewModel
     public bool CanAccessAttendance { get; set; }
     public bool CanAccessPayroll { get; set; }
     public bool CanManageUnits { get; set; }
+    public bool CanAccessCleaning { get; set; } = true;
     
     // Helper properties
     public int EmployeeCount => Employees.Count;

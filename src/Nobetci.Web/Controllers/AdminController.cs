@@ -388,6 +388,13 @@ public class AdminController : Controller
             CanAccessAttendance = user.CanAccessAttendance,
             CanAccessPayroll = user.CanAccessPayroll,
             CanManageUnits = user.CanManageUnits,
+            // Temizlik modülü limitleri
+            CanAccessCleaning = user.CanAccessCleaning,
+            CleaningScheduleLimit = user.CleaningScheduleLimit,
+            CleaningItemLimit = user.CleaningItemLimit,
+            CleaningQrAccessLimit = user.CleaningQrAccessLimit,
+            CanSelectCleaningFrequency = user.CanSelectCleaningFrequency,
+            CanGroupCleaningSchedules = user.CanGroupCleaningSchedules,
             AdminNotes = user.AdminNotes,
             CreatedAt = user.CreatedAt,
             LastLoginAt = user.LastLoginAt,
@@ -427,6 +434,13 @@ public class AdminController : Controller
         user.CanAccessAttendance = model.CanAccessAttendance;
         user.CanAccessPayroll = model.CanAccessPayroll;
         user.CanManageUnits = model.CanManageUnits;
+        // Temizlik modülü limitleri
+        user.CanAccessCleaning = model.CanAccessCleaning;
+        user.CleaningScheduleLimit = model.CleaningScheduleLimit;
+        user.CleaningItemLimit = model.CleaningItemLimit;
+        user.CleaningQrAccessLimit = model.CleaningQrAccessLimit;
+        user.CanSelectCleaningFrequency = model.CanSelectCleaningFrequency;
+        user.CanGroupCleaningSchedules = model.CanGroupCleaningSchedules;
         user.AdminNotes = model.AdminNotes;
 
         var result = await _userManager.UpdateAsync(user);

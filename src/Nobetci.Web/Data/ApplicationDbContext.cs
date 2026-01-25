@@ -37,6 +37,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     
     // User API Credentials
     public DbSet<UserApiCredential> UserApiCredentials => Set<UserApiCredential>();
+    
+    // Cleaning Module
+    public DbSet<CleaningSchedule> CleaningSchedules => Set<CleaningSchedule>();
+    public DbSet<CleaningScheduleGroup> CleaningScheduleGroups => Set<CleaningScheduleGroup>();
+    public DbSet<CleaningItem> CleaningItems => Set<CleaningItem>();
+    public DbSet<CleaningRecord> CleaningRecords => Set<CleaningRecord>();
+    public DbSet<CleaningQrAccess> CleaningQrAccesses => Set<CleaningQrAccess>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

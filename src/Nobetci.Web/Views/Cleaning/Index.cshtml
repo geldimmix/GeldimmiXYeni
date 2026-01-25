@@ -1,0 +1,1043 @@
+@model Nobetci.Web.Models.CleaningViewModel
+@{
+    ViewData["Title"] = Model.IsTurkish ? "Temizlik Çizelgesi" : "Cleaning Schedule";
+    Layout = "~/Views/Shared/_AppLayout.cshtml";
+    var isTurkish = Model.IsTurkish;
+}
+
+<div class="cleaning-page">
+    <!-- Header -->
+    <div class="cleaning-header">
+        <div class="header-info">
+            <h1>
+                <span class="header-icon">🧹</span>
+                @(isTurkish ? "Temizlik Çizelgesi" : "Cleaning Schedule")
+            </h1>
+            <p class="header-subtitle">
+                @(isTurkish ? "Çizelgelerinizi yönetin, QR kod ile temizlik takibi yapın" : "Manage schedules, track cleaning with QR codes")
+            </p>
+        </div>
+        <div class="header-actions">
+            @if (Model.PendingRecordsCount > 0)
+            {
+                <button class="btn-pending" onclick="showPendingRecords()">
+                    <span>⏳</span>
+                    @(isTurkish ? "Onay Bekleyen" : "Pending")
+                    <span class="badge">@Model.PendingRecordsCount</span>
+                </button>
+            }
+            <a href="@Url.Action("Index", "App")" class="btn-back">
+                <span>←</span>
+                @(isTurkish ? "Nöbet Çizelgesi" : "Shift Schedule")
+            </a>
+        </div>
+    </div>
+
+    <!-- Limits Bar -->
+    <div class="limits-bar">
+        <div class="limit-item">
+            <span class="limit-icon">📋</span>
+            <span class="limit-label">@(isTurkish ? "Çizelge" : "Schedules")</span>
+            <span class="limit-value">@Model.ScheduleCount / @(Model.Limits.MaxSchedules == 100 ? "∞" : Model.Limits.MaxSchedules.ToString())</span>
+        </div>
+        <div class="limit-item">
+            <span class="limit-icon">📱</span>
+            <span class="limit-label">@(isTurkish ? "Aylık QR Erişim" : "Monthly QR Access")</span>
+            <span class="limit-value">@Model.MonthlyQrAccessCount / @Model.Limits.MaxQrAccessPerMonth</span>
+        </div>
+        @if (!Model.Limits.CanSelectFrequency)
+        {
+            <div class="limit-item warning">
+                <span class="limit-icon">⚠️</span>
+                <span class="limit-label">@(isTurkish ? "Sadece günlük frekans" : "Daily frequency only")</span>
+            </div>
+        }
+    </div>
+
+    <!-- Schedules Grid -->
+    <div class="schedules-section">
+        <div class="section-header">
+            <h2>@(isTurkish ? "Çizelgelerim" : "My Schedules")</h2>
+            @if (Model.CanAddSchedule)
+            {
+                <button class="btn-add" onclick="showAddScheduleModal()">
+                    <span>+</span> @(isTurkish ? "Yeni Çizelge" : "New Schedule")
+                </button>
+            }
+        </div>
+
+        @if (Model.Schedules.Any())
+        {
+            <div class="schedules-grid">
+                @foreach (var schedule in Model.Schedules)
+                {
+                    <div class="schedule-card" data-id="@schedule.Id">
+                        <div class="card-header">
+                            <h3>@schedule.Name</h3>
+                            <div class="card-actions">
+                                <button class="btn-icon" onclick="showQrCode(@schedule.Id, '@schedule.QrAccessCode')" title="QR Kod">📱</button>
+                                <button class="btn-icon" onclick="editSchedule(@schedule.Id)" title="@(isTurkish ? "Düzenle" : "Edit")">✏️</button>
+                                <button class="btn-icon danger" onclick="deleteSchedule(@schedule.Id)" title="@(isTurkish ? "Sil" : "Delete")">🗑️</button>
+                            </div>
+                        </div>
+                        @if (!string.IsNullOrEmpty(schedule.Location))
+                        {
+                            <div class="card-location">📍 @schedule.Location</div>
+                        }
+                        <div class="card-stats">
+                            <span class="stat">
+                                <span class="stat-icon">📝</span>
+                                @schedule.Items.Count @(isTurkish ? "madde" : "items")
+                            </span>
+                            @if (!string.IsNullOrEmpty(schedule.CleanerName))
+                            {
+                                <span class="stat">
+                                    <span class="stat-icon">👤</span>
+                                    @schedule.CleanerName
+                                </span>
+                            }
+                            @if (!string.IsNullOrEmpty(schedule.AccessCode))
+                            {
+                                <span class="stat protected">
+                                    <span class="stat-icon">🔒</span>
+                                    @(isTurkish ? "Şifreli" : "Protected")
+                                </span>
+                            }
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn-items" onclick="manageItems(@schedule.Id)">
+                                @(isTurkish ? "Maddeleri Yönet" : "Manage Items")
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-icon">🧹</div>
+                <h3>@(isTurkish ? "Henüz çizelge yok" : "No schedules yet")</h3>
+                <p>@(isTurkish ? "İlk temizlik çizelgenizi oluşturun" : "Create your first cleaning schedule")</p>
+                @if (Model.CanAddSchedule)
+                {
+                    <button class="btn-primary" onclick="showAddScheduleModal()">
+                        @(isTurkish ? "Çizelge Oluştur" : "Create Schedule")
+                    </button>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Add/Edit Schedule Modal -->
+<div class="modal fade" id="scheduleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="scheduleModalTitle">@(isTurkish ? "Yeni Çizelge" : "New Schedule")</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="scheduleId">
+                <div class="form-group">
+                    <label>@(isTurkish ? "Çizelge Adı" : "Schedule Name") *</label>
+                    <input type="text" id="scheduleName" class="form-control" placeholder="@(isTurkish ? "örn: Tuvalet Temizliği" : "e.g. Restroom Cleaning")">
+                </div>
+                <div class="form-group">
+                    <label>@(isTurkish ? "Konum" : "Location")</label>
+                    <input type="text" id="scheduleLocation" class="form-control" placeholder="@(isTurkish ? "örn: 1. Kat" : "e.g. 1st Floor")">
+                </div>
+                <div class="form-group">
+                    <label>@(isTurkish ? "Erişim Şifresi (4-6 karakter)" : "Access Code (4-6 chars)")</label>
+                    <input type="text" id="scheduleAccessCode" class="form-control" maxlength="6" placeholder="@(isTurkish ? "Boş bırakılabilir" : "Optional")">
+                </div>
+                <hr>
+                <div class="form-group">
+                    <label>@(isTurkish ? "Temizlik Görevlisi Adı" : "Cleaner Name")</label>
+                    <input type="text" id="cleanerName" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>@(isTurkish ? "Temizlik Görevlisi Telefonu" : "Cleaner Phone")</label>
+                    <input type="text" id="cleanerPhone" class="form-control">
+                </div>
+                @if (Model.IsPremium && Model.Limits.CanGroupSchedules && Model.Groups.Any())
+                {
+                    <div class="form-group">
+                        <label>@(isTurkish ? "Grup" : "Group")</label>
+                        <select id="scheduleGroup" class="form-control">
+                            <option value="">@(isTurkish ? "Grupsuz" : "No Group")</option>
+                            @foreach (var g in Model.Groups)
+                            {
+                                <option value="@g.Id">@g.Name</option>
+                            }
+                        </select>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@(isTurkish ? "İptal" : "Cancel")</button>
+                <button type="button" class="btn btn-primary" onclick="saveSchedule()">@(isTurkish ? "Kaydet" : "Save")</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Items Modal -->
+<div class="modal fade" id="itemsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@(isTurkish ? "Çizelge Maddeleri" : "Schedule Items")</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="currentScheduleId">
+                <div class="items-header">
+                    <span id="itemCount">0</span> / <span id="itemLimit">@Model.Limits.MaxItemsPerSchedule</span> @(isTurkish ? "madde" : "items")
+                    <button class="btn-add-item" id="addItemBtn" onclick="showAddItemForm()">
+                        + @(isTurkish ? "Madde Ekle" : "Add Item")
+                    </button>
+                </div>
+                
+                <!-- Add Item Form (hidden by default) -->
+                <div id="addItemForm" class="add-item-form" style="display:none;">
+                    <div class="form-row">
+                        <div class="form-group flex-grow">
+                            <input type="text" id="newItemName" class="form-control" placeholder="@(isTurkish ? "Madde adı" : "Item name")">
+                        </div>
+                        @if (Model.Limits.CanSelectFrequency)
+                        {
+                            <div class="form-group">
+                                <select id="newItemFrequency" class="form-control">
+                                    <option value="0">@(isTurkish ? "Günlük" : "Daily")</option>
+                                    <option value="1">@(isTurkish ? "Haftalık" : "Weekly")</option>
+                                    <option value="2">@(isTurkish ? "Aylık" : "Monthly")</option>
+                                    <option value="3">@(isTurkish ? "Yıllık" : "Yearly")</option>
+                                    <option value="4">@(isTurkish ? "Özel" : "Custom")</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="customDaysGroup" style="display:none;">
+                                <input type="number" id="newItemDays" class="form-control" min="1" placeholder="@(isTurkish ? "Gün" : "Days")">
+                            </div>
+                        }
+                        <button class="btn-save-item" onclick="saveItem()">✓</button>
+                        <button class="btn-cancel-item" onclick="hideAddItemForm()">✕</button>
+                    </div>
+                </div>
+                
+                <div id="itemsList" class="items-list"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- QR Code Modal -->
+<div class="modal fade" id="qrModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">QR Kod</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div id="qrCodeContainer"></div>
+                <p class="qr-url mt-3" id="qrUrl"></p>
+                <button class="btn btn-outline-primary btn-sm" onclick="copyQrUrl()">
+                    @(isTurkish ? "Linki Kopyala" : "Copy Link")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pending Records Modal -->
+<div class="modal fade" id="pendingModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@(isTurkish ? "Onay Bekleyenler" : "Pending Approvals")</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="pendingList"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .cleaning-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px;
+    }
+    
+    .cleaning-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+    
+    .header-info h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .header-icon {
+        font-size: 2rem;
+    }
+    
+    .header-subtitle {
+        color: #6b7280;
+        margin: 4px 0 0 0;
+    }
+    
+    .header-actions {
+        display: flex;
+        gap: 12px;
+    }
+    
+    .btn-back {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        background: #f3f4f6;
+        color: #374151;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    
+    .btn-back:hover {
+        background: #e5e7eb;
+    }
+    
+    .btn-pending {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        color: #92400e;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-pending .badge {
+        background: #f59e0b;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+    }
+    
+    /* Limits Bar */
+    .limits-bar {
+        display: flex;
+        gap: 24px;
+        padding: 16px 20px;
+        background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        border-radius: 12px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+    }
+    
+    .limit-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+    }
+    
+    .limit-item.warning {
+        color: #d97706;
+    }
+    
+    .limit-icon {
+        font-size: 1.1rem;
+    }
+    
+    .limit-label {
+        color: #4b5563;
+    }
+    
+    .limit-value {
+        font-weight: 600;
+        color: #1e40af;
+        font-variant-numeric: tabular-nums;
+    }
+    
+    /* Section */
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .section-header h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin: 0;
+    }
+    
+    .btn-add {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 18px;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-add:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    
+    /* Schedules Grid */
+    .schedules-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+    }
+    
+    .schedule-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        border: 1px solid #e5e7eb;
+        transition: all 0.2s;
+    }
+    
+    .schedule-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border-color: #d1d5db;
+    }
+    
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+    }
+    
+    .card-header h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin: 0;
+    }
+    
+    .card-actions {
+        display: flex;
+        gap: 4px;
+    }
+    
+    .btn-icon {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f3f4f6;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-icon:hover {
+        background: #e5e7eb;
+    }
+    
+    .btn-icon.danger:hover {
+        background: #fee2e2;
+    }
+    
+    .card-location {
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-bottom: 12px;
+    }
+    
+    .card-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    
+    .stat {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.85rem;
+        color: #4b5563;
+    }
+    
+    .stat.protected {
+        color: #059669;
+    }
+    
+    .card-footer {
+        padding-top: 12px;
+        border-top: 1px solid #e5e7eb;
+    }
+    
+    .btn-items {
+        width: 100%;
+        padding: 10px;
+        background: #f8fafc;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-items:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+    }
+    
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: #f9fafb;
+        border-radius: 12px;
+        border: 2px dashed #d1d5db;
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 16px;
+    }
+    
+    .empty-state h3 {
+        color: #374151;
+        margin: 0 0 8px 0;
+    }
+    
+    .empty-state p {
+        color: #6b7280;
+        margin: 0 0 20px 0;
+    }
+    
+    .btn-primary {
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    
+    /* Modal Styles */
+    .modal-content {
+        border-radius: 12px;
+        border: none;
+    }
+    
+    .form-group {
+        margin-bottom: 16px;
+    }
+    
+    .form-group label {
+        display: block;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 6px;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 0.95rem;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    /* Items Modal */
+    .items-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 16px;
+        color: #6b7280;
+    }
+    
+    .btn-add-item {
+        padding: 8px 14px;
+        background: #10b981;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+    }
+    
+    .add-item-form {
+        padding: 16px;
+        background: #f0fdf4;
+        border-radius: 8px;
+        margin-bottom: 16px;
+    }
+    
+    .form-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+    
+    .flex-grow {
+        flex: 1;
+    }
+    
+    .btn-save-item, .btn-cancel-item {
+        width: 36px;
+        height: 36px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1.1rem;
+    }
+    
+    .btn-save-item {
+        background: #10b981;
+        color: white;
+    }
+    
+    .btn-cancel-item {
+        background: #f3f4f6;
+        color: #6b7280;
+    }
+    
+    .items-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .item-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: #f9fafb;
+        border-radius: 8px;
+    }
+    
+    .item-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .item-name {
+        font-weight: 500;
+        color: #1f2937;
+    }
+    
+    .item-freq {
+        font-size: 0.8rem;
+        padding: 2px 8px;
+        background: #dbeafe;
+        color: #1e40af;
+        border-radius: 4px;
+    }
+    
+    .item-actions button {
+        padding: 4px 8px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        opacity: 0.6;
+    }
+    
+    .item-actions button:hover {
+        opacity: 1;
+    }
+    
+    /* QR Modal */
+    #qrCodeContainer {
+        padding: 20px;
+        background: white;
+        display: inline-block;
+        border-radius: 8px;
+    }
+    
+    .qr-url {
+        font-size: 0.85rem;
+        color: #6b7280;
+        word-break: break-all;
+    }
+    
+    /* Pending */
+    .pending-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        background: #fffbeb;
+        border-radius: 8px;
+        margin-bottom: 8px;
+    }
+    
+    .pending-info h4 {
+        margin: 0 0 4px 0;
+        font-size: 1rem;
+    }
+    
+    .pending-info p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: #6b7280;
+    }
+    
+    .pending-actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .btn-approve {
+        padding: 8px 16px;
+        background: #10b981;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+    
+    .btn-reject {
+        padding: 8px 16px;
+        background: #ef4444;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+    
+    @@media (max-width: 768px) {
+        .cleaning-page {
+            padding: 16px;
+        }
+        
+        .cleaning-header {
+            flex-direction: column;
+        }
+        
+        .limits-bar {
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .schedules-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script>
+    const isTurkish = @(isTurkish ? "true" : "false");
+    const canSelectFrequency = @(Model.Limits.CanSelectFrequency ? "true" : "false");
+    const itemLimit = @Model.Limits.MaxItemsPerSchedule;
+    let currentQrCode = '';
+    
+    // Schedule Modal
+    function showAddScheduleModal() {
+        document.getElementById('scheduleId').value = '';
+        document.getElementById('scheduleName').value = '';
+        document.getElementById('scheduleLocation').value = '';
+        document.getElementById('scheduleAccessCode').value = '';
+        document.getElementById('cleanerName').value = '';
+        document.getElementById('cleanerPhone').value = '';
+        const groupSelect = document.getElementById('scheduleGroup');
+        if (groupSelect) groupSelect.value = '';
+        
+        document.getElementById('scheduleModalTitle').textContent = isTurkish ? 'Yeni Çizelge' : 'New Schedule';
+        new bootstrap.Modal(document.getElementById('scheduleModal')).show();
+    }
+    
+    async function editSchedule(id) {
+        try {
+            const res = await fetch(`/api/cleaning/schedules/${id}`);
+            const data = await res.json();
+            
+            document.getElementById('scheduleId').value = data.id;
+            document.getElementById('scheduleName').value = data.name;
+            document.getElementById('scheduleLocation').value = data.location || '';
+            document.getElementById('scheduleAccessCode').value = data.accessCode || '';
+            document.getElementById('cleanerName').value = data.cleanerName || '';
+            document.getElementById('cleanerPhone').value = data.cleanerPhone || '';
+            const groupSelect = document.getElementById('scheduleGroup');
+            if (groupSelect) groupSelect.value = data.groupId || '';
+            
+            document.getElementById('scheduleModalTitle').textContent = isTurkish ? 'Çizelgeyi Düzenle' : 'Edit Schedule';
+            new bootstrap.Modal(document.getElementById('scheduleModal')).show();
+        } catch (err) {
+            alert(isTurkish ? 'Hata oluştu' : 'An error occurred');
+        }
+    }
+    
+    async function saveSchedule() {
+        const id = document.getElementById('scheduleId').value;
+        const data = {
+            name: document.getElementById('scheduleName').value,
+            location: document.getElementById('scheduleLocation').value || null,
+            accessCode: document.getElementById('scheduleAccessCode').value || null,
+            cleanerName: document.getElementById('cleanerName').value || null,
+            cleanerPhone: document.getElementById('cleanerPhone').value || null,
+            groupId: document.getElementById('scheduleGroup')?.value || null
+        };
+        
+        if (!data.name) {
+            alert(isTurkish ? 'Çizelge adı gerekli' : 'Schedule name is required');
+            return;
+        }
+        
+        try {
+            const url = id ? `/api/cleaning/schedules/${id}` : '/api/cleaning/schedules';
+            const method = id ? 'PUT' : 'POST';
+            
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await res.json();
+            if (result.error) {
+                alert(result.error);
+                return;
+            }
+            
+            location.reload();
+        } catch (err) {
+            alert(isTurkish ? 'Hata oluştu' : 'An error occurred');
+        }
+    }
+    
+    async function deleteSchedule(id) {
+        if (!confirm(isTurkish ? 'Bu çizelgeyi silmek istediğinize emin misiniz?' : 'Are you sure you want to delete this schedule?')) {
+            return;
+        }
+        
+        try {
+            await fetch(`/api/cleaning/schedules/${id}`, { method: 'DELETE' });
+            location.reload();
+        } catch (err) {
+            alert(isTurkish ? 'Hata oluştu' : 'An error occurred');
+        }
+    }
+    
+    // QR Code
+    function showQrCode(id, qrCode) {
+        currentQrCode = qrCode;
+        const url = `${window.location.origin}/c/${qrCode}`;
+        document.getElementById('qrUrl').textContent = url;
+        
+        const container = document.getElementById('qrCodeContainer');
+        container.innerHTML = '';
+        
+        QRCode.toCanvas(container, url, { width: 200 }, function(error) {
+            if (error) console.error(error);
+        });
+        
+        new bootstrap.Modal(document.getElementById('qrModal')).show();
+    }
+    
+    function copyQrUrl() {
+        const url = document.getElementById('qrUrl').textContent;
+        navigator.clipboard.writeText(url);
+        alert(isTurkish ? 'Link kopyalandı!' : 'Link copied!');
+    }
+    
+    // Items
+    async function manageItems(scheduleId) {
+        document.getElementById('currentScheduleId').value = scheduleId;
+        await loadItems(scheduleId);
+        new bootstrap.Modal(document.getElementById('itemsModal')).show();
+    }
+    
+    async function loadItems(scheduleId) {
+        try {
+            const res = await fetch(`/api/cleaning/schedules/${scheduleId}`);
+            const data = await res.json();
+            
+            document.getElementById('itemCount').textContent = data.items.length;
+            document.getElementById('addItemBtn').style.display = data.items.length >= itemLimit ? 'none' : 'block';
+            
+            const freqLabels = isTurkish 
+                ? ['Günlük', 'Haftalık', 'Aylık', 'Yıllık', 'Özel']
+                : ['Daily', 'Weekly', 'Monthly', 'Yearly', 'Custom'];
+            
+            const list = document.getElementById('itemsList');
+            list.innerHTML = data.items.map(item => `
+                <div class="item-row" data-id="${item.id}">
+                    <div class="item-info">
+                        <span class="item-name">${item.name}</span>
+                        <span class="item-freq">${freqLabels[item.frequency]}${item.frequency === 4 ? ` (${item.frequencyDays} ${isTurkish ? 'gün' : 'days'})` : ''}</span>
+                    </div>
+                    <div class="item-actions">
+                        <button onclick="deleteItem(${item.id})">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    
+    function showAddItemForm() {
+        document.getElementById('addItemForm').style.display = 'block';
+        document.getElementById('newItemName').focus();
+    }
+    
+    function hideAddItemForm() {
+        document.getElementById('addItemForm').style.display = 'none';
+        document.getElementById('newItemName').value = '';
+    }
+    
+    async function saveItem() {
+        const scheduleId = document.getElementById('currentScheduleId').value;
+        const name = document.getElementById('newItemName').value;
+        const frequency = canSelectFrequency ? parseInt(document.getElementById('newItemFrequency')?.value || 0) : 0;
+        const frequencyDays = frequency === 4 ? parseInt(document.getElementById('newItemDays')?.value || 1) : null;
+        
+        if (!name) {
+            alert(isTurkish ? 'Madde adı gerekli' : 'Item name is required');
+            return;
+        }
+        
+        try {
+            const res = await fetch('/api/cleaning/items', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ scheduleId: parseInt(scheduleId), name, frequency, frequencyDays })
+            });
+            
+            const result = await res.json();
+            if (result.error) {
+                alert(result.error);
+                return;
+            }
+            
+            hideAddItemForm();
+            await loadItems(scheduleId);
+        } catch (err) {
+            alert(isTurkish ? 'Hata oluştu' : 'An error occurred');
+        }
+    }
+    
+    async function deleteItem(id) {
+        if (!confirm(isTurkish ? 'Bu maddeyi silmek istediğinize emin misiniz?' : 'Are you sure?')) return;
+        
+        try {
+            await fetch(`/api/cleaning/items/${id}`, { method: 'DELETE' });
+            const scheduleId = document.getElementById('currentScheduleId').value;
+            await loadItems(scheduleId);
+        } catch (err) {
+            alert(isTurkish ? 'Hata oluştu' : 'An error occurred');
+        }
+    }
+    
+    // Frequency change handler
+    document.getElementById('newItemFrequency')?.addEventListener('change', function() {
+        const customGroup = document.getElementById('customDaysGroup');
+        if (customGroup) {
+            customGroup.style.display = this.value === '4' ? 'block' : 'none';
+        }
+    });
+    
+    // Pending Records
+    async function showPendingRecords() {
+        try {
+            const res = await fetch('/api/cleaning/records/pending');
+            const records = await res.json();
+            
+            const list = document.getElementById('pendingList');
+            if (records.length === 0) {
+                list.innerHTML = `<p class="text-center text-muted">${isTurkish ? 'Onay bekleyen kayıt yok' : 'No pending records'}</p>`;
+            } else {
+                list.innerHTML = records.map(r => `
+                    <div class="pending-item" data-id="${r.id}">
+                        <div class="pending-info">
+                            <h4>${r.itemName}</h4>
+                            <p>${r.scheduleName} ${r.scheduleLocation ? '• ' + r.scheduleLocation : ''}</p>
+                            <p>${r.completedByName || '-'} • ${new Date(r.completedAt).toLocaleString()}</p>
+                        </div>
+                        <div class="pending-actions">
+                            <button class="btn-approve" onclick="approveRecord(${r.id})">✓ ${isTurkish ? 'Onayla' : 'Approve'}</button>
+                            <button class="btn-reject" onclick="rejectRecord(${r.id})">✕ ${isTurkish ? 'Reddet' : 'Reject'}</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            new bootstrap.Modal(document.getElementById('pendingModal')).show();
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    
+    async function approveRecord(id) {
+        try {
+            await fetch(`/api/cleaning/records/${id}/approve`, { method: 'POST' });
+            document.querySelector(`.pending-item[data-id="${id}"]`)?.remove();
+            location.reload();
+        } catch (err) {
+            alert(isTurkish ? 'Hata oluştu' : 'An error occurred');
+        }
+    }
+    
+    async function rejectRecord(id) {
+        const note = prompt(isTurkish ? 'Red sebebi (opsiyonel):' : 'Rejection reason (optional):');
+        
+        try {
+            await fetch(`/api/cleaning/records/${id}/reject`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ note })
+            });
+            document.querySelector(`.pending-item[data-id="${id}"]`)?.remove();
+            location.reload();
+        } catch (err) {
+            alert(isTurkish ? 'Hata oluştu' : 'An error occurred');
+        }
+    }
+</script>
+

@@ -110,6 +110,54 @@
                 </div>
             </div>
             
+            <!-- Temizlik Çizelgesi Limitleri -->
+            <div style="background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%); padding: 20px; border-radius: var(--radius-md); margin-bottom: 20px; border: 2px solid #fde047;">
+                <h4 style="margin: 0 0 16px 0; font-size: 1rem; color: #854d0e; display: flex; align-items: center; gap: 8px;">
+                    <span>🧹</span> Temizlik Çizelgesi Limitleri
+                </h4>
+                
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 16px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="color: #854d0e;">Çizelge Limiti</label>
+                        <input type="number" name="CleaningScheduleLimit" class="form-control" 
+                               value="@Model.CleaningScheduleLimit" 
+                               min="1" max="100">
+                        <small style="color: #a16207; font-size: 0.75rem;">Free: 1, Premium: ∞</small>
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="color: #854d0e;">Madde/Çizelge Limiti</label>
+                        <input type="number" name="CleaningItemLimit" class="form-control" 
+                               value="@Model.CleaningItemLimit" 
+                               min="1" max="100">
+                        <small style="color: #a16207; font-size: 0.75rem;">Unregistered: 5, Free: 10, Premium: 25</small>
+                    </div>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label class="form-label" style="color: #854d0e;">Aylık QR Erişim Limiti</label>
+                    <input type="number" name="CleaningQrAccessLimit" class="form-control" 
+                           value="@Model.CleaningQrAccessLimit" 
+                           min="10" max="10000">
+                    <small style="color: #a16207; font-size: 0.75rem;">Unregistered: 100, Free: 500, Premium: 3000</small>
+                </div>
+                
+                <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" name="CanAccessCleaning" value="true" @(Model.CanAccessCleaning ? "checked" : "")>
+                        <span style="color: #854d0e; font-size: 0.9rem;">Temizlik Modülüne Erişim</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" name="CanSelectCleaningFrequency" value="true" @(Model.CanSelectCleaningFrequency ? "checked" : "")>
+                        <span style="color: #854d0e; font-size: 0.9rem;">Frekans Seçebilir</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" name="CanGroupCleaningSchedules" value="true" @(Model.CanGroupCleaningSchedules ? "checked" : "")>
+                        <span style="color: #854d0e; font-size: 0.9rem;">Çizelge Gruplama (Premium)</span>
+                    </label>
+                </div>
+            </div>
+            
             <hr style="margin: 28px 0; border: none; border-top: 2px solid var(--border-color);">
             
             <!-- Modül Erişimleri -->

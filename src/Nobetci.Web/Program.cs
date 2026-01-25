@@ -654,6 +654,97 @@ using (var scope = app.Services.CreateScope())
             CREATE INDEX IF NOT EXISTS ""IX_UserApiCredentials_ApiUsername"" ON ""UserApiCredentials"" (""ApiUsername"");
         ", "UserApiCredentials");
         
+        // ============ Cleaning Module Tables ============
+        
+        // Add Cleaning columns to AspNetUsers
+        await SafeExecuteSql(@"
+            ALTER TABLE ""AspNetUsers"" ADD COLUMN IF NOT EXISTS ""CanAccessCleaning"" BOOLEAN NOT NULL DEFAULT TRUE;
+            ALTER TABLE ""AspNetUsers"" ADD COLUMN IF NOT EXISTS ""CleaningScheduleLimit"" INTEGER NOT NULL DEFAULT 1;
+            ALTER TABLE ""AspNetUsers"" ADD COLUMN IF NOT EXISTS ""CleaningItemLimit"" INTEGER NOT NULL DEFAULT 10;
+            ALTER TABLE ""AspNetUsers"" ADD COLUMN IF NOT EXISTS ""CleaningQrAccessLimit"" INTEGER NOT NULL DEFAULT 500;
+            ALTER TABLE ""AspNetUsers"" ADD COLUMN IF NOT EXISTS ""CanSelectCleaningFrequency"" BOOLEAN NOT NULL DEFAULT TRUE;
+            ALTER TABLE ""AspNetUsers"" ADD COLUMN IF NOT EXISTS ""CanGroupCleaningSchedules"" BOOLEAN NOT NULL DEFAULT FALSE;
+        ", "AspNetUsers Cleaning columns");
+        
+        // Create CleaningScheduleGroups table
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""CleaningScheduleGroups"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""OrganizationId"" INTEGER NOT NULL REFERENCES ""Organizations""(""Id"") ON DELETE CASCADE,
+                ""Name"" VARCHAR(100) NOT NULL,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_CleaningScheduleGroups_OrganizationId"" ON ""CleaningScheduleGroups"" (""OrganizationId"");
+        ", "CleaningScheduleGroups");
+        
+        // Create CleaningSchedules table
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""CleaningSchedules"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""OrganizationId"" INTEGER NOT NULL REFERENCES ""Organizations""(""Id"") ON DELETE CASCADE,
+                ""Name"" VARCHAR(200) NOT NULL,
+                ""Location"" VARCHAR(200) NULL,
+                ""AccessCode"" VARCHAR(10) NULL,
+                ""QrAccessCode"" VARCHAR(20) NOT NULL,
+                ""CleanerName"" VARCHAR(100) NULL,
+                ""CleanerPhone"" VARCHAR(20) NULL,
+                ""GroupId"" INTEGER NULL REFERENCES ""CleaningScheduleGroups""(""Id"") ON DELETE SET NULL,
+                ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                UNIQUE(""QrAccessCode"")
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_CleaningSchedules_OrganizationId"" ON ""CleaningSchedules"" (""OrganizationId"");
+            CREATE INDEX IF NOT EXISTS ""IX_CleaningSchedules_QrAccessCode"" ON ""CleaningSchedules"" (""QrAccessCode"");
+            CREATE INDEX IF NOT EXISTS ""IX_CleaningSchedules_GroupId"" ON ""CleaningSchedules"" (""GroupId"");
+        ", "CleaningSchedules");
+        
+        // Create CleaningItems table
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""CleaningItems"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""ScheduleId"" INTEGER NOT NULL REFERENCES ""CleaningSchedules""(""Id"") ON DELETE CASCADE,
+                ""Name"" VARCHAR(200) NOT NULL,
+                ""Description"" TEXT NULL,
+                ""Frequency"" INTEGER NOT NULL DEFAULT 0,
+                ""FrequencyDays"" INTEGER NULL,
+                ""SortOrder"" INTEGER NOT NULL DEFAULT 0,
+                ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_CleaningItems_ScheduleId"" ON ""CleaningItems"" (""ScheduleId"");
+        ", "CleaningItems");
+        
+        // Create CleaningRecords table
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""CleaningRecords"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""ItemId"" INTEGER NOT NULL REFERENCES ""CleaningItems""(""Id"") ON DELETE CASCADE,
+                ""CompletedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                ""CompletedByName"" VARCHAR(100) NULL,
+                ""Status"" INTEGER NOT NULL DEFAULT 0,
+                ""ReviewedAt"" TIMESTAMP WITH TIME ZONE NULL,
+                ""ReviewedById"" VARCHAR(450) NULL REFERENCES ""AspNetUsers""(""Id"") ON DELETE SET NULL,
+                ""Note"" TEXT NULL,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_CleaningRecords_ItemId"" ON ""CleaningRecords"" (""ItemId"");
+            CREATE INDEX IF NOT EXISTS ""IX_CleaningRecords_Status"" ON ""CleaningRecords"" (""Status"");
+            CREATE INDEX IF NOT EXISTS ""IX_CleaningRecords_CompletedAt"" ON ""CleaningRecords"" (""CompletedAt"");
+        ", "CleaningRecords");
+        
+        // Create CleaningQrAccesses table (for limit tracking)
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""CleaningQrAccesses"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""ScheduleId"" INTEGER NOT NULL REFERENCES ""CleaningSchedules""(""Id"") ON DELETE CASCADE,
+                ""AccessedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                ""IpAddress"" VARCHAR(50) NULL,
+                ""MonthKey"" VARCHAR(10) NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_CleaningQrAccesses_ScheduleId"" ON ""CleaningQrAccesses"" (""ScheduleId"");
+            CREATE INDEX IF NOT EXISTS ""IX_CleaningQrAccesses_MonthKey"" ON ""CleaningQrAccesses"" (""MonthKey"");
+        ", "CleaningQrAccesses");
+        
         // Run migrations - but don't let failures prevent seeding
         try
         {

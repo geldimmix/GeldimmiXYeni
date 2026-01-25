@@ -88,6 +88,15 @@ public class EditUserViewModel
     public bool CanAccessAttendance { get; set; } = true;
     public bool CanAccessPayroll { get; set; } = true;
     public bool CanManageUnits { get; set; } = false;
+    
+    // Temizlik Çizelgesi Limitleri
+    public bool CanAccessCleaning { get; set; } = true;
+    public int CleaningScheduleLimit { get; set; } = 1;
+    public int CleaningItemLimit { get; set; } = 10;
+    public int CleaningQrAccessLimit { get; set; } = 500;
+    public bool CanSelectCleaningFrequency { get; set; } = true;
+    public bool CanGroupCleaningSchedules { get; set; } = false;
+    
     public string? AdminNotes { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? LastLoginAt { get; set; }

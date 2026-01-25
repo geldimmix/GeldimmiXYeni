@@ -1,0 +1,488 @@
+@model Nobetci.Web.Models.QrAccessViewModel
+@{
+    Layout = null;
+    var isTurkish = Model.IsTurkish;
+}
+<!DOCTYPE html>
+<html lang="@(isTurkish ? "tr" : "en")">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@Model.ScheduleName - @(isTurkish ? "Temizlik Çizelgesi" : "Cleaning Schedule")</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .header-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        
+        .header p {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        /* Login Form */
+        #loginForm {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .form-group label {
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .form-group input {
+            padding: 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            text-align: center;
+            letter-spacing: 4px;
+            transition: all 0.2s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn-login {
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .error-msg {
+            color: #dc2626;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 12px;
+            background: #fef2f2;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        /* Schedule View */
+        #scheduleView {
+            display: none;
+        }
+        
+        .schedule-header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .schedule-header h2 {
+            color: #1f2937;
+            font-size: 1.3rem;
+        }
+        
+        .schedule-header p {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .cleaner-info {
+            background: #f0fdf4;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .cleaner-info span {
+            font-size: 1.2rem;
+        }
+        
+        .items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .item-card {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        
+        .item-card.completed {
+            background: #f0fdf4;
+            border-color: #86efac;
+        }
+        
+        .item-card.pending {
+            background: #fffbeb;
+            border-color: #fde68a;
+        }
+        
+        .item-card.rejected {
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+        
+        .item-info h3 {
+            font-size: 1rem;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        
+        .item-info p {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+        
+        .item-status {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .btn-complete {
+            padding: 10px 20px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-complete:hover {
+            background: #059669;
+        }
+        
+        .btn-complete:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        .status-note {
+            font-size: 0.75rem;
+            color: #991b1b;
+            margin-top: 4px;
+        }
+        
+        .refresh-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background: #f3f4f6;
+            color: #374151;
+            border: none;
+            border-radius: 10px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .today-date {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Form -->
+        <div id="loginForm">
+            <div class="header">
+                <div class="header-icon">🧹</div>
+                <h1>@Model.ScheduleName</h1>
+                @if (!string.IsNullOrEmpty(Model.Location))
+                {
+                    <p>📍 @Model.Location</p>
+                }
+            </div>
+            
+            <div class="error-msg" id="errorMsg"></div>
+            
+            @if (Model.HasAccessCode)
+            {
+                <div class="form-group">
+                    <label>@(isTurkish ? "Erişim Şifresi" : "Access Code")</label>
+                    <input type="password" id="accessCode" maxlength="6" placeholder="• • • •" autofocus>
+                </div>
+            }
+            
+            <button class="btn-login" onclick="verifyAccess()">
+                @(isTurkish ? "Giriş Yap" : "Enter")
+            </button>
+        </div>
+        
+        <!-- Schedule View (after login) -->
+        <div id="scheduleView">
+            <div class="schedule-header">
+                <h2 id="scheduleName"></h2>
+                <p id="scheduleLocation"></p>
+            </div>
+            
+            <div class="cleaner-info" id="cleanerInfo" style="display:none;">
+                <span>👤</span>
+                <span id="cleanerName"></span>
+            </div>
+            
+            <div class="today-date" id="todayDate"></div>
+            
+            <div class="items-list" id="itemsList"></div>
+            
+            <button class="refresh-btn" onclick="refreshStatus()">
+                🔄 @(isTurkish ? "Yenile" : "Refresh")
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        const qrCode = '@Model.QrCode';
+        const hasAccessCode = @(Model.HasAccessCode ? "true" : "false");
+        const isTurkish = @(isTurkish ? "true" : "false");
+        let currentAccessCode = '';
+        
+        // Enter key handler
+        document.getElementById('accessCode')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') verifyAccess();
+        });
+        
+        async function verifyAccess() {
+            const accessCodeInput = document.getElementById('accessCode');
+            currentAccessCode = accessCodeInput?.value || '';
+            
+            const errorMsg = document.getElementById('errorMsg');
+            errorMsg.style.display = 'none';
+            
+            try {
+                const res = await fetch('/api/cleaning/qr/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ qrCode, accessCode: currentAccessCode })
+                });
+                
+                const data = await res.json();
+                
+                if (data.error) {
+                    errorMsg.textContent = data.error;
+                    errorMsg.style.display = 'block';
+                    return;
+                }
+                
+                // Success - show schedule
+                showSchedule(data.schedule);
+            } catch (err) {
+                errorMsg.textContent = isTurkish ? 'Bağlantı hatası' : 'Connection error';
+                errorMsg.style.display = 'block';
+            }
+        }
+        
+        function showSchedule(schedule) {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('scheduleView').style.display = 'block';
+            
+            document.getElementById('scheduleName').textContent = schedule.name;
+            document.getElementById('scheduleLocation').textContent = schedule.location ? '📍 ' + schedule.location : '';
+            
+            if (schedule.cleanerName) {
+                document.getElementById('cleanerInfo').style.display = 'flex';
+                document.getElementById('cleanerName').textContent = schedule.cleanerName;
+            }
+            
+            // Today's date
+            const today = new Date();
+            document.getElementById('todayDate').textContent = today.toLocaleDateString(isTurkish ? 'tr-TR' : 'en-US', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            });
+            
+            renderItems(schedule.items);
+        }
+        
+        function renderItems(items) {
+            const freqLabels = isTurkish 
+                ? ['Günlük', 'Haftalık', 'Aylık', 'Yıllık', 'Özel']
+                : ['Daily', 'Weekly', 'Monthly', 'Yearly', 'Custom'];
+            
+            const statusLabels = isTurkish
+                ? ['Onay Bekliyor', 'Onaylandı', 'Reddedildi']
+                : ['Pending', 'Approved', 'Rejected'];
+            
+            const list = document.getElementById('itemsList');
+            list.innerHTML = items.map(item => {
+                const hasRecord = item.todayRecord != null;
+                const status = hasRecord ? item.todayRecord.status : null;
+                
+                let cardClass = '';
+                let statusHtml = '';
+                let actionHtml = '';
+                
+                if (hasRecord) {
+                    if (status === 0) {
+                        cardClass = 'pending';
+                        statusHtml = `<span class="item-status status-pending">${statusLabels[0]}</span>`;
+                    } else if (status === 1) {
+                        cardClass = 'completed';
+                        statusHtml = `<span class="item-status status-approved">✓ ${statusLabels[1]}</span>`;
+                    } else if (status === 2) {
+                        cardClass = 'rejected';
+                        statusHtml = `<span class="item-status status-rejected">✕ ${statusLabels[2]}</span>`;
+                        if (item.todayRecord.note) {
+                            statusHtml += `<div class="status-note">💬 ${item.todayRecord.note}</div>`;
+                        }
+                    }
+                } else {
+                    actionHtml = `<button class="btn-complete" onclick="completeItem(${item.id})">${isTurkish ? 'Tamamla' : 'Complete'}</button>`;
+                }
+                
+                return `
+                    <div class="item-card ${cardClass}">
+                        <div class="item-info">
+                            <h3>${item.name}</h3>
+                            <p>${freqLabels[item.frequency]}${item.frequency === 4 ? ` (${item.frequencyDays} ${isTurkish ? 'gün' : 'days'})` : ''}</p>
+                            ${statusHtml}
+                        </div>
+                        ${actionHtml}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        async function completeItem(itemId) {
+            try {
+                const res = await fetch('/api/cleaning/qr/complete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        qrCode, 
+                        accessCode: currentAccessCode, 
+                        itemId 
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+                
+                // Refresh the list
+                await refreshStatus();
+            } catch (err) {
+                alert(isTurkish ? 'Bağlantı hatası' : 'Connection error');
+            }
+        }
+        
+        async function refreshStatus() {
+            try {
+                const res = await fetch(`/api/cleaning/qr/${qrCode}/status?accessCode=${encodeURIComponent(currentAccessCode)}`);
+                const data = await res.json();
+                
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+                
+                renderItems(data.items.map(i => ({
+                    ...i,
+                    todayRecord: i.isCompleted ? { status: i.status, note: i.statusNote } : null
+                })));
+            } catch (err) {
+                alert(isTurkish ? 'Bağlantı hatası' : 'Connection error');
+            }
+        }
+        
+        // Auto-verify if no access code needed
+        if (!hasAccessCode) {
+            verifyAccess();
+        }
+    </script>
+</body>
+</html>
+
