@@ -90,14 +90,13 @@ public class WorkHoursApiController : ControllerBase
                 });
             }
 
-            if (string.IsNullOrEmpty(request.Action) || 
-                (request.Action.ToLower() != "checkin" && request.Action.ToLower() != "checkout"))
+            if (!request.Action.HasValue || (request.Action.Value != 0 && request.Action.Value != 1))
             {
                 return BadRequest(new ApiErrorResponse
                 {
                     Success = false,
                     Error = "ValidationError",
-                    Message = "Action must be 'checkin' or 'checkout'"
+                    Message = "Action must be 1 (check-in/giriş) or 0 (check-out/çıkış)"
                 });
             }
 
@@ -119,7 +118,7 @@ public class WorkHoursApiController : ControllerBase
             // 5. Find or create attendance record for the date
             var date = DateOnly.FromDateTime(request.Date.Value);
             var time = TimeOnly.FromTimeSpan(request.Time.Value);
-            var isCheckIn = request.Action.ToLower() == "checkin";
+            var isCheckIn = request.Action.Value == 1; // 1 = check-in, 0 = check-out
 
             var attendance = await _context.TimeAttendances
                 .FirstOrDefaultAsync(a => a.EmployeeId == employee.Id && a.Date == date);
@@ -181,20 +180,22 @@ public class WorkHoursApiController : ControllerBase
 
             await _context.SaveChangesAsync();
 
+            var actionName = isCheckIn ? "check-in" : "check-out";
             _logger.LogInformation(
                 "API Attendance recorded: {IdentityNo}, {Date}, {Action}, {Time} by {ApiUser}",
-                request.IdentityNo, date, request.Action, time, credential.ApiUsername);
+                request.IdentityNo, date, actionName, time, credential.ApiUsername);
 
             return Ok(new ApiSuccessResponse
             {
                 Success = true,
-                Message = $"{(isCheckIn ? "Check-in" : "Check-out")} recorded successfully",
+                Message = $"{(isCheckIn ? "Giriş (Check-in)" : "Çıkış (Check-out)")} recorded successfully",
                 Data = new
                 {
                     EmployeeId = employee.Id,
                     EmployeeName = employee.FullName,
                     Date = date.ToString("yyyy-MM-dd"),
-                    Action = request.Action,
+                    Action = request.Action.Value, // 1 = giriş, 0 = çıkış
+                    ActionName = actionName,
                     Time = time.ToString("HH:mm"),
                     CheckInTime = attendance.CheckInTime?.ToString("HH:mm"),
                     CheckOutTime = attendance.CheckOutTime?.ToString("HH:mm"),
@@ -341,9 +342,9 @@ public class AttendanceRecordRequest
     public DateTime? Date { get; set; }
     
     /// <summary>
-    /// Action type: "checkin" or "checkout"
+    /// Action type: 1 = check-in (giriş), 0 = check-out (çıkış)
     /// </summary>
-    public string? Action { get; set; }
+    public int? Action { get; set; }
     
     /// <summary>
     /// Time of the action (format: HH:mm)

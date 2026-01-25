@@ -998,14 +998,14 @@
                         <div>curl -X POST \\</div>
                         <div style="padding-left: 20px;">-u "${data.username}:YOUR_PASSWORD" \\</div>
                         <div style="padding-left: 20px;">-H "Content-Type: application/json" \\</div>
-                        <div style="padding-left: 20px;">-d '{"identityNo":"12345","date":"2026-01-24","action":"checkin","time":"08:00"}' \\</div>
+                        <div style="padding-left: 20px;">-d '{"identityNo":"12345","date":"2026-01-24","action":1,"time":"08:00"}' \\</div>
                         <div style="padding-left: 20px;">${window.location.origin}/api/v1/workhours/record</div>
                     </div>
                     <p style="font-size: 0.8rem; color: #666; margin: 10px 0 0;">
                         <strong>${isTurkish ? 'Parametreler:' : 'Parameters:'}</strong> 
                         identityNo (${isTurkish ? 'sicil no' : 'employee ID'}), 
                         date (YYYY-MM-DD), 
-                        action (checkin/checkout), 
+                        action (<span style="color:#16a34a">1=${isTurkish ? 'giriş' : 'check-in'}</span>, <span style="color:#dc2626">0=${isTurkish ? 'çıkış' : 'check-out'}</span>), 
                         time (HH:mm)
                     </p>
                 </div>
