@@ -1492,417 +1492,267 @@
 <div class="modal fade sg-modal-fullscreen" id="smartGenerateModal" tabindex="-1" data-bs-backdrop="static">
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content sg-modal-content">
-            <!-- Animated Background -->
-            <div class="sg-bg-pattern"></div>
-            
             <!-- Header -->
-            <div class="sg-modal-header">
-                <div class="sg-header-left">
-                    <div class="sg-header-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-                            <circle cx="12" cy="12" r="4"/>
-                        </svg>
-                    </div>
-                    <div class="sg-header-text">
-                        <h2>@(isTurkish ? "Akıllı Çizelge Oluşturucu" : "Smart Schedule Generator")</h2>
-                        <p>@Model.MonthName @(isTurkish ? "için otomatik nöbet ve mesai planı" : "automatic shift and work schedule")</p>
+            <div class="sg-header">
+                <div class="sg-header-title">
+                    <span class="sg-icon">⚡</span>
+                    <div>
+                        <h1>@(isTurkish ? "Akıllı Çizelge Oluşturucu" : "Smart Schedule Generator")</h1>
+                        <span class="sg-subtitle">@Model.MonthName @Model.Year</span>
                     </div>
                 </div>
-                <button type="button" class="sg-close-btn" data-bs-dismiss="modal">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 6L6 18M6 6l12 12"/>
-                    </svg>
-                </button>
+                <button type="button" class="sg-close" data-bs-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Warning -->
+            <div class="sg-alert">
+                <strong>⚠️ @(isTurkish ? "Dikkat:" : "Warning:")</strong>
+                @(isTurkish ? "Bu işlem mevcut vardiyaları silecek ve yeni çizelge oluşturacak." : "This will delete existing shifts and create a new schedule.")
             </div>
             
-            <!-- Warning Banner -->
-            <div class="sg-warning-banner">
-                <div class="sg-warning-icon">⚠️</div>
-                <div class="sg-warning-text">
-                    <strong>@(isTurkish ? "Dikkat!" : "Warning!")</strong>
-                    @(isTurkish ? "Bu işlem, seçili aydaki TÜM mevcut vardiyaları silecek ve yeni çizelge oluşturacaktır." : "This will DELETE ALL existing shifts for the selected month and create a new schedule.")
-                </div>
-            </div>
-            
-            <!-- Main Content -->
-            <div class="sg-modal-body">
-                <!-- Step 1: Weekday Work Hours -->
-                <div class="smart-section">
-                    <div class="section-header">
-                        <span class="section-number">1</span>
-                        <div class="section-info">
-                            <h6>@(isTurkish ? "Hafta İçi Mesai Saatleri" : "Weekday Work Hours")</h6>
-                            <p>@(isTurkish ? "Varsayılan mesai saatlerini belirleyin" : "Set default work hours")</p>
-                        </div>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <div class="form-floating-custom">
-                                <input type="time" class="form-input" id="sgWeekdayStart" value="08:00">
-                                <label>@(isTurkish ? "Başlangıç" : "Start")</label>
+            <!-- Body -->
+            <div class="sg-body">
+                <div class="sg-grid">
+                    <!-- Left Column: Time Settings -->
+                    <div class="sg-column">
+                        <div class="sg-card">
+                            <div class="sg-card-header">
+                                <span class="sg-step">1</span>
+                                @(isTurkish ? "Hafta İçi Mesai" : "Weekday Hours")
                             </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-floating-custom">
-                                <input type="time" class="form-input" id="sgWeekdayEnd" value="17:00">
-                                <label>@(isTurkish ? "Bitiş" : "End")</label>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-floating-custom">
-                                <input type="number" class="form-input" id="sgWeekdayBreak" value="60" min="0" max="120" step="5">
-                                <label>@(isTurkish ? "Mola (dk)" : "Break (min)")</label>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="checkbox-wrapper" style="margin-top: 10px;">
-                                <label class="custom-checkbox">
+                            <div class="sg-card-body">
+                                <div class="sg-row">
+                                    <div class="sg-field">
+                                        <label>@(isTurkish ? "Başlangıç" : "Start")</label>
+                                        <input type="time" id="sgWeekdayStart" value="08:00">
+                                    </div>
+                                    <div class="sg-field">
+                                        <label>@(isTurkish ? "Bitiş" : "End")</label>
+                                        <input type="time" id="sgWeekdayEnd" value="17:00">
+                                    </div>
+                                    <div class="sg-field">
+                                        <label>@(isTurkish ? "Mola" : "Break")</label>
+                                        <input type="number" id="sgWeekdayBreak" value="60" min="0" max="120"> dk
+                                    </div>
+                                </div>
+                                <label class="sg-check">
                                     <input type="checkbox" id="sgApplyWeekday" checked>
-                                    <span class="checkmark"></span>
-                                    <span class="checkbox-label">@(isTurkish ? "Uygula" : "Apply")</span>
+                                    @(isTurkish ? "Uygula" : "Apply")
                                 </label>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Step 2: Weekend Settings -->
-                <div class="smart-section">
-                    <div class="section-header">
-                        <span class="section-number">2</span>
-                        <div class="section-info">
-                            <h6>@(isTurkish ? "Hafta Sonu Çalışma" : "Weekend Work")</h6>
-                            <p>@(isTurkish ? "Hafta sonları minimum personel ve saat belirleyin" : "Set minimum staff and hours for weekends")</p>
-                        </div>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-md-2">
-                            <div class="form-floating-custom">
-                                <input type="number" class="form-input" id="sgWeekendMinStaff" value="1" min="0" max="50">
-                                <label>@(isTurkish ? "Min. Personel" : "Min Staff")</label>
+                        <div class="sg-card">
+                            <div class="sg-card-header">
+                                <span class="sg-step">2</span>
+                                @(isTurkish ? "Hafta Sonu" : "Weekend")
                             </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-floating-custom">
-                                <input type="time" class="form-input" id="sgWeekendStart" value="08:00">
-                                <label>@(isTurkish ? "Başlangıç" : "Start")</label>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-floating-custom">
-                                <input type="time" class="form-input" id="sgWeekendEnd" value="17:00">
-                                <label>@(isTurkish ? "Bitiş" : "End")</label>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-floating-custom">
-                                <input type="number" class="form-input" id="sgWeekendBreak" value="60" min="0" max="120" step="5">
-                                <label>@(isTurkish ? "Mola (dk)" : "Break (min)")</label>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="checkbox-wrapper" style="margin-top: 10px;">
-                                <label class="custom-checkbox">
+                            <div class="sg-card-body">
+                                <div class="sg-row">
+                                    <div class="sg-field">
+                                        <label>@(isTurkish ? "Min. Personel" : "Min Staff")</label>
+                                        <input type="number" id="sgWeekendMinStaff" value="1" min="0" max="50">
+                                    </div>
+                                    <div class="sg-field">
+                                        <label>@(isTurkish ? "Başlangıç" : "Start")</label>
+                                        <input type="time" id="sgWeekendStart" value="08:00">
+                                    </div>
+                                    <div class="sg-field">
+                                        <label>@(isTurkish ? "Bitiş" : "End")</label>
+                                        <input type="time" id="sgWeekendEnd" value="17:00">
+                                    </div>
+                                    <div class="sg-field">
+                                        <label>@(isTurkish ? "Mola" : "Break")</label>
+                                        <input type="number" id="sgWeekendBreak" value="60" min="0" max="120"> dk
+                                    </div>
+                                </div>
+                                <label class="sg-check">
                                     <input type="checkbox" id="sgApplyWeekend" checked>
-                                    <span class="checkmark"></span>
-                                    <span class="checkbox-label">@(isTurkish ? "Hafta sonu çalışma uygula" : "Apply weekend work")</span>
+                                    @(isTurkish ? "Uygula" : "Apply")
                                 </label>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Step 3: Weekday Duty (Nöbet) -->
-                <div class="smart-section">
-                    <div class="section-header">
-                        <span class="section-number">3</span>
-                        <div class="section-info">
-                            <h6>@(isTurkish ? "Hafta İçi Nöbet" : "Weekday Duty")</h6>
-                            <p>@(isTurkish ? "Her gün kaç personel nöbet tutacak?" : "How many staff on duty each day?")</p>
-                        </div>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-md-2">
-                            <div class="form-floating-custom">
-                                <input type="number" class="form-input" id="sgWeekdayDutyMin" value="1" min="0" max="50">
-                                <label>@(isTurkish ? "Min. Nöbetçi" : "Min On-Duty")</label>
+                        <div class="sg-card">
+                            <div class="sg-card-header">
+                                <span class="sg-step">3</span>
+                                @(isTurkish ? "Hafta İçi Nöbet" : "Weekday Duty")
                             </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-floating-custom">
-                                <input type="time" class="form-input" id="sgWeekdayDutyStart" value="17:00">
-                                <label>@(isTurkish ? "Başlangıç" : "Start")</label>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-floating-custom">
-                                <input type="time" class="form-input" id="sgWeekdayDutyEnd" value="08:00">
-                                <label>@(isTurkish ? "Bitiş" : "End")</label>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-floating-custom">
-                                <input type="number" class="form-input" id="sgWeekdayDutyBreak" value="0" min="0" max="120" step="5">
-                                <label>@(isTurkish ? "Mola (dk)" : "Break (min)")</label>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="checkbox-wrapper" style="margin-top: 10px;">
-                                <label class="custom-checkbox">
+                            <div class="sg-card-body">
+                                <div class="sg-row">
+                                    <div class="sg-field">
+                                        <label>@(isTurkish ? "Min. Nöbetçi" : "Min On-Duty")</label>
+                                        <input type="number" id="sgWeekdayDutyMin" value="1" min="0" max="50">
+                                    </div>
+                                    <div class="sg-field">
+                                        <label>@(isTurkish ? "Başlangıç" : "Start")</label>
+                                        <input type="time" id="sgWeekdayDutyStart" value="17:00">
+                                    </div>
+                                    <div class="sg-field">
+                                        <label>@(isTurkish ? "Bitiş" : "End")</label>
+                                        <input type="time" id="sgWeekdayDutyEnd" value="08:00">
+                                    </div>
+                                    <div class="sg-field">
+                                        <label>@(isTurkish ? "Mola" : "Break")</label>
+                                        <input type="number" id="sgWeekdayDutyBreak" value="0" min="0" max="120"> dk
+                                    </div>
+                                </div>
+                                <label class="sg-check">
                                     <input type="checkbox" id="sgApplyWeekdayDuty" checked>
-                                    <span class="checkmark"></span>
-                                    <span class="checkbox-label">@(isTurkish ? "Hafta içi nöbet uygula" : "Apply weekday duty")</span>
+                                    @(isTurkish ? "Uygula" : "Apply")
                                 </label>
+                                <div class="sg-hint">💡 @(isTurkish ? "Bitiş < Başlangıç ise ertesi güne geçer" : "If End < Start, spans to next day")</div>
                             </div>
                         </div>
-                    </div>
-                    <div class="info-box mini mt-2">
-                        <span class="info-icon">💡</span>
-                        <span>@(isTurkish ? "Bitiş saati başlangıçtan küçükse ertesi güne geçer (gece nöbeti)" : "If end time is before start, it spans to next day (night shift)")</span>
-                    </div>
-                </div>
 
-                <!-- Step 4: Holiday Duty -->
-                <div class="smart-section">
-                    <div class="section-header">
-                        <span class="section-number">4</span>
-                        <div class="section-info">
-                            <h6>@(isTurkish ? "Resmi Tatil Nöbeti" : "Holiday Duty")</h6>
-                            <p>@(isTurkish ? "Resmi tatillerde nöbet ayarları" : "Duty settings for holidays")</p>
-                        </div>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-md-2">
-                            <div class="form-floating-custom">
-                                <input type="number" class="form-input" id="sgHolidayDutyMin" value="1" min="0" max="50">
-                                <label>@(isTurkish ? "Min. Nöbetçi" : "Min On-Duty")</label>
+                        <div class="sg-card">
+                            <div class="sg-card-header">
+                                <span class="sg-step">4</span>
+                                @(isTurkish ? "Tatil Nöbeti" : "Holiday Duty")
                             </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-floating-custom">
-                                <input type="time" class="form-input" id="sgHolidayDutyStart" value="08:00">
-                                <label>@(isTurkish ? "Başlangıç" : "Start")</label>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-floating-custom">
-                                <input type="time" class="form-input" id="sgHolidayDutyEnd" value="08:00">
-                                <label>@(isTurkish ? "Bitiş" : "End")</label>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-floating-custom">
-                                <input type="number" class="form-input" id="sgHolidayDutyBreak" value="0" min="0" max="120" step="5">
-                                <label>@(isTurkish ? "Mola (dk)" : "Break (min)")</label>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="checkbox-wrapper" style="margin-top: 10px;">
-                                <label class="custom-checkbox">
+                            <div class="sg-card-body">
+                                <div class="sg-row">
+                                    <div class="sg-field">
+                                        <label>@(isTurkish ? "Min. Nöbetçi" : "Min On-Duty")</label>
+                                        <input type="number" id="sgHolidayDutyMin" value="1" min="0" max="50">
+                                    </div>
+                                    <div class="sg-field">
+                                        <label>@(isTurkish ? "Başlangıç" : "Start")</label>
+                                        <input type="time" id="sgHolidayDutyStart" value="08:00">
+                                    </div>
+                                    <div class="sg-field">
+                                        <label>@(isTurkish ? "Bitiş" : "End")</label>
+                                        <input type="time" id="sgHolidayDutyEnd" value="08:00">
+                                    </div>
+                                    <div class="sg-field">
+                                        <label>@(isTurkish ? "Mola" : "Break")</label>
+                                        <input type="number" id="sgHolidayDutyBreak" value="0" min="0" max="120"> dk
+                                    </div>
+                                </div>
+                                <label class="sg-check">
                                     <input type="checkbox" id="sgApplyHolidayDuty" checked>
-                                    <span class="checkmark"></span>
-                                    <span class="checkbox-label">@(isTurkish ? "Tatil nöbeti uygula" : "Apply holiday duty")</span>
+                                    @(isTurkish ? "Uygula" : "Apply")
                                 </label>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Step 5: Exempt Employees -->
-                <div class="smart-section">
-                    <div class="section-header">
-                        <span class="section-number">5</span>
-                        <div class="section-info">
-                            <h6>@(isTurkish ? "Nöbet Tutmayan Personeller" : "Exempt from Duty")</h6>
-                            <p>@(isTurkish ? "Bu personeller hiçbir zaman nöbete yazılmaz" : "These employees are never assigned to duty")</p>
-                        </div>
-                    </div>
-                    <div class="exempt-employees-list" id="sgExemptEmployeesList">
-                        @foreach (var emp in Model.Employees.Where(e => e.IsActive).OrderBy(e => e.FullName))
-                        {
-                            <label class="exempt-employee-item">
-                                <input type="checkbox" class="sg-exempt-employee" value="@emp.Id">
-                                <span class="exempt-name">@emp.FullName</span>
-                                @if (!string.IsNullOrEmpty(emp.Title))
-                                {
-                                    <span class="exempt-title">@emp.Title</span>
-                                }
-                            </label>
-                        }
-                    </div>
-                </div>
-
-                <!-- Step 6: Specific Date Restrictions -->
-                <div class="smart-section">
-                    <div class="section-header">
-                        <span class="section-number">6</span>
-                        <div class="section-info">
-                            <h6>@(isTurkish ? "Tarih Bazlı Kısıtlamalar" : "Date-Based Restrictions")</h6>
-                            <p>@(isTurkish ? "Belirli tarihlerde nöbet tutamayacak personeller" : "Employees unavailable on specific dates")</p>
-                        </div>
-                    </div>
-                    <div class="date-restrictions-container">
-                        <div class="date-restriction-add">
-                            <div class="row g-2 align-items-end">
-                                <div class="col-md-4">
-                                    <div class="form-floating-custom">
-                                        <select class="form-input" id="sgRestrictionEmployee">
-                                            <option value="">@(isTurkish ? "Personel seç..." : "Select employee...")</option>
-                                            @foreach (var emp in Model.Employees.Where(e => e.IsActive).OrderBy(e => e.FullName))
+                    <!-- Right Column: Personnel & Restrictions -->
+                    <div class="sg-column">
+                        <div class="sg-card">
+                            <div class="sg-card-header">
+                                <span class="sg-step">5</span>
+                                @(isTurkish ? "Nöbet Tutmayan Personeller" : "Exempt from Duty")
+                            </div>
+                            <div class="sg-card-body">
+                                <div class="sg-employee-list" id="sgExemptEmployeesList">
+                                    @foreach (var emp in Model.Employees.Where(e => e.IsActive).OrderBy(e => e.FullName))
+                                    {
+                                        <label class="sg-emp-item">
+                                            <input type="checkbox" class="sg-exempt-employee" value="@emp.Id">
+                                            <span>@emp.FullName</span>
+                                            @if (!string.IsNullOrEmpty(emp.Title))
                                             {
-                                                <option value="@emp.Id">@emp.FullName</option>
+                                                <small>@emp.Title</small>
                                             }
-                                        </select>
-                                        <label>@(isTurkish ? "Personel" : "Employee")</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-floating-custom">
-                                        <input type="date" class="form-input" id="sgRestrictionStartDate">
-                                        <label>@(isTurkish ? "Başlangıç" : "Start Date")</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-floating-custom">
-                                        <input type="date" class="form-input" id="sgRestrictionEndDate">
-                                        <label>@(isTurkish ? "Bitiş" : "End Date")</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <button type="button" class="btn-add-restriction" id="sgAddRestriction">
-                                        <span>+</span> @(isTurkish ? "Ekle" : "Add")
-                                    </button>
+                                        </label>
+                                    }
                                 </div>
                             </div>
                         </div>
-                        <div class="date-restrictions-list" id="sgRestrictionsList">
-                            <!-- Dynamically added restrictions will appear here -->
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Step 7: Specific Date Availability -->
-                <div class="smart-section">
-                    <div class="section-header">
-                        <span class="section-number">7</span>
-                        <div class="section-info">
-                            <h6>@(isTurkish ? "Nöbet Tercih Tarihleri" : "Duty Preference Dates")</h6>
-                            <p>@(isTurkish ? "Belirli tarihlerde nöbet tutabilecek/isteyenler" : "Employees available/preferred on specific dates")</p>
-                        </div>
-                    </div>
-                    <div class="date-restrictions-container">
-                        <div class="date-restriction-add">
-                            <div class="row g-2 align-items-end">
-                                <div class="col-md-4">
-                                    <div class="form-floating-custom">
-                                        <select class="form-input" id="sgPreferenceEmployee">
-                                            <option value="">@(isTurkish ? "Personel seç..." : "Select employee...")</option>
-                                            @foreach (var emp in Model.Employees.Where(e => e.IsActive).OrderBy(e => e.FullName))
-                                            {
-                                                <option value="@emp.Id">@emp.FullName</option>
-                                            }
-                                        </select>
-                                        <label>@(isTurkish ? "Personel" : "Employee")</label>
-                                    </div>
+                        <div class="sg-card">
+                            <div class="sg-card-header">
+                                <span class="sg-step">6</span>
+                                @(isTurkish ? "Tarih Kısıtlamaları" : "Date Restrictions")
+                            </div>
+                            <div class="sg-card-body">
+                                <div class="sg-restriction-form">
+                                    <select id="sgRestrictionEmployee">
+                                        <option value="">@(isTurkish ? "Personel seç..." : "Select employee...")</option>
+                                        @foreach (var emp in Model.Employees.Where(e => e.IsActive).OrderBy(e => e.FullName))
+                                        {
+                                            <option value="@emp.Id">@emp.FullName</option>
+                                        }
+                                    </select>
+                                    <input type="date" id="sgRestrictionStartDate" placeholder="@(isTurkish ? "Başlangıç" : "Start")">
+                                    <input type="date" id="sgRestrictionEndDate" placeholder="@(isTurkish ? "Bitiş" : "End")">
+                                    <button type="button" class="sg-btn-add red" id="sgAddRestriction">+ @(isTurkish ? "Ekle" : "Add")</button>
                                 </div>
-                                <div class="col-md-3">
-                                    <div class="form-floating-custom">
-                                        <input type="date" class="form-input" id="sgPreferenceStartDate">
-                                        <label>@(isTurkish ? "Başlangıç" : "Start Date")</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-floating-custom">
-                                        <input type="date" class="form-input" id="sgPreferenceEndDate">
-                                        <label>@(isTurkish ? "Bitiş" : "End Date")</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <button type="button" class="btn-add-restriction preference" id="sgAddPreference">
-                                        <span>+</span> @(isTurkish ? "Ekle" : "Add")
-                                    </button>
-                                </div>
+                                <div class="sg-restriction-list" id="sgRestrictionsList"></div>
                             </div>
                         </div>
-                        <div class="date-restrictions-list preferences" id="sgPreferencesList">
-                            <!-- Dynamically added preferences will appear here -->
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Additional Options -->
-                <div class="smart-section options">
-                    <div class="section-header">
-                        <span class="section-number">⚙️</span>
-                        <div class="section-info">
-                            <h6>@(isTurkish ? "Ek Ayarlar" : "Additional Options")</h6>
-                        </div>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <div class="checkbox-wrapper">
-                                <label class="custom-checkbox">
-                                    <input type="checkbox" id="sgOverwriteExisting">
-                                    <span class="checkmark"></span>
-                                    <span class="checkbox-label">@(isTurkish ? "Mevcut vardiyaları üzerine yaz" : "Overwrite existing shifts")</span>
-                                </label>
+                        <div class="sg-card">
+                            <div class="sg-card-header">
+                                <span class="sg-step">7</span>
+                                @(isTurkish ? "Tercih Edilen Tarihler" : "Preferred Dates")
+                            </div>
+                            <div class="sg-card-body">
+                                <div class="sg-restriction-form">
+                                    <select id="sgPreferenceEmployee">
+                                        <option value="">@(isTurkish ? "Personel seç..." : "Select employee...")</option>
+                                        @foreach (var emp in Model.Employees.Where(e => e.IsActive).OrderBy(e => e.FullName))
+                                        {
+                                            <option value="@emp.Id">@emp.FullName</option>
+                                        }
+                                    </select>
+                                    <input type="date" id="sgPreferenceStartDate">
+                                    <input type="date" id="sgPreferenceEndDate">
+                                    <button type="button" class="sg-btn-add green" id="sgAddPreference">+ @(isTurkish ? "Ekle" : "Add")</button>
+                                </div>
+                                <div class="sg-restriction-list preferences" id="sgPreferencesList"></div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="checkbox-wrapper">
-                                <label class="custom-checkbox">
-                                    <input type="checkbox" id="sgBalanceDuties" checked>
-                                    <span class="checkmark"></span>
-                                    <span class="checkbox-label">@(isTurkish ? "Nöbetleri adil dağıt" : "Balance duties fairly")</span>
-                                </label>
+
+                        <div class="sg-card options">
+                            <div class="sg-card-header">
+                                <span class="sg-step">⚙️</span>
+                                @(isTurkish ? "Ek Ayarlar" : "Options")
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-floating-custom">
-                                <input type="number" class="form-input" id="sgMinDaysBetweenDuties" value="2" min="0" max="14">
-                                <label>@(isTurkish ? "Nöbetler arası min. gün" : "Min days between duties")</label>
+                            <div class="sg-card-body">
+                                <div class="sg-options-row">
+                                    <label class="sg-check">
+                                        <input type="checkbox" id="sgOverwriteExisting">
+                                        @(isTurkish ? "Mevcut vardiyaları üzerine yaz" : "Overwrite existing")
+                                    </label>
+                                    <label class="sg-check">
+                                        <input type="checkbox" id="sgBalanceDuties" checked>
+                                        @(isTurkish ? "Adil dağıt" : "Fair distribution")
+                                    </label>
+                                    <div class="sg-field inline">
+                                        <label>@(isTurkish ? "Nöbet arası min. gün" : "Min days between")</label>
+                                        <input type="number" id="sgMinDaysBetweenDuties" value="2" min="0" max="14">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Progress indicator -->
+                <!-- Progress -->
                 <div class="sg-progress-section" id="sgProgress" style="display: none;">
                     <div class="sg-progress-card">
-                        <div class="sg-progress-icon">
-                            <div class="sg-spinner"></div>
-                        </div>
-                        <div class="sg-progress-info">
-                            <h4 id="sgProgressText">@(isTurkish ? "Çizelge oluşturuluyor..." : "Generating schedule...")</h4>
+                        <div class="sg-spinner"></div>
+                        <div>
+                            <strong id="sgProgressText">@(isTurkish ? "Çizelge oluşturuluyor..." : "Generating...")</strong>
                             <div class="sg-progress-bar-wrap">
                                 <div class="sg-progress-bar" id="sgProgressBar"></div>
                             </div>
-                            <p class="sg-progress-hint">@(isTurkish ? "Bu işlem birkaç saniye sürebilir" : "This may take a few seconds")</p>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Footer -->
-            <div class="sg-modal-footer">
+            <div class="sg-footer">
                 <div class="sg-footer-info">
-                    <span class="sg-employee-count">👥 @Model.Employees.Count(e => e.IsActive) @(isTurkish ? "aktif personel" : "active employees")</span>
-                    <span class="sg-day-count">📅 @Model.DaysInMonth @(isTurkish ? "gün" : "days")</span>
+                    <span>👥 @Model.Employees.Count(e => e.IsActive) @(isTurkish ? "personel" : "staff")</span>
+                    <span>📅 @Model.DaysInMonth @(isTurkish ? "gün" : "days")</span>
                 </div>
                 <div class="sg-footer-actions">
-                    <button type="button" class="sg-btn-cancel" data-bs-dismiss="modal">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 6L6 18M6 6l12 12"/>
-                        </svg>
-                        @(isTurkish ? "İptal" : "Cancel")
-                    </button>
-                    <button type="button" class="sg-btn-generate" id="sgGenerateBtn">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-                        </svg>
-                        @(isTurkish ? "Çizelge Oluştur" : "Generate Schedule")
-                    </button>
+                    <button type="button" class="sg-btn secondary" data-bs-dismiss="modal">@(isTurkish ? "İptal" : "Cancel")</button>
+                    <button type="button" class="sg-btn primary" id="sgGenerateBtn">⚡ @(isTurkish ? "Oluştur" : "Generate")</button>
                 </div>
             </div>
         </div>
@@ -1911,661 +1761,515 @@
 
 <!-- Confirmation Modal -->
 <div class="modal fade" id="sgConfirmModal" tabindex="-1" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content sg-confirm-modal">
-            <div class="sg-confirm-icon">🗑️</div>
-            <h3>@(isTurkish ? "Emin misiniz?" : "Are you sure?")</h3>
-            <p>@(isTurkish ? "Bu işlem geri alınamaz! Tüm mevcut vardiyalar silinecek ve yeni çizelge oluşturulacak." : "This cannot be undone! All existing shifts will be deleted and a new schedule will be created.")</p>
-            <div class="sg-confirm-details">
-                <div class="sg-confirm-item">
-                    <span class="sg-confirm-label">@(isTurkish ? "Ay" : "Month"):</span>
-                    <span class="sg-confirm-value">@Model.MonthName</span>
-                </div>
-                <div class="sg-confirm-item">
-                    <span class="sg-confirm-label">@(isTurkish ? "Silinecek" : "To delete"):</span>
-                    <span class="sg-confirm-value sg-delete-count">@Model.Shifts.Count @(isTurkish ? "vardiya" : "shifts")</span>
-                </div>
+            <div class="sg-confirm-icon">⚠️</div>
+            <h3>@(isTurkish ? "Emin misiniz?" : "Confirm")</h3>
+            <p>@(isTurkish ? "Mevcut vardiyalar silinecek." : "Existing shifts will be deleted.")</p>
+            <div class="sg-confirm-info">
+                <span>@Model.MonthName</span>
+                <span class="sg-delete-count">@Model.Shifts.Count @(isTurkish ? "vardiya" : "shifts")</span>
             </div>
             <div class="sg-confirm-actions">
-                <button type="button" class="sg-btn-cancel-confirm" data-bs-dismiss="modal">
-                    @(isTurkish ? "Vazgeç" : "Cancel")
-                </button>
-                <button type="button" class="sg-btn-confirm-delete" id="sgConfirmGenerate">
-                    @(isTurkish ? "Evet, Oluştur" : "Yes, Generate")
-                </button>
+                <button type="button" class="sg-btn secondary" data-bs-dismiss="modal">@(isTurkish ? "Vazgeç" : "Cancel")</button>
+                <button type="button" class="sg-btn danger" id="sgConfirmGenerate">@(isTurkish ? "Oluştur" : "Generate")</button>
             </div>
         </div>
     </div>
 </div>
 
 <style>
-    /* ===== Smart Generate Fullscreen Modal ===== */
-    .sg-modal-fullscreen .modal-fullscreen {
-        padding: 0;
-    }
+    /* ===== Smart Generate Modal - Clean Design ===== */
+    .sg-modal-fullscreen .modal-fullscreen { padding: 0; }
     
     .sg-modal-content {
-        background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0d0d1f 100%);
+        background: #f8fafc;
         min-height: 100vh;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    /* Animated background pattern */
-    .sg-bg-pattern {
-        position: absolute;
-        inset: 0;
-        background-image: 
-            radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 40% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
-        animation: sgBgPulse 10s ease-in-out infinite;
-    }
-    
-    @@keyframes sgBgPulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.7; }
+        display: flex;
+        flex-direction: column;
     }
     
     /* Header */
-    .sg-modal-header {
+    .sg-header {
         display: flex;
-        align-items: center;
         justify-content: space-between;
-        padding: 20px 32px;
-        border-bottom: 1px solid rgba(139, 92, 246, 0.2);
-        position: relative;
-        z-index: 1;
+        align-items: center;
+        padding: 16px 24px;
+        background: #fff;
+        border-bottom: 1px solid #e2e8f0;
     }
     
-    .sg-header-left {
+    .sg-header-title {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 12px;
     }
     
-    .sg-header-icon {
-        width: 56px;
-        height: 56px;
-        background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        box-shadow: 0 8px 32px rgba(139, 92, 246, 0.4);
-        animation: sgIconFloat 3s ease-in-out infinite;
-    }
-    
-    @@keyframes sgIconFloat {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-4px); }
-    }
-    
-    .sg-header-text h2 {
-        margin: 0;
+    .sg-header-title .sg-icon {
         font-size: 1.5rem;
-        font-weight: 700;
-        color: #fff;
-        letter-spacing: -0.02em;
     }
     
-    .sg-header-text p {
-        margin: 4px 0 0;
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.6);
+    .sg-header-title h1 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1e293b;
     }
     
-    .sg-close-btn {
-        width: 44px;
-        height: 44px;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        color: rgba(255, 255, 255, 0.7);
+    .sg-subtitle {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+    
+    .sg-close {
+        width: 36px;
+        height: 36px;
+        border: none;
+        background: #f1f5f9;
+        border-radius: 8px;
+        font-size: 1.5rem;
+        color: #64748b;
         cursor: pointer;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        line-height: 1;
     }
     
-    .sg-close-btn:hover {
-        background: rgba(239, 68, 68, 0.2);
-        border-color: rgba(239, 68, 68, 0.4);
+    .sg-close:hover {
+        background: #fee2e2;
         color: #ef4444;
     }
     
-    /* Warning Banner */
-    .sg-warning-banner {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        margin: 0 32px;
-        padding: 16px 20px;
-        background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(234, 88, 12, 0.1) 100%);
-        border: 1px solid rgba(245, 158, 11, 0.3);
-        border-radius: 12px;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .sg-warning-icon {
-        font-size: 1.5rem;
-        flex-shrink: 0;
-    }
-    
-    .sg-warning-text {
-        color: #fbbf24;
-        font-size: 0.9rem;
-        line-height: 1.5;
-    }
-    
-    .sg-warning-text strong {
-        color: #f59e0b;
-    }
-    
-    /* Main Body */
-    .sg-modal-body {
-        padding: 24px 32px;
-        overflow-y: auto;
-        max-height: calc(100vh - 240px);
-        position: relative;
-        z-index: 1;
-    }
-    
-    /* Section Cards */
-    .smart-section {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
-        padding: 24px;
-        margin-bottom: 20px;
-        backdrop-filter: blur(10px);
-        transition: all 0.3s;
-    }
-    
-    .smart-section:hover {
-        border-color: rgba(139, 92, 246, 0.3);
-        background: rgba(255, 255, 255, 0.05);
-    }
-    
-    .smart-section.options {
-        background: rgba(234, 179, 8, 0.05);
-        border-color: rgba(234, 179, 8, 0.2);
-    }
-    
-    .section-header {
-        display: flex;
-        align-items: flex-start;
-        gap: 16px;
-        margin-bottom: 20px;
-    }
-    
-    .section-number {
-        width: 36px;
-        height: 36px;
-        background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-        color: white;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 1rem;
-        flex-shrink: 0;
-        box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
-    }
-    
-    .section-info h6 {
-        margin: 0;
-        font-weight: 600;
-        font-size: 1.05rem;
-        color: #fff;
-    }
-    
-    .section-info p {
-        margin: 4px 0 0;
+    /* Alert */
+    .sg-alert {
+        margin: 0 24px;
+        margin-top: 16px;
+        padding: 10px 16px;
+        background: #fef3c7;
+        border: 1px solid #fcd34d;
+        border-radius: 8px;
         font-size: 0.85rem;
-        color: rgba(255, 255, 255, 0.5);
+        color: #92400e;
     }
     
-    /* Form inputs in modal */
-    .sg-modal-body .form-floating-custom {
-        position: relative;
-    }
-    
-    .sg-modal-body .form-input {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        color: #fff;
-        border-radius: 10px;
-    }
-    
-    .sg-modal-body .form-input:focus {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: #8b5cf6;
-        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
-    }
-    
-    .sg-modal-body .form-floating-custom label {
-        color: rgba(255, 255, 255, 0.6);
-    }
-    
-    /* Checkbox styling */
-    .sg-modal-body .checkbox-label {
-        color: rgba(255, 255, 255, 0.8);
-    }
-    
-    .sg-modal-body .checkmark {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.3);
-    }
-    
-    .sg-modal-body .custom-checkbox input:checked ~ .checkmark {
-        background: #8b5cf6;
-        border-color: #8b5cf6;
-    }
-    
-    /* Exempt employees list */
-    .exempt-employees-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        max-height: 180px;
+    /* Body */
+    .sg-body {
+        flex: 1;
+        padding: 16px 24px;
         overflow-y: auto;
-        padding: 4px;
     }
     
-    .exempt-employee-item {
+    .sg-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+    
+    @@media (max-width: 992px) {
+        .sg-grid { grid-template-columns: 1fr; }
+    }
+    
+    .sg-column {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    /* Cards */
+    .sg-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .sg-card.options {
+        background: #fefce8;
+        border-color: #fde047;
+    }
+    
+    .sg-card-header {
         display: flex;
         align-items: center;
         gap: 10px;
         padding: 10px 14px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-    
-    .exempt-employee-item:hover {
-        border-color: #8b5cf6;
-        background: rgba(139, 92, 246, 0.1);
-    }
-    
-    .exempt-employee-item input:checked + .exempt-name {
-        color: #a78bfa;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
         font-weight: 600;
-    }
-    
-    .exempt-employee-item input {
-        width: 18px;
-        height: 18px;
-        accent-color: #8b5cf6;
-    }
-    
-    .exempt-name {
         font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.9);
+        color: #334155;
     }
     
-    .exempt-title {
-        font-size: 0.75rem;
-        color: rgba(255, 255, 255, 0.5);
-        background: rgba(255, 255, 255, 0.1);
-        padding: 3px 8px;
+    .sg-card.options .sg-card-header {
+        background: #fef9c3;
+    }
+    
+    .sg-step {
+        width: 24px;
+        height: 24px;
+        background: #6366f1;
+        color: #fff;
         border-radius: 6px;
-    }
-    
-    /* Date restrictions */
-    .date-restrictions-container {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        padding: 16px;
-    }
-    
-    .btn-add-restriction {
-        width: 100%;
-        padding: 12px 18px;
-        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-        color: white;
-        border: none;
-        border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
     }
     
-    .btn-add-restriction:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+    .sg-card-body {
+        padding: 12px 14px;
     }
     
-    .btn-add-restriction.preference {
-        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    /* Form Elements */
+    .sg-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
     }
     
-    .btn-add-restriction.preference:hover {
-        box-shadow: 0 8px 24px rgba(34, 197, 94, 0.4);
-    }
-    
-    .date-restrictions-list {
-        margin-top: 16px;
+    .sg-field {
         display: flex;
         flex-direction: column;
-        gap: 10px;
-        max-height: 180px;
+        gap: 4px;
+        flex: 1;
+        min-width: 80px;
+    }
+    
+    .sg-field.inline {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .sg-field.inline input {
+        width: 60px;
+    }
+    
+    .sg-field label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+    }
+    
+    .sg-field input,
+    .sg-field select {
+        padding: 8px 10px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        background: #fff;
+        color: #1e293b;
+    }
+    
+    .sg-field input:focus,
+    .sg-field select:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 2px rgba(99,102,241,0.15);
+    }
+    
+    .sg-check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        color: #475569;
+        cursor: pointer;
+    }
+    
+    .sg-check input {
+        width: 16px;
+        height: 16px;
+        accent-color: #6366f1;
+    }
+    
+    .sg-hint {
+        margin-top: 8px;
+        font-size: 0.75rem;
+        color: #64748b;
+        background: #f1f5f9;
+        padding: 6px 10px;
+        border-radius: 6px;
+    }
+    
+    /* Employee List */
+    .sg-employee-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        max-height: 150px;
         overflow-y: auto;
     }
     
-    .date-restrictions-list:empty {
-        display: none;
+    .sg-emp-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        cursor: pointer;
     }
+    
+    .sg-emp-item:hover {
+        border-color: #6366f1;
+        background: #eef2ff;
+    }
+    
+    .sg-emp-item input {
+        width: 14px;
+        height: 14px;
+        accent-color: #6366f1;
+    }
+    
+    .sg-emp-item small {
+        color: #94a3b8;
+        font-size: 0.7rem;
+    }
+    
+    /* Restrictions */
+    .sg-restriction-form {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+    }
+    
+    .sg-restriction-form select,
+    .sg-restriction-form input {
+        flex: 1;
+        min-width: 100px;
+        padding: 8px 10px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 0.85rem;
+    }
+    
+    .sg-btn-add {
+        padding: 8px 14px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+    
+    .sg-btn-add.red {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+    
+    .sg-btn-add.red:hover {
+        background: #fecaca;
+    }
+    
+    .sg-btn-add.green {
+        background: #f0fdf4;
+        color: #16a34a;
+    }
+    
+    .sg-btn-add.green:hover {
+        background: #dcfce7;
+    }
+    
+    .sg-restriction-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        max-height: 120px;
+        overflow-y: auto;
+    }
+    
+    .sg-restriction-list:empty { display: none; }
     
     .restriction-item {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 12px 14px;
-        background: rgba(239, 68, 68, 0.1);
-        border: 1px solid rgba(239, 68, 68, 0.3);
-        border-radius: 10px;
+        padding: 8px 10px;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 6px;
+        font-size: 0.8rem;
     }
     
     .restriction-item.preference {
-        background: rgba(34, 197, 94, 0.1);
-        border-color: rgba(34, 197, 94, 0.3);
+        background: #f0fdf4;
+        border-color: #bbf7d0;
     }
     
     .restriction-info {
         display: flex;
         align-items: center;
-        gap: 14px;
+        gap: 10px;
     }
     
-    .restriction-employee {
-        font-weight: 600;
-        color: rgba(255, 255, 255, 0.9);
-    }
-    
-    .restriction-dates {
-        font-size: 0.8rem;
-        color: rgba(255, 255, 255, 0.6);
-        background: rgba(255, 255, 255, 0.1);
-        padding: 4px 10px;
-        border-radius: 6px;
-    }
+    .restriction-employee { font-weight: 600; color: #1e293b; }
+    .restriction-dates { color: #64748b; font-size: 0.75rem; }
     
     .restriction-remove {
-        background: rgba(255, 255, 255, 0.1);
+        background: transparent;
         border: none;
-        color: #f87171;
-        font-size: 1.2rem;
+        color: #ef4444;
+        font-size: 1rem;
         cursor: pointer;
-        padding: 6px 10px;
-        border-radius: 8px;
-        transition: all 0.2s;
+        padding: 4px 8px;
+        border-radius: 4px;
     }
     
     .restriction-remove:hover {
-        background: rgba(239, 68, 68, 0.2);
-        color: #ef4444;
+        background: #fee2e2;
     }
     
-    .info-box.mini {
-        padding: 10px 14px;
-        font-size: 0.85rem;
-        background: rgba(59, 130, 246, 0.1);
-        border: 1px solid rgba(59, 130, 246, 0.2);
-        border-radius: 8px;
+    /* Options */
+    .sg-options-row {
         display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
         align-items: center;
-        gap: 10px;
-        color: rgba(255, 255, 255, 0.7);
     }
     
-    .info-box.mini .info-icon {
-        font-size: 1.1rem;
-    }
-    
-    /* Footer */
-    .sg-modal-footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 20px 32px;
-        border-top: 1px solid rgba(139, 92, 246, 0.2);
-        background: rgba(0, 0, 0, 0.2);
-        position: relative;
-        z-index: 1;
-    }
-    
-    .sg-footer-info {
-        display: flex;
-        gap: 24px;
-    }
-    
-    .sg-footer-info span {
-        color: rgba(255, 255, 255, 0.6);
-        font-size: 0.9rem;
-    }
-    
-    .sg-footer-actions {
-        display: flex;
-        gap: 12px;
-    }
-    
-    .sg-btn-cancel {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 12px 24px;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: rgba(255, 255, 255, 0.8);
-        border-radius: 12px;
-        font-weight: 500;
-        font-size: 0.95rem;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-    
-    .sg-btn-cancel:hover {
-        background: rgba(255, 255, 255, 0.15);
-        border-color: rgba(255, 255, 255, 0.3);
-    }
-    
-    .sg-btn-generate {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 12px 32px;
-        background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-        border: none;
-        color: white;
-        border-radius: 12px;
-        font-weight: 600;
-        font-size: 0.95rem;
-        cursor: pointer;
-        transition: all 0.2s;
-        box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
-    }
-    
-    .sg-btn-generate:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
-    }
-    
-    .sg-btn-generate:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        transform: none;
-    }
-    
-    /* Progress Section */
-    .sg-progress-section {
-        margin-top: 24px;
-    }
+    /* Progress */
+    .sg-progress-section { margin-top: 16px; }
     
     .sg-progress-card {
         display: flex;
         align-items: center;
-        gap: 24px;
-        padding: 24px;
-        background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
-        border: 1px solid rgba(139, 92, 246, 0.3);
-        border-radius: 16px;
-    }
-    
-    .sg-progress-icon {
-        flex-shrink: 0;
+        gap: 16px;
+        padding: 16px;
+        background: #eef2ff;
+        border: 1px solid #c7d2fe;
+        border-radius: 10px;
     }
     
     .sg-spinner {
-        width: 48px;
-        height: 48px;
-        border: 4px solid rgba(139, 92, 246, 0.2);
-        border-top-color: #8b5cf6;
+        width: 32px;
+        height: 32px;
+        border: 3px solid #c7d2fe;
+        border-top-color: #6366f1;
         border-radius: 50%;
         animation: sgSpin 1s linear infinite;
     }
     
-    @@keyframes sgSpin {
-        to { transform: rotate(360deg); }
-    }
-    
-    .sg-progress-info {
-        flex: 1;
-    }
-    
-    .sg-progress-info h4 {
-        margin: 0 0 12px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #a78bfa;
-    }
+    @@keyframes sgSpin { to { transform: rotate(360deg); } }
     
     .sg-progress-bar-wrap {
-        height: 8px;
-        background: rgba(139, 92, 246, 0.2);
-        border-radius: 4px;
+        margin-top: 8px;
+        height: 6px;
+        background: #c7d2fe;
+        border-radius: 3px;
         overflow: hidden;
+        width: 200px;
     }
     
     .sg-progress-bar {
         height: 100%;
         width: 0%;
-        background: linear-gradient(90deg, #8b5cf6 0%, #a78bfa 100%);
-        border-radius: 4px;
-        transition: width 0.3s ease;
+        background: #6366f1;
+        border-radius: 3px;
+        transition: width 0.3s;
     }
     
-    .sg-progress-hint {
-        margin: 8px 0 0;
+    /* Footer */
+    .sg-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 24px;
+        background: #fff;
+        border-top: 1px solid #e2e8f0;
+    }
+    
+    .sg-footer-info {
+        display: flex;
+        gap: 16px;
         font-size: 0.85rem;
-        color: rgba(255, 255, 255, 0.5);
+        color: #64748b;
     }
     
-    /* Confirmation Modal */
+    .sg-footer-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .sg-btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .sg-btn.secondary {
+        background: #f1f5f9;
+        color: #475569;
+    }
+    
+    .sg-btn.secondary:hover {
+        background: #e2e8f0;
+    }
+    
+    .sg-btn.primary {
+        background: #6366f1;
+        color: #fff;
+    }
+    
+    .sg-btn.primary:hover {
+        background: #4f46e5;
+    }
+    
+    .sg-btn.danger {
+        background: #ef4444;
+        color: #fff;
+    }
+    
+    .sg-btn.danger:hover {
+        background: #dc2626;
+    }
+    
+    /* Confirm Modal */
     .sg-confirm-modal {
-        background: linear-gradient(135deg, #1a1a3e 0%, #0f0f23 100%);
-        border: 1px solid rgba(239, 68, 68, 0.3);
-        border-radius: 20px;
-        padding: 32px;
+        padding: 24px;
         text-align: center;
+        border-radius: 12px;
     }
     
-    .sg-confirm-icon {
-        font-size: 3rem;
-        margin-bottom: 16px;
-    }
+    .sg-confirm-icon { font-size: 2.5rem; margin-bottom: 12px; }
     
     .sg-confirm-modal h3 {
-        margin: 0 0 12px;
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #fff;
+        margin: 0 0 8px;
+        font-size: 1.25rem;
+        color: #1e293b;
     }
     
     .sg-confirm-modal > p {
-        margin: 0 0 24px;
-        color: rgba(255, 255, 255, 0.6);
-        line-height: 1.6;
+        margin: 0 0 16px;
+        color: #64748b;
+        font-size: 0.9rem;
     }
     
-    .sg-confirm-details {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        padding: 16px;
-        margin-bottom: 24px;
-    }
-    
-    .sg-confirm-item {
+    .sg-confirm-info {
         display: flex;
         justify-content: space-between;
-        padding: 8px 0;
+        padding: 12px;
+        background: #f8fafc;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        font-size: 0.9rem;
     }
     
-    .sg-confirm-item:not(:last-child) {
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .sg-confirm-label {
-        color: rgba(255, 255, 255, 0.5);
-    }
-    
-    .sg-confirm-value {
-        color: #fff;
-        font-weight: 600;
-    }
-    
-    .sg-delete-count {
-        color: #f87171;
-    }
+    .sg-delete-count { color: #ef4444; font-weight: 600; }
     
     .sg-confirm-actions {
         display: flex;
-        gap: 12px;
+        gap: 10px;
         justify-content: center;
-    }
-    
-    .sg-btn-cancel-confirm {
-        padding: 12px 24px;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: rgba(255, 255, 255, 0.8);
-        border-radius: 10px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-    
-    .sg-btn-cancel-confirm:hover {
-        background: rgba(255, 255, 255, 0.15);
-    }
-    
-    .sg-btn-confirm-delete {
-        padding: 12px 24px;
-        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-        border: none;
-        color: white;
-        border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
-    }
-    
-    .sg-btn-confirm-delete:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(239, 68, 68, 0.5);
     }
     
     /* Two column layout for sections */
