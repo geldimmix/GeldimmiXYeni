@@ -420,11 +420,14 @@
                     actionHtml = `<button class="btn-complete" onclick="completeItem(${item.id})">${isTurkish ? 'Tamamla' : 'Complete'}</button>`;
                 }
                 
+                const freqText = freqLabels[item.frequency] || freqLabels[0];
+                const customDays = item.frequency === 4 && item.frequencyDays ? ` (${item.frequencyDays} ${isTurkish ? 'gün' : 'days'})` : '';
+                
                 return `
                     <div class="item-card ${cardClass}">
                         <div class="item-info">
                             <h3>${item.name}</h3>
-                            <p>${freqLabels[item.frequency]}${item.frequency === 4 ? ` (${item.frequencyDays} ${isTurkish ? 'gün' : 'days'})` : ''}</p>
+                            <p>${freqText}${customDays}</p>
                             ${statusHtml}
                         </div>
                         ${actionHtml}
