@@ -727,13 +727,39 @@ public class CleaningController : Controller
         
         // Check if there's already a PENDING record today (don't allow duplicate pending)
         var today = DateOnly.FromDateTime(now);
-        var existingPendingRecord = await _context.CleaningRecords
+        var existingTodayRecord = await _context.CleaningRecords
             .FirstOrDefaultAsync(r => r.ItemId == request.ItemId && 
-                                     DateOnly.FromDateTime(r.CompletedAt) == today &&
-                                     r.Status == CleaningRecordStatus.Pending);
+                                     DateOnly.FromDateTime(r.CompletedAt) == today);
         
-        if (existingPendingRecord != null)
-            return BadRequest(new { error = T(isTr, "Bu madde bugün zaten işaretlenmiş ve onay bekliyor", "This item is already marked today and pending approval") });
+        if (existingTodayRecord != null)
+        {
+            if (existingTodayRecord.Status == CleaningRecordStatus.Pending)
+            {
+                return BadRequest(new { error = T(isTr, "Bu madde bugün zaten işaretlenmiş ve onay bekliyor", "This item is already marked today and pending approval") });
+            }
+            else if (existingTodayRecord.Status == CleaningRecordStatus.Approved)
+            {
+                return BadRequest(new { error = T(isTr, "Bu madde bugün zaten onaylanmış", "This item is already approved today") });
+            }
+            else if (existingTodayRecord.Status == CleaningRecordStatus.Rejected)
+            {
+                // Reset the rejected record to pending for retry
+                existingTodayRecord.Status = CleaningRecordStatus.Pending;
+                existingTodayRecord.CompletedAt = DateTime.UtcNow;
+                existingTodayRecord.CompletedByName = request.CompletedByName ?? schedule.CleanerName;
+                existingTodayRecord.Note = null; // Clear rejection note
+                await _context.SaveChangesAsync();
+                
+                return Json(new { 
+                    success = true, 
+                    record = new {
+                        existingTodayRecord.Id,
+                        existingTodayRecord.CompletedAt,
+                        existingTodayRecord.Status
+                    }
+                });
+            }
+        }
         
         var record = new CleaningRecord
         {
