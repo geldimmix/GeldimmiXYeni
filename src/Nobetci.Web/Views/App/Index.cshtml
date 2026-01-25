@@ -1540,123 +1540,108 @@
                             <div class="sg-card-header">
                                 <span class="sg-step">1</span>
                                 @(isTurkish ? "Hafta İçi Mesai" : "Weekday Hours")
-                        </div>
-                            <div class="sg-card-body">
-                                <div class="sg-row">
-                                    <div class="sg-field">
-                                <label>@(isTurkish ? "Başlangıç" : "Start")</label>
-                                        <input type="time" id="sgWeekdayStart" value="08:00">
-                            </div>
-                                    <div class="sg-field">
-                                <label>@(isTurkish ? "Bitiş" : "End")</label>
-                                        <input type="time" id="sgWeekdayEnd" value="17:00">
-                            </div>
-                                    <div class="sg-field">
-                                        <label>@(isTurkish ? "Mola" : "Break")</label>
-                                        <input type="number" id="sgWeekdayBreak" value="60" min="0" max="120"> dk
-                        </div>
-                            </div>
-                                <label class="sg-check">
+                                <label class="sg-check-inline">
                                     <input type="checkbox" id="sgApplyWeekday" checked>
-                                    @(isTurkish ? "Uygula" : "Apply")
+                                    <span>@(isTurkish ? "Aktif" : "Active")</span>
                                 </label>
-                    </div>
-                </div>
+                            </div>
+                            <div class="sg-card-body">
+                                <div class="sg-template-select">
+                                    <label>@(isTurkish ? "Şablon Seç" : "Select Template")</label>
+                                    <select id="sgWeekdayTemplate" class="sg-select" onchange="sgApplyTemplate('weekday', this.value)">
+                                        <option value="">@(isTurkish ? "-- Şablon seçin --" : "-- Select template --")</option>
+                                    </select>
+                                </div>
+                                <div class="sg-template-preview" id="sgWeekdayPreview">
+                                    <span class="sg-preview-empty">@(isTurkish ? "Şablon seçilmedi" : "No template selected")</span>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="sg-card">
                             <div class="sg-card-header">
                                 <span class="sg-step">2</span>
-                                @(isTurkish ? "Hafta Sonu" : "Weekend")
-                        </div>
-                            <div class="sg-card-body">
-                                <div class="sg-row">
-                                    <div class="sg-field">
-                                <label>@(isTurkish ? "Min. Personel" : "Min Staff")</label>
-                                        <input type="number" id="sgWeekendMinStaff" value="1" min="0" max="50">
-                            </div>
-                                    <div class="sg-field">
-                                <label>@(isTurkish ? "Başlangıç" : "Start")</label>
-                                        <input type="time" id="sgWeekendStart" value="08:00">
-                            </div>
-                                    <div class="sg-field">
-                                <label>@(isTurkish ? "Bitiş" : "End")</label>
-                                        <input type="time" id="sgWeekendEnd" value="17:00">
-                            </div>
-                                    <div class="sg-field">
-                                        <label>@(isTurkish ? "Mola" : "Break")</label>
-                                        <input type="number" id="sgWeekendBreak" value="60" min="0" max="120"> dk
-                        </div>
-                            </div>
-                                <label class="sg-check">
+                                @(isTurkish ? "Hafta Sonu Mesai" : "Weekend Hours")
+                                <label class="sg-check-inline">
                                     <input type="checkbox" id="sgApplyWeekend" checked>
-                                    @(isTurkish ? "Uygula" : "Apply")
+                                    <span>@(isTurkish ? "Aktif" : "Active")</span>
                                 </label>
-                    </div>
-                </div>
+                            </div>
+                            <div class="sg-card-body">
+                                <div class="sg-row-mini">
+                                    <div class="sg-field-mini">
+                                        <label>@(isTurkish ? "Min. Personel" : "Min Staff")</label>
+                                        <input type="number" id="sgWeekendMinStaff" value="1" min="0" max="50">
+                                    </div>
+                                </div>
+                                <div class="sg-template-select">
+                                    <label>@(isTurkish ? "Şablon Seç" : "Select Template")</label>
+                                    <select id="sgWeekendTemplate" class="sg-select" onchange="sgApplyTemplate('weekend', this.value)">
+                                        <option value="">@(isTurkish ? "-- Şablon seçin --" : "-- Select template --")</option>
+                                    </select>
+                                </div>
+                                <div class="sg-template-preview" id="sgWeekendPreview">
+                                    <span class="sg-preview-empty">@(isTurkish ? "Şablon seçilmedi" : "No template selected")</span>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="sg-card">
                             <div class="sg-card-header">
                                 <span class="sg-step">3</span>
                                 @(isTurkish ? "Hafta İçi Nöbet" : "Weekday Duty")
-                        </div>
-                            <div class="sg-card-body">
-                                <div class="sg-row">
-                                    <div class="sg-field">
-                                <label>@(isTurkish ? "Min. Nöbetçi" : "Min On-Duty")</label>
-                                        <input type="number" id="sgWeekdayDutyMin" value="1" min="0" max="50">
-                            </div>
-                                    <div class="sg-field">
-                                <label>@(isTurkish ? "Başlangıç" : "Start")</label>
-                                        <input type="time" id="sgWeekdayDutyStart" value="17:00">
-                            </div>
-                                    <div class="sg-field">
-                                <label>@(isTurkish ? "Bitiş" : "End")</label>
-                                        <input type="time" id="sgWeekdayDutyEnd" value="08:00">
-                            </div>
-                                    <div class="sg-field">
-                                        <label>@(isTurkish ? "Mola" : "Break")</label>
-                                        <input type="number" id="sgWeekdayDutyBreak" value="0" min="0" max="120"> dk
-                        </div>
-                            </div>
-                                <label class="sg-check">
+                                <label class="sg-check-inline">
                                     <input type="checkbox" id="sgApplyWeekdayDuty" checked>
-                                    @(isTurkish ? "Uygula" : "Apply")
+                                    <span>@(isTurkish ? "Aktif" : "Active")</span>
                                 </label>
-                                <div class="sg-hint">💡 @(isTurkish ? "Bitiş < Başlangıç ise ertesi güne geçer" : "If End < Start, spans to next day")</div>
-                    </div>
-                </div>
+                            </div>
+                            <div class="sg-card-body">
+                                <div class="sg-row-mini">
+                                    <div class="sg-field-mini">
+                                        <label>@(isTurkish ? "Min. Nöbetçi" : "Min On-Duty")</label>
+                                        <input type="number" id="sgWeekdayDutyMin" value="1" min="0" max="50">
+                                    </div>
+                                </div>
+                                <div class="sg-template-select">
+                                    <label>@(isTurkish ? "Şablon Seç" : "Select Template")</label>
+                                    <select id="sgWeekdayDutyTemplate" class="sg-select" onchange="sgApplyTemplate('weekdayDuty', this.value)">
+                                        <option value="">@(isTurkish ? "-- Şablon seçin --" : "-- Select template --")</option>
+                                    </select>
+                                </div>
+                                <div class="sg-template-preview" id="sgWeekdayDutyPreview">
+                                    <span class="sg-preview-empty">@(isTurkish ? "Şablon seçilmedi" : "No template selected")</span>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="sg-card">
                             <div class="sg-card-header">
                                 <span class="sg-step">4</span>
-                                @(isTurkish ? "Tatil Nöbeti" : "Holiday Duty")
-                        </div>
-                            <div class="sg-card-body">
-                                <div class="sg-row">
-                                    <div class="sg-field">
-                                <label>@(isTurkish ? "Min. Nöbetçi" : "Min On-Duty")</label>
-                                        <input type="number" id="sgHolidayDutyMin" value="1" min="0" max="50">
-                            </div>
-                                    <div class="sg-field">
-                                <label>@(isTurkish ? "Başlangıç" : "Start")</label>
-                                        <input type="time" id="sgHolidayDutyStart" value="08:00">
-                            </div>
-                                    <div class="sg-field">
-                                <label>@(isTurkish ? "Bitiş" : "End")</label>
-                                        <input type="time" id="sgHolidayDutyEnd" value="08:00">
-                            </div>
-                                    <div class="sg-field">
-                                        <label>@(isTurkish ? "Mola" : "Break")</label>
-                                        <input type="number" id="sgHolidayDutyBreak" value="0" min="0" max="120"> dk
-                        </div>
-                            </div>
-                                <label class="sg-check">
+                                @(isTurkish ? "Tatil/Hafta Sonu Nöbet" : "Holiday/Weekend Duty")
+                                <label class="sg-check-inline">
                                     <input type="checkbox" id="sgApplyHolidayDuty" checked>
-                                    @(isTurkish ? "Uygula" : "Apply")
+                                    <span>@(isTurkish ? "Aktif" : "Active")</span>
                                 </label>
+                            </div>
+                            <div class="sg-card-body">
+                                <div class="sg-row-mini">
+                                    <div class="sg-field-mini">
+                                        <label>@(isTurkish ? "Min. Nöbetçi" : "Min On-Duty")</label>
+                                        <input type="number" id="sgHolidayDutyMin" value="1" min="0" max="50">
+                                    </div>
+                                </div>
+                                <div class="sg-template-select">
+                                    <label>@(isTurkish ? "Şablon Seç" : "Select Template")</label>
+                                    <select id="sgHolidayDutyTemplate" class="sg-select" onchange="sgApplyTemplate('holidayDuty', this.value)">
+                                        <option value="">@(isTurkish ? "-- Şablon seçin --" : "-- Select template --")</option>
+                                    </select>
+                                </div>
+                                <div class="sg-template-preview" id="sgHolidayDutyPreview">
+                                    <span class="sg-preview-empty">@(isTurkish ? "Şablon seçilmedi" : "No template selected")</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
                     <!-- Right Column: Personnel & Restrictions -->
                     <div class="sg-column">
@@ -2003,6 +1988,134 @@
         width: 16px;
         height: 16px;
         accent-color: #6366f1;
+    }
+    
+    .sg-check-inline {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-left: auto;
+        font-size: 0.7rem;
+        color: #64748b;
+    }
+    
+    .sg-check-inline input {
+        width: 14px;
+        height: 14px;
+        accent-color: #22c55e;
+    }
+    
+    .sg-check-inline span {
+        font-weight: 500;
+    }
+    
+    .sg-template-select {
+        margin-bottom: 10px;
+    }
+    
+    .sg-template-select label {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+    
+    .sg-select {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        background: #fff;
+        color: #1e293b;
+        cursor: pointer;
+    }
+    
+    .sg-select:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 2px rgba(99,102,241,0.15);
+    }
+    
+    .sg-template-preview {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 10px 12px;
+        min-height: 50px;
+    }
+    
+    .sg-preview-empty {
+        color: #94a3b8;
+        font-size: 0.8rem;
+        font-style: italic;
+    }
+    
+    .sg-preview-content {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .sg-preview-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+        flex-shrink: 0;
+    }
+    
+    .sg-preview-info {
+        flex: 1;
+    }
+    
+    .sg-preview-name {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #1e293b;
+    }
+    
+    .sg-preview-time {
+        font-size: 0.75rem;
+        color: #64748b;
+    }
+    
+    .sg-preview-badge {
+        background: #fef3c7;
+        color: #92400e;
+        font-size: 0.65rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: 600;
+    }
+    
+    .sg-row-mini {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .sg-field-mini {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .sg-field-mini label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #64748b;
+        white-space: nowrap;
+    }
+    
+    .sg-field-mini input {
+        width: 60px;
+        padding: 6px 8px;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        text-align: center;
     }
     
     .sg-hint {
@@ -9291,6 +9404,9 @@
         initSmartGenerate();
     });
     
+    // Store templates for Smart Generate
+    let sgTemplates = [];
+    
     function initSmartGenerate() {
         const addRestrictionBtn = document.getElementById('sgAddRestriction');
         const addPreferenceBtn = document.getElementById('sgAddPreference');
@@ -9329,7 +9445,95 @@
                 input.max = lastDay;
             }
         });
+        
+        // Load templates when modal opens
+        const sgModal = document.getElementById('smartGenerateModal');
+        if (sgModal) {
+            sgModal.addEventListener('show.bs.modal', loadSgTemplates);
+        }
     }
+    
+    // Load templates for Smart Generate dropdowns
+    async function loadSgTemplates() {
+        try {
+            const response = await fetch('/api/shift-templates');
+            if (response.ok) {
+                sgTemplates = await response.json();
+                populateSgTemplateDropdowns();
+            }
+        } catch (error) {
+            console.error('Failed to load templates:', error);
+        }
+    }
+    
+    // Populate all template dropdowns
+    function populateSgTemplateDropdowns() {
+        const dropdowns = ['sgWeekdayTemplate', 'sgWeekendTemplate', 'sgWeekdayDutyTemplate', 'sgHolidayDutyTemplate'];
+        
+        dropdowns.forEach(dropdownId => {
+            const dropdown = document.getElementById(dropdownId);
+            if (!dropdown) return;
+            
+            // Clear existing options except first
+            while (dropdown.options.length > 1) {
+                dropdown.remove(1);
+            }
+            
+            // Add templates
+            sgTemplates.forEach(t => {
+                const option = document.createElement('option');
+                option.value = t.id;
+                const spans = t.spans ? (isTurkish ? ' (Gece)' : ' (Night)') : '';
+                option.textContent = `${t.name} (${t.startTime}-${t.endTime})${spans}`;
+                dropdown.appendChild(option);
+            });
+        });
+    }
+    
+    // Apply template to a section
+    window.sgApplyTemplate = function(section, templateId) {
+        const previewId = `sg${section.charAt(0).toUpperCase() + section.slice(1)}Preview`;
+        const preview = document.getElementById(previewId);
+        
+        if (!templateId || !preview) {
+            if (preview) {
+                preview.innerHTML = `<span class="sg-preview-empty">${isTurkish ? 'Şablon seçilmedi' : 'No template selected'}</span>`;
+            }
+            return;
+        }
+        
+        const template = sgTemplates.find(t => t.id == templateId);
+        if (!template) return;
+        
+        // Calculate hours
+        const start = template.startTime.split(':');
+        const end = template.endTime.split(':');
+        let startMins = parseInt(start[0]) * 60 + parseInt(start[1]);
+        let endMins = parseInt(end[0]) * 60 + parseInt(end[1]);
+        
+        // Handle overnight shift
+        if (endMins <= startMins) {
+            endMins += 24 * 60; // Add 24 hours
+        }
+        
+        const totalMins = endMins - startMins - template.breakMinutes;
+        const hours = Math.floor(totalMins / 60);
+        const mins = totalMins % 60;
+        const hoursText = mins > 0 ? `${hours}s ${mins}dk` : `${hours} saat`;
+        
+        const nightBadge = template.spans ? `<span class="sg-preview-badge">${isTurkish ? 'Ertesi güne sarkar' : 'Spans to next day'}</span>` : '';
+        
+        preview.innerHTML = `
+            <div class="sg-preview-content">
+                <div class="sg-preview-color" style="background: ${template.color}"></div>
+                <div class="sg-preview-info">
+                    <div class="sg-preview-name">${template.name}</div>
+                    <div class="sg-preview-time">${template.startTime} - ${template.endTime} (${template.breakMinutes}dk mola) = ${hoursText}</div>
+                </div>
+                ${nightBadge}
+            </div>
+        `;
+    };
     
     function addRestriction() {
         const employeeSelect = document.getElementById('sgRestrictionEmployee');
@@ -9543,37 +9747,58 @@
     }
     
     function gatherSettings() {
+        // Helper to get template data from selection
+        function getTemplateSettings(selectId, defaultStart, defaultEnd, defaultBreak) {
+            const select = document.getElementById(selectId);
+            const templateId = select?.value;
+            
+            if (templateId && sgTemplates.length > 0) {
+                const template = sgTemplates.find(t => t.id == templateId);
+                if (template) {
+                    return {
+                        templateId: template.id,
+                        start: template.startTime,
+                        end: template.endTime,
+                        breakMinutes: template.breakMinutes,
+                        spans: template.spans, // Overnight shift flag
+                        color: template.color,
+                        name: template.name
+                    };
+                }
+            }
+            
+            return {
+                templateId: null,
+                start: defaultStart,
+                end: defaultEnd,
+                breakMinutes: defaultBreak,
+                spans: false
+            };
+        }
+        
         return {
             // Weekday work
             weekday: {
                 apply: document.getElementById('sgApplyWeekday')?.checked ?? true,
-                start: document.getElementById('sgWeekdayStart')?.value || '08:00',
-                end: document.getElementById('sgWeekdayEnd')?.value || '17:00',
-                breakMinutes: parseInt(document.getElementById('sgWeekdayBreak')?.value || '60')
+                ...getTemplateSettings('sgWeekdayTemplate', '08:00', '17:00', 60)
             },
             // Weekend
             weekend: {
                 apply: document.getElementById('sgApplyWeekend')?.checked ?? true,
                 minStaff: parseInt(document.getElementById('sgWeekendMinStaff')?.value || '1'),
-                start: document.getElementById('sgWeekendStart')?.value || '08:00',
-                end: document.getElementById('sgWeekendEnd')?.value || '17:00',
-                breakMinutes: parseInt(document.getElementById('sgWeekendBreak')?.value || '60')
+                ...getTemplateSettings('sgWeekendTemplate', '08:00', '17:00', 60)
             },
             // Weekday duty
             weekdayDuty: {
                 apply: document.getElementById('sgApplyWeekdayDuty')?.checked ?? true,
                 minStaff: parseInt(document.getElementById('sgWeekdayDutyMin')?.value || '1'),
-                start: document.getElementById('sgWeekdayDutyStart')?.value || '17:00',
-                end: document.getElementById('sgWeekdayDutyEnd')?.value || '08:00',
-                breakMinutes: parseInt(document.getElementById('sgWeekdayDutyBreak')?.value || '0')
+                ...getTemplateSettings('sgWeekdayDutyTemplate', '17:00', '08:00', 0)
             },
             // Holiday duty
             holidayDuty: {
                 apply: document.getElementById('sgApplyHolidayDuty')?.checked ?? true,
                 minStaff: parseInt(document.getElementById('sgHolidayDutyMin')?.value || '1'),
-                start: document.getElementById('sgHolidayDutyStart')?.value || '08:00',
-                end: document.getElementById('sgHolidayDutyEnd')?.value || '08:00',
-                breakMinutes: parseInt(document.getElementById('sgHolidayDutyBreak')?.value || '0')
+                ...getTemplateSettings('sgHolidayDutyTemplate', '08:00', '08:00', 0)
             },
             // Exempt employees (never on duty)
             exemptEmployees: Array.from(document.querySelectorAll('.sg-exempt-employee:checked')).map(cb => parseInt(cb.value)),
