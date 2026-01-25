@@ -809,7 +809,7 @@
     }
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script>
     const isTurkish = @(isTurkish ? "true" : "false");
     const canSelectFrequency = @(Model.Limits.CanSelectFrequency ? "true" : "false");
@@ -923,16 +923,19 @@
         const container = document.getElementById('qrCodeContainer');
         container.innerHTML = '';
         
-        // Create a canvas element for QRCode
-        const canvas = document.createElement('canvas');
-        container.appendChild(canvas);
-        
-        QRCode.toCanvas(canvas, url, { width: 200, margin: 2 }, function(error) {
-            if (error) {
-                console.error('QR Code error:', error);
-                container.innerHTML = '<p style="color: red;">QR kod oluşturulamadı</p>';
-            }
-        });
+        try {
+            new QRCode(container, {
+                text: url,
+                width: 180,
+                height: 180,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        } catch (error) {
+            console.error('QR Code error:', error);
+            container.innerHTML = '<p style="color: red;">' + (isTurkish ? 'QR kod oluşturulamadı' : 'Failed to generate QR code') + '</p>';
+        }
         
         new bootstrap.Modal(document.getElementById('qrModal')).show();
     }
