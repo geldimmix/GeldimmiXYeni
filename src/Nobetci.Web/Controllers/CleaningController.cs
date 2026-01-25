@@ -39,7 +39,9 @@ public class CleaningController : Controller
         var user = await _userManager.GetUserAsync(User);
         var isRegistered = User.Identity?.IsAuthenticated == true;
         var isPremium = user?.Plan == UserPlan.Premium;
-        var isTurkish = (user?.Language ?? "tr") == "tr";
+        
+        // Use CultureInfo for language detection (respects cookie/browser settings)
+        var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
         
         // Get cleaning limits
         var limits = GetCleaningLimits(user, isRegistered, isPremium);
@@ -546,7 +548,7 @@ public class CleaningController : Controller
             ScheduleName = schedule.Name,
             Location = schedule.Location,
             HasAccessCode = !string.IsNullOrEmpty(schedule.AccessCode),
-            IsTurkish = (user?.Language ?? "tr") == "tr"
+            IsTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr"
         };
         
         return View("QrAccess", viewModel);
@@ -817,18 +819,13 @@ public class CleaningController : Controller
     }
 
     /// <summary>
-    /// Check if current user prefers Turkish
+    /// Check if current user prefers Turkish (uses CultureInfo which respects cookie settings)
     /// </summary>
-    private async Task<bool> IsTurkishAsync()
+    private Task<bool> IsTurkishAsync()
     {
-        if (User.Identity?.IsAuthenticated == true)
-        {
-            var user = await _userManager.GetUserAsync(User);
-            return (user?.Language ?? "tr") == "tr";
-        }
-        // Check Accept-Language header for anonymous users
-        var acceptLang = Request.Headers["Accept-Language"].ToString();
-        return string.IsNullOrEmpty(acceptLang) || acceptLang.StartsWith("tr");
+        // Use CultureInfo which is set by the localization middleware (respects cookie)
+        var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+        return Task.FromResult(isTurkish);
     }
 
     /// <summary>
