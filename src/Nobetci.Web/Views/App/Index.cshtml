@@ -103,6 +103,25 @@
             </div>
         </div>
         
+        <!-- Your Limits -->
+        @if (Model.IsRegistered)
+        {
+            <div class="sidebar-limits">
+                <div class="limits-title">@(isTurkish ? "Limitler" : "Your Limits")</div>
+                <div class="limit-row">
+                    <span class="limit-icon">👥</span>
+                    <span class="limit-text">@Model.TotalEmployeeCount / @(Model.EmployeeLimit == int.MaxValue ? "∞" : Model.EmployeeLimit.ToString())</span>
+                </div>
+                @if (Model.IsPremium)
+                {
+                    <div class="limit-row">
+                        <span class="limit-icon">🏛️</span>
+                        <span class="limit-text">@Model.Units.Count / @(Model.UnitLimit == 0 ? "∞" : Model.UnitLimit.ToString())</span>
+                    </div>
+                }
+            </div>
+        }
+        
         <!-- Hidden multiselect for compatibility -->
         <input type="checkbox" id="multiSelectMode" style="display:none;">
     </aside>
@@ -3114,6 +3133,42 @@
         margin-top: auto;
         padding-top: 8px;
         border-top: 1px solid #e5e7eb;
+    }
+    
+    /* Limits */
+    .sidebar-limits {
+        margin-top: 8px;
+        padding: 8px;
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border-radius: 6px;
+        border: 1px solid #bae6fd;
+    }
+    
+    .limits-title {
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: #0369a1;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+    }
+    
+    .limit-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.75rem;
+        color: #0c4a6e;
+        padding: 2px 0;
+    }
+    
+    .limit-icon {
+        font-size: 0.7rem;
+    }
+    
+    .limit-text {
+        font-weight: 500;
+        font-variant-numeric: tabular-nums;
     }
     
     .multi-toggle {
@@ -6312,6 +6367,10 @@
         }
         
         .sidebar-tools {
+            display: none;
+        }
+        
+        .sidebar-limits {
             display: none;
         }
         

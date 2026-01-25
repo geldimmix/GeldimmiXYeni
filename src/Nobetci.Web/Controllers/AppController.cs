@@ -202,6 +202,17 @@ public class AppController : Controller
         var (canAccessAttendance, canAccessPayroll) = await GetFeatureAccessAsync();
         var isRegistered = User.Identity?.IsAuthenticated == true;
         
+        // Get unit limit for registered users
+        var unitLimit = 5; // default
+        if (isRegistered)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser != null)
+            {
+                unitLimit = currentUser.UnitLimit;
+            }
+        }
+        
         var viewModel = new AppViewModel
         {
             Organization = organization,
@@ -219,6 +230,8 @@ public class AppController : Controller
             SelectedYear = selectedYear,
             SelectedMonth = selectedMonth,
             EmployeeLimit = employeeLimit,
+            UnitLimit = unitLimit,
+            TotalEmployeeCount = allEmployees.Count,
             IsRegistered = isRegistered,
             IsPremium = isPremium,
             // Feature access based on registration and admin settings

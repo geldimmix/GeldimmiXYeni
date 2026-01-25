@@ -23,6 +23,8 @@ public class AppViewModel
     public int SelectedMonth { get; set; }
     
     public int EmployeeLimit { get; set; }
+    public int UnitLimit { get; set; }
+    public int TotalEmployeeCount { get; set; } // Total across all units
     public bool IsRegistered { get; set; }
     public bool IsPremium { get; set; }
     
