@@ -21,6 +21,10 @@
             </p>
         </div>
         <div class="header-actions">
+            <button class="btn-dashboard" onclick="showDailyDashboard()">
+                <span>📊</span>
+                @(isTurkish ? "Günlük Durum" : "Daily Status")
+            </button>
             <button class="btn-pending @(Model.PendingRecordsCount > 0 ? "has-pending" : "")" onclick="showPendingRecords()">
                 <span>⏳</span>
                 @(isTurkish ? "Onay Bekleyen" : "Pending")
@@ -250,6 +254,64 @@
     </div>
 </div>
 
+<!-- Daily Dashboard Modal -->
+<div class="modal fade" id="dashboardModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    📊 @(isTurkish ? "Günlük Temizlik Durumu" : "Daily Cleaning Status")
+                    <span id="dashboardDate" class="text-muted ms-2" style="font-size: 0.85rem;"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Summary Stats -->
+                <div class="dashboard-summary" id="dashboardSummary">
+                    <div class="stat-card total">
+                        <div class="stat-icon">📋</div>
+                        <div class="stat-value" id="statTotal">0</div>
+                        <div class="stat-label">@(isTurkish ? "Toplam Madde" : "Total Items")</div>
+                    </div>
+                    <div class="stat-card completed">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-value" id="statCompleted">0</div>
+                        <div class="stat-label">@(isTurkish ? "Onaylandı" : "Approved")</div>
+                    </div>
+                    <div class="stat-card pending">
+                        <div class="stat-icon">⏳</div>
+                        <div class="stat-value" id="statPending">0</div>
+                        <div class="stat-label">@(isTurkish ? "Bekliyor" : "Pending")</div>
+                    </div>
+                    <div class="stat-card notdone">
+                        <div class="stat-icon">⭕</div>
+                        <div class="stat-value" id="statNotDone">0</div>
+                        <div class="stat-label">@(isTurkish ? "Yapılmadı" : "Not Done")</div>
+                    </div>
+                    <div class="stat-card rejected">
+                        <div class="stat-icon">❌</div>
+                        <div class="stat-value" id="statRejected">0</div>
+                        <div class="stat-label">@(isTurkish ? "Reddedildi" : "Rejected")</div>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="dashboard-progress">
+                    <div class="progress-bar-container">
+                        <div class="progress-segment completed" id="progressCompleted" style="width: 0%"></div>
+                        <div class="progress-segment pending" id="progressPending" style="width: 0%"></div>
+                        <div class="progress-segment rejected" id="progressRejected" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-percent" id="progressPercent">0%</div>
+                </div>
+                
+                <!-- Schedules List -->
+                <div id="dashboardSchedules"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Pending Records Modal -->
 <div class="modal fade" id="pendingModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -407,6 +469,180 @@
         font-size: 0.7rem;
         font-weight: 600;
     }
+    
+    .btn-dashboard {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        color: #1e40af;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-dashboard:hover {
+        background: linear-gradient(135deg, #bfdbfe, #93c5fd);
+    }
+    
+    /* Dashboard Styles */
+    .dashboard-summary {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .stat-card {
+        flex: 1;
+        min-width: 100px;
+        padding: 12px;
+        border-radius: 10px;
+        text-align: center;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .stat-card.total { background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border-color: #7dd3fc; }
+    .stat-card.completed { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-color: #86efac; }
+    .stat-card.pending { background: linear-gradient(135deg, #fefce8, #fef9c3); border-color: #fde047; }
+    .stat-card.notdone { background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-color: #cbd5e1; }
+    .stat-card.rejected { background: linear-gradient(135deg, #fef2f2, #fee2e2); border-color: #fca5a5; }
+    
+    .stat-icon { font-size: 1.5rem; margin-bottom: 4px; }
+    .stat-value { font-size: 1.5rem; font-weight: 700; }
+    .stat-label { font-size: 0.75rem; color: #64748b; }
+    
+    .stat-card.total .stat-value { color: #0369a1; }
+    .stat-card.completed .stat-value { color: #16a34a; }
+    .stat-card.pending .stat-value { color: #ca8a04; }
+    .stat-card.notdone .stat-value { color: #64748b; }
+    .stat-card.rejected .stat-value { color: #dc2626; }
+    
+    .dashboard-progress {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    
+    .progress-bar-container {
+        flex: 1;
+        height: 12px;
+        background: #e2e8f0;
+        border-radius: 6px;
+        overflow: hidden;
+        display: flex;
+    }
+    
+    .progress-segment {
+        height: 100%;
+        transition: width 0.3s ease;
+    }
+    
+    .progress-segment.completed { background: #22c55e; }
+    .progress-segment.pending { background: #eab308; }
+    .progress-segment.rejected { background: #ef4444; }
+    
+    .progress-percent {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #22c55e;
+        min-width: 50px;
+        text-align: right;
+    }
+    
+    .dashboard-schedule {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        margin-bottom: 12px;
+        overflow: hidden;
+    }
+    
+    .dashboard-schedule-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        cursor: pointer;
+    }
+    
+    .dashboard-schedule-header:hover {
+        background: #f1f5f9;
+    }
+    
+    .schedule-title {
+        font-weight: 600;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .schedule-stats {
+        display: flex;
+        gap: 12px;
+        font-size: 0.8rem;
+    }
+    
+    .schedule-stat {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .schedule-stat.done { color: #16a34a; }
+    .schedule-stat.pending { color: #ca8a04; }
+    .schedule-stat.notdone { color: #64748b; }
+    
+    .dashboard-items {
+        padding: 12px 16px;
+        display: none;
+    }
+    
+    .dashboard-items.open {
+        display: block;
+    }
+    
+    .dashboard-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        background: #f8fafc;
+        border-radius: 6px;
+        margin-bottom: 6px;
+        font-size: 0.85rem;
+    }
+    
+    .dashboard-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .dashboard-item.done { background: #f0fdf4; border-left: 3px solid #22c55e; }
+    .dashboard-item.pending { background: #fefce8; border-left: 3px solid #eab308; }
+    .dashboard-item.rejected { background: #fef2f2; border-left: 3px solid #ef4444; }
+    .dashboard-item.notdone { background: #f8fafc; border-left: 3px solid #cbd5e1; }
+    
+    .item-name { font-weight: 500; color: #334155; }
+    .item-status-badge {
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+    
+    .item-status-badge.done { background: #dcfce7; color: #16a34a; }
+    .item-status-badge.pending { background: #fef9c3; color: #ca8a04; }
+    .item-status-badge.rejected { background: #fee2e2; color: #dc2626; }
+    .item-status-badge.notdone { background: #e2e8f0; color: #64748b; }
     
     /* Limits Bar */
     .limits-bar {
@@ -1097,6 +1333,95 @@
             customGroup.style.display = this.value === '4' ? 'block' : 'none';
         }
     });
+    
+    // Daily Dashboard
+    async function showDailyDashboard() {
+        try {
+            const res = await fetch('/api/cleaning/dashboard/daily');
+            const data = await res.json();
+            
+            // Update date
+            const today = new Date();
+            document.getElementById('dashboardDate').textContent = today.toLocaleDateString(isTurkish ? 'tr-TR' : 'en-US', {
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+            });
+            
+            // Update stats
+            document.getElementById('statTotal').textContent = data.totalItems;
+            document.getElementById('statCompleted').textContent = data.completedItems;
+            document.getElementById('statPending').textContent = data.pendingItems;
+            document.getElementById('statNotDone').textContent = data.notDoneItems;
+            document.getElementById('statRejected').textContent = data.rejectedItems;
+            
+            // Update progress bar
+            const total = data.totalItems || 1;
+            const completedPct = (data.completedItems / total) * 100;
+            const pendingPct = (data.pendingItems / total) * 100;
+            const rejectedPct = (data.rejectedItems / total) * 100;
+            
+            document.getElementById('progressCompleted').style.width = completedPct + '%';
+            document.getElementById('progressPending').style.width = pendingPct + '%';
+            document.getElementById('progressRejected').style.width = rejectedPct + '%';
+            document.getElementById('progressPercent').textContent = Math.round(completedPct) + '%';
+            
+            // Render schedules
+            const container = document.getElementById('dashboardSchedules');
+            if (data.schedules.length === 0) {
+                container.innerHTML = `<p class="text-center text-muted">${isTurkish ? 'Henüz çizelge yok' : 'No schedules yet'}</p>`;
+            } else {
+                container.innerHTML = data.schedules.map((s, idx) => `
+                    <div class="dashboard-schedule">
+                        <div class="dashboard-schedule-header" onclick="toggleDashboardSchedule(${idx})">
+                            <div class="schedule-title">
+                                <span>📋</span>
+                                <span>${s.name}</span>
+                                ${s.location ? `<span class="text-muted" style="font-size: 0.8rem;">• ${s.location}</span>` : ''}
+                            </div>
+                            <div class="schedule-stats">
+                                <span class="schedule-stat done">✅ ${s.completedCount}</span>
+                                <span class="schedule-stat pending">⏳ ${s.pendingCount}</span>
+                                <span class="schedule-stat notdone">⭕ ${s.notDoneCount}</span>
+                            </div>
+                        </div>
+                        <div class="dashboard-items" id="dashboardItems${idx}">
+                            ${s.items.map(item => {
+                                let statusClass = 'notdone';
+                                let statusText = isTurkish ? 'Yapılmadı' : 'Not Done';
+                                
+                                if (item.status === 'completed') {
+                                    statusClass = 'done';
+                                    statusText = isTurkish ? 'Onaylandı' : 'Approved';
+                                } else if (item.status === 'pending') {
+                                    statusClass = 'pending';
+                                    statusText = isTurkish ? 'Bekliyor' : 'Pending';
+                                } else if (item.status === 'rejected') {
+                                    statusClass = 'rejected';
+                                    statusText = isTurkish ? 'Reddedildi' : 'Rejected';
+                                }
+                                
+                                return `
+                                    <div class="dashboard-item ${statusClass}">
+                                        <span class="item-name">${item.name}</span>
+                                        <span class="item-status-badge ${statusClass}">${statusText}</span>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            new bootstrap.Modal(document.getElementById('dashboardModal')).show();
+        } catch (err) {
+            console.error(err);
+            alert(isTurkish ? 'Bir hata oluştu' : 'An error occurred');
+        }
+    }
+    
+    function toggleDashboardSchedule(idx) {
+        const items = document.getElementById('dashboardItems' + idx);
+        items.classList.toggle('open');
+    }
     
     // Pending Records
     async function showPendingRecords() {

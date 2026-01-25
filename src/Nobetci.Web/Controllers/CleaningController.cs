@@ -422,6 +422,110 @@ public class CleaningController : Controller
     #region Records API (Onay/Red)
 
     /// <summary>
+    /// Günlük dashboard verisi
+    /// </summary>
+    [HttpGet]
+    [Route("api/cleaning/dashboard/daily")]
+    public async Task<IActionResult> GetDailyDashboard()
+    {
+        var organization = await GetOrCreateOrganizationAsync();
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        
+        var schedules = await _context.CleaningSchedules
+            .Include(s => s.Items.Where(i => i.IsActive))
+            .Where(s => s.OrganizationId == organization.Id && s.IsActive)
+            .ToListAsync();
+        
+        var allItemIds = schedules.SelectMany(s => s.Items).Select(i => i.Id).ToList();
+        
+        // Get today's records
+        var todayRecords = await _context.CleaningRecords
+            .Where(r => allItemIds.Contains(r.ItemId) && DateOnly.FromDateTime(r.CompletedAt) == today)
+            .ToListAsync();
+        
+        var recordsByItem = todayRecords.GroupBy(r => r.ItemId)
+            .ToDictionary(g => g.Key, g => g.OrderByDescending(r => r.CompletedAt).First());
+        
+        int totalItems = 0;
+        int completedItems = 0;
+        int pendingItems = 0;
+        int rejectedItems = 0;
+        int notDoneItems = 0;
+        
+        var scheduleData = new List<object>();
+        
+        foreach (var schedule in schedules)
+        {
+            var items = schedule.Items.Where(i => i.IsActive).ToList();
+            int scheduleCompleted = 0;
+            int schedulePending = 0;
+            int scheduleNotDone = 0;
+            int scheduleRejected = 0;
+            
+            var itemData = new List<object>();
+            
+            foreach (var item in items)
+            {
+                totalItems++;
+                string status = "notdone";
+                
+                if (recordsByItem.TryGetValue(item.Id, out var record))
+                {
+                    if (record.Status == CleaningRecordStatus.Approved)
+                    {
+                        status = "completed";
+                        completedItems++;
+                        scheduleCompleted++;
+                    }
+                    else if (record.Status == CleaningRecordStatus.Pending)
+                    {
+                        status = "pending";
+                        pendingItems++;
+                        schedulePending++;
+                    }
+                    else if (record.Status == CleaningRecordStatus.Rejected)
+                    {
+                        status = "rejected";
+                        rejectedItems++;
+                        scheduleRejected++;
+                    }
+                }
+                else
+                {
+                    notDoneItems++;
+                    scheduleNotDone++;
+                }
+                
+                itemData.Add(new {
+                    id = item.Id,
+                    name = item.Name,
+                    status = status
+                });
+            }
+            
+            scheduleData.Add(new {
+                id = schedule.Id,
+                name = schedule.Name,
+                location = schedule.Location,
+                completedCount = scheduleCompleted,
+                pendingCount = schedulePending,
+                notDoneCount = scheduleNotDone,
+                rejectedCount = scheduleRejected,
+                items = itemData
+            });
+        }
+        
+        return Json(new {
+            totalItems,
+            completedItems,
+            pendingItems,
+            rejectedItems,
+            notDoneItems,
+            schedules = scheduleData
+        });
+    }
+
+    /// <summary>
     /// Bekleyen kayıtları getir
     /// </summary>
     [HttpGet]
