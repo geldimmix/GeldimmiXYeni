@@ -8,20 +8,12 @@
 <div class="app-wrapper">
     <!-- Left Sidebar - Compact Module Based -->
     <aside class="app-sidebar">
-        <!-- Module Selector -->
-        <div class="module-selector">
-            <button class="module-btn active" data-module="shift" title="@(isTurkish ? "Nöbet Sistemi" : "Shift System")">
-                🏥
-            </button>
-            <a href="@Url.Action("Index", "Cleaning")" class="module-btn" title="@(isTurkish ? "Temizlik Çizelgesi" : "Cleaning Schedule")">
-                🧹
-            </a>
-        </div>
-        
-        <!-- Module Header - Minimal -->
-        <div class="module-header">
-            <span>🏥</span>
-            <span class="module-title">@(isTurkish ? "Nöbet Sistemi" : "Shift System")</span>
+        <!-- Module Selector Dropdown -->
+        <div class="module-dropdown">
+            <select id="moduleSelect" class="module-select" onchange="switchModule(this.value)">
+                <option value="shift" selected>🏥 @(isTurkish ? "Nöbet Sistemi" : "Shift System")</option>
+                <option value="cleaning">🧹 @(isTurkish ? "Temizlik Çizelgesi" : "Cleaning Schedule")</option>
+            </select>
         </div>
         
         <!-- All Items in Flat List -->
@@ -92,7 +84,7 @@
                         <span class="si-icon">🏛️</span>
                         <span class="si-text">@(isTurkish ? "Birimler" : "Units")</span>
                         <span class="si-badge pro">@Model.Units.Count</span>
-                    </button>
+        </button>
                 }
                 else
                 {
@@ -107,8 +99,8 @@
         
         <!-- Selected Indicator -->
         <div class="sidebar-tools">
-            <div class="selected-indicator" id="selectedIndicator" style="display:none;">
-                <div class="indicator-color"></div>
+        <div class="selected-indicator" id="selectedIndicator" style="display:none;">
+            <div class="indicator-color"></div>
                 <span class="indicator-time" id="selectedTime"></span>
             </div>
         </div>
@@ -371,7 +363,7 @@
                                         break;
                                     case 3: // Saturday specific hours
                                         if (isSaturday && !hasLeave)
-                                            saturdayHours += employee.SaturdayWorkHours ?? 0;
+                                    saturdayHours += employee.SaturdayWorkHours ?? 0;
                                         // Sunday leave doesn't affect (doesn't work Sundays)
                                         break;
                                 }
@@ -876,7 +868,7 @@
                             }
                             else
                             {
-                                <div class="emp-hours">@employee.DailyWorkHours @(isTurkish ? "s/g" : "h/d")</div>
+                            <div class="emp-hours">@employee.DailyWorkHours @(isTurkish ? "s/g" : "h/d")</div>
                             }
                             <button class="emp-edit" onclick="openEditEmployee(@employee.Id)" title="@(isTurkish ? "Düzenle" : "Edit")">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -1529,10 +1521,10 @@
                         <h1>@(isTurkish ? "Akıllı Çizelge Oluşturucu" : "Smart Schedule Generator")</h1>
                         <span class="sg-subtitle">@Model.MonthName</span>
                     </div>
-                </div>
+                    </div>
                 <button type="button" class="sg-close" data-bs-dismiss="modal">&times;</button>
             </div>
-
+            
             <!-- Warning -->
             <div class="sg-alert">
                 <strong>⚠️ @(isTurkish ? "Dikkat:" : "Warning:")</strong>
@@ -1548,123 +1540,123 @@
                             <div class="sg-card-header">
                                 <span class="sg-step">1</span>
                                 @(isTurkish ? "Hafta İçi Mesai" : "Weekday Hours")
-                            </div>
+                        </div>
                             <div class="sg-card-body">
                                 <div class="sg-row">
                                     <div class="sg-field">
-                                        <label>@(isTurkish ? "Başlangıç" : "Start")</label>
+                                <label>@(isTurkish ? "Başlangıç" : "Start")</label>
                                         <input type="time" id="sgWeekdayStart" value="08:00">
-                                    </div>
+                            </div>
                                     <div class="sg-field">
-                                        <label>@(isTurkish ? "Bitiş" : "End")</label>
+                                <label>@(isTurkish ? "Bitiş" : "End")</label>
                                         <input type="time" id="sgWeekdayEnd" value="17:00">
-                                    </div>
+                            </div>
                                     <div class="sg-field">
                                         <label>@(isTurkish ? "Mola" : "Break")</label>
                                         <input type="number" id="sgWeekdayBreak" value="60" min="0" max="120"> dk
-                                    </div>
-                                </div>
+                        </div>
+                            </div>
                                 <label class="sg-check">
                                     <input type="checkbox" id="sgApplyWeekday" checked>
                                     @(isTurkish ? "Uygula" : "Apply")
                                 </label>
-                            </div>
-                        </div>
+                    </div>
+                </div>
 
                         <div class="sg-card">
                             <div class="sg-card-header">
                                 <span class="sg-step">2</span>
                                 @(isTurkish ? "Hafta Sonu" : "Weekend")
-                            </div>
+                        </div>
                             <div class="sg-card-body">
                                 <div class="sg-row">
                                     <div class="sg-field">
-                                        <label>@(isTurkish ? "Min. Personel" : "Min Staff")</label>
+                                <label>@(isTurkish ? "Min. Personel" : "Min Staff")</label>
                                         <input type="number" id="sgWeekendMinStaff" value="1" min="0" max="50">
-                                    </div>
+                            </div>
                                     <div class="sg-field">
-                                        <label>@(isTurkish ? "Başlangıç" : "Start")</label>
+                                <label>@(isTurkish ? "Başlangıç" : "Start")</label>
                                         <input type="time" id="sgWeekendStart" value="08:00">
-                                    </div>
+                            </div>
                                     <div class="sg-field">
-                                        <label>@(isTurkish ? "Bitiş" : "End")</label>
+                                <label>@(isTurkish ? "Bitiş" : "End")</label>
                                         <input type="time" id="sgWeekendEnd" value="17:00">
-                                    </div>
+                            </div>
                                     <div class="sg-field">
                                         <label>@(isTurkish ? "Mola" : "Break")</label>
                                         <input type="number" id="sgWeekendBreak" value="60" min="0" max="120"> dk
-                                    </div>
-                                </div>
+                        </div>
+                            </div>
                                 <label class="sg-check">
                                     <input type="checkbox" id="sgApplyWeekend" checked>
                                     @(isTurkish ? "Uygula" : "Apply")
                                 </label>
-                            </div>
-                        </div>
+                    </div>
+                </div>
 
                         <div class="sg-card">
                             <div class="sg-card-header">
                                 <span class="sg-step">3</span>
                                 @(isTurkish ? "Hafta İçi Nöbet" : "Weekday Duty")
-                            </div>
+                        </div>
                             <div class="sg-card-body">
                                 <div class="sg-row">
                                     <div class="sg-field">
-                                        <label>@(isTurkish ? "Min. Nöbetçi" : "Min On-Duty")</label>
+                                <label>@(isTurkish ? "Min. Nöbetçi" : "Min On-Duty")</label>
                                         <input type="number" id="sgWeekdayDutyMin" value="1" min="0" max="50">
-                                    </div>
+                            </div>
                                     <div class="sg-field">
-                                        <label>@(isTurkish ? "Başlangıç" : "Start")</label>
+                                <label>@(isTurkish ? "Başlangıç" : "Start")</label>
                                         <input type="time" id="sgWeekdayDutyStart" value="17:00">
-                                    </div>
+                            </div>
                                     <div class="sg-field">
-                                        <label>@(isTurkish ? "Bitiş" : "End")</label>
+                                <label>@(isTurkish ? "Bitiş" : "End")</label>
                                         <input type="time" id="sgWeekdayDutyEnd" value="08:00">
-                                    </div>
+                            </div>
                                     <div class="sg-field">
                                         <label>@(isTurkish ? "Mola" : "Break")</label>
                                         <input type="number" id="sgWeekdayDutyBreak" value="0" min="0" max="120"> dk
-                                    </div>
-                                </div>
+                        </div>
+                            </div>
                                 <label class="sg-check">
                                     <input type="checkbox" id="sgApplyWeekdayDuty" checked>
                                     @(isTurkish ? "Uygula" : "Apply")
                                 </label>
                                 <div class="sg-hint">💡 @(isTurkish ? "Bitiş < Başlangıç ise ertesi güne geçer" : "If End < Start, spans to next day")</div>
-                            </div>
-                        </div>
+                    </div>
+                </div>
 
                         <div class="sg-card">
                             <div class="sg-card-header">
                                 <span class="sg-step">4</span>
                                 @(isTurkish ? "Tatil Nöbeti" : "Holiday Duty")
-                            </div>
+                        </div>
                             <div class="sg-card-body">
                                 <div class="sg-row">
                                     <div class="sg-field">
-                                        <label>@(isTurkish ? "Min. Nöbetçi" : "Min On-Duty")</label>
+                                <label>@(isTurkish ? "Min. Nöbetçi" : "Min On-Duty")</label>
                                         <input type="number" id="sgHolidayDutyMin" value="1" min="0" max="50">
-                                    </div>
+                            </div>
                                     <div class="sg-field">
-                                        <label>@(isTurkish ? "Başlangıç" : "Start")</label>
+                                <label>@(isTurkish ? "Başlangıç" : "Start")</label>
                                         <input type="time" id="sgHolidayDutyStart" value="08:00">
-                                    </div>
+                            </div>
                                     <div class="sg-field">
-                                        <label>@(isTurkish ? "Bitiş" : "End")</label>
+                                <label>@(isTurkish ? "Bitiş" : "End")</label>
                                         <input type="time" id="sgHolidayDutyEnd" value="08:00">
-                                    </div>
+                            </div>
                                     <div class="sg-field">
                                         <label>@(isTurkish ? "Mola" : "Break")</label>
                                         <input type="number" id="sgHolidayDutyBreak" value="0" min="0" max="120"> dk
-                                    </div>
-                                </div>
+                        </div>
+                            </div>
                                 <label class="sg-check">
                                     <input type="checkbox" id="sgApplyHolidayDuty" checked>
                                     @(isTurkish ? "Uygula" : "Apply")
                                 </label>
-                            </div>
                         </div>
                     </div>
+                </div>
 
                     <!-- Right Column: Personnel & Restrictions -->
                     <div class="sg-column">
@@ -1672,88 +1664,88 @@
                             <div class="sg-card-header">
                                 <span class="sg-step">5</span>
                                 @(isTurkish ? "Nöbet Tutmayan Personeller" : "Exempt from Duty")
-                            </div>
+                        </div>
                             <div class="sg-card-body">
                                 <div class="sg-employee-list" id="sgExemptEmployeesList">
-                                    @foreach (var emp in Model.Employees.Where(e => e.IsActive).OrderBy(e => e.FullName))
-                                    {
+                        @foreach (var emp in Model.Employees.Where(e => e.IsActive).OrderBy(e => e.FullName))
+                        {
                                         <label class="sg-emp-item">
-                                            <input type="checkbox" class="sg-exempt-employee" value="@emp.Id">
+                                <input type="checkbox" class="sg-exempt-employee" value="@emp.Id">
                                             <span>@emp.FullName</span>
-                                            @if (!string.IsNullOrEmpty(emp.Title))
-                                            {
+                                @if (!string.IsNullOrEmpty(emp.Title))
+                                {
                                                 <small>@emp.Title</small>
-                                            }
-                                        </label>
-                                    }
+                                }
+                            </label>
+                        }
                                 </div>
-                            </div>
-                        </div>
+                    </div>
+                </div>
 
                         <div class="sg-card">
                             <div class="sg-card-header">
                                 <span class="sg-step">6</span>
                                 @(isTurkish ? "Tarih Kısıtlamaları" : "Date Restrictions")
-                            </div>
+                        </div>
                             <div class="sg-card-body">
                                 <div class="sg-restriction-form">
                                     <select id="sgRestrictionEmployee">
-                                        <option value="">@(isTurkish ? "Personel seç..." : "Select employee...")</option>
-                                        @foreach (var emp in Model.Employees.Where(e => e.IsActive).OrderBy(e => e.FullName))
-                                        {
-                                            <option value="@emp.Id">@emp.FullName</option>
-                                        }
-                                    </select>
+                                            <option value="">@(isTurkish ? "Personel seç..." : "Select employee...")</option>
+                                            @foreach (var emp in Model.Employees.Where(e => e.IsActive).OrderBy(e => e.FullName))
+                                            {
+                                                <option value="@emp.Id">@emp.FullName</option>
+                                            }
+                                        </select>
                                     <input type="date" id="sgRestrictionStartDate" placeholder="@(isTurkish ? "Başlangıç" : "Start")">
                                     <input type="date" id="sgRestrictionEndDate" placeholder="@(isTurkish ? "Bitiş" : "End")">
                                     <button type="button" class="sg-btn-add red" id="sgAddRestriction">+ @(isTurkish ? "Ekle" : "Add")</button>
-                                </div>
+                                    </div>
                                 <div class="sg-restriction-list" id="sgRestrictionsList"></div>
-                            </div>
-                        </div>
+                    </div>
+                </div>
 
                         <div class="sg-card">
                             <div class="sg-card-header">
                                 <span class="sg-step">7</span>
                                 @(isTurkish ? "Tercih Edilen Tarihler" : "Preferred Dates")
-                            </div>
+                        </div>
                             <div class="sg-card-body">
                                 <div class="sg-restriction-form">
                                     <select id="sgPreferenceEmployee">
-                                        <option value="">@(isTurkish ? "Personel seç..." : "Select employee...")</option>
-                                        @foreach (var emp in Model.Employees.Where(e => e.IsActive).OrderBy(e => e.FullName))
-                                        {
-                                            <option value="@emp.Id">@emp.FullName</option>
-                                        }
-                                    </select>
+                                            <option value="">@(isTurkish ? "Personel seç..." : "Select employee...")</option>
+                                            @foreach (var emp in Model.Employees.Where(e => e.IsActive).OrderBy(e => e.FullName))
+                                            {
+                                                <option value="@emp.Id">@emp.FullName</option>
+                                            }
+                                        </select>
                                     <input type="date" id="sgPreferenceStartDate">
                                     <input type="date" id="sgPreferenceEndDate">
                                     <button type="button" class="sg-btn-add green" id="sgAddPreference">+ @(isTurkish ? "Ekle" : "Add")</button>
-                                </div>
+                                    </div>
                                 <div class="sg-restriction-list preferences" id="sgPreferencesList"></div>
-                            </div>
-                        </div>
+                    </div>
+                </div>
 
                         <div class="sg-card options">
                             <div class="sg-card-header">
                                 <span class="sg-step">⚙️</span>
                                 @(isTurkish ? "Ek Ayarlar" : "Options")
-                            </div>
+                        </div>
                             <div class="sg-card-body">
                                 <div class="sg-options-row">
                                     <label class="sg-check">
-                                        <input type="checkbox" id="sgOverwriteExisting">
+                                    <input type="checkbox" id="sgOverwriteExisting">
                                         @(isTurkish ? "Mevcut vardiyaları üzerine yaz" : "Overwrite existing")
-                                    </label>
+                                </label>
                                     <label class="sg-check">
-                                        <input type="checkbox" id="sgBalanceDuties" checked>
+                                    <input type="checkbox" id="sgBalanceDuties" checked>
                                         @(isTurkish ? "Adil dağıt" : "Fair distribution")
-                                    </label>
+                                </label>
                                     <div class="sg-field inline">
                                         <label>@(isTurkish ? "Nöbet arası min. gün" : "Min days between")</label>
                                         <input type="number" id="sgMinDaysBetweenDuties" value="2" min="0" max="14">
-                                    </div>
-                                </div>
+                            </div>
+                        </div>
                             </div>
                         </div>
                     </div>
@@ -1762,7 +1754,7 @@
                 <!-- Progress -->
                 <div class="sg-progress-section" id="sgProgress" style="display: none;">
                     <div class="sg-progress-card">
-                        <div class="sg-spinner"></div>
+                            <div class="sg-spinner"></div>
                         <div>
                             <strong id="sgProgressText">@(isTurkish ? "Çizelge oluşturuluyor..." : "Generating...")</strong>
                             <div class="sg-progress-bar-wrap">
@@ -1772,7 +1764,7 @@
                     </div>
                 </div>
             </div>
-
+            
             <!-- Footer -->
             <div class="sg-footer">
                 <div class="sg-footer-info">
@@ -3037,53 +3029,42 @@
         border-radius: 2px;
     }
     
-    /* Module Selector */
-    .module-selector {
-        display: flex;
-        gap: 4px;
-        margin-bottom: 8px;
-        padding: 4px;
-        background: #f1f5f9;
-        border-radius: 8px;
+    /* Module Dropdown */
+    .module-dropdown {
+        margin-bottom: 10px;
     }
     
-    .module-btn {
-        flex: 1;
-        padding: 8px;
-        background: transparent;
-        border: none;
-        border-radius: 6px;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: all 0.2s;
-        text-decoration: none;
-        text-align: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .module-btn:hover {
-        background: #e2e8f0;
-    }
-    
-    .module-btn.active {
-        background: #3b82f6;
-        box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
-    }
-    
-    /* Module Header - Minimal */
-    .module-header {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 8px;
-        background: #3b82f6;
-        border-radius: 6px;
-        margin-bottom: 8px;
+    .module-select {
+        width: 100%;
+        padding: 10px 12px;
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
         color: white;
-        font-size: 0.75rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.85rem;
         font-weight: 600;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        padding-right: 30px;
+    }
+    
+    .module-select:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    }
+    
+    .module-select:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    }
+    
+    .module-select option {
+        background: white;
+        color: #1f2937;
+        padding: 10px;
+    }
     }
     
     .module-title {
@@ -6451,6 +6432,18 @@
 <script>
     const isTurkish = @(isTurkish ? "true" : "false");
     const isRegistered = @(Model.IsRegistered ? "true" : "false");
+    
+    // Module switcher
+    function switchModule(module) {
+        const routes = {
+            'shift': '@Url.Action("Index", "App")',
+            'cleaning': '@Url.Action("Index", "Cleaning")'
+        };
+        if (routes[module] && module !== 'shift') {
+            window.location.href = routes[module];
+        }
+    }
+    
     const texts = {
         confirmDelete: isTurkish ? 'Silmek istediğinize emin misiniz?' : 'Are you sure you want to delete?',
         confirmDeleteShift: isTurkish ? 'Bu nöbeti silmek istiyor musunuz?' : 'Do you want to delete this shift?',

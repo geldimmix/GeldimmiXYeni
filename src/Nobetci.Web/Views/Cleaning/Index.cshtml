@@ -9,10 +9,13 @@
     <!-- Header -->
     <div class="cleaning-header">
         <div class="header-info">
-            <h1>
-                <span class="header-icon">🧹</span>
-                @(isTurkish ? "Temizlik Çizelgesi" : "Cleaning Schedule")
-            </h1>
+            <!-- Module Selector -->
+            <div class="module-dropdown">
+                <select id="moduleSelect" class="module-select" onchange="switchModule(this.value)">
+                    <option value="shift">🏥 @(isTurkish ? "Nöbet Sistemi" : "Shift System")</option>
+                    <option value="cleaning" selected>🧹 @(isTurkish ? "Temizlik Çizelgesi" : "Cleaning Schedule")</option>
+                </select>
+            </div>
             <p class="header-subtitle">
                 @(isTurkish ? "Çizelgelerinizi yönetin, QR kod ile temizlik takibi yapın" : "Manage schedules, track cleaning with QR codes")
             </p>
@@ -26,10 +29,6 @@
                     <span class="badge">@Model.PendingRecordsCount</span>
                 </button>
             }
-            <a href="@Url.Action("Index", "App")" class="btn-back">
-                <span>←</span>
-                @(isTurkish ? "Nöbet Çizelgesi" : "Shift Schedule")
-            </a>
         </div>
     </div>
 
@@ -267,6 +266,42 @@
 </div>
 
 <style>
+    /* Module Dropdown */
+    .module-dropdown {
+        margin-bottom: 8px;
+    }
+    
+    .module-select {
+        padding: 10px 14px;
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 36px;
+    }
+    
+    .module-select:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    }
+    
+    .module-select:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    }
+    
+    .module-select option {
+        background: white;
+        color: #1f2937;
+        padding: 10px;
+    }
+    
     .cleaning-page {
         max-width: 1200px;
         margin: 0 auto;
@@ -776,6 +811,17 @@
     const canSelectFrequency = @(Model.Limits.CanSelectFrequency ? "true" : "false");
     const itemLimit = @Model.Limits.MaxItemsPerSchedule;
     let currentQrCode = '';
+    
+    // Module switcher
+    function switchModule(module) {
+        const routes = {
+            'shift': '@Url.Action("Index", "App")',
+            'cleaning': '@Url.Action("Index", "Cleaning")'
+        };
+        if (routes[module] && module !== 'cleaning') {
+            window.location.href = routes[module];
+        }
+    }
     
     // Schedule Modal
     function showAddScheduleModal() {
