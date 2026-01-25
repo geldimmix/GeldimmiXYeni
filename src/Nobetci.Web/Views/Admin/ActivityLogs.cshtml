@@ -564,45 +564,45 @@
             const data = await res.json();
             
             let detailsHtml = '';
-            if (data.Details) {
+            if (data.details) {
                 try {
-                    const json = JSON.parse(data.Details);
+                    const json = JSON.parse(data.details);
                     detailsHtml = `<pre class="detail-json">${JSON.stringify(json, null, 2)}</pre>`;
                 } catch {
-                    detailsHtml = `<pre class="detail-json">${data.Details}</pre>`;
+                    detailsHtml = `<pre class="detail-json">${data.details}</pre>`;
                 }
             }
             
             document.getElementById('modalBody').innerHTML = `
                 <div class="detail-row">
                     <span class="detail-label">Tarih</span>
-                    <span class="detail-value">${data.CreatedAt}</span>
+                    <span class="detail-value">${data.createdAt}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Kullanıcı</span>
-                    <span class="detail-value">${data.UserName} ${data.UserEmail ? '(' + data.UserEmail + ')' : ''}</span>
+                    <span class="detail-value">${data.userName} ${data.userEmail ? '(' + data.userEmail + ')' : ''}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">İşlem</span>
-                    <span class="detail-value">${data.ActivityType}</span>
+                    <span class="detail-value">${data.activityType}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Açıklama</span>
-                    <span class="detail-value">${data.Description}</span>
+                    <span class="detail-value">${data.description}</span>
                 </div>
-                ${data.EntityType ? `
+                ${data.entityType ? `
                 <div class="detail-row">
                     <span class="detail-label">Varlık</span>
-                    <span class="detail-value">${data.EntityType} #${data.EntityId || '-'}</span>
+                    <span class="detail-value">${data.entityType} #${data.entityId || '-'}</span>
                 </div>
                 ` : ''}
                 <div class="detail-row">
                     <span class="detail-label">IP Adresi</span>
-                    <span class="detail-value">${data.IpAddress || '-'}</span>
+                    <span class="detail-value">${data.ipAddress || '-'}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">User Agent</span>
-                    <span class="detail-value" style="font-size: 0.75rem;">${data.UserAgent || '-'}</span>
+                    <span class="detail-value" style="font-size: 0.75rem;">${data.userAgent || '-'}</span>
                 </div>
                 ${detailsHtml ? `
                 <div class="detail-row">
