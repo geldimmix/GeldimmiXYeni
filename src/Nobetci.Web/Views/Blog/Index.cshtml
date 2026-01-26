@@ -1,4 +1,5 @@
 @using Nobetci.Web.Controllers
+@using Nobetci.Web.Data.Entities
 @model BlogListViewModel
 @{
     var isTurkish = Model.IsTurkish;
@@ -28,9 +29,9 @@
         <div class="row g-4">
             @foreach (var post in Model.Posts)
             {
-                var title = isTurkish ? post.TitleTr : post.TitleEn;
-                var excerpt = isTurkish ? post.ExcerptTr : post.ExcerptEn;
-                var keywords = isTurkish ? post.KeywordsTr : post.KeywordsEn;
+                var title = post.GetTitle(isTurkish);
+                var excerpt = post.GetExcerpt(isTurkish);
+                var keywords = post.GetKeywords(isTurkish);
                 <div class="col-lg-6">
                     <div class="blog-card">
                         <p class="blog-date">@post.PublishedAt.ToString("dd MMM yyyy")</p>

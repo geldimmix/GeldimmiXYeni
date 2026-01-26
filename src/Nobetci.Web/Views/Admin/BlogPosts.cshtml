@@ -1,0 +1,353 @@
+@model Nobetci.Web.Models.BlogPostsViewModel
+@{
+    ViewData["Title"] = "Blog Yönetimi";
+    Layout = "_AdminLayout";
+}
+
+<div class="admin-page">
+    <div class="page-header">
+        <div>
+            <h1>📝 Blog Yönetimi</h1>
+            <p class="text-muted">Toplam @Model.TotalCount blog yazısı</p>
+        </div>
+        <a href="/admin/blog/create" class="btn btn-primary">
+            <span>➕</span> Yeni Yazı
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width: 40%;">Başlık</th>
+                        <th>Durum</th>
+                        <th>Yayın</th>
+                        <th>Görüntülenme</th>
+                        <th>Tarih</th>
+                        <th style="width: 120px;">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var post in Model.Posts)
+                    {
+                        <tr>
+                            <td>
+                                <div class="post-title-cell">
+                                    <a href="/blog/@post.Slug" target="_blank" class="post-title">@post.TitleTr</a>
+                                    <span class="post-slug">/@post.Slug</span>
+                                </div>
+                            </td>
+                            <td>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" @(post.IsPublished ? "checked" : "") onchange="togglePublish(@post.Id, this)">
+                                    <span class="slider"></span>
+                                </label>
+                            </td>
+                            <td>
+                                @if (post.IsFeatured)
+                                {
+                                    <span class="badge badge-featured">⭐ Öne Çıkan</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="view-count">👁 @post.ViewCount</span>
+                            </td>
+                            <td>
+                                <span class="date-cell">@post.PublishedAt.ToString("dd.MM.yyyy")</span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="/admin/blog/edit/@post.Id" class="btn btn-sm btn-secondary" title="Düzenle">✏️</a>
+                                    <button class="btn btn-sm btn-danger" onclick="confirmDelete(@post.Id, '@post.TitleTr.Replace("'", "\\'")')" title="Sil">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        
+        @if (Model.TotalPages > 1)
+        {
+            <div class="pagination-wrapper">
+                <div class="pagination">
+                    @if (Model.CurrentPage > 1)
+                    {
+                        <a href="/admin/blog?page=@(Model.CurrentPage - 1)" class="page-link">« Önceki</a>
+                    }
+                    
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <a href="/admin/blog?page=@i" class="page-link @(i == Model.CurrentPage ? "active" : "")">@i</a>
+                    }
+                    
+                    @if (Model.CurrentPage < Model.TotalPages)
+                    {
+                        <a href="/admin/blog?page=@(Model.CurrentPage + 1)" class="page-link">Sonraki »</a>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal" id="deleteModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5>Blog Yazısını Sil</h5>
+            <button type="button" class="btn-close" onclick="closeDeleteModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <p>"<strong id="deletePostTitle"></strong>" başlıklı blog yazısını silmek istediğinize emin misiniz?</p>
+            <p class="text-danger">Bu işlem geri alınamaz!</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">İptal</button>
+            <form id="deleteForm" method="post" style="display: inline;">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-danger">Sil</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+    
+    .page-header h1 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+    
+    .page-header p {
+        margin: 4px 0 0;
+        font-size: 0.85rem;
+    }
+    
+    .post-title-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .post-title {
+        font-weight: 600;
+        color: #1e293b;
+        text-decoration: none;
+    }
+    
+    .post-title:hover {
+        color: #3b82f6;
+    }
+    
+    .post-slug {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        font-family: monospace;
+    }
+    
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 22px;
+    }
+    
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #cbd5e1;
+        transition: .3s;
+        border-radius: 22px;
+    }
+    
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .3s;
+        border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+        background-color: #22c55e;
+    }
+    
+    input:checked + .slider:before {
+        transform: translateX(18px);
+    }
+    
+    .badge-featured {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        color: #fff;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+    
+    .view-count {
+        color: #64748b;
+        font-size: 0.85rem;
+    }
+    
+    .date-cell {
+        color: #64748b;
+        font-size: 0.85rem;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 4px;
+    }
+    
+    .btn-sm {
+        padding: 4px 8px;
+        font-size: 0.8rem;
+    }
+    
+    .pagination-wrapper {
+        padding: 16px;
+        border-top: 1px solid #e2e8f0;
+    }
+    
+    .pagination {
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+    }
+    
+    .page-link {
+        padding: 6px 12px;
+        border-radius: 4px;
+        text-decoration: none;
+        color: #475569;
+        background: #f1f5f9;
+        font-size: 0.85rem;
+    }
+    
+    .page-link:hover {
+        background: #e2e8f0;
+    }
+    
+    .page-link.active {
+        background: #3b82f6;
+        color: white;
+    }
+    
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .modal.active {
+        display: flex;
+    }
+    
+    .modal-content {
+        background: white;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 400px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .modal-header h5 {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .modal-footer {
+        padding: 16px 20px;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+    }
+    
+    .btn-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #94a3b8;
+    }
+</style>
+
+<script>
+    async function togglePublish(id, checkbox) {
+        try {
+            const response = await fetch(`/admin/blog/toggle-publish/${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                checkbox.checked = !checkbox.checked;
+                alert('İşlem başarısız');
+            }
+        } catch (error) {
+            checkbox.checked = !checkbox.checked;
+            alert('Bağlantı hatası');
+        }
+    }
+    
+    function confirmDelete(id, title) {
+        document.getElementById('deletePostTitle').textContent = title;
+        document.getElementById('deleteForm').action = `/admin/blog/delete/${id}`;
+        document.getElementById('deleteModal').classList.add('active');
+    }
+    
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.remove('active');
+    }
+</script>
+

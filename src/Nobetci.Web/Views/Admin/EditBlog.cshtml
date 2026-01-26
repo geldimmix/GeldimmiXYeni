@@ -1,0 +1,343 @@
+@model Nobetci.Web.Models.BlogPostEditViewModel
+@{
+    ViewData["Title"] = "Blog Yazısını Düzenle";
+    Layout = "_AdminLayout";
+}
+
+<div class="admin-page">
+    <div class="page-header">
+        <div>
+            <h1>✏️ Blog Yazısını Düzenle</h1>
+            <p class="text-muted">
+                <a href="/blog/@Model.Slug" target="_blank">/blog/@Model.Slug</a> • 
+                👁 @Model.ViewCount görüntülenme
+            </p>
+        </div>
+        <a href="/admin/blog" class="btn btn-secondary">← Geri</a>
+    </div>
+
+    <form asp-action="EditBlog" asp-route-id="@Model.Id" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        
+        <div class="form-grid">
+            <!-- Left Column: Turkish Content -->
+            <div class="form-section">
+                <div class="section-header">
+                    <h3>🇹🇷 Türkçe İçerik</h3>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="TitleTr" class="required">Başlık</label>
+                    <input asp-for="TitleTr" class="form-control" placeholder="Blog yazısı başlığı" />
+                    <span asp-validation-for="TitleTr" class="validation-error"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="ExcerptTr">Özet</label>
+                    <textarea asp-for="ExcerptTr" class="form-control" rows="2" placeholder="Kısa açıklama (liste görünümünde gösterilir)"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="ContentTr" class="required">İçerik (HTML)</label>
+                    <textarea asp-for="ContentTr" class="form-control content-editor" rows="12" placeholder="<h2>Başlık</h2><p>Paragraf...</p>"></textarea>
+                    <small class="form-hint">HTML formatında içerik yazabilirsiniz: &lt;h2&gt;, &lt;p&gt;, &lt;ul&gt;, &lt;ol&gt;, &lt;strong&gt; vb.</small>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="KeywordsTr">Anahtar Kelimeler</label>
+                    <input asp-for="KeywordsTr" class="form-control" placeholder="kelime1, kelime2, kelime3" />
+                    <small class="form-hint">Virgülle ayırarak yazın</small>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="MetaDescriptionTr">Meta Açıklama</label>
+                    <textarea asp-for="MetaDescriptionTr" class="form-control" rows="2" placeholder="Arama motorları için açıklama (155-160 karakter ideal)"></textarea>
+                </div>
+            </div>
+            
+            <!-- Right Column: English Content -->
+            <div class="form-section">
+                <div class="section-header">
+                    <h3>🇬🇧 English Content</h3>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="TitleEn">Title</label>
+                    <input asp-for="TitleEn" class="form-control" placeholder="Blog post title" />
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="ExcerptEn">Excerpt</label>
+                    <textarea asp-for="ExcerptEn" class="form-control" rows="2" placeholder="Short description"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="ContentEn">Content (HTML)</label>
+                    <textarea asp-for="ContentEn" class="form-control content-editor" rows="12" placeholder="<h2>Heading</h2><p>Paragraph...</p>"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="KeywordsEn">Keywords</label>
+                    <input asp-for="KeywordsEn" class="form-control" placeholder="keyword1, keyword2, keyword3" />
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="MetaDescriptionEn">Meta Description</label>
+                    <textarea asp-for="MetaDescriptionEn" class="form-control" rows="2" placeholder="Description for search engines"></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section settings-section">
+            <div class="section-header">
+                <h3>⚙️ Ayarlar & SEO</h3>
+            </div>
+            
+            <div class="settings-grid">
+                <div class="form-group">
+                    <label asp-for="Slug" class="required">URL Slug</label>
+                    <div class="input-with-prefix">
+                        <span class="prefix">/blog/</span>
+                        <input asp-for="Slug" class="form-control" placeholder="yazinin-url-adresi" />
+                    </div>
+                    <span asp-validation-for="Slug" class="validation-error"></span>
+                    <small class="form-hint">Sadece küçük harf, rakam ve tire (-) kullanın</small>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="AuthorName">Yazar</label>
+                    <input asp-for="AuthorName" class="form-control" placeholder="Yazar adı (opsiyonel)" />
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="PublishedAt">Yayın Tarihi</label>
+                    <input asp-for="PublishedAt" type="datetime-local" class="form-control" />
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="OgImageUrl">OG Image URL</label>
+                    <input asp-for="OgImageUrl" class="form-control" placeholder="https://example.com/image.jpg" />
+                    <small class="form-hint">Sosyal medya paylaşımları için görsel</small>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="CanonicalUrl">Canonical URL</label>
+                    <input asp-for="CanonicalUrl" class="form-control" placeholder="Varsayılandan farklıysa" />
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="RobotsMeta">Robots Meta</label>
+                    <select asp-for="RobotsMeta" class="form-control">
+                        <option value="">Varsayılan (index, follow)</option>
+                        <option value="noindex, follow">noindex, follow</option>
+                        <option value="index, nofollow">index, nofollow</option>
+                        <option value="noindex, nofollow">noindex, nofollow</option>
+                    </select>
+                </div>
+                
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input asp-for="IsPublished" type="checkbox" />
+                        <span class="checkmark"></span>
+                        Yayınla
+                    </label>
+                </div>
+                
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input asp-for="IsFeatured" type="checkbox" />
+                        <span class="checkmark"></span>
+                        Öne Çıkar ⭐
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <a href="/admin/blog" class="btn btn-secondary">İptal</a>
+            <a href="/blog/@Model.Slug" target="_blank" class="btn btn-outline">👁 Önizle</a>
+            <button type="submit" class="btn btn-primary">💾 Güncelle</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+    
+    .page-header h1 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+    
+    .page-header p {
+        margin: 4px 0 0;
+        font-size: 0.85rem;
+    }
+    
+    .page-header p a {
+        color: #3b82f6;
+        text-decoration: none;
+    }
+    
+    .page-header p a:hover {
+        text-decoration: underline;
+    }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+    
+    .form-section {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .section-header {
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .section-header h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: #1e293b;
+    }
+    
+    .form-group {
+        margin-bottom: 16px;
+    }
+    
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #475569;
+        margin-bottom: 6px;
+    }
+    
+    .form-group label.required::after {
+        content: " *";
+        color: #ef4444;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        transition: border-color 0.2s;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .content-editor {
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        font-size: 0.85rem;
+        line-height: 1.6;
+    }
+    
+    .form-hint {
+        display: block;
+        margin-top: 4px;
+        font-size: 0.75rem;
+        color: #94a3b8;
+    }
+    
+    .validation-error {
+        display: block;
+        margin-top: 4px;
+        font-size: 0.8rem;
+        color: #ef4444;
+    }
+    
+    .settings-section {
+        margin-bottom: 24px;
+    }
+    
+    .settings-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 16px;
+    }
+    
+    .input-with-prefix {
+        display: flex;
+        align-items: center;
+    }
+    
+    .input-with-prefix .prefix {
+        background: #f1f5f9;
+        padding: 10px 12px;
+        border: 1px solid #e2e8f0;
+        border-right: none;
+        border-radius: 8px 0 0 8px;
+        font-size: 0.85rem;
+        color: #64748b;
+    }
+    
+    .input-with-prefix .form-control {
+        border-radius: 0 8px 8px 0;
+    }
+    
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+    }
+    
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        font-weight: normal !important;
+    }
+    
+    .checkbox-label input {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        padding: 20px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .btn-outline {
+        background: transparent;
+        border: 1px solid #e2e8f0;
+        color: #475569;
+    }
+    
+    .btn-outline:hover {
+        background: #f1f5f9;
+    }
+    
+    @@media (max-width: 1024px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+

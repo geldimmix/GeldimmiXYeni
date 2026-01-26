@@ -1,10 +1,12 @@
 @using Nobetci.Web.Controllers
-@model BlogPost
+@using Nobetci.Web.Data.Entities
+@model BlogDetailViewModel
 @{
-    var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
-    var title = isTurkish ? Model.TitleTr : Model.TitleEn;
-    var content = isTurkish ? Model.ContentTr : Model.ContentEn;
-    var keywords = isTurkish ? Model.KeywordsTr : Model.KeywordsEn;
+    var isTurkish = Model.IsTurkish;
+    var post = Model.Post;
+    var title = post.GetTitle(isTurkish);
+    var content = post.GetContent(isTurkish);
+    var keywords = post.GetKeywords(isTurkish);
     ViewData["Title"] = title;
     var paragraphs = content
         .Split('\n', StringSplitOptions.RemoveEmptyEntries)
@@ -18,7 +20,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-9">
-                <p class="blog-date">@Model.PublishedAt.ToString("dd MMM yyyy")</p>
+                <p class="blog-date">@post.PublishedAt.ToString("dd MMM yyyy")</p>
                 <h1 class="blog-detail-title">@title</h1>
                 <div class="blog-tags mb-3">
                     @foreach (var tag in keywords.Take(4))

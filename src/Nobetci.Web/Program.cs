@@ -768,6 +768,40 @@ using (var scope = app.Services.CreateScope())
             CREATE INDEX IF NOT EXISTS ""IX_ActivityLogs_EntityType_EntityId"" ON ""ActivityLogs"" (""EntityType"", ""EntityId"");
         ", "ActivityLogs");
         
+        // Create BlogPosts table (for CMS blog management)
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""BlogPosts"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""Slug"" VARCHAR(200) NOT NULL UNIQUE,
+                ""TitleTr"" VARCHAR(300) NOT NULL,
+                ""TitleEn"" VARCHAR(300) NULL,
+                ""ExcerptTr"" VARCHAR(500) NULL,
+                ""ExcerptEn"" VARCHAR(500) NULL,
+                ""ContentTr"" TEXT NOT NULL,
+                ""ContentEn"" TEXT NULL,
+                ""KeywordsTr"" VARCHAR(500) NULL,
+                ""KeywordsEn"" VARCHAR(500) NULL,
+                ""MetaDescriptionTr"" VARCHAR(500) NULL,
+                ""MetaDescriptionEn"" VARCHAR(500) NULL,
+                ""OgImageUrl"" VARCHAR(500) NULL,
+                ""CanonicalUrl"" VARCHAR(500) NULL,
+                ""SchemaJson"" TEXT NULL,
+                ""RobotsMeta"" VARCHAR(50) NULL,
+                ""IsPublished"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""IsFeatured"" BOOLEAN NOT NULL DEFAULT FALSE,
+                ""DisplayOrder"" INTEGER NOT NULL DEFAULT 0,
+                ""PublishedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                ""UpdatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                ""AuthorName"" VARCHAR(100) NULL,
+                ""ViewCount"" INTEGER NOT NULL DEFAULT 0
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_BlogPosts_Slug"" ON ""BlogPosts"" (""Slug"");
+            CREATE INDEX IF NOT EXISTS ""IX_BlogPosts_IsPublished"" ON ""BlogPosts"" (""IsPublished"");
+            CREATE INDEX IF NOT EXISTS ""IX_BlogPosts_PublishedAt"" ON ""BlogPosts"" (""PublishedAt"");
+            CREATE INDEX IF NOT EXISTS ""IX_BlogPosts_IsFeatured"" ON ""BlogPosts"" (""IsFeatured"");
+        ", "BlogPosts");
+        
         // Run migrations - but don't let failures prevent seeding
         try
         {
@@ -798,6 +832,10 @@ using (var scope = app.Services.CreateScope())
         // Seed initial content pages
         try { await SeedContentPages(context); }
         catch (Exception ex) { Console.WriteLine($"SeedContentPages warning: {ex.Message}"); }
+        
+        // Seed blog posts from static data
+        try { await SeedBlogPosts(context); }
+        catch (Exception ex) { Console.WriteLine($"SeedBlogPosts warning: {ex.Message}"); }
     }
     catch (Exception ex)
     {
@@ -1660,5 +1698,46 @@ static async Task SeedContentPages(ApplicationDbContext context)
     {
         await context.ContentPages.AddRangeAsync(pagesToAdd);
     await context.SaveChangesAsync();
+    }
+}
+
+// Seed method for blog posts - imports from BlogController static data
+static async Task SeedBlogPosts(ApplicationDbContext context)
+{
+    // Get existing slugs to avoid duplicates
+    var existingSlugs = await context.BlogPosts
+        .Select(b => b.Slug)
+        .ToListAsync();
+    
+    // Import from static BlogController data
+    var staticPosts = Nobetci.Web.Controllers.BlogController.GetAllPostsForSeeding();
+    
+    var postsToAdd = staticPosts
+        .Where(p => !existingSlugs.Contains(p.Slug))
+        .Select(p => new BlogPost
+        {
+            Slug = p.Slug,
+            TitleTr = p.TitleTr,
+            TitleEn = p.TitleEn,
+            ExcerptTr = p.ExcerptTr,
+            ExcerptEn = p.ExcerptEn,
+            ContentTr = p.ContentTr,
+            ContentEn = p.ContentEn,
+            KeywordsTr = string.Join(", ", p.KeywordsTr),
+            KeywordsEn = string.Join(", ", p.KeywordsEn),
+            MetaDescriptionTr = p.ExcerptTr, // Use excerpt as meta description
+            MetaDescriptionEn = p.ExcerptEn,
+            IsPublished = true,
+            PublishedAt = p.PublishedAt,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        })
+        .ToList();
+    
+    if (postsToAdd.Any())
+    {
+        await context.BlogPosts.AddRangeAsync(postsToAdd);
+        await context.SaveChangesAsync();
+        Console.WriteLine($"Seeded {postsToAdd.Count} blog posts from static data.");
     }
 }

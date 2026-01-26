@@ -45,6 +45,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<CleaningRecord> CleaningRecords => Set<CleaningRecord>();
     public DbSet<CleaningQrAccess> CleaningQrAccesses => Set<CleaningQrAccess>();
     public DbSet<ActivityLog> ActivityLogs => Set<ActivityLog>();
+    
+    // Blog System
+    public DbSet<BlogPost> BlogPosts => Set<BlogPost>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -338,6 +341,15 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .WithMany()
                 .HasForeignKey(e => e.OrganizationId)
                 .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // BlogPost configuration
+        builder.Entity<BlogPost>(entity =>
+        {
+            entity.HasIndex(e => e.Slug).IsUnique();
+            entity.HasIndex(e => e.IsPublished);
+            entity.HasIndex(e => e.PublishedAt);
+            entity.HasIndex(e => e.IsFeatured);
         });
 
         // Seed global shift templates

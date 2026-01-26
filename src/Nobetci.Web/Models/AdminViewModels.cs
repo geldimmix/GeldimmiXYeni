@@ -166,3 +166,73 @@ public class ActivityLogItem
     public string? IpAddress { get; set; }
     public DateTime CreatedAt { get; set; }
 }
+
+// Blog Management ViewModels
+public class BlogPostsViewModel
+{
+    public List<Nobetci.Web.Data.Entities.BlogPost> Posts { get; set; } = new();
+    public int CurrentPage { get; set; } = 1;
+    public int TotalPages { get; set; } = 1;
+    public int TotalCount { get; set; } = 0;
+}
+
+public class BlogPostEditViewModel
+{
+    public int Id { get; set; }
+    
+    [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "URL Slug zorunludur")]
+    [System.ComponentModel.DataAnnotations.MaxLength(200)]
+    [System.ComponentModel.DataAnnotations.RegularExpression(@"^[a-z0-9-]+$", ErrorMessage = "Slug sadece küçük harf, rakam ve tire içerebilir")]
+    public string Slug { get; set; } = string.Empty;
+    
+    // Turkish content
+    [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Türkçe başlık zorunludur")]
+    [System.ComponentModel.DataAnnotations.MaxLength(300)]
+    public string TitleTr { get; set; } = string.Empty;
+    
+    [System.ComponentModel.DataAnnotations.MaxLength(500)]
+    public string? ExcerptTr { get; set; }
+    
+    public string? ContentTr { get; set; }
+    
+    [System.ComponentModel.DataAnnotations.MaxLength(500)]
+    public string? KeywordsTr { get; set; }
+    
+    [System.ComponentModel.DataAnnotations.MaxLength(500)]
+    public string? MetaDescriptionTr { get; set; }
+    
+    // English content
+    [System.ComponentModel.DataAnnotations.MaxLength(300)]
+    public string? TitleEn { get; set; }
+    
+    [System.ComponentModel.DataAnnotations.MaxLength(500)]
+    public string? ExcerptEn { get; set; }
+    
+    public string? ContentEn { get; set; }
+    
+    [System.ComponentModel.DataAnnotations.MaxLength(500)]
+    public string? KeywordsEn { get; set; }
+    
+    [System.ComponentModel.DataAnnotations.MaxLength(500)]
+    public string? MetaDescriptionEn { get; set; }
+    
+    // SEO & Meta
+    [System.ComponentModel.DataAnnotations.MaxLength(500)]
+    public string? OgImageUrl { get; set; }
+    
+    [System.ComponentModel.DataAnnotations.MaxLength(500)]
+    public string? CanonicalUrl { get; set; }
+    
+    [System.ComponentModel.DataAnnotations.MaxLength(50)]
+    public string? RobotsMeta { get; set; }
+    
+    // Publishing
+    public bool IsPublished { get; set; } = true;
+    public bool IsFeatured { get; set; } = false;
+    
+    [System.ComponentModel.DataAnnotations.MaxLength(100)]
+    public string? AuthorName { get; set; }
+    
+    public DateTime? PublishedAt { get; set; }
+    public int ViewCount { get; set; } = 0;
+}

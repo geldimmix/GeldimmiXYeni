@@ -855,5 +855,242 @@ public class AdminController : Controller
     }
     
     #endregion
+    
+    #region Blog Management
+    
+    [HttpGet]
+    [Route("admin/blog")]
+    public async Task<IActionResult> BlogPosts(int page = 1)
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction("Login");
+        
+        ViewBag.IsSuperAdmin = IsSuperAdmin();
+        
+        const int pageSize = 20;
+        var query = _context.BlogPosts.OrderByDescending(b => b.PublishedAt);
+        
+        var totalCount = await query.CountAsync();
+        var posts = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+        
+        var model = new BlogPostsViewModel
+        {
+            Posts = posts,
+            CurrentPage = page,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+            TotalCount = totalCount
+        };
+        
+        return View(model);
+    }
+    
+    [HttpGet]
+    [Route("admin/blog/create")]
+    public IActionResult CreateBlog()
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction("Login");
+        
+        ViewBag.IsSuperAdmin = IsSuperAdmin();
+        return View(new BlogPostEditViewModel());
+    }
+    
+    [HttpPost]
+    [Route("admin/blog/create")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateBlog(BlogPostEditViewModel model)
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction("Login");
+        
+        ViewBag.IsSuperAdmin = IsSuperAdmin();
+        
+        if (!ModelState.IsValid)
+            return View(model);
+        
+        // Check slug uniqueness
+        var existingSlug = await _context.BlogPosts.AnyAsync(b => b.Slug == model.Slug);
+        if (existingSlug)
+        {
+            ModelState.AddModelError("Slug", "Bu URL slug zaten kullanılıyor");
+            return View(model);
+        }
+        
+        var post = new BlogPost
+        {
+            Slug = model.Slug,
+            TitleTr = model.TitleTr,
+            TitleEn = model.TitleEn,
+            ExcerptTr = model.ExcerptTr,
+            ExcerptEn = model.ExcerptEn,
+            ContentTr = model.ContentTr ?? "",
+            ContentEn = model.ContentEn,
+            KeywordsTr = model.KeywordsTr,
+            KeywordsEn = model.KeywordsEn,
+            MetaDescriptionTr = model.MetaDescriptionTr,
+            MetaDescriptionEn = model.MetaDescriptionEn,
+            OgImageUrl = model.OgImageUrl,
+            CanonicalUrl = model.CanonicalUrl,
+            RobotsMeta = model.RobotsMeta,
+            IsPublished = model.IsPublished,
+            IsFeatured = model.IsFeatured,
+            AuthorName = model.AuthorName,
+            PublishedAt = model.PublishedAt ?? DateTime.UtcNow,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+        
+        _context.BlogPosts.Add(post);
+        await _context.SaveChangesAsync();
+        
+        await _activityLog.LogAsync(ActivityType.ContentCreated, 
+            $"Blog yazısı oluşturuldu: {post.TitleTr}", 
+            "BlogPost", post.Id);
+        
+        TempData["Success"] = "Blog yazısı başarıyla oluşturuldu";
+        return RedirectToAction("BlogPosts");
+    }
+    
+    [HttpGet]
+    [Route("admin/blog/edit/{id}")]
+    public async Task<IActionResult> EditBlog(int id)
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction("Login");
+        
+        ViewBag.IsSuperAdmin = IsSuperAdmin();
+        
+        var post = await _context.BlogPosts.FindAsync(id);
+        if (post == null)
+            return NotFound();
+        
+        var model = new BlogPostEditViewModel
+        {
+            Id = post.Id,
+            Slug = post.Slug,
+            TitleTr = post.TitleTr,
+            TitleEn = post.TitleEn,
+            ExcerptTr = post.ExcerptTr,
+            ExcerptEn = post.ExcerptEn,
+            ContentTr = post.ContentTr,
+            ContentEn = post.ContentEn,
+            KeywordsTr = post.KeywordsTr,
+            KeywordsEn = post.KeywordsEn,
+            MetaDescriptionTr = post.MetaDescriptionTr,
+            MetaDescriptionEn = post.MetaDescriptionEn,
+            OgImageUrl = post.OgImageUrl,
+            CanonicalUrl = post.CanonicalUrl,
+            RobotsMeta = post.RobotsMeta,
+            IsPublished = post.IsPublished,
+            IsFeatured = post.IsFeatured,
+            AuthorName = post.AuthorName,
+            PublishedAt = post.PublishedAt,
+            ViewCount = post.ViewCount
+        };
+        
+        return View(model);
+    }
+    
+    [HttpPost]
+    [Route("admin/blog/edit/{id}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditBlog(int id, BlogPostEditViewModel model)
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction("Login");
+        
+        ViewBag.IsSuperAdmin = IsSuperAdmin();
+        
+        if (!ModelState.IsValid)
+            return View(model);
+        
+        var post = await _context.BlogPosts.FindAsync(id);
+        if (post == null)
+            return NotFound();
+        
+        // Check slug uniqueness (excluding current)
+        var existingSlug = await _context.BlogPosts.AnyAsync(b => b.Slug == model.Slug && b.Id != id);
+        if (existingSlug)
+        {
+            ModelState.AddModelError("Slug", "Bu URL slug zaten kullanılıyor");
+            return View(model);
+        }
+        
+        post.Slug = model.Slug;
+        post.TitleTr = model.TitleTr;
+        post.TitleEn = model.TitleEn;
+        post.ExcerptTr = model.ExcerptTr;
+        post.ExcerptEn = model.ExcerptEn;
+        post.ContentTr = model.ContentTr ?? "";
+        post.ContentEn = model.ContentEn;
+        post.KeywordsTr = model.KeywordsTr;
+        post.KeywordsEn = model.KeywordsEn;
+        post.MetaDescriptionTr = model.MetaDescriptionTr;
+        post.MetaDescriptionEn = model.MetaDescriptionEn;
+        post.OgImageUrl = model.OgImageUrl;
+        post.CanonicalUrl = model.CanonicalUrl;
+        post.RobotsMeta = model.RobotsMeta;
+        post.IsPublished = model.IsPublished;
+        post.IsFeatured = model.IsFeatured;
+        post.AuthorName = model.AuthorName;
+        post.PublishedAt = model.PublishedAt ?? post.PublishedAt;
+        post.UpdatedAt = DateTime.UtcNow;
+        
+        await _context.SaveChangesAsync();
+        
+        await _activityLog.LogAsync(ActivityType.ContentUpdated, 
+            $"Blog yazısı güncellendi: {post.TitleTr}", 
+            "BlogPost", post.Id);
+        
+        TempData["Success"] = "Blog yazısı başarıyla güncellendi";
+        return RedirectToAction("BlogPosts");
+    }
+    
+    [HttpPost]
+    [Route("admin/blog/delete/{id}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteBlog(int id)
+    {
+        if (!IsAdminLoggedIn())
+            return Unauthorized();
+        
+        var post = await _context.BlogPosts.FindAsync(id);
+        if (post == null)
+            return NotFound();
+        
+        var title = post.TitleTr;
+        _context.BlogPosts.Remove(post);
+        await _context.SaveChangesAsync();
+        
+        await _activityLog.LogAsync(ActivityType.ContentDeleted, 
+            $"Blog yazısı silindi: {title}", 
+            "BlogPost", id);
+        
+        TempData["Success"] = "Blog yazısı silindi";
+        return RedirectToAction("BlogPosts");
+    }
+    
+    [HttpPost]
+    [Route("admin/blog/toggle-publish/{id}")]
+    public async Task<IActionResult> ToggleBlogPublish(int id)
+    {
+        if (!IsAdminLoggedIn())
+            return Unauthorized();
+        
+        var post = await _context.BlogPosts.FindAsync(id);
+        if (post == null)
+            return NotFound();
+        
+        post.IsPublished = !post.IsPublished;
+        post.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+        
+        return Json(new { success = true, isPublished = post.IsPublished });
+    }
+    
+    #endregion
 }
 

@@ -79,6 +79,11 @@ public enum ActivityType
     AdminUserCreated = 1101,
     AdminUserDeleted = 1102,
     
+    // İçerik (Blog/Sayfa) işlemleri
+    ContentCreated = 1200,
+    ContentUpdated = 1201,
+    ContentDeleted = 1202,
+    
     // Diğer
     Other = 9999
 }

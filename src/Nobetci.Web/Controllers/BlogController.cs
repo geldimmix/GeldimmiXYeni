@@ -1,9 +1,15 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Nobetci.Web.Data;
+using Nobetci.Web.Data.Entities;
 
 namespace Nobetci.Web.Controllers
 {
-    public class BlogPost
+    /// <summary>
+    /// Static blog post model for legacy/seeding purposes
+    /// </summary>
+    public class StaticBlogPost
     {
         public string Slug { get; set; } = string.Empty;
         public string TitleTr { get; set; } = string.Empty;
@@ -18,15 +24,23 @@ namespace Nobetci.Web.Controllers
     }
 
     public record BlogListViewModel(IEnumerable<BlogPost> Posts, bool IsTurkish);
+    public record BlogDetailViewModel(BlogPost Post, bool IsTurkish);
 
     public class BlogController : Controller
     {
+        private readonly ApplicationDbContext _context;
+        
+        public BlogController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+        
         private static string Combine(params string[] paragraphs) => string.Join("\n\n", paragraphs);
 
-        // Static in-memory blog posts for SEO landing
-        private static readonly List<BlogPost> Posts = new()
+        // Static in-memory blog posts for SEO landing (legacy - will be migrated to DB)
+        private static readonly List<StaticBlogPost> StaticPosts = new()
         {
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hastane-nobet-sistemi-nedir",
                 TitleTr = "Hastane Nöbet Sistemi Nedir? Eksiksiz Rehber",
@@ -57,7 +71,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 21)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "nobet-cizelgesi-nasil-olusturulur",
                 TitleTr = "Nöbet Çizelgesi Nasıl Oluşturulur? Adım Adım Rehber",
@@ -88,7 +102,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 20)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "adil-nobet-dagilimi-nasil-saglanir",
                 TitleTr = "Adil Nöbet Dağılımı Nasıl Sağlanır?",
@@ -119,7 +133,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 19)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "otomatik-nobet-olusturma-sistemleri",
                 TitleTr = "Otomatik Nöbet Oluşturma Sistemleri ve Avantajları",
@@ -150,7 +164,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 18)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hastane-nobet-kurallari-yasal-duzenlemeler",
                 TitleTr = "2026 Hastane Nöbet Kuralları ve Yasal Düzenlemeler",
@@ -181,7 +195,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 17)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "puantaj-nedir-hastane-puantaj-sistemi",
                 TitleTr = "Puantaj Nedir? Hastanelerde Puantaj Sistemi",
@@ -212,7 +226,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 16)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "ucretsiz-puantaj-olusturma-araclari",
                 TitleTr = "Ücretsiz Puantaj Oluşturma Araçları ve Şablonları",
@@ -243,7 +257,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 15)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "excel-ile-puantaj-nasil-hazirlanir",
                 TitleTr = "Excel ile Puantaj Nasıl Hazırlanır?",
@@ -274,7 +288,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 14)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "mesai-takip-sistemi-hastane-rehberi",
                 TitleTr = "Mesai Takip Sistemi: Hastanelerde Uygulama Rehberi",
@@ -305,7 +319,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 13)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "fazla-mesai-hesaplama-saglik-personeli",
                 TitleTr = "Fazla Mesai Hesaplama: Sağlık Personeli için Kılavuz",
@@ -336,7 +350,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 12)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "online-hemsire-nobet-programi-2026",
                 TitleTr = "Online Hemşire Nöbet Programı 2026 Rehberi",
@@ -359,7 +373,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 10)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "otomatik-hemsire-nobet-planlayici",
                 TitleTr = "Otomatik Hemşire Nöbet Planlayıcı ile 15 Dakikada Çizelge",
@@ -382,7 +396,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 11)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "adil-hemsire-nobet-dagitimi",
                 TitleTr = "Adil Hemşire Nöbet Dağıtımı için 7 Kural",
@@ -405,7 +419,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 12)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "mobil-hemsire-nobet-uygulamasi",
                 TitleTr = "Mobil Hemşire Nöbet Uygulaması ile Anlık Takvim",
@@ -428,7 +442,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 13)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "yapay-zeka-hemsire-nobet-sistemi",
                 TitleTr = "Yapay Zeka Hemşire Nöbet Sistemi ile Tahmin ve Optimizasyon",
@@ -451,7 +465,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 14)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hemsire-puantaj-takip-programi",
                 TitleTr = "Hemşire Puantaj Takip Programı ile Fazla Mesaiyi Kapatın",
@@ -474,7 +488,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 15)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "bulut-tabanli-hemsire-nobet-sistemi",
                 TitleTr = "Bulut Tabanlı Hemşire Nöbet Sistemi: Güvenlik ve Hız",
@@ -497,7 +511,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 16)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hemsire-nobet-optimizasyon-araci",
                 TitleTr = "Hemşire Nöbet Optimizasyon Aracı ile Maliyet Kontrolü",
@@ -520,7 +534,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 17)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hemsire-vardiya-takasi-programi",
                 TitleTr = "Hemşire Vardiya Takası Programı ile Esneklik",
@@ -543,7 +557,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 18)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hemsire-nobet-listesi-olusturma-rehberi",
                 TitleTr = "Hemşire Nöbet Listesi Oluşturma Rehberi",
@@ -566,7 +580,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 19)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hastane-hemsire-nobet-yazilimi",
                 TitleTr = "Hastane Hemşire Nöbet Yazılımı Seçim Kriterleri",
@@ -589,7 +603,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 20)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "adil-nobet-dagitimi-ve-otomasyon",
                 TitleTr = "Adil Nöbet Dağıtımı ve Otomasyonun Rolü",
@@ -612,7 +626,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 21)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "mobil-nobet-uygulamasi-seo",
                 TitleTr = "Mobil Nöbet Uygulaması ile Hemşire Deneyimini Yükseltin",
@@ -635,7 +649,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 22)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hemsire-nobet-uygulamasi-indir",
                 TitleTr = "Hemşire Nöbet Programı İndir Seçenekleri",
@@ -658,7 +672,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 23)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hemsire-mesai-hesaplama-araci",
                 TitleTr = "Hemşire Mesai Hesaplama Aracı Nasıl Çalışır?",
@@ -681,7 +695,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 24)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hemsire-personel-planlama-yazilimi",
                 TitleTr = "Hemşire Personel Planlama Yazılımı ile Kapasite Yönetimi",
@@ -704,7 +718,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 25)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hemsire-nobet-uygulamasinda-adalet",
                 TitleTr = "Hemşire Nöbet Uygulamasında Adalet ve Şeffaflık",
@@ -727,7 +741,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 26)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hemsire-nobet-uygulamasi-2026",
                 TitleTr = "2026'nın En İyi Hemşire Nöbet Uygulaması Nasıl Olmalı?",
@@ -750,7 +764,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 27)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "online-hemsire-nobet-programi-kurulumu",
                 TitleTr = "Online Hemşire Nöbet Programı Kurulumu 30 Dakika",
@@ -773,7 +787,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 28)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hemsire-nobet-uygulamasinda-raporlama",
                 TitleTr = "Hemşire Nöbet Uygulamasında Raporlama ve KPI'lar",
@@ -796,7 +810,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 29)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hemsire-vardiya-takip-ipuclari",
                 TitleTr = "Hemşire Vardiya Takip İpuçları: Hız ve Doğruluk",
@@ -819,7 +833,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 30)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hemsire-nobetinde-hafta-sonu-planlama",
                 TitleTr = "Hemşire Nöbetinde Hafta Sonu Planlama Stratejileri",
@@ -843,7 +857,7 @@ namespace Nobetci.Web.Controllers
                 PublishedAt = new DateTime(2026, 1, 31)
             },
             // ============ HEMŞİRE NÖBET VE ÜCRET (11-15) ============
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hemsire-nobet-ucreti-2026",
                 TitleTr = "Hemşire Nöbet Ücreti 2026: Güncel Rakamlar",
@@ -874,7 +888,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 1)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hemsire-nobet-parasi-nasil-hesaplanir",
                 TitleTr = "Hemşire Nöbet Parası Nasıl Hesaplanır?",
@@ -905,7 +919,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 2)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hemsire-resmi-tatil-calismasi-ucret",
                 TitleTr = "Hemşire Resmi Tatil Çalışması ve Ücretlendirme",
@@ -936,7 +950,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 3)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hemsire-gece-nobeti-kurallar-haklar",
                 TitleTr = "Hemşire Gece Nöbeti: Kurallar ve Haklar",
@@ -967,7 +981,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 4)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hemsire-hafta-sonu-nobeti-ek-odemeler",
                 TitleTr = "Hemşire Hafta Sonu Nöbeti ve Ek Ödemeler",
@@ -999,7 +1013,7 @@ namespace Nobetci.Web.Controllers
                 PublishedAt = new DateTime(2026, 2, 5)
             },
             // ============ ASİSTAN DOKTOR NÖBET VE ÜCRET (16-20) ============
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "asistan-doktor-nobet-parasi-2026",
                 TitleTr = "Asistan Doktor Nöbet Parası 2026 Hesaplama",
@@ -1030,7 +1044,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 6)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "asistan-doktor-nobet-kurallari-sinirlamalar",
                 TitleTr = "Asistan Doktor Nöbet Kuralları ve Sınırlamalar",
@@ -1061,7 +1075,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 7)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "asistan-aylik-nobet-sayisi",
                 TitleTr = "Asistan Doktor Aylık Nöbet Sayısı Ne Kadar Olmalı?",
@@ -1092,7 +1106,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 8)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "asistan-nobet-cizelgesi-olusturma",
                 TitleTr = "Asistan Nöbet Çizelgesi Oluşturma Rehberi",
@@ -1123,7 +1137,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 9)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "asistan-gece-nobeti-sonrasi-izin",
                 TitleTr = "Asistan Doktor Gece Nöbeti Sonrası İzin Hakkı",
@@ -1155,7 +1169,7 @@ namespace Nobetci.Web.Controllers
                 PublishedAt = new DateTime(2026, 2, 10)
             },
             // ============ İCAP NÖBETİ (21-25) ============
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "icap-nobeti-nedir-rehber",
                 TitleTr = "İcap Nöbeti Nedir? Kapsamlı Rehber",
@@ -1186,7 +1200,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 11)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "icap-nobet-parasi-hesaplama",
                 TitleTr = "İcap Nöbet Parası Nasıl Hesaplanır?",
@@ -1217,7 +1231,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 12)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "icap-nobeti-cizelgesi-hazirlama",
                 TitleTr = "İcap Nöbeti Çizelgesi Nasıl Hazırlanır?",
@@ -1248,7 +1262,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 13)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "aktif-nobet-icap-farklari",
                 TitleTr = "Aktif Nöbet ve İcap Nöbeti Arasındaki Farklar",
@@ -1279,7 +1293,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 14)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "icap-nobetinde-cagri-ne-yapilir",
                 TitleTr = "İcap Nöbetinde Çağrı Alınca Ne Yapılır?",
@@ -1311,7 +1325,7 @@ namespace Nobetci.Web.Controllers
                 PublishedAt = new DateTime(2026, 2, 15)
             },
             // ============ BORDRO VE MAAŞ HESAPLAMA (26-30) ============
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "4a-personel-nobet-parasi-hesaplama",
                 TitleTr = "4A Personel Nöbet Parası Hesaplama",
@@ -1342,7 +1356,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 16)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "4b-sozlesmeli-personel-nobet-ucreti",
                 TitleTr = "4B Sözleşmeli Personel Nöbet Ücreti Hesaplama",
@@ -1373,7 +1387,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 17)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hastane-bordro-hesaplama-kilavuz",
                 TitleTr = "Hastane Bordro Hesaplama: Eksiksiz Kılavuz",
@@ -1404,7 +1418,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 18)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "nobet-ek-odeme-sistemi",
                 TitleTr = "Nöbet Ek Ödeme Sistemi Nasıl Çalışır?",
@@ -1435,7 +1449,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 19)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "doner-sermaye-nobet-iliskisi",
                 TitleTr = "Döner Sermaye Ek Ödemesi ve Nöbet İlişkisi",
@@ -1467,7 +1481,7 @@ namespace Nobetci.Web.Controllers
                 PublishedAt = new DateTime(2026, 2, 20)
             },
             // ============ PERSONEL YÖNETİMİ (31-35) ============
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hastane-personel-yonetim-sistemi",
                 TitleTr = "Hastane Personel Ekleme ve Yönetim Sistemi",
@@ -1498,7 +1512,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 21)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hemsire-kadro-planlamasi-nobet-dagilimi",
                 TitleTr = "Hemşire Kadro Planlaması ve Nöbet Dağılımı",
@@ -1529,7 +1543,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 22)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "personel-yetkinlik-nobet-atama",
                 TitleTr = "Personel Yetkinlik ve Nöbet Atama Kriterleri",
@@ -1560,7 +1574,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 23)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "personel-izin-yonetimi-nobet",
                 TitleTr = "Personel İzin Yönetimi ve Nöbet Planlaması",
@@ -1591,7 +1605,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 24)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "saglik-personeli-devamsizlik-takibi",
                 TitleTr = "Sağlık Personeli Devamsızlık Takibi",
@@ -1623,7 +1637,7 @@ namespace Nobetci.Web.Controllers
                 PublishedAt = new DateTime(2026, 2, 25)
             },
             // ============ TEKNOLOJİ VE YAZILIM (36-40) ============
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "en-iyi-nobet-planlama-yazilimlari-2026",
                 TitleTr = "En İyi Nöbet Planlama Yazılımları 2026",
@@ -1654,7 +1668,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 26)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "mobil-nobet-takip-uygulamalari",
                 TitleTr = "Mobil Nöbet Takip Uygulamaları",
@@ -1685,7 +1699,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 27)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "bulut-tabanli-nobet-yonetim-sistemleri",
                 TitleTr = "Bulut Tabanlı Nöbet Yönetim Sistemleri",
@@ -1716,7 +1730,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 2, 28)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "nobet-sistemi-his-hbys-entegrasyonu",
                 TitleTr = "Nöbet Sistemi Entegrasyonları: HIS ve HBYS",
@@ -1747,7 +1761,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 3, 1)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "yapay-zeka-nobet-optimizasyonu",
                 TitleTr = "Yapay Zeka ile Nöbet Optimizasyonu",
@@ -1779,7 +1793,7 @@ namespace Nobetci.Web.Controllers
                 PublishedAt = new DateTime(2026, 3, 2)
             },
             // ============ SEKTÖREL VE BÖLÜM BAZLI (41-45) + RAPORLAMA VE ANALİZ (46-50) ============
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "acil-servis-nobet-duzeni",
                 TitleTr = "Acil Servis Nöbet Düzeni ve Özel Kurallar",
@@ -1810,7 +1824,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 3, 3)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "yogun-bakim-nobet-planlamasi",
                 TitleTr = "Yoğun Bakım Nöbet Planlaması",
@@ -1841,7 +1855,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 3, 4)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "nobet-raporlama-istatistik-analizi",
                 TitleTr = "Nöbet Raporlama ve İstatistik Analizi",
@@ -1872,7 +1886,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 3, 5)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "nobet-maliyet-analizi-butce",
                 TitleTr = "Nöbet Maliyet Analizi ve Bütçe Planlaması",
@@ -1903,7 +1917,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 3, 6)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "nobet-verimliligi-artirma-stratejileri",
                 TitleTr = "Nöbet Verimliliği Artırma Stratejileri",
@@ -1935,7 +1949,7 @@ namespace Nobetci.Web.Controllers
                 PublishedAt = new DateTime(2026, 3, 7)
             },
             // ========== YENİ SEO BLOG YAZILARI (2026-01-26) ==========
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "kolay-nobet-programi",
                 TitleTr = "Kolay Nöbet Programı: Hızlı ve Pratik Çözüm",
@@ -1982,7 +1996,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 26)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hastane-nobet-yonetimi",
                 TitleTr = "Hastane Nöbet: Sağlık Sektöründe Etkili Planlama",
@@ -2035,7 +2049,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 26)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "basit-nobet-listesi-hazirlama",
                 TitleTr = "Basit Nöbet Listesi Hazırlama: Adım Adım Kılavuz",
@@ -2093,7 +2107,7 @@ namespace Nobetci.Web.Controllers
                 PublishedAt = new DateTime(2026, 1, 26)
             },
             // ========== HEMŞİRE NÖBETİ SEO BLOG YAZILARI (2026-01-26) ==========
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hemsire-nobet-listesi-nasil-hazirlanir",
                 TitleTr = "Hemşire Nöbet Listesi Nasıl Hazırlanır? 2026 Rehberi",
@@ -2152,7 +2166,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 26)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "hemsire-nobet-haklari-yasal-duzenlemeler",
                 TitleTr = "Hemşire Nöbet Hakları: Yasal Düzenlemeler ve Sınırlar 2026",
@@ -2221,7 +2235,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 26)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "adil-hemsire-nobet-dagilimi",
                 TitleTr = "Adil Hemşire Nöbet Dağılımı İçin 7 Altın Kural",
@@ -2282,7 +2296,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 26)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "ucretsiz-hemsire-nobet-programi",
                 TitleTr = "Ücretsiz Hemşire Nöbet Programı: En İyi 5 Araç Karşılaştırması",
@@ -2349,7 +2363,7 @@ namespace Nobetci.Web.Controllers
                 ),
                 PublishedAt = new DateTime(2026, 1, 26)
             },
-            new BlogPost
+            new StaticBlogPost
             {
                 Slug = "gece-nobeti-sonrasi-dinlenme",
                 TitleTr = "Gece Nöbeti Sonrası Dinlenme: Yasal Haklar ve Öneriler",
@@ -2425,28 +2439,48 @@ namespace Nobetci.Web.Controllers
         /// <summary>
         /// Static property to access blog post slugs (for sitemap generation)
         /// </summary>
-        public static IEnumerable<string> AllSlugs => Posts.Select(p => p.Slug);
+        public static IEnumerable<string> AllSlugs => StaticPosts.Select(p => p.Slug);
+        
+        /// <summary>
+        /// Get all static posts for seeding to database
+        /// </summary>
+        public static IEnumerable<StaticBlogPost> GetAllPostsForSeeding() => StaticPosts;
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var isTurkish = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
             ViewData["Title"] = "Blog";
-            var model = new BlogListViewModel(Posts.OrderByDescending(p => p.PublishedAt), isTurkish);
+            
+            // Get posts from database
+            var posts = await _context.BlogPosts
+                .Where(p => p.IsPublished)
+                .OrderByDescending(p => p.PublishedAt)
+                .ToListAsync();
+            
+            var model = new BlogListViewModel(posts, isTurkish);
             return View(model);
         }
 
         [Route("blog/{slug}")]
-        public IActionResult Detail(string slug)
+        public async Task<IActionResult> Detail(string slug)
         {
             var isTurkish = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
-            var post = Posts.FirstOrDefault(p => string.Equals(p.Slug, slug, StringComparison.OrdinalIgnoreCase));
+            
+            // Get post from database
+            var post = await _context.BlogPosts
+                .FirstOrDefaultAsync(p => p.Slug == slug && p.IsPublished);
+            
             if (post == null) return NotFound();
+            
+            // Increment view count
+            post.ViewCount++;
+            await _context.SaveChangesAsync();
 
-            ViewData["Title"] = isTurkish ? post.TitleTr : post.TitleEn;
-            ViewData["MetaDescription"] = isTurkish ? post.ExcerptTr : post.ExcerptEn;
-            ViewData["MetaKeywords"] = string.Join(", ", isTurkish ? post.KeywordsTr : post.KeywordsEn);
+            ViewData["Title"] = post.GetTitle(isTurkish);
+            ViewData["MetaDescription"] = post.GetMetaDescription(isTurkish);
+            ViewData["MetaKeywords"] = string.Join(", ", post.GetKeywords(isTurkish));
 
-            return View(post);
+            return View(new BlogDetailViewModel(post, isTurkish));
         }
     }
 }
