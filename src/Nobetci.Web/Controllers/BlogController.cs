@@ -2452,13 +2452,40 @@ namespace Nobetci.Web.Controllers
             ViewData["Title"] = "Blog";
             
             // Get posts from database
-            var posts = await _context.BlogPosts
+            var dbPosts = await _context.BlogPosts
                 .Where(p => p.IsPublished)
                 .OrderByDescending(p => p.PublishedAt)
                 .ToListAsync();
             
-            var model = new BlogListViewModel(posts, isTurkish);
-            return View(model);
+            // If database has posts, use them; otherwise fall back to static posts
+            if (dbPosts.Any())
+            {
+                var model = new BlogListViewModel(dbPosts, isTurkish);
+                return View(model);
+            }
+            else
+            {
+                // Fallback to static posts (convert to BlogPost entity format)
+                var staticConverted = StaticPosts
+                    .OrderByDescending(p => p.PublishedAt)
+                    .Select(p => new BlogPost
+                    {
+                        Slug = p.Slug,
+                        TitleTr = p.TitleTr,
+                        TitleEn = p.TitleEn,
+                        ExcerptTr = p.ExcerptTr,
+                        ExcerptEn = p.ExcerptEn,
+                        ContentTr = p.ContentTr,
+                        ContentEn = p.ContentEn,
+                        KeywordsTr = string.Join(", ", p.KeywordsTr),
+                        KeywordsEn = string.Join(", ", p.KeywordsEn),
+                        PublishedAt = p.PublishedAt,
+                        IsPublished = true
+                    })
+                    .ToList();
+                var model = new BlogListViewModel(staticConverted, isTurkish);
+                return View(model);
+            }
         }
 
         [Route("blog/{slug}")]
@@ -2470,11 +2497,36 @@ namespace Nobetci.Web.Controllers
             var post = await _context.BlogPosts
                 .FirstOrDefaultAsync(p => p.Slug == slug && p.IsPublished);
             
-            if (post == null) return NotFound();
-            
-            // Increment view count
-            post.ViewCount++;
-            await _context.SaveChangesAsync();
+            // Fallback to static posts if not found in database
+            if (post == null)
+            {
+                var staticPost = StaticPosts.FirstOrDefault(p => 
+                    string.Equals(p.Slug, slug, StringComparison.OrdinalIgnoreCase));
+                
+                if (staticPost == null) return NotFound();
+                
+                // Convert static post to BlogPost entity
+                post = new BlogPost
+                {
+                    Slug = staticPost.Slug,
+                    TitleTr = staticPost.TitleTr,
+                    TitleEn = staticPost.TitleEn,
+                    ExcerptTr = staticPost.ExcerptTr,
+                    ExcerptEn = staticPost.ExcerptEn,
+                    ContentTr = staticPost.ContentTr,
+                    ContentEn = staticPost.ContentEn,
+                    KeywordsTr = string.Join(", ", staticPost.KeywordsTr),
+                    KeywordsEn = string.Join(", ", staticPost.KeywordsEn),
+                    PublishedAt = staticPost.PublishedAt,
+                    IsPublished = true
+                };
+            }
+            else
+            {
+                // Increment view count only for DB posts
+                post.ViewCount++;
+                await _context.SaveChangesAsync();
+            }
 
             ViewData["Title"] = post.GetTitle(isTurkish);
             ViewData["MetaDescription"] = post.GetMetaDescription(isTurkish);
