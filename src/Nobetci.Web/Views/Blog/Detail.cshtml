@@ -28,26 +28,37 @@
                 </div>
                 <div class="blog-content">
                     @{
+                        // Check if content has HTML tags (new style) or plain text (old style)
+                        var hasHtmlTags = content.Contains("<h2>") || content.Contains("<ul>") || content.Contains("<div");
+                    }
+                    @if (hasHtmlTags)
+                    {
+                        <!-- New style: Content with HTML formatting -->
+                        @Html.Raw(content)
+                    }
+                    else
+                    {
+                        <!-- Old style: Plain text paragraphs -->
                         var midPoint = paragraphs.Count / 2;
                         var index = 0;
-                    }
-                    @foreach (var paragraph in paragraphs)
-                    {
-                        <p>@paragraph.Trim()</p>
-                        index++;
-                        @if (index == midPoint)
+                        foreach (var paragraph in paragraphs)
                         {
-                            <!-- Mid-article CTA -->
-                            <div class="blog-cta blog-cta-inline">
-                                <div class="cta-icon">💡</div>
-                                <div class="cta-content">
-                                    <h4>@(isTurkish ? "Geldimmi ile Nöbet Planlamayı Deneyin" : "Try Shift Planning with Geldimmi")</h4>
-                                    <p>@(isTurkish ? "Ücretsiz hesap oluşturun, hemen kullanmaya başlayın." : "Create a free account and start using right away.")</p>
-                                    <a href="https://geldimmi.com/App" class="cta-btn cta-btn-primary" target="_blank">
-                                        @(isTurkish ? "🚀 Hemen Dene" : "🚀 Try Now")
-                                    </a>
+                            <p>@paragraph.Trim()</p>
+                            index++;
+                            if (index == midPoint)
+                            {
+                                <!-- Mid-article CTA -->
+                                <div class="blog-cta blog-cta-inline">
+                                    <div class="cta-icon">💡</div>
+                                    <div class="cta-content">
+                                        <h4>@(isTurkish ? "Geldimmi ile Nöbet Planlamayı Deneyin" : "Try Shift Planning with Geldimmi")</h4>
+                                        <p>@(isTurkish ? "Ücretsiz hesap oluşturun, hemen kullanmaya başlayın." : "Create a free account and start using right away.")</p>
+                                        <a href="https://geldimmi.com/App" class="cta-btn cta-btn-primary" target="_blank">
+                                            @(isTurkish ? "🚀 Hemen Dene" : "🚀 Try Now")
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
+                            }
                         }
                     }
                 </div>
@@ -212,6 +223,84 @@
     .cta-btn-secondary:hover {
         background: rgba(255,255,255,0.2);
         color: #fff;
+    }
+
+    /* New blog content styles */
+    .blog-content h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 32px 0 16px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .blog-content h2:first-child {
+        margin-top: 0;
+    }
+
+    .blog-content ul, .blog-content ol {
+        margin: 16px 0 24px 24px;
+        padding: 0;
+    }
+
+    .blog-content li {
+        margin-bottom: 8px;
+        line-height: 1.7;
+        color: #475569;
+    }
+
+    .blog-content li strong {
+        color: #1e293b;
+    }
+
+    /* CTA Box in content */
+    .blog-content .cta-box {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        border-radius: 16px;
+        padding: 32px;
+        margin: 32px 0;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .blog-content .cta-box strong {
+        display: block;
+        color: #fff;
+        font-size: 1.2rem;
+        margin-bottom: 16px;
+    }
+
+    .blog-content .cta-box .btn {
+        display: inline-block;
+        padding: 12px 28px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        margin: 4px;
+    }
+
+    .blog-content .cta-box .btn-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .blog-content .cta-box .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .blog-content .cta-box .btn-outline-primary {
+        background: transparent;
+        color: #fff;
+        border: 2px solid rgba(255,255,255,0.3);
+    }
+
+    .blog-content .cta-box .btn-outline-primary:hover {
+        background: rgba(255,255,255,0.1);
+        border-color: rgba(255,255,255,0.5);
     }
 
     @@media (max-width: 576px) {
