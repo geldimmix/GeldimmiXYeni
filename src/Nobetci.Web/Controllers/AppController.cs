@@ -205,14 +205,15 @@ public class AppController : Controller
         var (canAccessAttendance, canAccessPayroll) = await GetFeatureAccessAsync();
         var isRegistered = User.Identity?.IsAuthenticated == true;
         
-        // Get unit limit for registered users
-        var unitLimit = 5; // default
+        // Get unit limit for registered users (from user settings or system default)
+        var defaultUnitLimit = await _settingsService.GetDefaultUnitLimitAsync();
+        var unitLimit = defaultUnitLimit;
         if (isRegistered)
         {
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser != null)
             {
-                unitLimit = currentUser.UnitLimit;
+                unitLimit = currentUser.UnitLimit > 0 ? currentUser.UnitLimit : defaultUnitLimit;
             }
         }
         

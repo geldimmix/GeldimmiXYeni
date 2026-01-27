@@ -517,61 +517,6 @@ public class AdminController : Controller
     
     #endregion
     
-    #region System Settings
-    
-    // GET: /admin/settings
-    public async Task<IActionResult> Settings()
-    {
-        if (!IsAdminLoggedIn())
-            return RedirectToAction(nameof(Login));
-        
-        if (!IsSuperAdmin())
-        {
-            TempData["Error"] = "Bu sayfaya erişim yetkiniz yok.";
-            return RedirectToAction(nameof(Index));
-        }
-        
-        var settings = await _context.SystemSettings.ToListAsync();
-        
-        var viewModel = new SystemSettingsViewModel
-        {
-            GuestEmployeeLimit = int.Parse(settings.FirstOrDefault(s => s.Key == SystemSettings.Keys.GuestEmployeeLimit)?.Value ?? "5"),
-            RegisteredEmployeeLimit = int.Parse(settings.FirstOrDefault(s => s.Key == SystemSettings.Keys.RegisteredEmployeeLimit)?.Value ?? "10"),
-            PremiumEmployeeLimit = int.Parse(settings.FirstOrDefault(s => s.Key == SystemSettings.Keys.PremiumEmployeeLimit)?.Value ?? "100"),
-            SiteName = settings.FirstOrDefault(s => s.Key == SystemSettings.Keys.SiteName)?.Value ?? "Geldimmi",
-            MaintenanceMode = bool.Parse(settings.FirstOrDefault(s => s.Key == SystemSettings.Keys.MaintenanceMode)?.Value ?? "false")
-        };
-        
-        return View(viewModel);
-    }
-    
-    // POST: /admin/settings
-    [HttpPost]
-    public async Task<IActionResult> Settings(SystemSettingsViewModel model)
-    {
-        if (!IsAdminLoggedIn())
-            return RedirectToAction(nameof(Login));
-        
-        if (!IsSuperAdmin())
-        {
-            TempData["Error"] = "Bu işlemi yapmaya yetkiniz yok.";
-            return RedirectToAction(nameof(Index));
-        }
-        
-        await _settingsService.SetSettingAsync(SystemSettings.Keys.GuestEmployeeLimit, model.GuestEmployeeLimit.ToString());
-        await _settingsService.SetSettingAsync(SystemSettings.Keys.RegisteredEmployeeLimit, model.RegisteredEmployeeLimit.ToString());
-        await _settingsService.SetSettingAsync(SystemSettings.Keys.PremiumEmployeeLimit, model.PremiumEmployeeLimit.ToString());
-        await _settingsService.SetSettingAsync(SystemSettings.Keys.SiteName, model.SiteName ?? "Geldimmi");
-        await _settingsService.SetSettingAsync(SystemSettings.Keys.MaintenanceMode, model.MaintenanceMode.ToString().ToLower());
-        
-        _settingsService.ClearCache();
-        
-        TempData["Success"] = "Ayarlar kaydedildi.";
-        return RedirectToAction(nameof(Settings));
-    }
-    
-    #endregion
-    
     #region Admin User Management
     
     // GET: /admin/admins
@@ -1092,5 +1037,284 @@ public class AdminController : Controller
     }
     
     #endregion
+    
+    #region System Settings Management
+    
+    /// <summary>
+    /// Sistem ayarları listesi
+    /// </summary>
+    [HttpGet]
+    [Route("admin/settings")]
+    public async Task<IActionResult> SystemSettings()
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction("Login");
+        
+        if (!IsSuperAdmin())
+        {
+            TempData["Error"] = "Bu sayfaya erişim yetkiniz yok";
+            return RedirectToAction("Index");
+        }
+        
+        ViewBag.IsSuperAdmin = IsSuperAdmin();
+        
+        var settings = await _settingsService.GetAllSettingsAsync();
+        
+        // Kategorilere göre grupla
+        var grouped = settings
+            .GroupBy(s => s.Category)
+            .OrderBy(g => GetCategoryOrder(g.Key))
+            .ToDictionary(g => g.Key, g => g.OrderBy(s => s.SortOrder).ToList());
+        
+        var model = new SystemSettingsViewModel
+        {
+            SettingsByCategory = grouped,
+            CategoryNames = GetCategoryNames()
+        };
+        
+        return View(model);
+    }
+    
+    /// <summary>
+    /// Tek bir ayarı güncelle (AJAX)
+    /// </summary>
+    [HttpPost]
+    [Route("admin/settings/update")]
+    public async Task<IActionResult> UpdateSetting([FromBody] UpdateSettingRequest request)
+    {
+        if (!IsAdminLoggedIn())
+            return Unauthorized();
+        
+        if (!IsSuperAdmin())
+            return Forbid();
+        
+        if (string.IsNullOrEmpty(request.Key) || request.Value == null)
+            return BadRequest(new { error = "Key ve Value gereklidir" });
+        
+        try
+        {
+            var setting = await _context.SystemSettings.FirstOrDefaultAsync(s => s.Key == request.Key);
+            if (setting == null)
+                return NotFound(new { error = "Ayar bulunamadı" });
+            
+            var oldValue = setting.Value;
+            
+            // Veri tipi doğrulaması
+            if (!ValidateSettingValue(setting.DataType, request.Value))
+                return BadRequest(new { error = $"Geçersiz değer formatı. Beklenen tip: {setting.DataType}" });
+            
+            setting.Value = request.Value;
+            setting.UpdatedAt = DateTime.UtcNow;
+            
+            await _context.SaveChangesAsync();
+            
+            // Cache temizle
+            _settingsService.ClearCache();
+            
+            // Log kaydet
+            await _activityLog.LogAsync(ActivityType.UserSettingsUpdated, 
+                $"Sistem ayarı güncellendi: {setting.Key} = {setting.Value} (eski: {oldValue})", 
+                "SystemSettings", setting.Id);
+            
+            return Json(new { success = true, message = "Ayar güncellendi" });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+    
+    /// <summary>
+    /// Tüm ayarları toplu güncelle
+    /// </summary>
+    [HttpPost]
+    [Route("admin/settings/save-all")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SaveAllSettings(Dictionary<string, string> settings)
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction("Login");
+        
+        if (!IsSuperAdmin())
+        {
+            TempData["Error"] = "Bu işlem için yetkiniz yok";
+            return RedirectToAction("Index");
+        }
+        
+        try
+        {
+            var dbSettings = await _context.SystemSettings.ToListAsync();
+            var changedCount = 0;
+            
+            foreach (var kvp in settings)
+            {
+                var setting = dbSettings.FirstOrDefault(s => s.Key == kvp.Key);
+                if (setting != null && setting.Value != kvp.Value)
+                {
+                    if (!ValidateSettingValue(setting.DataType, kvp.Value))
+                        continue;
+                    
+                    setting.Value = kvp.Value;
+                    setting.UpdatedAt = DateTime.UtcNow;
+                    changedCount++;
+                }
+            }
+            
+            if (changedCount > 0)
+            {
+                await _context.SaveChangesAsync();
+                _settingsService.ClearCache();
+                
+                await _activityLog.LogAsync(ActivityType.UserSettingsUpdated, 
+                    $"{changedCount} sistem ayarı güncellendi");
+            }
+            
+            TempData["Success"] = $"{changedCount} ayar başarıyla güncellendi";
+        }
+        catch (Exception ex)
+        {
+            TempData["Error"] = $"Hata: {ex.Message}";
+        }
+        
+        return RedirectToAction("SystemSettings");
+    }
+    
+    /// <summary>
+    /// Yeni ayar ekle
+    /// </summary>
+    [HttpPost]
+    [Route("admin/settings/create")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateSetting(CreateSettingRequest request)
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction("Login");
+        
+        if (!IsSuperAdmin())
+        {
+            TempData["Error"] = "Bu işlem için yetkiniz yok";
+            return RedirectToAction("Index");
+        }
+        
+        if (string.IsNullOrEmpty(request.Key))
+        {
+            TempData["Error"] = "Ayar anahtarı gereklidir";
+            return RedirectToAction("SystemSettings");
+        }
+        
+        // Anahtar benzersizliği kontrolü
+        var exists = await _context.SystemSettings.AnyAsync(s => s.Key == request.Key);
+        if (exists)
+        {
+            TempData["Error"] = "Bu anahtar zaten mevcut";
+            return RedirectToAction("SystemSettings");
+        }
+        
+        var maxSortOrder = await _context.SystemSettings
+            .Where(s => s.Category == request.Category)
+            .MaxAsync(s => (int?)s.SortOrder) ?? 0;
+        
+        var setting = new Data.Entities.SystemSettings
+        {
+            Key = request.Key,
+            Value = request.Value ?? "",
+            Description = request.Description,
+            Category = request.Category ?? Data.Entities.SystemSettings.Categories.General,
+            DataType = request.DataType ?? "string",
+            SortOrder = maxSortOrder + 1,
+            UpdatedAt = DateTime.UtcNow
+        };
+        
+        _context.SystemSettings.Add(setting);
+        await _context.SaveChangesAsync();
+        
+        _settingsService.ClearCache();
+        
+        await _activityLog.LogAsync(ActivityType.UserSettingsUpdated, 
+            $"Yeni sistem ayarı oluşturuldu: {setting.Key}", 
+            "SystemSettings", setting.Id);
+        
+        TempData["Success"] = "Yeni ayar oluşturuldu";
+        return RedirectToAction("SystemSettings");
+    }
+    
+    /// <summary>
+    /// Ayarı sil (sadece özel eklenen ayarlar silinebilir)
+    /// </summary>
+    [HttpPost]
+    [Route("admin/settings/delete/{id}")]
+    public async Task<IActionResult> DeleteSetting(int id)
+    {
+        if (!IsAdminLoggedIn())
+            return Unauthorized();
+        
+        if (!IsSuperAdmin())
+            return Forbid();
+        
+        var setting = await _context.SystemSettings.FindAsync(id);
+        if (setting == null)
+            return NotFound(new { error = "Ayar bulunamadı" });
+        
+        // Sistem ayarlarını silmeye izin verme
+        var systemKeys = typeof(Data.Entities.SystemSettings.Keys)
+            .GetFields()
+            .Select(f => f.GetValue(null)?.ToString())
+            .ToHashSet();
+        
+        if (systemKeys.Contains(setting.Key))
+            return BadRequest(new { error = "Sistem ayarları silinemez" });
+        
+        var key = setting.Key;
+        _context.SystemSettings.Remove(setting);
+        await _context.SaveChangesAsync();
+        
+        _settingsService.ClearCache();
+        
+        await _activityLog.LogAsync(ActivityType.UserSettingsUpdated, 
+            $"Sistem ayarı silindi: {key}");
+        
+        return Json(new { success = true });
+    }
+    
+    private bool ValidateSettingValue(string dataType, string value)
+    {
+        return dataType switch
+        {
+            "int" => int.TryParse(value, out _),
+            "decimal" => decimal.TryParse(value, out _),
+            "bool" => bool.TryParse(value, out _) || value == "0" || value == "1",
+            _ => true // string her zaman geçerli
+        };
+    }
+    
+    private int GetCategoryOrder(string category)
+    {
+        return category switch
+        {
+            Data.Entities.SystemSettings.Categories.General => 1,
+            Data.Entities.SystemSettings.Categories.EmployeeLimits => 2,
+            Data.Entities.SystemSettings.Categories.WorkSettings => 3,
+            Data.Entities.SystemSettings.Categories.CleaningLimits => 4,
+            Data.Entities.SystemSettings.Categories.UnitLimits => 5,
+            Data.Entities.SystemSettings.Categories.Security => 6,
+            _ => 99
+        };
+    }
+    
+    private Dictionary<string, string> GetCategoryNames()
+    {
+        return new Dictionary<string, string>
+        {
+            { Data.Entities.SystemSettings.Categories.General, "🌐 Genel Ayarlar" },
+            { Data.Entities.SystemSettings.Categories.EmployeeLimits, "👥 Personel Limitleri" },
+            { Data.Entities.SystemSettings.Categories.WorkSettings, "⏰ Çalışma Ayarları" },
+            { Data.Entities.SystemSettings.Categories.CleaningLimits, "🧹 Temizlik Modülü Limitleri" },
+            { Data.Entities.SystemSettings.Categories.UnitLimits, "🏢 Birim Limitleri" },
+            { Data.Entities.SystemSettings.Categories.Security, "🔒 Güvenlik Ayarları" }
+        };
+    }
+    
+    #endregion
 }
+
 

@@ -18,17 +18,20 @@ public class CleaningController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<CleaningController> _logger;
     private readonly IActivityLogService _activityLog;
+    private readonly ISystemSettingsService _systemSettings;
 
     public CleaningController(
         ApplicationDbContext context, 
         UserManager<ApplicationUser> userManager,
         ILogger<CleaningController> logger,
-        IActivityLogService activityLog)
+        IActivityLogService activityLog,
+        ISystemSettingsService systemSettings)
     {
         _context = context;
         _userManager = userManager;
         _logger = logger;
         _activityLog = activityLog;
+        _systemSettings = systemSettings;
     }
 
     #region Main Page
@@ -48,7 +51,7 @@ public class CleaningController : Controller
         var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
         
         // Get cleaning limits
-        var limits = GetCleaningLimits(user, isRegistered, isPremium);
+        var limits = await GetCleaningLimitsAsync(user, isRegistered, isPremium);
         
         // Get schedules
         var schedules = await _context.CleaningSchedules
@@ -107,7 +110,7 @@ public class CleaningController : Controller
         var isPremium = user?.Plan == UserPlan.Premium;
         var isTr = await IsTurkishAsync();
         
-        var limits = GetCleaningLimits(user, isRegistered, isPremium);
+        var limits = await GetCleaningLimitsAsync(user, isRegistered, isPremium);
         
         // Check schedule limit
         var currentCount = await _context.CleaningSchedules
@@ -271,7 +274,7 @@ public class CleaningController : Controller
         var isPremium = user?.Plan == UserPlan.Premium;
         var isTr = await IsTurkishAsync();
         
-        var limits = GetCleaningLimits(user, isRegistered, isPremium);
+        var limits = await GetCleaningLimitsAsync(user, isRegistered, isPremium);
         
         // Get schedule
         var schedule = await _context.CleaningSchedules
@@ -331,7 +334,7 @@ public class CleaningController : Controller
         var isPremium = user?.Plan == UserPlan.Premium;
         var isTr = await IsTurkishAsync();
         
-        var limits = GetCleaningLimits(user, isRegistered, isPremium);
+        var limits = await GetCleaningLimitsAsync(user, isRegistered, isPremium);
         
         var item = await _context.CleaningItems
             .Include(i => i.Schedule)
@@ -662,7 +665,7 @@ public class CleaningController : Controller
         var user = await GetOrganizationOwnerAsync(schedule.OrganizationId);
         var isRegistered = user != null;
         var isPremium = user?.Plan == UserPlan.Premium;
-        var limits = GetCleaningLimits(user, isRegistered, isPremium);
+        var limits = await GetCleaningLimitsAsync(user, isRegistered, isPremium);
         
         var monthKey = DateTime.UtcNow.ToString("yyyy-MM");
         var monthlyAccessCount = await _context.CleaningQrAccesses
@@ -716,7 +719,7 @@ public class CleaningController : Controller
         var user = await GetOrganizationOwnerAsync(schedule.OrganizationId);
         var isRegistered = user != null;
         var isPremium = user?.Plan == UserPlan.Premium;
-        var limits = GetCleaningLimits(user, isRegistered, isPremium);
+        var limits = await GetCleaningLimitsAsync(user, isRegistered, isPremium);
         
         var monthKey = DateTime.UtcNow.ToString("yyyy-MM");
         var monthlyAccessCount = await _context.CleaningQrAccesses
@@ -1010,15 +1013,16 @@ public class CleaningController : Controller
         return await _userManager.FindByIdAsync(org.UserId);
     }
 
-    private CleaningLimits GetCleaningLimits(ApplicationUser? user, bool isRegistered, bool isPremium)
+    private async Task<CleaningLimits> GetCleaningLimitsAsync(ApplicationUser? user, bool isRegistered, bool isPremium)
     {
         if (!isRegistered)
         {
+            // Kayıtsız kullanıcılar için sistem ayarlarından limitleri al
             return new CleaningLimits
             {
-                MaxSchedules = 1,
-                MaxItemsPerSchedule = 5,
-                MaxQrAccessPerMonth = 100,
+                MaxSchedules = await _systemSettings.GetUnregisteredMaxSchedulesAsync(),
+                MaxItemsPerSchedule = await _systemSettings.GetUnregisteredMaxItemsPerScheduleAsync(),
+                MaxQrAccessPerMonth = await _systemSettings.GetUnregisteredMaxQrAccessPerMonthAsync(),
                 CanSelectFrequency = false,
                 CanGroupSchedules = false
             };
@@ -1026,22 +1030,31 @@ public class CleaningController : Controller
         
         if (isPremium)
         {
+            // Premium kullanıcılar için: Kullanıcı özel limiti varsa onu kullan, yoksa sistem varsayılanını
+            var defaultScheduleLimit = await _systemSettings.GetPremiumDefaultScheduleLimitAsync();
+            var defaultItemLimit = await _systemSettings.GetPremiumDefaultItemLimitAsync();
+            var defaultQrLimit = await _systemSettings.GetPremiumDefaultQrAccessLimitAsync();
+            
             return new CleaningLimits
             {
-                MaxSchedules = user?.CleaningScheduleLimit ?? 100,
-                MaxItemsPerSchedule = user?.CleaningItemLimit ?? 25,
-                MaxQrAccessPerMonth = user?.CleaningQrAccessLimit ?? 3000,
+                MaxSchedules = user?.CleaningScheduleLimit ?? defaultScheduleLimit,
+                MaxItemsPerSchedule = user?.CleaningItemLimit ?? defaultItemLimit,
+                MaxQrAccessPerMonth = user?.CleaningQrAccessLimit ?? defaultQrLimit,
                 CanSelectFrequency = user?.CanSelectCleaningFrequency ?? true,
                 CanGroupSchedules = user?.CanGroupCleaningSchedules ?? true
             };
         }
         
-        // Registered (Free)
+        // Kayıtlı (Free) kullanıcılar için: Kullanıcı özel limiti varsa onu kullan, yoksa sistem varsayılanını
+        var regScheduleLimit = await _systemSettings.GetRegisteredDefaultScheduleLimitAsync();
+        var regItemLimit = await _systemSettings.GetRegisteredDefaultItemLimitAsync();
+        var regQrLimit = await _systemSettings.GetRegisteredDefaultQrAccessLimitAsync();
+        
         return new CleaningLimits
         {
-            MaxSchedules = user?.CleaningScheduleLimit ?? 1,
-            MaxItemsPerSchedule = user?.CleaningItemLimit ?? 10,
-            MaxQrAccessPerMonth = user?.CleaningQrAccessLimit ?? 500,
+            MaxSchedules = user?.CleaningScheduleLimit ?? regScheduleLimit,
+            MaxItemsPerSchedule = user?.CleaningItemLimit ?? regItemLimit,
+            MaxQrAccessPerMonth = user?.CleaningQrAccessLimit ?? regQrLimit,
             CanSelectFrequency = user?.CanSelectCleaningFrequency ?? true,
             CanGroupSchedules = false
         };

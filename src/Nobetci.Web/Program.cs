@@ -850,9 +850,11 @@ app.Run();
 static async Task SeedSystemSettings(ApplicationDbContext context)
 {
     var existingSettings = await context.SystemSettings.ToListAsync();
+    var sortOrder = 0;
     
-    void AddSettingIfNotExists(string key, string value, string? description)
+    void AddSettingIfNotExists(string key, string value, string description, string category, string dataType)
     {
+        sortOrder++;
         if (!existingSettings.Any(s => s.Key == key))
         {
             context.SystemSettings.Add(new SystemSettings
@@ -860,17 +862,54 @@ static async Task SeedSystemSettings(ApplicationDbContext context)
                 Key = key,
                 Value = value,
                 Description = description,
+                Category = category,
+                DataType = dataType,
+                SortOrder = sortOrder,
                 UpdatedAt = DateTime.UtcNow
             });
         }
     }
     
-    // Employee limits
-    AddSettingIfNotExists(SystemSettings.Keys.GuestEmployeeLimit, "5", "Kayıtsız kullanıcılar için personel limiti");
-    AddSettingIfNotExists(SystemSettings.Keys.RegisteredEmployeeLimit, "10", "Kayıtlı kullanıcılar için personel limiti");
-    AddSettingIfNotExists(SystemSettings.Keys.PremiumEmployeeLimit, "100", "Premium kullanıcılar için personel limiti");
-    AddSettingIfNotExists(SystemSettings.Keys.SiteName, "Geldimmi", "Site adı");
-    AddSettingIfNotExists(SystemSettings.Keys.MaintenanceMode, "false", "Bakım modu aktif mi?");
+    // ========== Genel Ayarlar ==========
+    AddSettingIfNotExists(SystemSettings.Keys.SiteName, "Geldimmi", "Site adı", SystemSettings.Categories.General, "string");
+    AddSettingIfNotExists(SystemSettings.Keys.MaintenanceMode, "false", "Bakım modu aktif mi?", SystemSettings.Categories.General, "bool");
+    
+    // ========== Personel Limitleri ==========
+    AddSettingIfNotExists(SystemSettings.Keys.GuestEmployeeLimit, "5", "Kayıtsız kullanıcılar için personel limiti", SystemSettings.Categories.EmployeeLimits, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.RegisteredEmployeeLimit, "10", "Kayıtlı (Free) kullanıcılar için personel limiti", SystemSettings.Categories.EmployeeLimits, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.PremiumEmployeeLimit, "100", "Premium kullanıcılar için personel limiti", SystemSettings.Categories.EmployeeLimits, "int");
+    
+    // ========== Varsayılan Çalışma Ayarları ==========
+    AddSettingIfNotExists(SystemSettings.Keys.DefaultDailyWorkHours, "8", "Günlük çalışma saati (saat)", SystemSettings.Categories.WorkSettings, "decimal");
+    AddSettingIfNotExists(SystemSettings.Keys.DefaultWeeklyWorkHours, "45", "Haftalık çalışma saati (saat)", SystemSettings.Categories.WorkSettings, "decimal");
+    AddSettingIfNotExists(SystemSettings.Keys.DefaultBreakMinutes, "60", "Mola süresi (dakika)", SystemSettings.Categories.WorkSettings, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.DefaultNightStartHour, "20", "Gece vardiyası başlangıç saati (0-23)", SystemSettings.Categories.WorkSettings, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.DefaultNightEndHour, "6", "Gece vardiyası bitiş saati (0-23)", SystemSettings.Categories.WorkSettings, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.DefaultWeekendDays, "0,6", "Hafta sonu günleri (0=Pazar, 6=Cumartesi)", SystemSettings.Categories.WorkSettings, "string");
+    
+    // ========== Temizlik Modülü - Kayıtsız Kullanıcı Limitleri ==========
+    AddSettingIfNotExists(SystemSettings.Keys.UnregisteredMaxSchedules, "1", "Kayıtsız kullanıcı max çizelge sayısı", SystemSettings.Categories.CleaningLimits, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.UnregisteredMaxItemsPerSchedule, "5", "Kayıtsız kullanıcı çizelge başına max madde", SystemSettings.Categories.CleaningLimits, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.UnregisteredMaxQrAccessPerMonth, "100", "Kayıtsız kullanıcı aylık max QR erişim", SystemSettings.Categories.CleaningLimits, "int");
+    
+    // ========== Temizlik Modülü - Kayıtlı (Free) Kullanıcı Varsayılanları ==========
+    AddSettingIfNotExists(SystemSettings.Keys.RegisteredDefaultScheduleLimit, "1", "Kayıtlı (Free) kullanıcı varsayılan çizelge limiti", SystemSettings.Categories.CleaningLimits, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.RegisteredDefaultItemLimit, "10", "Kayıtlı (Free) kullanıcı varsayılan madde limiti", SystemSettings.Categories.CleaningLimits, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.RegisteredDefaultQrAccessLimit, "500", "Kayıtlı (Free) kullanıcı varsayılan aylık QR erişim limiti", SystemSettings.Categories.CleaningLimits, "int");
+    
+    // ========== Temizlik Modülü - Premium Kullanıcı Varsayılanları ==========
+    AddSettingIfNotExists(SystemSettings.Keys.PremiumDefaultScheduleLimit, "100", "Premium kullanıcı varsayılan çizelge limiti", SystemSettings.Categories.CleaningLimits, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.PremiumDefaultItemLimit, "25", "Premium kullanıcı varsayılan madde limiti", SystemSettings.Categories.CleaningLimits, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.PremiumDefaultQrAccessLimit, "3000", "Premium kullanıcı varsayılan aylık QR erişim limiti", SystemSettings.Categories.CleaningLimits, "int");
+    
+    // ========== Birim Limitleri ==========
+    AddSettingIfNotExists(SystemSettings.Keys.DefaultUnitLimit, "5", "Varsayılan birim limiti", SystemSettings.Categories.UnitLimits, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.DefaultUnitEmployeeLimit, "0", "Birim başına varsayılan personel limiti (0=sınırsız)", SystemSettings.Categories.UnitLimits, "int");
+    
+    // ========== Güvenlik Ayarları ==========
+    AddSettingIfNotExists(SystemSettings.Keys.PasswordMinLength, "6", "Minimum şifre uzunluğu", SystemSettings.Categories.Security, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.MaxLoginAttempts, "5", "Maksimum başarısız giriş denemesi", SystemSettings.Categories.Security, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.LockoutMinutes, "5", "Hesap kilitleme süresi (dakika)", SystemSettings.Categories.Security, "int");
     
     await context.SaveChangesAsync();
 }
@@ -883,10 +922,14 @@ static async Task SeedAdminUsers(ApplicationDbContext context)
     // Create default SuperAdmin if no admin exists
     if (!existingAdmins.Any())
     {
+        // Get default admin credentials from environment variables
+        var defaultUsername = Environment.GetEnvironmentVariable("ADMIN_DEFAULT_USERNAME") ?? "admin";
+        var defaultPassword = Environment.GetEnvironmentVariable("ADMIN_DEFAULT_PASSWORD") ?? "ChangeMe123!";
+        
         context.AdminUsers.Add(new AdminUser
         {
-            Username = "GeldimmiX",
-            PasswordHash = AdminUser.HashPassword("Liberemall423445"),
+            Username = defaultUsername,
+            PasswordHash = AdminUser.HashPassword(defaultPassword),
             FullName = "Super Admin",
             Role = AdminRoles.SuperAdmin,
             IsActive = true,
@@ -894,6 +937,12 @@ static async Task SeedAdminUsers(ApplicationDbContext context)
         });
         
         await context.SaveChangesAsync();
+        
+        // Log warning if using default password
+        if (Environment.GetEnvironmentVariable("ADMIN_DEFAULT_PASSWORD") == null)
+        {
+            Console.WriteLine("⚠️  WARNING: Using default admin password. Set ADMIN_DEFAULT_PASSWORD environment variable for production!");
+        }
     }
 }
 

@@ -1,0 +1,262 @@
+@model SystemSettingsViewModel
+@{
+    ViewData["Title"] = "Sistem Ayarları";
+}
+
+<div class="admin-header">
+    <h2>
+        <span>⚙️</span>
+        Sistem Ayarları
+    </h2>
+    <div class="header-actions">
+        <button type="button" class="btn btn-success" onclick="showAddSettingModal()">
+            <span>➕</span>
+            Yeni Ayar Ekle
+        </button>
+        <a href="/admin" class="btn btn-secondary">
+            <span>←</span>
+            Ana Sayfa
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success" style="margin-bottom: 24px; padding: 16px 20px; border-radius: 8px; background: #dcfce7; border: 1px solid #86efac; color: #166534; display: flex; align-items: center; gap: 12px;">
+        <span>✅</span>
+        <span>@TempData["Success"]</span>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger" style="margin-bottom: 24px; padding: 16px 20px; border-radius: 8px; background: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; display: flex; align-items: center; gap: 12px;">
+        <span>❌</span>
+        <span>@TempData["Error"]</span>
+    </div>
+}
+
+<form method="post" action="/admin/settings/save-all" id="settingsForm">
+    @Html.AntiForgeryToken()
+    
+    <div class="settings-container" style="display: flex; flex-direction: column; gap: 24px;">
+        @foreach (var category in Model.SettingsByCategory)
+        {
+            var categoryName = Model.CategoryNames.TryGetValue(category.Key, out var name) ? name : category.Key;
+            
+            <div class="card">
+                <div class="card-header" style="cursor: pointer;" onclick="toggleCategory('@category.Key')">
+                    <span class="card-title" style="display: flex; align-items: center; gap: 10px;">
+                        @categoryName
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">(@category.Value.Count ayar)</span>
+                    </span>
+                    <span class="toggle-icon" id="icon-@category.Key" style="transition: transform 0.3s;">▼</span>
+                </div>
+                
+                <div class="category-content" id="content-@category.Key">
+                    <div class="settings-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; padding-top: 12px;">
+                        @foreach (var setting in category.Value)
+                        {
+                            <div class="setting-item" style="background: var(--bg-secondary); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                                    <label class="form-label" style="margin: 0; font-weight: 600; color: var(--text-primary);">
+                                        @setting.Key
+                                    </label>
+                                    <span class="badge" style="font-size: 0.7rem; padding: 2px 8px; background: @GetDataTypeBadgeColor(setting.DataType); color: white;">
+                                        @setting.DataType
+                                    </span>
+                                </div>
+                                
+                                @if (setting.DataType == "bool")
+                                {
+                                    <select name="settings[@setting.Key]" class="form-control" style="height: 42px;">
+                                        @if (setting.Value == "true")
+                                        {
+                                            <option value="true" selected>✅ Aktif (true)</option>
+                                            <option value="false">❌ Pasif (false)</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="true">✅ Aktif (true)</option>
+                                            <option value="false" selected>❌ Pasif (false)</option>
+                                        }
+                                    </select>
+                                }
+                                else if (setting.DataType == "int")
+                                {
+                                    <input type="number" name="settings[@setting.Key]" class="form-control" 
+                                           value="@setting.Value" style="height: 42px;">
+                                }
+                                else if (setting.DataType == "decimal")
+                                {
+                                    <input type="number" name="settings[@setting.Key]" class="form-control" 
+                                           value="@setting.Value" step="0.01" style="height: 42px;">
+                                }
+                                else
+                                {
+                                    <input type="text" name="settings[@setting.Key]" class="form-control" 
+                                           value="@setting.Value" style="height: 42px;">
+                                }
+                                
+                                @if (!string.IsNullOrEmpty(setting.Description))
+                                {
+                                    <small style="color: var(--text-muted); font-size: 0.8rem; margin-top: 8px; display: block; line-height: 1.4;">
+                                        💡 @setting.Description
+                                    </small>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    
+    <div style="margin-top: 32px; padding: 24px; background: var(--bg-secondary); border-radius: 12px; border: 2px solid var(--border-color); position: sticky; bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 1.5rem;">💾</span>
+                <div>
+                    <div style="font-weight: 600; color: var(--text-primary);">Değişiklikleri Kaydet</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted);">Tüm ayarlar aynı anda kaydedilir</div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button type="button" class="btn btn-secondary" onclick="window.location.reload();">
+                    <span>🔄</span>
+                    İptal
+                </button>
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <span>💾</span>
+                    Tüm Ayarları Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Add Setting Modal -->
+<div id="addSettingModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 32px; border-radius: 16px; width: 100%; max-width: 500px; margin: 20px;">
+        <h3 style="margin: 0 0 24px 0; display: flex; align-items: center; gap: 10px;">
+            <span>➕</span>
+            Yeni Sistem Ayarı Ekle
+        </h3>
+        
+        <form method="post" action="/admin/settings/create">
+            @Html.AntiForgeryToken()
+            
+            <div class="form-group">
+                <label class="form-label">Anahtar (Key) *</label>
+                <input type="text" name="Key" class="form-control" required placeholder="CustomSettingName" pattern="[A-Za-z0-9_]+" title="Sadece harf, rakam ve alt çizgi">
+                <small style="color: var(--text-muted);">Benzersiz bir tanımlayıcı. Boşluk ve özel karakter kullanmayın.</small>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Değer (Value)</label>
+                <input type="text" name="Value" class="form-control" placeholder="Ayar değeri">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Açıklama</label>
+                <textarea name="Description" class="form-control" rows="2" placeholder="Bu ayarın ne işe yaradığını açıklayın"></textarea>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label">Kategori</label>
+                    <select name="Category" class="form-control">
+                        <option value="general">Genel</option>
+                        <option value="employee_limits">Personel Limitleri</option>
+                        <option value="work_settings">Çalışma Ayarları</option>
+                        <option value="cleaning_limits">Temizlik Limitleri</option>
+                        <option value="unit_limits">Birim Limitleri</option>
+                        <option value="security">Güvenlik</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Veri Tipi</label>
+                    <select name="DataType" class="form-control">
+                        <option value="string">Metin (string)</option>
+                        <option value="int">Tam Sayı (int)</option>
+                        <option value="decimal">Ondalıklı Sayı (decimal)</option>
+                        <option value="bool">Evet/Hayır (bool)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="hideAddSettingModal()">İptal</button>
+                <button type="submit" class="btn btn-primary" style="flex: 1;">Oluştur</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@functions {
+    string GetDataTypeBadgeColor(string dataType)
+    {
+        return dataType switch
+        {
+            "int" => "#3b82f6",
+            "decimal" => "#8b5cf6",
+            "bool" => "#22c55e",
+            _ => "#6b7280"
+        };
+    }
+}
+
+<style>
+    .settings-grid input:focus,
+    .settings-grid select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .category-content {
+        max-height: 2000px;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+    }
+    
+    .category-content.collapsed {
+        max-height: 0;
+        padding-top: 0 !important;
+    }
+    
+    .toggle-icon.rotated {
+        transform: rotate(-90deg);
+    }
+    
+    .setting-item:hover {
+        border-color: var(--primary-color) !important;
+        background: var(--bg-tertiary) !important;
+    }
+</style>
+
+<script>
+    function toggleCategory(categoryKey) {
+        const content = document.getElementById('content-' + categoryKey);
+        const icon = document.getElementById('icon-' + categoryKey);
+        
+        content.classList.toggle('collapsed');
+        icon.classList.toggle('rotated');
+    }
+    
+    function showAddSettingModal() {
+        document.getElementById('addSettingModal').style.display = 'flex';
+    }
+    
+    function hideAddSettingModal() {
+        document.getElementById('addSettingModal').style.display = 'none';
+    }
+    
+    // Close modal on outside click
+    document.getElementById('addSettingModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            hideAddSettingModal();
+        }
+    });
+</script>
+

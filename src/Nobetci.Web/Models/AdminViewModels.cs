@@ -110,13 +110,28 @@ public class OrganizationSummary
     public int EmployeeCount { get; set; }
 }
 
+/// <summary>
+/// Dinamik sistem ayarları görünümü modeli
+/// </summary>
 public class SystemSettingsViewModel
 {
-    public int GuestEmployeeLimit { get; set; } = 5;
-    public int RegisteredEmployeeLimit { get; set; } = 10;
-    public int PremiumEmployeeLimit { get; set; } = 100;
-    public string? SiteName { get; set; } = "Geldimmi";
-    public bool MaintenanceMode { get; set; } = false;
+    public Dictionary<string, List<Nobetci.Web.Data.Entities.SystemSettings>> SettingsByCategory { get; set; } = new();
+    public Dictionary<string, string> CategoryNames { get; set; } = new();
+}
+
+public class UpdateSettingRequest
+{
+    public string Key { get; set; } = string.Empty;
+    public string Value { get; set; } = string.Empty;
+}
+
+public class CreateSettingRequest
+{
+    public string Key { get; set; } = string.Empty;
+    public string? Value { get; set; }
+    public string? Description { get; set; }
+    public string? Category { get; set; }
+    public string? DataType { get; set; }
 }
 
 public class AdminUserViewModel
