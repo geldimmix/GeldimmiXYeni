@@ -813,6 +813,10 @@ using (var scope = app.Services.CreateScope())
             logger.LogWarning(migrationEx, "Migration warning (tables may already exist).");
         }
         
+        // Ensure SystemSettings table has required columns
+        try { await EnsureSystemSettingsColumnsAsync(context); }
+        catch (Exception ex) { Console.WriteLine($"EnsureSystemSettingsColumns warning: {ex.Message}"); }
+        
         // Seed system settings (run regardless of migration status)
         try { await SeedSystemSettings(context); }
         catch (Exception ex) { Console.WriteLine($"SeedSystemSettings warning: {ex.Message}"); }
@@ -1788,5 +1792,53 @@ static async Task SeedBlogPosts(ApplicationDbContext context)
         await context.BlogPosts.AddRangeAsync(postsToAdd);
         await context.SaveChangesAsync();
         Console.WriteLine($"Seeded {postsToAdd.Count} blog posts from static data.");
+    }
+}
+
+// Ensure SystemSettings table has required columns (Category, DataType, SortOrder)
+static async Task EnsureSystemSettingsColumnsAsync(ApplicationDbContext context)
+{
+    var connection = context.Database.GetDbConnection();
+    await connection.OpenAsync();
+    
+    try
+    {
+        using var command = connection.CreateCommand();
+        
+        // Check and add Category column
+        command.CommandText = @"
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='SystemSettings' AND column_name='Category') THEN
+                    ALTER TABLE ""SystemSettings"" ADD COLUMN ""Category"" VARCHAR(50) DEFAULT 'general';
+                END IF;
+            END $$;";
+        await command.ExecuteNonQueryAsync();
+        
+        // Check and add DataType column
+        command.CommandText = @"
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='SystemSettings' AND column_name='DataType') THEN
+                    ALTER TABLE ""SystemSettings"" ADD COLUMN ""DataType"" VARCHAR(20) DEFAULT 'string';
+                END IF;
+            END $$;";
+        await command.ExecuteNonQueryAsync();
+        
+        // Check and add SortOrder column
+        command.CommandText = @"
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='SystemSettings' AND column_name='SortOrder') THEN
+                    ALTER TABLE ""SystemSettings"" ADD COLUMN ""SortOrder"" INTEGER DEFAULT 0;
+                END IF;
+            END $$;";
+        await command.ExecuteNonQueryAsync();
+        
+        Console.WriteLine("SystemSettings columns ensured.");
+    }
+    finally
+    {
+        await connection.CloseAsync();
     }
 }

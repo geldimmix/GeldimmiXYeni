@@ -198,7 +198,7 @@ namespace Nobetci.Web.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.ToTable("AdminUsers");
+                    b.ToTable("AdminUsers", (string)null);
                 });
 
             modelBuilder.Entity("Nobetci.Web.Data.Entities.ApiKey", b =>
@@ -262,7 +262,7 @@ namespace Nobetci.Web.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("ApiKeys");
+                    b.ToTable("ApiKeys", (string)null);
                 });
 
             modelBuilder.Entity("Nobetci.Web.Data.Entities.ApplicationUser", b =>
@@ -435,7 +435,7 @@ namespace Nobetci.Web.Migrations
                     b.HasIndex("Slug", "Language")
                         .IsUnique();
 
-                    b.ToTable("ContentPages");
+                    b.ToTable("ContentPages", (string)null);
                 });
 
             modelBuilder.Entity("Nobetci.Web.Data.Entities.Employee", b =>
@@ -510,7 +510,7 @@ namespace Nobetci.Web.Migrations
 
                     b.HasIndex("OrganizationId", "IdentityNo");
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("Nobetci.Web.Data.Entities.EmployeeAvailability", b =>
@@ -550,7 +550,7 @@ namespace Nobetci.Web.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("EmployeeAvailabilities");
+                    b.ToTable("EmployeeAvailabilities", (string)null);
                 });
 
             modelBuilder.Entity("Nobetci.Web.Data.Entities.Holiday", b =>
@@ -589,7 +589,7 @@ namespace Nobetci.Web.Migrations
                     b.HasIndex("OrganizationId", "Date")
                         .IsUnique();
 
-                    b.ToTable("Holidays");
+                    b.ToTable("Holidays", (string)null);
                 });
 
             modelBuilder.Entity("Nobetci.Web.Data.Entities.Leave", b =>
@@ -624,7 +624,7 @@ namespace Nobetci.Web.Migrations
 
                     b.HasIndex("EmployeeId", "Date");
 
-                    b.ToTable("Leaves");
+                    b.ToTable("Leaves", (string)null);
                 });
 
             modelBuilder.Entity("Nobetci.Web.Data.Entities.LeaveType", b =>
@@ -689,7 +689,7 @@ namespace Nobetci.Web.Migrations
 
                     b.HasIndex("OrganizationId", "Code");
 
-                    b.ToTable("LeaveTypes");
+                    b.ToTable("LeaveTypes", (string)null);
                 });
 
             modelBuilder.Entity("Nobetci.Web.Data.Entities.Organization", b =>
@@ -748,7 +748,7 @@ namespace Nobetci.Web.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Organizations");
+                    b.ToTable("Organizations", (string)null);
                 });
 
             modelBuilder.Entity("Nobetci.Web.Data.Entities.SavedPayroll", b =>
@@ -800,7 +800,7 @@ namespace Nobetci.Web.Migrations
 
                     b.HasIndex("OrganizationId", "Year", "Month");
 
-                    b.ToTable("SavedPayrolls");
+                    b.ToTable("SavedPayrolls", (string)null);
                 });
 
             modelBuilder.Entity("Nobetci.Web.Data.Entities.SavedSchedule", b =>
@@ -845,7 +845,7 @@ namespace Nobetci.Web.Migrations
 
                     b.HasIndex("OrganizationId", "Year", "Month");
 
-                    b.ToTable("SavedSchedules");
+                    b.ToTable("SavedSchedules", (string)null);
                 });
 
             modelBuilder.Entity("Nobetci.Web.Data.Entities.Shift", b =>
@@ -913,7 +913,7 @@ namespace Nobetci.Web.Migrations
 
                     b.HasIndex("EmployeeId", "Date");
 
-                    b.ToTable("Shifts");
+                    b.ToTable("Shifts", (string)null);
                 });
 
             modelBuilder.Entity("Nobetci.Web.Data.Entities.ShiftTemplate", b =>
@@ -971,7 +971,7 @@ namespace Nobetci.Web.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("ShiftTemplates");
+                    b.ToTable("ShiftTemplates", (string)null);
 
                     b.HasData(
                         new
@@ -1090,7 +1090,7 @@ namespace Nobetci.Web.Migrations
                     b.HasIndex("Key")
                         .IsUnique();
 
-                    b.ToTable("SystemSettings");
+                    b.ToTable("SystemSettings", (string)null);
                 });
 
             modelBuilder.Entity("Nobetci.Web.Data.Entities.TimeAttendance", b =>
@@ -1159,7 +1159,7 @@ namespace Nobetci.Web.Migrations
 
                     b.HasIndex("EmployeeId", "Date");
 
-                    b.ToTable("TimeAttendances");
+                    b.ToTable("TimeAttendances", (string)null);
                 });
 
             modelBuilder.Entity("Nobetci.Web.Data.Entities.Unit", b =>
@@ -1214,7 +1214,7 @@ namespace Nobetci.Web.Migrations
                     b.HasIndex("OrganizationId", "Name")
                         .IsUnique();
 
-                    b.ToTable("Units");
+                    b.ToTable("Units", (string)null);
                 });
 
             modelBuilder.Entity("Nobetci.Web.Data.Entities.UnitType", b =>
@@ -1265,7 +1265,7 @@ namespace Nobetci.Web.Migrations
                     b.HasIndex("OrganizationId", "Name")
                         .IsUnique();
 
-                    b.ToTable("UnitTypes");
+                    b.ToTable("UnitTypes", (string)null);
                 });
 
             modelBuilder.Entity("Nobetci.Web.Data.Entities.VisitorLog", b =>
@@ -1369,7 +1369,7 @@ namespace Nobetci.Web.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("VisitorLogs");
+                    b.ToTable("VisitorLogs", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
