@@ -525,7 +525,7 @@
     
     .products-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 24px;
     }
     
@@ -1101,6 +1101,10 @@
        ═══════════════════════════════════════════════════════════ */
     
     @@media (max-width: 1199px) {
+        .products-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    
+    @@media (max-width: 1199px) {
         .products-grid { grid-template-columns: repeat(2, 1fr); }
     }
     
@@ -1259,8 +1263,8 @@
             </h2>
             <p class="section-text">
                 @(isTurkish 
-                    ? "Nöbet planlama, mesai takip, puantaj ve izin yönetimi - hepsi tek platformda."
-                    : "Shift planning, time attendance, payroll and leave management - all in one platform.")
+                    ? "Nöbet planlama, mesai takip, puantaj, izin yönetimi, temizlik çizelgesi ve restoran QR menü - hepsi tek platformda."
+                    : "Shift planning, time attendance, payroll, leave management, cleaning schedules and restaurant QR menu - all in one platform.")
             </p>
         </div>
         
@@ -1354,6 +1358,54 @@
                 </ul>
                 <a href="/app" class="product-btn">
                     @(isTurkish ? "Keşfet" : "Explore")
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+            
+            <!-- 5. Temizlik Çizelgesi -->
+            <div class="product-card" id="cleaning-schedule">
+                <span class="product-number">05</span>
+                <div class="product-icon">🧹</div>
+                <div class="product-badge" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%);">@(isTurkish ? "Yeni" : "New")</div>
+                <h3 class="product-title">@(isTurkish ? "Temizlik Çizelgesi" : "Cleaning Schedule")</h3>
+                <p class="product-desc">
+                    @(isTurkish 
+                        ? "QR kodlu dijital temizlik takip sistemi. Otel, hastane, AVM ve işletmeler için profesyonel temizlik yönetimi."
+                        : "QR code digital cleaning tracking system. Professional cleaning management for hotels, hospitals, malls and businesses.")
+                </p>
+                <ul class="product-features">
+                    <li>@(isTurkish ? "QR kod ile anlık takip" : "Real-time QR code tracking")</li>
+                    <li>@(isTurkish ? "Periyodik görev tanımlama" : "Periodic task definition")</li>
+                    <li>@(isTurkish ? "Personel performans raporu" : "Staff performance reports")</li>
+                    <li>@(isTurkish ? "Fotoğraflı kanıt sistemi" : "Photo evidence system")</li>
+                    <li>@(isTurkish ? "Anlık bildirimler" : "Instant notifications")</li>
+                </ul>
+                <a href="/cleaning" class="product-btn">
+                    @(isTurkish ? "Hemen Başla" : "Get Started")
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+            
+            <!-- 6. Restoran QR Menü -->
+            <div class="product-card" id="qr-menu">
+                <span class="product-number">06</span>
+                <div class="product-icon">🍽️</div>
+                <div class="product-badge" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);">@(isTurkish ? "Yeni" : "New")</div>
+                <h3 class="product-title">@(isTurkish ? "Restoran QR Menü" : "Restaurant QR Menu")</h3>
+                <p class="product-desc">
+                    @(isTurkish 
+                        ? "Restoranınız için şık dijital menü. QR kod ile müşterileriniz menünüze anında erişsin, sipariş versin."
+                        : "Elegant digital menu for your restaurant. Customers can instantly access your menu via QR code and place orders.")
+                </p>
+                <ul class="product-features">
+                    <li>@(isTurkish ? "Şık ve modern menü tasarımı" : "Elegant modern menu design")</li>
+                    <li>@(isTurkish ? "Kategoriler ve alt kategoriler" : "Categories and subcategories")</li>
+                    <li>@(isTurkish ? "Masa bazlı QR kodlar" : "Table-based QR codes")</li>
+                    <li>@(isTurkish ? "Online sipariş sistemi" : "Online ordering system")</li>
+                    <li>@(isTurkish ? "Günlük satış raporu" : "Daily sales reports")</li>
+                </ul>
+                <a href="/qrmenu" class="product-btn">
+                    @(isTurkish ? "Hemen Başla" : "Get Started")
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </a>
             </div>

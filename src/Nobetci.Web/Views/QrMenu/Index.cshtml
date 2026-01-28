@@ -1,9 +1,9 @@
 @model QrMenuViewModel
 @using System.Globalization
 @{
-    ViewData["Title"] = "QR Menü";
-    Layout = "_AppLayout";
     var isTurkish = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+    ViewData["Title"] = isTurkish ? "Restoran QR Menü" : "Restaurant QR Menu";
+    Layout = "_AppLayout";
 }
 
 <style>
@@ -506,10 +506,10 @@
                 <select id="moduleSelect" class="module-select" onchange="switchModule(this.value)">
                     <option value="shift">🏥 @(isTurkish ? "Nöbet Sistemi" : "Shift System")</option>
                     <option value="cleaning">🧹 @(isTurkish ? "Temizlik Çizelgesi" : "Cleaning Schedule")</option>
-                    <option value="qrmenu" selected>🍽️ @(isTurkish ? "QR Menü" : "QR Menu")</option>
+                    <option value="qrmenu" selected>🍽️ @(isTurkish ? "Restoran QR Menü" : "Restaurant QR Menu")</option>
                 </select>
             </div>
-            <h1>🍽️ @(isTurkish ? "QR Menü" : "QR Menu")</h1>
+            <h1>🍽️ @(isTurkish ? "Restoran QR Menü" : "Restaurant QR Menu")</h1>
             <p>@(isTurkish ? "Restoranınız için dijital menü oluşturun" : "Create digital menu for your restaurant")</p>
         </div>
         
