@@ -676,15 +676,15 @@
             
             <!-- Tabs -->
             <div class="tabs">
-                <button class="tab active" onclick="showTab('menu')">📋 Menü</button>
-                <button class="tab" onclick="showTab('categories')">📁 Kategoriler</button>
-                <button class="tab" onclick="showTab('items')">🍔 Ürünler</button>
+                <button class="tab active" onclick="showTab('menu', event)">📋 Menü</button>
+                <button class="tab" onclick="showTab('categories', event)">📁 Kategoriler</button>
+                <button class="tab" onclick="showTab('items', event)">🍔 Ürünler</button>
                 @if (Model.Limits.CanManageTables)
                 {
-                    <button class="tab" onclick="showTab('tables')">🪑 Masalar</button>
+                    <button class="tab" onclick="showTab('tables', event)">🪑 Masalar</button>
                 }
-                <button class="tab" onclick="showTab('qr')">📱 QR Kod</button>
-                <button class="tab" onclick="showTab('settings')">⚙️ Ayarlar</button>
+                <button class="tab" onclick="showTab('qr', event)">📱 QR Kod</button>
+                <button class="tab" onclick="showTab('settings', event)">⚙️ Ayarlar</button>
             </div>
             
             <!-- Tab: Menu Preview -->
@@ -767,7 +767,7 @@
                         <div class="empty-state">
                             <div class="icon">📂</div>
                             <p>Henüz kategori eklenmemiş</p>
-                            <button class="qr-btn qr-btn-primary qr-btn-sm" onclick="showTab('categories')">
+                            <button class="qr-btn qr-btn-primary qr-btn-sm" onclick="showTab('categories', event)">
                                 <span>➕</span> Kategori Ekle
                             </button>
                         </div>
@@ -1310,11 +1310,16 @@
     }
     
     // Tab switching
-    function showTab(tabName) {
+    function showTab(tabName, evt) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         
-        event.target.classList.add('active');
+        if (evt && evt.target) {
+            evt.target.classList.add('active');
+        } else {
+            // Find tab button by tabName
+            document.querySelector(`.tab[onclick*="'${tabName}'"]`)?.classList.add('active');
+        }
         document.getElementById('tab-' + tabName).classList.add('active');
     }
     
