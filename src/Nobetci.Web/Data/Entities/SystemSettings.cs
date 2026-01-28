@@ -81,6 +81,28 @@ public class SystemSettings
         public const string PasswordMinLength = "PasswordMinLength";
         public const string MaxLoginAttempts = "MaxLoginAttempts";
         public const string LockoutMinutes = "LockoutMinutes";
+        
+        // ========== QR Menü - Kayıtsız Kullanıcı Limitleri ==========
+        public const string QrMenuUnregisteredMenuLimit = "QrMenuUnregisteredMenuLimit";
+        public const string QrMenuUnregisteredDailyAccessLimit = "QrMenuUnregisteredDailyAccessLimit";
+        public const string QrMenuUnregisteredCategoryLimit = "QrMenuUnregisteredCategoryLimit";
+        public const string QrMenuUnregisteredItemLimit = "QrMenuUnregisteredItemLimit";
+        
+        // ========== QR Menü - Kayıtlı (Free) Kullanıcı Limitleri ==========
+        public const string QrMenuRegisteredMenuLimit = "QrMenuRegisteredMenuLimit";
+        public const string QrMenuRegisteredTableLimit = "QrMenuRegisteredTableLimit";
+        public const string QrMenuRegisteredDailyAccessLimit = "QrMenuRegisteredDailyAccessLimit";
+        public const string QrMenuRegisteredCategoryLimit = "QrMenuRegisteredCategoryLimit";
+        public const string QrMenuRegisteredItemLimit = "QrMenuRegisteredItemLimit";
+        
+        // ========== QR Menü - Premium Kullanıcı Limitleri ==========
+        public const string QrMenuPremiumMenuLimit = "QrMenuPremiumMenuLimit";
+        public const string QrMenuPremiumTableLimit = "QrMenuPremiumTableLimit";
+        public const string QrMenuPremiumDailyAccessLimit = "QrMenuPremiumDailyAccessLimit";
+        public const string QrMenuPremiumCategoryLimit = "QrMenuPremiumCategoryLimit";
+        public const string QrMenuPremiumItemLimit = "QrMenuPremiumItemLimit";
+        public const string QrMenuPremiumImageUploadEnabled = "QrMenuPremiumImageUploadEnabled";
+        public const string QrMenuPremiumMaxImageSizeKB = "QrMenuPremiumMaxImageSizeKB";
     }
     
     public static class Categories
@@ -91,6 +113,7 @@ public class SystemSettings
         public const string CleaningLimits = "cleaning_limits";
         public const string UnitLimits = "unit_limits";
         public const string Security = "security";
+        public const string QrMenuLimits = "qrmenu_limits";
     }
 }
 

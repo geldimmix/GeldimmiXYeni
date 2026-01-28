@@ -1,0 +1,450 @@
+@model OrdersViewModel
+@{
+    ViewData["Title"] = "Siparişler";
+    Layout = "_AppLayout";
+}
+
+<style>
+    .orders-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .page-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #1E1E1E;
+    }
+    
+    .header-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    
+    .btn-primary {
+        background: #E53935;
+        color: white;
+    }
+    
+    .btn-secondary {
+        background: #1E1E1E;
+        color: white;
+    }
+    
+    .btn-outline {
+        background: white;
+        border: 1px solid #E0E0E0;
+        color: #1E1E1E;
+    }
+    
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.25rem;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #E53935;
+    }
+    
+    .stat-label {
+        font-size: 0.85rem;
+        color: #757575;
+        margin-top: 0.25rem;
+    }
+    
+    .filters {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .filter-input {
+        padding: 0.6rem 1rem;
+        border: 1px solid #E0E0E0;
+        border-radius: 8px;
+        font-size: 0.95rem;
+    }
+    
+    .order-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .order-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        overflow: hidden;
+    }
+    
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.25rem;
+        background: #FAFAFA;
+        border-bottom: 1px solid #E0E0E0;
+    }
+    
+    .order-number {
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+    
+    .order-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-size: 0.9rem;
+        color: #757575;
+    }
+    
+    .order-status {
+        padding: 0.3rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .status-pending { background: #FFF3E0; color: #E65100; }
+    .status-confirmed { background: #E3F2FD; color: #1565C0; }
+    .status-preparing { background: #E8F5E9; color: #2E7D32; }
+    .status-ready { background: #F3E5F5; color: #7B1FA2; }
+    .status-delivered { background: #E0F2F1; color: #00695C; }
+    .status-completed { background: #ECEFF1; color: #455A64; }
+    .status-cancelled { background: #FFEBEE; color: #C62828; }
+    
+    .order-body {
+        padding: 1rem 1.25rem;
+    }
+    
+    .order-items {
+        margin-bottom: 1rem;
+    }
+    
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px dashed #E0E0E0;
+    }
+    
+    .order-item:last-child {
+        border-bottom: none;
+    }
+    
+    .item-name {
+        font-weight: 500;
+    }
+    
+    .item-qty {
+        color: #757575;
+        margin-left: 0.5rem;
+    }
+    
+    .item-note {
+        font-size: 0.85rem;
+        color: #757575;
+        font-style: italic;
+    }
+    
+    .order-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.25rem;
+        background: #FAFAFA;
+        border-top: 1px solid #E0E0E0;
+    }
+    
+    .order-total {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #E53935;
+    }
+    
+    .order-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .action-btn {
+        padding: 0.5rem 0.75rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .action-confirm { background: #E3F2FD; color: #1565C0; }
+    .action-prepare { background: #E8F5E9; color: #2E7D32; }
+    .action-ready { background: #F3E5F5; color: #7B1FA2; }
+    .action-complete { background: #E0F2F1; color: #00695C; }
+    .action-cancel { background: #FFEBEE; color: #C62828; }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #757575;
+    }
+    
+    .empty-state .icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+    
+    @@media (max-width: 600px) {
+        .order-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .order-footer {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .order-actions {
+            width: 100%;
+            justify-content: flex-end;
+        }
+    }
+</style>
+
+<div class="orders-container">
+    <div class="page-header">
+        <h1 class="page-title">📋 Siparişler</h1>
+        <div class="header-actions">
+            <a href="/qrmenu" class="btn btn-outline">← QR Menü</a>
+            <a href="/qrmenu/report?date=@Model.FilterDate.ToString("yyyy-MM-dd")" class="btn btn-secondary">📊 Gün Sonu Raporu</a>
+        </div>
+    </div>
+    
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-value">@Model.Orders.Count</div>
+            <div class="stat-label">Toplam Sipariş</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">@Model.PendingCount</div>
+            <div class="stat-label">Bekleyen</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">@MenuCurrencies.GetSymbol(Model.Menu.Currency)@Model.TodayTotal.ToString("N2")</div>
+            <div class="stat-label">Günlük Ciro</div>
+        </div>
+    </div>
+    
+    <form method="get" class="filters">
+        <input type="date" name="date" class="filter-input" value="@Model.FilterDate.ToString("yyyy-MM-dd")" onchange="this.form.submit()">
+        <select name="status" class="filter-input" onchange="this.form.submit()">
+            <option value="">Tüm Durumlar</option>
+            @{
+                var statuses = new[] {
+                    (OrderStatus.Pending, "⏳ Beklemede"),
+                    (OrderStatus.Confirmed, "✅ Onaylı"),
+                    (OrderStatus.Preparing, "👨‍🍳 Hazırlanıyor"),
+                    (OrderStatus.Ready, "🍽️ Hazır"),
+                    (OrderStatus.Completed, "✔️ Tamamlandı"),
+                    (OrderStatus.Cancelled, "❌ İptal")
+                };
+            }
+            @foreach (var (status, label) in statuses)
+            {
+                if (Model.FilterStatus == status)
+                {
+                    <option value="@((int)status)" selected>@label</option>
+                }
+                else
+                {
+                    <option value="@((int)status)">@label</option>
+                }
+            }
+        </select>
+    </form>
+    
+    @if (Model.Orders.Any())
+    {
+        <div class="order-list">
+            @foreach (var order in Model.Orders)
+            {
+                var statusClass = order.Status switch
+                {
+                    OrderStatus.Pending => "status-pending",
+                    OrderStatus.Confirmed => "status-confirmed",
+                    OrderStatus.Preparing => "status-preparing",
+                    OrderStatus.Ready => "status-ready",
+                    OrderStatus.Delivered => "status-delivered",
+                    OrderStatus.Completed => "status-completed",
+                    OrderStatus.Cancelled => "status-cancelled",
+                    _ => ""
+                };
+                
+                <div class="order-card">
+                    <div class="order-header">
+                        <div>
+                            <span class="order-number">#@order.OrderNumber</span>
+                            @if (order.Table != null)
+                            {
+                                <span style="margin-left: 0.75rem; color: #757575;">🪑 Masa @order.Table.TableNumber</span>
+                            }
+                        </div>
+                        <div class="order-meta">
+                            <span>@order.OrderedAt.ToLocalTime().ToString("HH:mm")</span>
+                            <span class="order-status @statusClass">@order.Status.GetDisplayNameTr()</span>
+                        </div>
+                    </div>
+                    
+                    <div class="order-body">
+                        @if (!string.IsNullOrEmpty(order.CustomerName))
+                        {
+                            <div style="margin-bottom: 0.75rem; color: #757575;">
+                                👤 @order.CustomerName
+                                @if (!string.IsNullOrEmpty(order.CustomerPhone))
+                                {
+                                    <span style="margin-left: 0.5rem;">📞 @order.CustomerPhone</span>
+                                }
+                            </div>
+                        }
+                        
+                        <div class="order-items">
+                            @foreach (var item in order.Items)
+                            {
+                                <div class="order-item">
+                                    <div>
+                                        <span class="item-name">@item.ItemName</span>
+                                        <span class="item-qty">x@item.Quantity</span>
+                                        @if (!string.IsNullOrEmpty(item.Note))
+                                        {
+                                            <div class="item-note">📝 @item.Note</div>
+                                        }
+                                    </div>
+                                    <div style="font-weight: 500;">
+                                        @MenuCurrencies.GetSymbol(order.Currency)@item.TotalPrice.ToString("N2")
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        
+                        @if (!string.IsNullOrEmpty(order.Note))
+                        {
+                            <div style="padding: 0.75rem; background: #FFF8E1; border-radius: 8px; font-size: 0.9rem;">
+                                📝 <strong>Not:</strong> @order.Note
+                            </div>
+                        }
+                    </div>
+                    
+                    <div class="order-footer">
+                        <div class="order-total">
+                            Toplam: @MenuCurrencies.GetSymbol(order.Currency)@order.TotalAmount.ToString("N2")
+                        </div>
+                        
+                        @if (order.Status != OrderStatus.Completed && order.Status != OrderStatus.Cancelled)
+                        {
+                            <div class="order-actions">
+                                @if (order.Status == OrderStatus.Pending)
+                                {
+                                    <button class="action-btn action-confirm" onclick="updateStatus(@order.Id, @((int)OrderStatus.Confirmed))">✅ Onayla</button>
+                                    <button class="action-btn action-cancel" onclick="updateStatus(@order.Id, @((int)OrderStatus.Cancelled))">❌ İptal</button>
+                                }
+                                @if (order.Status == OrderStatus.Confirmed)
+                                {
+                                    <button class="action-btn action-prepare" onclick="updateStatus(@order.Id, @((int)OrderStatus.Preparing))">👨‍🍳 Hazırla</button>
+                                }
+                                @if (order.Status == OrderStatus.Preparing)
+                                {
+                                    <button class="action-btn action-ready" onclick="updateStatus(@order.Id, @((int)OrderStatus.Ready))">🍽️ Hazır</button>
+                                }
+                                @if (order.Status == OrderStatus.Ready)
+                                {
+                                    <button class="action-btn action-complete" onclick="updateStatus(@order.Id, @((int)OrderStatus.Completed))">✔️ Tamamla</button>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="icon">📋</div>
+            <h3>Sipariş Bulunamadı</h3>
+            <p>Seçili tarih için sipariş bulunmuyor.</p>
+        </div>
+    }
+</div>
+
+<script>
+    async function updateStatus(orderId, status) {
+        const formData = new FormData();
+        formData.append('orderId', orderId);
+        formData.append('status', status);
+        formData.append('__RequestVerificationToken', '@Html.AntiForgeryToken()'.match(/value="([^"]+)"/)[1]);
+        
+        try {
+            const response = await fetch('/qrmenu/order/update-status', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                location.reload();
+            } else {
+                alert('Hata: ' + result.message);
+            }
+        } catch (error) {
+            alert('Bir hata oluştu.');
+            console.error(error);
+        }
+    }
+    
+    // Auto refresh every 30 seconds
+    setInterval(() => {
+        location.reload();
+    }, 30000);
+</script>
+

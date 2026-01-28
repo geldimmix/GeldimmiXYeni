@@ -1,0 +1,337 @@
+@model DailyReportViewModel
+@{
+    ViewData["Title"] = "Gün Sonu Raporu";
+    Layout = "_AppLayout";
+}
+
+<style>
+    .report-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    .report-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid #E0E0E0;
+    }
+    
+    .report-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #1E1E1E;
+        margin-bottom: 0.5rem;
+    }
+    
+    .report-date {
+        font-size: 1.1rem;
+        color: #757575;
+    }
+    
+    .report-restaurant {
+        font-size: 1rem;
+        color: #E53935;
+        margin-top: 0.5rem;
+    }
+    
+    .date-nav {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .date-nav a {
+        padding: 0.5rem 1rem;
+        background: #F5F5F5;
+        border-radius: 8px;
+        color: #1E1E1E;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+    
+    .date-nav a:hover {
+        background: #E0E0E0;
+    }
+    
+    .date-nav input {
+        padding: 0.6rem 1rem;
+        border: 1px solid #E0E0E0;
+        border-radius: 8px;
+        font-size: 1rem;
+    }
+    
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .summary-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    
+    .summary-card.highlight {
+        background: linear-gradient(135deg, #E53935 0%, #FF6F00 100%);
+        color: white;
+    }
+    
+    .summary-value {
+        font-size: 2.2rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+    
+    .summary-label {
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        opacity: 0.9;
+    }
+    
+    .summary-card.highlight .summary-value {
+        color: white;
+    }
+    
+    .section {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    
+    .section-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #1E1E1E;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #E0E0E0;
+    }
+    
+    .top-items {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .top-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px dashed #E0E0E0;
+    }
+    
+    .top-item:last-child {
+        border-bottom: none;
+    }
+    
+    .top-item-rank {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, #E53935 0%, #FF6F00 100%);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+        margin-right: 1rem;
+    }
+    
+    .top-item-rank.gold { background: linear-gradient(135deg, #FFD700 0%, #FFA000 100%); color: #1E1E1E; }
+    .top-item-rank.silver { background: linear-gradient(135deg, #C0C0C0 0%, #9E9E9E 100%); }
+    .top-item-rank.bronze { background: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%); }
+    
+    .top-item-info {
+        flex: 1;
+    }
+    
+    .top-item-name {
+        font-weight: 600;
+        color: #1E1E1E;
+    }
+    
+    .top-item-qty {
+        font-size: 0.85rem;
+        color: #757575;
+    }
+    
+    .top-item-revenue {
+        font-weight: 700;
+        color: #E53935;
+    }
+    
+    .actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    
+    .btn-primary {
+        background: #E53935;
+        color: white;
+    }
+    
+    .btn-secondary {
+        background: #1E1E1E;
+        color: white;
+    }
+    
+    .btn-outline {
+        background: white;
+        border: 1px solid #E0E0E0;
+        color: #1E1E1E;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #757575;
+    }
+    
+    .empty-state .icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+    
+    @@media print {
+        body {
+            background: white;
+        }
+        
+        .date-nav, .actions {
+            display: none;
+        }
+        
+        .summary-card, .section {
+            box-shadow: none;
+            border: 1px solid #E0E0E0;
+        }
+        
+        .summary-card.highlight {
+            background: #E53935 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    }
+</style>
+
+<div class="report-container">
+    <div class="report-header">
+        <h1 class="report-title">📊 Gün Sonu Raporu</h1>
+        <div class="report-date">@Model.ReportDate.ToString("dd MMMM yyyy, dddd")</div>
+        <div class="report-restaurant">@Model.Menu.RestaurantName</div>
+    </div>
+    
+    <div class="date-nav">
+        <a href="/qrmenu/report?date=@Model.ReportDate.AddDays(-1).ToString("yyyy-MM-dd")">← Önceki Gün</a>
+        <form method="get" style="display: inline;">
+            <input type="date" name="date" value="@Model.ReportDate.ToString("yyyy-MM-dd")" onchange="this.form.submit()">
+        </form>
+        @if (Model.ReportDate.Date < DateTime.UtcNow.Date)
+        {
+            <a href="/qrmenu/report?date=@Model.ReportDate.AddDays(1).ToString("yyyy-MM-dd")">Sonraki Gün →</a>
+        }
+    </div>
+    
+    @if (Model.TotalOrders > 0)
+    {
+        <div class="summary-grid">
+            <div class="summary-card highlight">
+                <div class="summary-value">@Model.CurrencySymbol@Model.TotalRevenue.ToString("N0")</div>
+                <div class="summary-label">Toplam Ciro</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value">@Model.TotalOrders</div>
+                <div class="summary-label">Toplam Sipariş</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value">@Model.CompletedOrders</div>
+                <div class="summary-label">Tamamlanan</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value" style="color: #C62828;">@Model.CancelledOrders</div>
+                <div class="summary-label">İptal Edilen</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value">@Model.CurrencySymbol@Model.AverageOrderValue.ToString("N0")</div>
+                <div class="summary-label">Ortalama Sipariş</div>
+            </div>
+        </div>
+        
+        @if (Model.TopSellingItems.Any())
+        {
+            <div class="section">
+                <h2 class="section-title">🏆 En Çok Satan Ürünler</h2>
+                <ul class="top-items">
+                    @for (int i = 0; i < Model.TopSellingItems.Count; i++)
+                    {
+                        var item = Model.TopSellingItems[i];
+                        var rankClass = i == 0 ? "gold" : (i == 1 ? "silver" : (i == 2 ? "bronze" : ""));
+                        
+                        <li class="top-item">
+                            <span class="top-item-rank @rankClass">@(i + 1)</span>
+                            <div class="top-item-info">
+                                <div class="top-item-name">@item.ItemName</div>
+                                <div class="top-item-qty">@item.Quantity adet satıldı</div>
+                            </div>
+                            <div class="top-item-revenue">@Model.CurrencySymbol@item.TotalRevenue.ToString("N0")</div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+        
+        @if (Model.CancelledOrders > 0)
+        {
+            <div class="section">
+                <h2 class="section-title">❌ İptal Edilen Siparişler</h2>
+                <p style="color: #757575;">
+                    Toplam <strong>@Model.CancelledOrders</strong> sipariş iptal edildi.
+                    Kaybedilen potansiyel ciro: <strong style="color: #C62828;">@Model.CurrencySymbol@Model.CancelledRevenue.ToString("N0")</strong>
+                </p>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="icon">📊</div>
+            <h3>Veri Bulunamadı</h3>
+            <p>Bu tarihte sipariş kaydı bulunmuyor.</p>
+        </div>
+    }
+    
+    <div class="actions">
+        <a href="/qrmenu/orders?date=@Model.ReportDate.ToString("yyyy-MM-dd")" class="btn btn-outline">📋 Siparişleri Görüntüle</a>
+        <button onclick="window.print()" class="btn btn-secondary">🖨️ Yazdır</button>
+        <a href="/qrmenu" class="btn btn-primary">← QR Menü</a>
+    </div>
+</div>
+

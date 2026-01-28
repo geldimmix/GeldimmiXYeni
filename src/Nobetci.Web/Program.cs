@@ -148,6 +148,18 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+// Serve QR Menu images from AppData folder
+var appDataPath = Path.Combine(builder.Environment.ContentRootPath, "AppData", "QrMenuImages");
+if (!Directory.Exists(appDataPath))
+{
+    Directory.CreateDirectory(appDataPath);
+}
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(appDataPath),
+    RequestPath = "/QrMenuImages"
+});
+
 app.UseRouting();
 
 // Localization middleware
@@ -914,6 +926,28 @@ static async Task SeedSystemSettings(ApplicationDbContext context)
     AddSettingIfNotExists(SystemSettings.Keys.PasswordMinLength, "6", "Minimum şifre uzunluğu", SystemSettings.Categories.Security, "int");
     AddSettingIfNotExists(SystemSettings.Keys.MaxLoginAttempts, "5", "Maksimum başarısız giriş denemesi", SystemSettings.Categories.Security, "int");
     AddSettingIfNotExists(SystemSettings.Keys.LockoutMinutes, "5", "Hesap kilitleme süresi (dakika)", SystemSettings.Categories.Security, "int");
+    
+    // ========== QR Menü - Kayıtsız Kullanıcı Limitleri ==========
+    AddSettingIfNotExists(SystemSettings.Keys.QrMenuUnregisteredMenuLimit, "1", "Kayıtsız kullanıcı max menü sayısı", SystemSettings.Categories.QrMenuLimits, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.QrMenuUnregisteredDailyAccessLimit, "10", "Kayıtsız kullanıcı günlük QR erişim limiti", SystemSettings.Categories.QrMenuLimits, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.QrMenuUnregisteredCategoryLimit, "5", "Kayıtsız kullanıcı max kategori sayısı", SystemSettings.Categories.QrMenuLimits, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.QrMenuUnregisteredItemLimit, "20", "Kayıtsız kullanıcı max ürün sayısı", SystemSettings.Categories.QrMenuLimits, "int");
+    
+    // ========== QR Menü - Kayıtlı (Free) Kullanıcı Limitleri ==========
+    AddSettingIfNotExists(SystemSettings.Keys.QrMenuRegisteredMenuLimit, "1", "Kayıtlı kullanıcı max menü sayısı", SystemSettings.Categories.QrMenuLimits, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.QrMenuRegisteredTableLimit, "10", "Kayıtlı kullanıcı max masa sayısı", SystemSettings.Categories.QrMenuLimits, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.QrMenuRegisteredDailyAccessLimit, "50", "Kayıtlı kullanıcı günlük QR erişim limiti (toplam)", SystemSettings.Categories.QrMenuLimits, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.QrMenuRegisteredCategoryLimit, "5", "Kayıtlı kullanıcı max kategori sayısı", SystemSettings.Categories.QrMenuLimits, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.QrMenuRegisteredItemLimit, "100", "Kayıtlı kullanıcı max ürün sayısı", SystemSettings.Categories.QrMenuLimits, "int");
+    
+    // ========== QR Menü - Premium Kullanıcı Limitleri ==========
+    AddSettingIfNotExists(SystemSettings.Keys.QrMenuPremiumMenuLimit, "10", "Premium kullanıcı max menü sayısı", SystemSettings.Categories.QrMenuLimits, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.QrMenuPremiumTableLimit, "100", "Premium kullanıcı max masa sayısı", SystemSettings.Categories.QrMenuLimits, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.QrMenuPremiumDailyAccessLimit, "5000", "Premium kullanıcı günlük QR erişim limiti", SystemSettings.Categories.QrMenuLimits, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.QrMenuPremiumCategoryLimit, "50", "Premium kullanıcı max kategori sayısı", SystemSettings.Categories.QrMenuLimits, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.QrMenuPremiumItemLimit, "1000", "Premium kullanıcı max ürün sayısı", SystemSettings.Categories.QrMenuLimits, "int");
+    AddSettingIfNotExists(SystemSettings.Keys.QrMenuPremiumImageUploadEnabled, "true", "Premium kullanıcılar ürün resmi yükleyebilir", SystemSettings.Categories.QrMenuLimits, "bool");
+    AddSettingIfNotExists(SystemSettings.Keys.QrMenuPremiumMaxImageSizeKB, "500", "Max ürün resmi boyutu (KB)", SystemSettings.Categories.QrMenuLimits, "int");
     
     await context.SaveChangesAsync();
 }

@@ -48,6 +48,15 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     
     // Blog System
     public DbSet<BlogPost> BlogPosts => Set<BlogPost>();
+    
+    // QR Menu Module
+    public DbSet<QrMenu> QrMenus => Set<QrMenu>();
+    public DbSet<QrMenuCategory> QrMenuCategories => Set<QrMenuCategory>();
+    public DbSet<QrMenuItem> QrMenuItems => Set<QrMenuItem>();
+    public DbSet<QrMenuTable> QrMenuTables => Set<QrMenuTable>();
+    public DbSet<QrMenuOrder> QrMenuOrders => Set<QrMenuOrder>();
+    public DbSet<QrMenuOrderItem> QrMenuOrderItems => Set<QrMenuOrderItem>();
+    public DbSet<QrMenuAccess> QrMenuAccesses => Set<QrMenuAccess>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -350,6 +359,110 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasIndex(e => e.IsPublished);
             entity.HasIndex(e => e.PublishedAt);
             entity.HasIndex(e => e.IsFeatured);
+        });
+        
+        // QrMenu configuration
+        builder.Entity<QrMenu>(entity =>
+        {
+            entity.HasIndex(e => e.Slug).IsUnique();
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.SessionId);
+            entity.HasIndex(e => e.IsActive);
+            
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+        
+        // QrMenuCategory configuration
+        builder.Entity<QrMenuCategory>(entity =>
+        {
+            entity.HasIndex(e => new { e.MenuId, e.DisplayOrder });
+            
+            entity.HasOne(e => e.Menu)
+                .WithMany(m => m.Categories)
+                .HasForeignKey(e => e.MenuId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            entity.HasOne(e => e.ParentCategory)
+                .WithMany(c => c.SubCategories)
+                .HasForeignKey(e => e.ParentCategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+        
+        // QrMenuItem configuration
+        builder.Entity<QrMenuItem>(entity =>
+        {
+            entity.HasIndex(e => new { e.CategoryId, e.DisplayOrder });
+            entity.HasIndex(e => e.IsActive);
+            
+            entity.HasOne(e => e.Category)
+                .WithMany(c => c.Items)
+                .HasForeignKey(e => e.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        // QrMenuTable configuration
+        builder.Entity<QrMenuTable>(entity =>
+        {
+            entity.HasIndex(e => new { e.MenuId, e.QrCode }).IsUnique();
+            entity.HasIndex(e => e.IsActive);
+            
+            entity.HasOne(e => e.Menu)
+                .WithMany(m => m.Tables)
+                .HasForeignKey(e => e.MenuId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        // QrMenuOrder configuration
+        builder.Entity<QrMenuOrder>(entity =>
+        {
+            entity.HasIndex(e => e.OrderNumber);
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.OrderedAt);
+            entity.HasIndex(e => new { e.MenuId, e.OrderedAt });
+            
+            entity.HasOne(e => e.Menu)
+                .WithMany(m => m.Orders)
+                .HasForeignKey(e => e.MenuId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            entity.HasOne(e => e.Table)
+                .WithMany(t => t.Orders)
+                .HasForeignKey(e => e.TableId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+        
+        // QrMenuOrderItem configuration
+        builder.Entity<QrMenuOrderItem>(entity =>
+        {
+            entity.HasOne(e => e.Order)
+                .WithMany(o => o.Items)
+                .HasForeignKey(e => e.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            entity.HasOne(e => e.MenuItem)
+                .WithMany()
+                .HasForeignKey(e => e.MenuItemId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+        
+        // QrMenuAccess configuration
+        builder.Entity<QrMenuAccess>(entity =>
+        {
+            entity.HasIndex(e => new { e.MenuId, e.AccessDate });
+            entity.HasIndex(e => e.AccessDate);
+            
+            entity.HasOne(e => e.Menu)
+                .WithMany(m => m.Accesses)
+                .HasForeignKey(e => e.MenuId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            entity.HasOne(e => e.Table)
+                .WithMany()
+                .HasForeignKey(e => e.TableId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
 
         // Seed global shift templates

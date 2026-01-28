@@ -1,0 +1,1495 @@
+@model QrMenuViewModel
+@{
+    ViewData["Title"] = "QR Menü";
+    Layout = "_AppLayout";
+}
+
+<style>
+    :root {
+        --qr-primary: #E53935;
+        --qr-secondary: #1E1E1E;
+        --qr-accent: #FF6F00;
+        --qr-success: #2E7D32;
+        --qr-bg: #FAF7F5;
+        --qr-card: #FFFFFF;
+        --qr-text: #1E1E1E;
+        --qr-muted: #757575;
+        --qr-border: #E0E0E0;
+    }
+    
+    .qrmenu-container {
+        background: var(--qr-bg);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+    
+    .qrmenu-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .qrmenu-header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        color: var(--qr-secondary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .qrmenu-header p {
+        color: var(--qr-muted);
+        font-size: 1.1rem;
+    }
+    
+    .qr-card {
+        background: var(--qr-card);
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .qr-card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--qr-border);
+    }
+    
+    .qr-card-header .icon {
+        font-size: 1.5rem;
+    }
+    
+    .qr-card-header h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: var(--qr-secondary);
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 1rem;
+    }
+    
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+        background: linear-gradient(135deg, var(--qr-primary) 0%, var(--qr-accent) 100%);
+        border-radius: 12px;
+        color: white;
+    }
+    
+    .stat-item .value {
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+    
+    .stat-item .label {
+        font-size: 0.85rem;
+        opacity: 0.9;
+        margin-top: 0.25rem;
+    }
+    
+    .qr-form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .qr-form-group label {
+        display: block;
+        font-weight: 600;
+        color: var(--qr-secondary);
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .qr-input, .qr-select, .qr-textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--qr-border);
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+        background: white;
+    }
+    
+    .qr-input:focus, .qr-select:focus, .qr-textarea:focus {
+        outline: none;
+        border-color: var(--qr-primary);
+    }
+    
+    .qr-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .qr-btn-primary {
+        background: linear-gradient(135deg, var(--qr-primary) 0%, var(--qr-accent) 100%);
+        color: white;
+    }
+    
+    .qr-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(229, 57, 53, 0.4);
+    }
+    
+    .qr-btn-secondary {
+        background: var(--qr-secondary);
+        color: white;
+    }
+    
+    .qr-btn-success {
+        background: var(--qr-success);
+        color: white;
+    }
+    
+    .qr-btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .limit-bar {
+        background: var(--qr-border);
+        border-radius: 10px;
+        height: 8px;
+        overflow: hidden;
+        margin-top: 0.5rem;
+    }
+    
+    .limit-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--qr-success) 0%, var(--qr-primary) 100%);
+        border-radius: 10px;
+        transition: width 0.3s;
+    }
+    
+    .limit-text {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: var(--qr-muted);
+        margin-top: 0.25rem;
+    }
+    
+    .category-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .category-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        background: var(--qr-bg);
+        border-radius: 10px;
+        margin-bottom: 0.5rem;
+    }
+    
+    .category-item .name {
+        font-weight: 600;
+        color: var(--qr-secondary);
+    }
+    
+    .category-item .count {
+        font-size: 0.85rem;
+        color: var(--qr-muted);
+    }
+    
+    .item-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .menu-item-card {
+        background: var(--qr-bg);
+        border-radius: 12px;
+        padding: 1rem;
+        position: relative;
+    }
+    
+    .menu-item-card .name {
+        font-weight: 600;
+        color: var(--qr-secondary);
+        margin-bottom: 0.25rem;
+    }
+    
+    .menu-item-card .price {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--qr-primary);
+    }
+    
+    .menu-item-card .old-price {
+        font-size: 0.9rem;
+        text-decoration: line-through;
+        color: var(--qr-muted);
+        margin-left: 0.5rem;
+    }
+    
+    .table-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+    
+    .table-card {
+        background: var(--qr-bg);
+        border-radius: 12px;
+        padding: 1rem;
+        text-align: center;
+    }
+    
+    .table-card .number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--qr-secondary);
+    }
+    
+    .table-card .qr-code {
+        font-family: monospace;
+        font-size: 0.85rem;
+        color: var(--qr-muted);
+        margin-top: 0.25rem;
+    }
+    
+    .qr-preview {
+        text-align: center;
+        padding: 2rem;
+        background: white;
+        border-radius: 16px;
+        border: 2px dashed var(--qr-border);
+    }
+    
+    .qr-preview img {
+        max-width: 200px;
+        border-radius: 8px;
+    }
+    
+    .qr-preview .url {
+        font-size: 0.85rem;
+        color: var(--qr-muted);
+        word-break: break-all;
+        margin-top: 1rem;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--qr-muted);
+    }
+    
+    .empty-state .icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+    
+    .tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--qr-border);
+        padding-bottom: 0.5rem;
+    }
+    
+    .tab {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        background: transparent;
+        font-size: 1rem;
+        color: var(--qr-muted);
+        cursor: pointer;
+        border-radius: 8px 8px 0 0;
+        transition: all 0.2s;
+    }
+    
+    .tab.active {
+        color: var(--qr-primary);
+        background: white;
+        font-weight: 600;
+    }
+    
+    .tab-content {
+        display: none;
+    }
+    
+    .tab-content.active {
+        display: block;
+    }
+    
+    .color-picker-group {
+        display: flex;
+        gap: 1rem;
+    }
+    
+    .color-picker-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .color-picker {
+        width: 50px;
+        height: 40px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .modal-overlay.active {
+        display: flex;
+    }
+    
+    .modal {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .modal-header h3 {
+        margin: 0;
+        font-size: 1.3rem;
+    }
+    
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--qr-muted);
+    }
+    
+    .alert {
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+    }
+    
+    .alert-success {
+        background: #E8F5E9;
+        color: #2E7D32;
+    }
+    
+    .alert-error {
+        background: #FFEBEE;
+        color: #C62828;
+    }
+    
+    .premium-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        background: linear-gradient(135deg, #FFD700 0%, #FFA000 100%);
+        color: #1E1E1E;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    @@media (max-width: 768px) {
+        .qrmenu-header h1 {
+            font-size: 1.8rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .tabs {
+            overflow-x: auto;
+        }
+        
+        .tab {
+            white-space: nowrap;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+
+<div class="qrmenu-container">
+    <div class="container" style="max-width: 1200px; margin: 0 auto;">
+        
+        <div class="qrmenu-header">
+            <h1>🍽️ QR Menü</h1>
+            <p>Restoranınız için dijital menü oluşturun</p>
+        </div>
+        
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">✅ @TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-error">❌ @TempData["Error"]</div>
+        }
+        
+        @if (Model.Menu == null)
+        {
+            <!-- Create Menu Form -->
+            <div class="qr-card">
+                <div class="qr-card-header">
+                    <span class="icon">✨</span>
+                    <h3>Yeni Menü Oluştur</h3>
+                </div>
+                
+                <form method="post" action="/qrmenu/create">
+                    @Html.AntiForgeryToken()
+                    
+                    <div class="qr-form-group">
+                        <label>Menü Adı *</label>
+                        <input type="text" name="Name" class="qr-input" placeholder="Örn: Ana Menü" required>
+                    </div>
+                    
+                    <div class="qr-form-group">
+                        <label>Restoran Adı</label>
+                        <input type="text" name="RestaurantName" class="qr-input" placeholder="Örn: Lezzet Köşesi">
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="qr-form-group">
+                            <label>Para Birimi</label>
+                            <select name="Currency" class="qr-select">
+                                @foreach (var currency in Model.Currencies)
+                                {
+                                    if (currency.Key == "TRY")
+                                    {
+                                        <option value="@currency.Key" selected>@currency.Value</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@currency.Key">@currency.Value</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        
+                        <div class="qr-form-group">
+                            <label>Dil</label>
+                            <select name="Language" class="qr-select">
+                                @foreach (var lang in Model.Languages)
+                                {
+                                    if (lang.Key == "tr")
+                                    {
+                                        <option value="@lang.Key" selected>@lang.Value</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@lang.Key">@lang.Value</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="qr-form-group">
+                        <label>Telefon</label>
+                        <input type="tel" name="RestaurantPhone" class="qr-input" placeholder="0xxx xxx xx xx">
+                    </div>
+                    
+                    <div class="qr-form-group">
+                        <label>Açıklama</label>
+                        <textarea name="Description" class="qr-textarea" rows="2" placeholder="Menü hakkında kısa açıklama..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="qr-btn qr-btn-primary" style="width: 100%;">
+                        <span>🚀</span> Menü Oluştur
+                    </button>
+                </form>
+                
+                <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--qr-border);">
+                    <p style="font-size: 0.9rem; color: var(--qr-muted); margin: 0;">
+                        <strong>Limitler:</strong> 
+                        @Model.Limits.MenuLimit menü, 
+                        @Model.Limits.CategoryLimit kategori, 
+                        @Model.Limits.ItemLimit ürün, 
+                        günlük @Model.Limits.DailyAccessLimit QR erişim
+                    </p>
+                    @if (!Model.IsAuthenticated)
+                    {
+                        <p style="font-size: 0.85rem; color: var(--qr-primary); margin-top: 0.5rem;">
+                            <a href="/Account/Register">Kayıt olun</a> ve daha fazla özelliğe erişin!
+                        </p>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- Menu Dashboard -->
+            <div class="qr-card">
+                <div class="qr-card-header">
+                    <span class="icon">📊</span>
+                    <h3>@Model.Menu.Name</h3>
+                    @if (Model.IsPremium)
+                    {
+                        <span class="premium-badge">⭐ Premium</span>
+                    }
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="value">@Model.CategoryCount</div>
+                        <div class="label">Kategori</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="value">@Model.ItemCount</div>
+                        <div class="label">Ürün</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="value">@Model.TodayAccessCount</div>
+                        <div class="label">Bugün Erişim</div>
+                    </div>
+                    @if (Model.Limits.CanManageTables)
+                    {
+                        <div class="stat-item">
+                            <div class="value">@Model.Menu.Tables.Count</div>
+                            <div class="label">Masa</div>
+                        </div>
+                    }
+                </div>
+                
+                <div style="margin-top: 1.5rem;">
+                    <div style="margin-bottom: 0.5rem; font-weight: 600;">Kategori Limiti</div>
+                    <div class="limit-bar">
+                        <div class="limit-bar-fill" style="width: @(Math.Min(100, Model.CategoryCount * 100 / Model.Limits.CategoryLimit))%"></div>
+                    </div>
+                    <div class="limit-text">
+                        <span>@Model.CategoryCount / @Model.Limits.CategoryLimit</span>
+                    </div>
+                    
+                    <div style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Ürün Limiti</div>
+                    <div class="limit-bar">
+                        <div class="limit-bar-fill" style="width: @(Math.Min(100, Model.ItemCount * 100 / Model.Limits.ItemLimit))%"></div>
+                    </div>
+                    <div class="limit-text">
+                        <span>@Model.ItemCount / @Model.Limits.ItemLimit</span>
+                    </div>
+                    
+                    <div style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Günlük Erişim</div>
+                    <div class="limit-bar">
+                        <div class="limit-bar-fill" style="width: @(Math.Min(100, Model.TodayAccessCount * 100 / Model.Limits.DailyAccessLimit))%"></div>
+                    </div>
+                    <div class="limit-text">
+                        <span>@Model.TodayAccessCount / @Model.Limits.DailyAccessLimit</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('menu')">📋 Menü</button>
+                <button class="tab" onclick="showTab('categories')">📁 Kategoriler</button>
+                <button class="tab" onclick="showTab('items')">🍔 Ürünler</button>
+                @if (Model.Limits.CanManageTables)
+                {
+                    <button class="tab" onclick="showTab('tables')">🪑 Masalar</button>
+                }
+                <button class="tab" onclick="showTab('qr')">📱 QR Kod</button>
+                <button class="tab" onclick="showTab('settings')">⚙️ Ayarlar</button>
+            </div>
+            
+            <!-- Tab: Menu Preview -->
+            <div id="tab-menu" class="tab-content active">
+                <div class="qr-card">
+                    <div class="qr-card-header">
+                        <span class="icon">👁️</span>
+                        <h3>Menü Önizleme</h3>
+                    </div>
+                    
+                    <div class="action-buttons" style="margin-bottom: 1rem;">
+                        <a href="/m/@Model.Menu.Slug" target="_blank" class="qr-btn qr-btn-primary qr-btn-sm">
+                            <span>🔗</span> Menüyü Görüntüle
+                        </a>
+                        @if (Model.Limits.CanManageOrders)
+                        {
+                            <a href="/qrmenu/orders" class="qr-btn qr-btn-secondary qr-btn-sm">
+                                <span>📋</span> Siparişler
+                            </a>
+                            <a href="/qrmenu/report" class="qr-btn qr-btn-success qr-btn-sm">
+                                <span>📊</span> Gün Sonu Raporu
+                            </a>
+                        }
+                    </div>
+                    
+                    @if (Model.Menu.Categories.Any())
+                    {
+                        @foreach (var category in Model.Menu.Categories.Where(c => c.ParentCategoryId == null).OrderBy(c => c.DisplayOrder))
+                        {
+                            <div style="margin-bottom: 1.5rem;">
+                                <h4 style="margin-bottom: 0.75rem; color: var(--qr-secondary);">
+                                    @(category.Icon ?? "📂") @category.Name
+                                    <span style="font-size: 0.85rem; color: var(--qr-muted); font-weight: normal;">(@category.Items.Count ürün)</span>
+                                </h4>
+                                
+                                @if (category.Items.Any())
+                                {
+                                    <div class="item-grid">
+                                        @foreach (var item in category.Items.Take(4))
+                                        {
+                                            <div class="menu-item-card">
+                                                <div class="name">@item.Name</div>
+                                                <div class="price">
+                                                    @MenuCurrencies.GetSymbol(Model.Menu.Currency)@item.Price.ToString("N2")
+                                                    @if (item.DiscountedPrice.HasValue)
+                                                    {
+                                                        <span class="old-price">@MenuCurrencies.GetSymbol(Model.Menu.Currency)@item.DiscountedPrice.Value.ToString("N2")</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                
+                                @foreach (var subCat in category.SubCategories.OrderBy(sc => sc.DisplayOrder))
+                                {
+                                    <div style="margin-left: 1rem; margin-top: 1rem;">
+                                        <h5 style="margin-bottom: 0.5rem; color: var(--qr-muted);">
+                                            ↳ @(subCat.Icon ?? "📁") @subCat.Name
+                                        </h5>
+                                        @if (subCat.Items.Any())
+                                        {
+                                            <div class="item-grid">
+                                                @foreach (var item in subCat.Items.Take(3))
+                                                {
+                                                    <div class="menu-item-card">
+                                                        <div class="name">@item.Name</div>
+                                                        <div class="price">@MenuCurrencies.GetSymbol(Model.Menu.Currency)@item.Price.ToString("N2")</div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-state">
+                            <div class="icon">📂</div>
+                            <p>Henüz kategori eklenmemiş</p>
+                            <button class="qr-btn qr-btn-primary qr-btn-sm" onclick="showTab('categories')">
+                                <span>➕</span> Kategori Ekle
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+            
+            <!-- Tab: Categories -->
+            <div id="tab-categories" class="tab-content">
+                <div class="qr-card">
+                    <div class="qr-card-header">
+                        <span class="icon">📁</span>
+                        <h3>Kategoriler</h3>
+                        <button class="qr-btn qr-btn-primary qr-btn-sm" style="margin-left: auto;" onclick="openAddCategoryModal()">
+                            <span>➕</span> Kategori Ekle
+                        </button>
+                    </div>
+                    
+                    @if (Model.Menu.Categories.Any())
+                    {
+                        <ul class="category-list">
+                            @foreach (var category in Model.Menu.Categories.Where(c => c.ParentCategoryId == null).OrderBy(c => c.DisplayOrder))
+                            {
+                                <li class="category-item">
+                                    <div>
+                                        <span class="name">@(category.Icon ?? "📂") @category.Name</span>
+                                        <span class="count">@category.Items.Count ürün</span>
+                                    </div>
+                                    <div class="action-buttons">
+                                        <button class="qr-btn qr-btn-secondary qr-btn-sm" onclick="editCategory(@category.Id, '@category.Name', '@category.Description', '@category.Icon')">✏️</button>
+                                        <button class="qr-btn qr-btn-sm" style="background: #FFCDD2; color: #C62828;" onclick="deleteCategory(@category.Id)">🗑️</button>
+                                    </div>
+                                </li>
+                                
+                                @foreach (var subCat in category.SubCategories.OrderBy(sc => sc.DisplayOrder))
+                                {
+                                    <li class="category-item" style="margin-left: 2rem;">
+                                        <div>
+                                            <span class="name">↳ @(subCat.Icon ?? "📁") @subCat.Name</span>
+                                            <span class="count">@subCat.Items.Count ürün</span>
+                                        </div>
+                                        <div class="action-buttons">
+                                            <button class="qr-btn qr-btn-secondary qr-btn-sm" onclick="editCategory(@subCat.Id, '@subCat.Name', '@subCat.Description', '@subCat.Icon')">✏️</button>
+                                            <button class="qr-btn qr-btn-sm" style="background: #FFCDD2; color: #C62828;" onclick="deleteCategory(@subCat.Id)">🗑️</button>
+                                        </div>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <div class="empty-state">
+                            <div class="icon">📂</div>
+                            <p>Henüz kategori eklenmemiş</p>
+                        </div>
+                    }
+                </div>
+            </div>
+            
+            <!-- Tab: Items -->
+            <div id="tab-items" class="tab-content">
+                <div class="qr-card">
+                    <div class="qr-card-header">
+                        <span class="icon">🍔</span>
+                        <h3>Ürünler</h3>
+                        <button class="qr-btn qr-btn-primary qr-btn-sm" style="margin-left: auto;" onclick="openAddItemModal()">
+                            <span>➕</span> Ürün Ekle
+                        </button>
+                    </div>
+                    
+                    @if (Model.Menu.Categories.Any(c => c.Items.Any() || c.SubCategories.Any(sc => sc.Items.Any())))
+                    {
+                        @foreach (var category in Model.Menu.Categories.Where(c => c.ParentCategoryId == null).OrderBy(c => c.DisplayOrder))
+                        {
+                            @if (category.Items.Any())
+                            {
+                                <h4 style="margin: 1rem 0 0.75rem; color: var(--qr-secondary);">@(category.Icon ?? "📂") @category.Name</h4>
+                                <div class="item-grid">
+                                    @foreach (var item in category.Items.OrderBy(i => i.DisplayOrder))
+                                    {
+                                        <div class="menu-item-card">
+                                            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                            {
+                                                <img src="/appdata@item.ImageUrl" alt="@item.Name" style="width: 100%; height: 100px; object-fit: cover; border-radius: 8px; margin-bottom: 0.5rem;">
+                                            }
+                                            <div class="name">@item.Name</div>
+                                            @if (!string.IsNullOrEmpty(item.Description))
+                                            {
+                                                <div style="font-size: 0.85rem; color: var(--qr-muted); margin: 0.25rem 0;">@item.Description</div>
+                                            }
+                                            <div class="price">
+                                                @MenuCurrencies.GetSymbol(Model.Menu.Currency)@item.Price.ToString("N2")
+                                            </div>
+                                            <div class="action-buttons" style="margin-top: 0.5rem;">
+                                                <button class="qr-btn qr-btn-secondary qr-btn-sm" onclick='editItem(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(new { item.Id, item.CategoryId, item.Name, item.Description, item.Price, item.DiscountedPrice, item.Calories, item.PrepTimeMinutes, item.Allergens, item.Tags, item.PortionSize })))'>✏️</button>
+                                                <button class="qr-btn qr-btn-sm" style="background: #FFCDD2; color: #C62828;" onclick="deleteItem(@item.Id)">🗑️</button>
+                                                @if (Model.IsPremium && Model.Limits.CanUploadImages)
+                                                {
+                                                    <button class="qr-btn qr-btn-sm" style="background: #E3F2FD; color: #1565C0;" onclick="openImageUploadModal(@item.Id)">📷</button>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            
+                            @foreach (var subCat in category.SubCategories.Where(sc => sc.Items.Any()).OrderBy(sc => sc.DisplayOrder))
+                            {
+                                <h5 style="margin: 1rem 0 0.5rem 1rem; color: var(--qr-muted);">↳ @(subCat.Icon ?? "📁") @subCat.Name</h5>
+                                <div class="item-grid" style="margin-left: 1rem;">
+                                    @foreach (var item in subCat.Items.OrderBy(i => i.DisplayOrder))
+                                    {
+                                        <div class="menu-item-card">
+                                            <div class="name">@item.Name</div>
+                                            <div class="price">@MenuCurrencies.GetSymbol(Model.Menu.Currency)@item.Price.ToString("N2")</div>
+                                            <div class="action-buttons" style="margin-top: 0.5rem;">
+                                                <button class="qr-btn qr-btn-secondary qr-btn-sm" onclick='editItem(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(new { item.Id, item.CategoryId, item.Name, item.Description, item.Price, item.DiscountedPrice })))'>✏️</button>
+                                                <button class="qr-btn qr-btn-sm" style="background: #FFCDD2; color: #C62828;" onclick="deleteItem(@item.Id)">🗑️</button>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-state">
+                            <div class="icon">🍔</div>
+                            <p>Henüz ürün eklenmemiş</p>
+                            @if (!Model.Menu.Categories.Any())
+                            {
+                                <p style="font-size: 0.9rem;">Önce bir kategori eklemelisiniz.</p>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+            
+            @if (Model.Limits.CanManageTables)
+            {
+                <!-- Tab: Tables -->
+                <div id="tab-tables" class="tab-content">
+                    <div class="qr-card">
+                        <div class="qr-card-header">
+                            <span class="icon">🪑</span>
+                            <h3>Masalar</h3>
+                            <button class="qr-btn qr-btn-primary qr-btn-sm" style="margin-left: auto;" onclick="openAddTableModal()">
+                                <span>➕</span> Masa Ekle
+                            </button>
+                            @if (Model.Menu.Tables.Any())
+                            {
+                                <a href="/qrmenu/tables/print" class="qr-btn qr-btn-secondary qr-btn-sm" target="_blank">
+                                    <span>🖨️</span> Yazdır
+                                </a>
+                            }
+                        </div>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <div class="limit-bar">
+                                <div class="limit-bar-fill" style="width: @(Math.Min(100, Model.Menu.Tables.Count * 100 / Model.Limits.TableLimit))%"></div>
+                            </div>
+                            <div class="limit-text">
+                                <span>@Model.Menu.Tables.Count / @Model.Limits.TableLimit masa</span>
+                            </div>
+                        </div>
+                        
+                        @if (Model.Menu.Tables.Any())
+                        {
+                            <div class="table-grid">
+                                @foreach (var table in Model.Menu.Tables.OrderBy(t => t.DisplayOrder))
+                                {
+                                    <div class="table-card">
+                                        <div class="number">🪑 @table.TableNumber</div>
+                                        @if (!string.IsNullOrEmpty(table.Description))
+                                        {
+                                            <div style="font-size: 0.85rem; color: var(--qr-muted);">@table.Description</div>
+                                        }
+                                        <div class="qr-code">@table.QrCode</div>
+                                        <div style="margin-top: 0.5rem;">
+                                            <a href="/qrmenu/qr/@Model.Menu.Slug/@table.QrCode" target="_blank" class="qr-btn qr-btn-sm qr-btn-secondary">📱 QR</a>
+                                            <button class="qr-btn qr-btn-sm" style="background: #FFCDD2; color: #C62828;" onclick="deleteTable(@table.Id)">🗑️</button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <div class="icon">🪑</div>
+                                <p>Henüz masa eklenmemiş</p>
+                                <p style="font-size: 0.9rem;">Her masa için ayrı QR kod oluşturabilirsiniz.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            
+            <!-- Tab: QR Code -->
+            <div id="tab-qr" class="tab-content">
+                <div class="qr-card">
+                    <div class="qr-card-header">
+                        <span class="icon">📱</span>
+                        <h3>QR Kod</h3>
+                    </div>
+                    
+                    <div class="qr-preview">
+                        <img src="/qrmenu/qr/@Model.Menu.Slug" alt="QR Kod">
+                        <div class="url">@Context.Request.Scheme://@Context.Request.Host/m/@Model.Menu.Slug</div>
+                        <div style="margin-top: 1rem;">
+                            <a href="/qrmenu/qr/@Model.Menu.Slug" download="qrmenu-@(Model.Menu.Slug).png" class="qr-btn qr-btn-primary qr-btn-sm">
+                                <span>⬇️</span> QR Kodu İndir
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem; padding: 1rem; background: var(--qr-bg); border-radius: 10px;">
+                        <h4 style="margin: 0 0 0.5rem;">💡 Kullanım İpuçları</h4>
+                        <ul style="margin: 0; padding-left: 1.5rem; color: var(--qr-muted); font-size: 0.9rem;">
+                            <li>QR kodu masa üstü standlarına yazdırın</li>
+                            <li>Menü kartlarına ekleyin</li>
+                            <li>Vitrin veya girişe yerleştirin</li>
+                            <li>Sosyal medyada paylaşın</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab: Settings -->
+            <div id="tab-settings" class="tab-content">
+                <div class="qr-card">
+                    <div class="qr-card-header">
+                        <span class="icon">⚙️</span>
+                        <h3>Menü Ayarları</h3>
+                    </div>
+                    
+                    <form method="post" action="/qrmenu/update">
+                        @Html.AntiForgeryToken()
+                        
+                        <div class="qr-form-group">
+                            <label>Menü Adı *</label>
+                            <input type="text" name="Name" class="qr-input" value="@Model.Menu.Name" required>
+                        </div>
+                        
+                        <div class="qr-form-group">
+                            <label>Restoran Adı</label>
+                            <input type="text" name="RestaurantName" class="qr-input" value="@Model.Menu.RestaurantName">
+                        </div>
+                        
+                        <div class="qr-form-group">
+                            <label>Adres</label>
+                            <textarea name="RestaurantAddress" class="qr-textarea" rows="2">@Model.Menu.RestaurantAddress</textarea>
+                        </div>
+                        
+                        <div class="qr-form-group">
+                            <label>Telefon</label>
+                            <input type="tel" name="RestaurantPhone" class="qr-input" value="@Model.Menu.RestaurantPhone">
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="qr-form-group">
+                                <label>Para Birimi</label>
+                                <select name="Currency" class="qr-select">
+                                    @foreach (var currency in Model.Currencies)
+                                    {
+                                        if (currency.Key == Model.Menu.Currency)
+                                        {
+                                            <option value="@currency.Key" selected>@currency.Value</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@currency.Key">@currency.Value</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            
+                            <div class="qr-form-group">
+                                <label>Dil</label>
+                                <select name="Language" class="qr-select">
+                                    @foreach (var lang in Model.Languages)
+                                    {
+                                        if (lang.Key == Model.Menu.Language)
+                                        {
+                                            <option value="@lang.Key" selected>@lang.Value</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@lang.Key">@lang.Value</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="qr-form-group">
+                            <label>Renkler</label>
+                            <div class="color-picker-group">
+                                <div class="color-picker-item">
+                                    <input type="color" name="PrimaryColor" class="color-picker" value="@Model.Menu.PrimaryColor">
+                                    <span>Ana Renk</span>
+                                </div>
+                                <div class="color-picker-item">
+                                    <input type="color" name="SecondaryColor" class="color-picker" value="@Model.Menu.SecondaryColor">
+                                    <span>İkincil Renk</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="qr-form-group">
+                            <label>Açıklama</label>
+                            <textarea name="Description" class="qr-textarea" rows="2">@Model.Menu.Description</textarea>
+                        </div>
+                        
+                        <div class="qr-form-group">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="checkbox" name="IsActive" value="true" @(Model.Menu.IsActive ? "checked" : "") style="width: 20px; height: 20px;">
+                                Menü Aktif
+                            </label>
+                        </div>
+                        
+                        @if (Model.IsAuthenticated)
+                        {
+                            <div class="qr-form-group">
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                    <input type="checkbox" name="AcceptOrders" value="true" @(Model.Menu.AcceptOrders ? "checked" : "") style="width: 20px; height: 20px;">
+                                    Sipariş Kabul Et
+                                </label>
+                            </div>
+                        }
+                        
+                        <button type="submit" class="qr-btn qr-btn-primary" style="width: 100%;">
+                            <span>💾</span> Kaydet
+                        </button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Add Category Modal -->
+<div id="categoryModal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="categoryModalTitle">Kategori Ekle</h3>
+            <button class="modal-close" onclick="closeCategoryModal()">&times;</button>
+        </div>
+        <form id="categoryForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Id" id="categoryId">
+            
+            <div class="qr-form-group">
+                <label>Kategori Adı *</label>
+                <input type="text" name="Name" id="categoryName" class="qr-input" required>
+            </div>
+            
+            <div class="qr-form-group">
+                <label>Açıklama</label>
+                <input type="text" name="Description" id="categoryDescription" class="qr-input">
+            </div>
+            
+            <div class="qr-form-group">
+                <label>İkon (emoji)</label>
+                <input type="text" name="Icon" id="categoryIcon" class="qr-input" placeholder="🍔">
+            </div>
+            
+            @if (Model.Menu?.Categories.Any(c => c.ParentCategoryId == null) == true)
+            {
+                <div class="qr-form-group">
+                    <label>Üst Kategori (opsiyonel)</label>
+                    <select name="ParentCategoryId" id="categoryParent" class="qr-select">
+                        <option value="">Ana Kategori</option>
+                        @foreach (var cat in Model.Menu.Categories.Where(c => c.ParentCategoryId == null))
+                        {
+                            <option value="@cat.Id">@cat.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+            
+            <button type="submit" class="qr-btn qr-btn-primary" style="width: 100%;">
+                <span>💾</span> Kaydet
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Add Item Modal -->
+<div id="itemModal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="itemModalTitle">Ürün Ekle</h3>
+            <button class="modal-close" onclick="closeItemModal()">&times;</button>
+        </div>
+        <form id="itemForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Id" id="itemId">
+            
+            <div class="qr-form-group">
+                <label>Kategori *</label>
+                <select name="CategoryId" id="itemCategory" class="qr-select" required>
+                    <option value="">Seçiniz</option>
+                    @if (Model.Menu?.Categories != null)
+                    {
+                        @foreach (var cat in Model.Menu.Categories.OrderBy(c => c.DisplayOrder))
+                        {
+                            <option value="@cat.Id">@(cat.ParentCategoryId.HasValue ? "↳ " : "")@cat.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+            
+            <div class="qr-form-group">
+                <label>Ürün Adı *</label>
+                <input type="text" name="Name" id="itemName" class="qr-input" required>
+            </div>
+            
+            <div class="qr-form-group">
+                <label>Açıklama</label>
+                <textarea name="Description" id="itemDescription" class="qr-textarea" rows="2"></textarea>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="qr-form-group">
+                    <label>Fiyat *</label>
+                    <input type="number" name="Price" id="itemPrice" class="qr-input" step="0.01" min="0" required>
+                </div>
+                
+                <div class="qr-form-group">
+                    <label>İndirimli Fiyat</label>
+                    <input type="number" name="DiscountedPrice" id="itemDiscountedPrice" class="qr-input" step="0.01" min="0">
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="qr-form-group">
+                    <label>Kalori</label>
+                    <input type="number" name="Calories" id="itemCalories" class="qr-input" min="0">
+                </div>
+                
+                <div class="qr-form-group">
+                    <label>Hazırlanma Süresi (dk)</label>
+                    <input type="number" name="PrepTimeMinutes" id="itemPrepTime" class="qr-input" min="0">
+                </div>
+            </div>
+            
+            <div class="qr-form-group">
+                <label>Porsiyon</label>
+                <input type="text" name="PortionSize" id="itemPortionSize" class="qr-input" placeholder="Örn: 250gr, 2 kişilik">
+            </div>
+            
+            <div class="qr-form-group">
+                <label>Alerjenler</label>
+                <input type="text" name="Allergens" id="itemAllergens" class="qr-input" placeholder="Örn: Gluten, Fındık, Süt">
+            </div>
+            
+            <button type="submit" class="qr-btn qr-btn-primary" style="width: 100%;">
+                <span>💾</span> Kaydet
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Add Table Modal -->
+<div id="tableModal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Masa Ekle</h3>
+            <button class="modal-close" onclick="closeTableModal()">&times;</button>
+        </div>
+        <form id="tableForm">
+            @Html.AntiForgeryToken()
+            
+            <div class="qr-form-group">
+                <label>Masa Numarası/Adı *</label>
+                <input type="text" name="TableNumber" id="tableNumber" class="qr-input" placeholder="Örn: 1, VIP-1, Bahçe-3" required>
+            </div>
+            
+            <div class="qr-form-group">
+                <label>Açıklama</label>
+                <input type="text" name="Description" id="tableDescription" class="qr-input" placeholder="Örn: Bahçe köşe masa">
+            </div>
+            
+            <div class="qr-form-group">
+                <label>Kapasite (kişi)</label>
+                <input type="number" name="Capacity" id="tableCapacity" class="qr-input" value="4" min="1" max="20">
+            </div>
+            
+            <button type="submit" class="qr-btn qr-btn-primary" style="width: 100%;">
+                <span>💾</span> Masa Ekle
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Image Upload Modal (Premium) -->
+@if (Model.IsPremium)
+{
+    <div id="imageModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Ürün Resmi Yükle</h3>
+                <button class="modal-close" onclick="closeImageModal()">&times;</button>
+            </div>
+            <form id="imageForm" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="itemId" id="imageItemId">
+                
+                <div class="qr-form-group">
+                    <label>Resim Seç (Max @Model.Limits.MaxImageSizeKB KB)</label>
+                    <input type="file" name="image" id="imageFile" class="qr-input" accept="image/jpeg,image/png,image/webp" required>
+                </div>
+                
+                <div id="imagePreview" style="text-align: center; margin-bottom: 1rem; display: none;">
+                    <img id="previewImg" src="" alt="Önizleme" style="max-width: 200px; max-height: 200px; border-radius: 8px;">
+                </div>
+                
+                <button type="submit" class="qr-btn qr-btn-primary" style="width: 100%;">
+                    <span>📷</span> Yükle
+                </button>
+            </form>
+        </div>
+    </div>
+}
+
+<script>
+    // Tab switching
+    function showTab(tabName) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        event.target.classList.add('active');
+        document.getElementById('tab-' + tabName).classList.add('active');
+    }
+    
+    // Category Modal
+    function openAddCategoryModal() {
+        document.getElementById('categoryModalTitle').textContent = 'Kategori Ekle';
+        document.getElementById('categoryId').value = '';
+        document.getElementById('categoryName').value = '';
+        document.getElementById('categoryDescription').value = '';
+        document.getElementById('categoryIcon').value = '';
+        if (document.getElementById('categoryParent')) {
+            document.getElementById('categoryParent').value = '';
+        }
+        document.getElementById('categoryModal').classList.add('active');
+    }
+    
+    function editCategory(id, name, description, icon) {
+        document.getElementById('categoryModalTitle').textContent = 'Kategori Düzenle';
+        document.getElementById('categoryId').value = id;
+        document.getElementById('categoryName').value = name;
+        document.getElementById('categoryDescription').value = description || '';
+        document.getElementById('categoryIcon').value = icon || '';
+        document.getElementById('categoryModal').classList.add('active');
+    }
+    
+    function closeCategoryModal() {
+        document.getElementById('categoryModal').classList.remove('active');
+    }
+    
+    document.getElementById('categoryForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const id = formData.get('Id');
+        const url = id ? '/qrmenu/category/update' : '/qrmenu/category/add';
+        
+        const response = await fetch(url, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            location.reload();
+        } else {
+            alert(result.message);
+        }
+    });
+    
+    async function deleteCategory(id) {
+        if (!confirm('Bu kategoriyi silmek istediğinizden emin misiniz?')) return;
+        
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('__RequestVerificationToken', document.querySelector('input[name="__RequestVerificationToken"]').value);
+        
+        const response = await fetch('/qrmenu/category/delete', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            location.reload();
+        } else {
+            alert(result.message);
+        }
+    }
+    
+    // Item Modal
+    function openAddItemModal() {
+        document.getElementById('itemModalTitle').textContent = 'Ürün Ekle';
+        document.getElementById('itemId').value = '';
+        document.getElementById('itemCategory').value = '';
+        document.getElementById('itemName').value = '';
+        document.getElementById('itemDescription').value = '';
+        document.getElementById('itemPrice').value = '';
+        document.getElementById('itemDiscountedPrice').value = '';
+        document.getElementById('itemCalories').value = '';
+        document.getElementById('itemPrepTime').value = '';
+        document.getElementById('itemPortionSize').value = '';
+        document.getElementById('itemAllergens').value = '';
+        document.getElementById('itemModal').classList.add('active');
+    }
+    
+    function editItem(item) {
+        document.getElementById('itemModalTitle').textContent = 'Ürün Düzenle';
+        document.getElementById('itemId').value = item.Id;
+        document.getElementById('itemCategory').value = item.CategoryId;
+        document.getElementById('itemName').value = item.Name;
+        document.getElementById('itemDescription').value = item.Description || '';
+        document.getElementById('itemPrice').value = item.Price;
+        document.getElementById('itemDiscountedPrice').value = item.DiscountedPrice || '';
+        document.getElementById('itemCalories').value = item.Calories || '';
+        document.getElementById('itemPrepTime').value = item.PrepTimeMinutes || '';
+        document.getElementById('itemPortionSize').value = item.PortionSize || '';
+        document.getElementById('itemAllergens').value = item.Allergens || '';
+        document.getElementById('itemModal').classList.add('active');
+    }
+    
+    function closeItemModal() {
+        document.getElementById('itemModal').classList.remove('active');
+    }
+    
+    document.getElementById('itemForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const id = formData.get('Id');
+        const url = id ? '/qrmenu/item/update' : '/qrmenu/item/add';
+        
+        const response = await fetch(url, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            location.reload();
+        } else {
+            alert(result.message);
+        }
+    });
+    
+    async function deleteItem(id) {
+        if (!confirm('Bu ürünü silmek istediğinizden emin misiniz?')) return;
+        
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('__RequestVerificationToken', document.querySelector('input[name="__RequestVerificationToken"]').value);
+        
+        const response = await fetch('/qrmenu/item/delete', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            location.reload();
+        } else {
+            alert(result.message);
+        }
+    }
+    
+    // Table Modal
+    function openAddTableModal() {
+        document.getElementById('tableNumber').value = '';
+        document.getElementById('tableDescription').value = '';
+        document.getElementById('tableCapacity').value = '4';
+        document.getElementById('tableModal').classList.add('active');
+    }
+    
+    function closeTableModal() {
+        document.getElementById('tableModal').classList.remove('active');
+    }
+    
+    document.getElementById('tableForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        
+        const response = await fetch('/qrmenu/table/add', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            location.reload();
+        } else {
+            alert(result.message);
+        }
+    });
+    
+    async function deleteTable(id) {
+        if (!confirm('Bu masayı silmek istediğinizden emin misiniz?')) return;
+        
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('__RequestVerificationToken', document.querySelector('input[name="__RequestVerificationToken"]').value);
+        
+        const response = await fetch('/qrmenu/table/delete', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            location.reload();
+        } else {
+            alert(result.message);
+        }
+    }
+    
+    // Image Modal (Premium)
+    function openImageUploadModal(itemId) {
+        document.getElementById('imageItemId').value = itemId;
+        document.getElementById('imageFile').value = '';
+        document.getElementById('imagePreview').style.display = 'none';
+        document.getElementById('imageModal').classList.add('active');
+    }
+    
+    function closeImageModal() {
+        document.getElementById('imageModal').classList.remove('active');
+    }
+    
+    document.getElementById('imageFile')?.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('imagePreview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    document.getElementById('imageForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        
+        const response = await fetch('/qrmenu/item/upload-image', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            location.reload();
+        } else {
+            alert(result.message);
+        }
+    });
+    
+    // Close modals on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+    });
+</script>
+

@@ -1295,8 +1295,9 @@ public class AdminController : Controller
             Data.Entities.SystemSettings.Categories.EmployeeLimits => 2,
             Data.Entities.SystemSettings.Categories.WorkSettings => 3,
             Data.Entities.SystemSettings.Categories.CleaningLimits => 4,
-            Data.Entities.SystemSettings.Categories.UnitLimits => 5,
-            Data.Entities.SystemSettings.Categories.Security => 6,
+            Data.Entities.SystemSettings.Categories.QrMenuLimits => 5,
+            Data.Entities.SystemSettings.Categories.UnitLimits => 6,
+            Data.Entities.SystemSettings.Categories.Security => 7,
             _ => 99
         };
     }
@@ -1310,7 +1311,8 @@ public class AdminController : Controller
             { Data.Entities.SystemSettings.Categories.WorkSettings, "⏰ Çalışma Ayarları" },
             { Data.Entities.SystemSettings.Categories.CleaningLimits, "🧹 Temizlik Modülü Limitleri" },
             { Data.Entities.SystemSettings.Categories.UnitLimits, "🏢 Birim Limitleri" },
-            { Data.Entities.SystemSettings.Categories.Security, "🔒 Güvenlik Ayarları" }
+            { Data.Entities.SystemSettings.Categories.Security, "🔒 Güvenlik Ayarları" },
+            { Data.Entities.SystemSettings.Categories.QrMenuLimits, "🍽️ QR Menü Limitleri" }
         };
     }
     

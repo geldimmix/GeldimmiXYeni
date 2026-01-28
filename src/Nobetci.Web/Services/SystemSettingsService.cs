@@ -47,6 +47,28 @@ public interface ISystemSettingsService
     Task<int> GetMaxLoginAttemptsAsync();
     Task<int> GetLockoutMinutesAsync();
     
+    // QR Menu - Unregistered limits
+    Task<int> GetQrMenuUnregisteredMenuLimitAsync();
+    Task<int> GetQrMenuUnregisteredDailyAccessLimitAsync();
+    Task<int> GetQrMenuUnregisteredCategoryLimitAsync();
+    Task<int> GetQrMenuUnregisteredItemLimitAsync();
+    
+    // QR Menu - Registered limits
+    Task<int> GetQrMenuRegisteredMenuLimitAsync();
+    Task<int> GetQrMenuRegisteredTableLimitAsync();
+    Task<int> GetQrMenuRegisteredDailyAccessLimitAsync();
+    Task<int> GetQrMenuRegisteredCategoryLimitAsync();
+    Task<int> GetQrMenuRegisteredItemLimitAsync();
+    
+    // QR Menu - Premium limits
+    Task<int> GetQrMenuPremiumMenuLimitAsync();
+    Task<int> GetQrMenuPremiumTableLimitAsync();
+    Task<int> GetQrMenuPremiumDailyAccessLimitAsync();
+    Task<int> GetQrMenuPremiumCategoryLimitAsync();
+    Task<int> GetQrMenuPremiumItemLimitAsync();
+    Task<bool> GetQrMenuPremiumImageUploadEnabledAsync();
+    Task<int> GetQrMenuPremiumMaxImageSizeKBAsync();
+    
     // Generic methods
     Task<string?> GetSettingAsync(string key);
     Task<int> GetIntSettingAsync(string key, int defaultValue);
@@ -168,6 +190,66 @@ public class SystemSettingsService : ISystemSettingsService
 
     public async Task<int> GetLockoutMinutesAsync()
         => await GetIntSettingAsync(SystemSettings.Keys.LockoutMinutes, 5);
+
+    #endregion
+
+    #region QR Menu - Unregistered
+
+    public async Task<int> GetQrMenuUnregisteredMenuLimitAsync()
+        => await GetIntSettingAsync(SystemSettings.Keys.QrMenuUnregisteredMenuLimit, 1);
+
+    public async Task<int> GetQrMenuUnregisteredDailyAccessLimitAsync()
+        => await GetIntSettingAsync(SystemSettings.Keys.QrMenuUnregisteredDailyAccessLimit, 10);
+
+    public async Task<int> GetQrMenuUnregisteredCategoryLimitAsync()
+        => await GetIntSettingAsync(SystemSettings.Keys.QrMenuUnregisteredCategoryLimit, 5);
+
+    public async Task<int> GetQrMenuUnregisteredItemLimitAsync()
+        => await GetIntSettingAsync(SystemSettings.Keys.QrMenuUnregisteredItemLimit, 20);
+
+    #endregion
+
+    #region QR Menu - Registered
+
+    public async Task<int> GetQrMenuRegisteredMenuLimitAsync()
+        => await GetIntSettingAsync(SystemSettings.Keys.QrMenuRegisteredMenuLimit, 1);
+
+    public async Task<int> GetQrMenuRegisteredTableLimitAsync()
+        => await GetIntSettingAsync(SystemSettings.Keys.QrMenuRegisteredTableLimit, 10);
+
+    public async Task<int> GetQrMenuRegisteredDailyAccessLimitAsync()
+        => await GetIntSettingAsync(SystemSettings.Keys.QrMenuRegisteredDailyAccessLimit, 50);
+
+    public async Task<int> GetQrMenuRegisteredCategoryLimitAsync()
+        => await GetIntSettingAsync(SystemSettings.Keys.QrMenuRegisteredCategoryLimit, 5);
+
+    public async Task<int> GetQrMenuRegisteredItemLimitAsync()
+        => await GetIntSettingAsync(SystemSettings.Keys.QrMenuRegisteredItemLimit, 100);
+
+    #endregion
+
+    #region QR Menu - Premium
+
+    public async Task<int> GetQrMenuPremiumMenuLimitAsync()
+        => await GetIntSettingAsync(SystemSettings.Keys.QrMenuPremiumMenuLimit, 10);
+
+    public async Task<int> GetQrMenuPremiumTableLimitAsync()
+        => await GetIntSettingAsync(SystemSettings.Keys.QrMenuPremiumTableLimit, 100);
+
+    public async Task<int> GetQrMenuPremiumDailyAccessLimitAsync()
+        => await GetIntSettingAsync(SystemSettings.Keys.QrMenuPremiumDailyAccessLimit, 5000);
+
+    public async Task<int> GetQrMenuPremiumCategoryLimitAsync()
+        => await GetIntSettingAsync(SystemSettings.Keys.QrMenuPremiumCategoryLimit, 50);
+
+    public async Task<int> GetQrMenuPremiumItemLimitAsync()
+        => await GetIntSettingAsync(SystemSettings.Keys.QrMenuPremiumItemLimit, 1000);
+
+    public async Task<bool> GetQrMenuPremiumImageUploadEnabledAsync()
+        => await GetBoolSettingAsync(SystemSettings.Keys.QrMenuPremiumImageUploadEnabled, true);
+
+    public async Task<int> GetQrMenuPremiumMaxImageSizeKBAsync()
+        => await GetIntSettingAsync(SystemSettings.Keys.QrMenuPremiumMaxImageSizeKB, 500);
 
     #endregion
 

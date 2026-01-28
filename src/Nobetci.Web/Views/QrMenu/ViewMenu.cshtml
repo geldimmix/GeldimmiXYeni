@@ -1,0 +1,938 @@
+@model PublicMenuViewModel
+@{
+    Layout = null;
+    var menu = Model.Menu;
+    var primaryColor = menu.PrimaryColor;
+    var secondaryColor = menu.SecondaryColor;
+}
+
+<!DOCTYPE html>
+<html lang="@menu.Language">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="@primaryColor">
+    <title>@(menu.RestaurantName ?? menu.Name) - Menü</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: @primaryColor;
+            --secondary: @secondaryColor;
+            --bg: #FAFAFA;
+            --card: #FFFFFF;
+            --text: #1A1A1A;
+            --muted: #6B7280;
+            --border: #E5E7EB;
+            --success: #10B981;
+            --warning: #F59E0B;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
+        
+        /* Hero Header */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 2rem 1.5rem 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        
+        @@keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.3; }
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .restaurant-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: white;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .restaurant-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .menu-name {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+        
+        @if (Model.Table != null)
+        {
+            <text>
+        .table-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+        }
+            </text>
+        }
+        
+        /* Category Navigation */
+        .category-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .category-nav::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .category-nav-inner {
+            display: flex;
+            gap: 0.25rem;
+            padding: 0.75rem 1rem;
+            min-width: max-content;
+        }
+        
+        .category-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .category-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Content */
+        .content {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        /* Category Section */
+        .category-section {
+            margin-bottom: 2rem;
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .category-icon {
+            font-size: 1.5rem;
+        }
+        
+        .category-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .subcategory-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--muted);
+            margin: 1.5rem 0 0.75rem;
+            padding-left: 0.5rem;
+            border-left: 3px solid var(--primary);
+        }
+        
+        /* Menu Item Card */
+        .menu-item {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            gap: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .menu-item:active {
+            transform: scale(0.98);
+        }
+        
+        .menu-item-image {
+            width: 90px;
+            height: 90px;
+            border-radius: 12px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        
+        .menu-item-placeholder {
+            width: 90px;
+            height: 90px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            flex-shrink: 0;
+            opacity: 0.15;
+        }
+        
+        .menu-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .menu-item-name {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+            color: var(--text);
+        }
+        
+        .menu-item-description {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .menu-item-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .menu-item-tag {
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+            color: var(--muted);
+        }
+        
+        .menu-item-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+        
+        .menu-item-price {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+        
+        .menu-item-old-price {
+            font-size: 0.85rem;
+            text-decoration: line-through;
+            color: var(--muted);
+            margin-left: 0.5rem;
+        }
+        
+        .menu-item-meta {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+        
+        /* Featured Badge */
+        .badge-featured {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--warning);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        /* Out of Stock */
+        .out-of-stock {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .out-of-stock-badge {
+            background: #EF4444;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        /* Order Button */
+        @if (Model.CanOrder)
+        {
+            <text>
+        .add-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, background 0.2s;
+            flex-shrink: 0;
+        }
+        
+        .add-btn:active {
+            transform: scale(0.9);
+            background: var(--secondary);
+        }
+        
+        /* Cart */
+        .cart-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--secondary);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+            z-index: 200;
+        }
+        
+        .cart-bar.visible {
+            transform: translateY(0);
+        }
+        
+        .cart-info {
+            flex: 1;
+        }
+        
+        .cart-count {
+            font-weight: 700;
+        }
+        
+        .cart-total {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .cart-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .cart-btn:active {
+            transform: scale(0.95);
+        }
+            </text>
+        }
+        
+        /* Order Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 300;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 24px 24px 0 0;
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        @@keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .modal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--bg);
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+        
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        /* Contact Info */
+        .contact-info {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .contact-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+        
+        .contact-text {
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+        
+        .contact-text a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Header -->
+    <header class="hero">
+        <div class="hero-content">
+            @if (!string.IsNullOrEmpty(menu.LogoUrl))
+            {
+                <img src="@menu.LogoUrl" alt="@menu.RestaurantName" class="restaurant-logo" style="font-size: inherit;">
+            }
+            else
+            {
+                <div class="restaurant-logo">🍽️</div>
+            }
+            
+            <h1 class="restaurant-name">@(menu.RestaurantName ?? menu.Name)</h1>
+            @if (!string.IsNullOrEmpty(menu.Description))
+            {
+                <p class="menu-name">@menu.Description</p>
+            }
+            
+            @if (Model.Table != null)
+            {
+                <div class="table-badge">
+                    <span>🪑</span>
+                    <span>Masa @Model.Table.TableNumber</span>
+                </div>
+            }
+        </div>
+    </header>
+    
+    <!-- Category Navigation -->
+    <nav class="category-nav">
+        <div class="category-nav-inner">
+            @foreach (var category in menu.Categories.Where(c => c.ParentCategoryId == null))
+            {
+                <button class="category-btn" onclick="scrollToCategory('@category.Id')">
+                    @(category.Icon ?? "📂") @category.Name
+                </button>
+            }
+        </div>
+    </nav>
+    
+    <!-- Content -->
+    <main class="content">
+        @foreach (var category in menu.Categories.Where(c => c.ParentCategoryId == null))
+        {
+            <section class="category-section" id="category-@category.Id">
+                <div class="category-header">
+                    <span class="category-icon">@(category.Icon ?? "📂")</span>
+                    <h2 class="category-title">@category.Name</h2>
+                </div>
+                
+                @if (!string.IsNullOrEmpty(category.Description))
+                {
+                    <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">@category.Description</p>
+                }
+                
+                @foreach (var item in category.Items)
+                {
+                    <div class="menu-item @(item.InStock ? "" : "out-of-stock")" data-item-id="@item.Id" data-item-name="@item.Name" data-item-price="@(item.DiscountedPrice ?? item.Price)">
+                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                        {
+                            <img src="/appdata@item.ImageUrl" alt="@item.Name" class="menu-item-image">
+                        }
+                        
+                        <div class="menu-item-info">
+                            <h3 class="menu-item-name">
+                                @item.Name
+                                @if (item.IsFeatured)
+                                {
+                                    <span style="color: var(--warning);">⭐</span>
+                                }
+                                @if (item.IsNew)
+                                {
+                                    <span style="background: var(--success); color: white; padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.7rem; margin-left: 0.25rem;">YENİ</span>
+                                }
+                            </h3>
+                            
+                            @if (!string.IsNullOrEmpty(item.Description))
+                            {
+                                <p class="menu-item-description">@item.Description</p>
+                            }
+                            
+                            @if (!string.IsNullOrEmpty(item.Tags))
+                            {
+                                <div class="menu-item-tags">
+                                    @foreach (var tag in item.Tags.Split(','))
+                                    {
+                                        var tagName = tag.Trim();
+                                        var displayTag = menu.Language == "tr" && MenuItemTags.AllTr.ContainsKey(tagName) 
+                                            ? MenuItemTags.AllTr[tagName] 
+                                            : (MenuItemTags.AllEn.ContainsKey(tagName) ? MenuItemTags.AllEn[tagName] : tagName);
+                                        <span class="menu-item-tag">@displayTag</span>
+                                    }
+                                </div>
+                            }
+                            
+                            <div class="menu-item-footer">
+                                <div>
+                                    <span class="menu-item-price">
+                                        @Model.CurrencySymbol@((item.DiscountedPrice ?? item.Price).ToString("N2"))
+                                    </span>
+                                    @if (item.DiscountedPrice.HasValue && item.DiscountedPrice < item.Price)
+                                    {
+                                        <span class="menu-item-old-price">@Model.CurrencySymbol@item.Price.ToString("N2")</span>
+                                    }
+                                </div>
+                                
+                                <div class="menu-item-meta">
+                                    @if (item.Calories.HasValue)
+                                    {
+                                        <span>🔥 @item.Calories kcal</span>
+                                    }
+                                    @if (item.PrepTimeMinutes.HasValue)
+                                    {
+                                        <span style="margin-left: 0.5rem;">⏱️ @item.PrepTimeMinutes dk</span>
+                                    }
+                                </div>
+                            </div>
+                            
+                            @if (!item.InStock)
+                            {
+                                <span class="out-of-stock-badge">Tükendi</span>
+                            }
+                        </div>
+                        
+                        @if (Model.CanOrder && item.InStock)
+                        {
+                            <button class="add-btn" onclick="addToCart(@item.Id, '@item.Name.Replace("'", "\\'")
+', @(item.DiscountedPrice ?? item.Price))">+</button>
+                        }
+                    </div>
+                }
+                
+                @foreach (var subCategory in category.SubCategories)
+                {
+                    <h3 class="subcategory-title">@(subCategory.Icon ?? "📁") @subCategory.Name</h3>
+                    
+                    @foreach (var item in subCategory.Items)
+                    {
+                        <div class="menu-item @(item.InStock ? "" : "out-of-stock")" data-item-id="@item.Id" data-item-name="@item.Name" data-item-price="@(item.DiscountedPrice ?? item.Price)">
+                            <div class="menu-item-info">
+                                <h3 class="menu-item-name">@item.Name</h3>
+                                
+                                @if (!string.IsNullOrEmpty(item.Description))
+                                {
+                                    <p class="menu-item-description">@item.Description</p>
+                                }
+                                
+                                <div class="menu-item-footer">
+                                    <span class="menu-item-price">
+                                        @Model.CurrencySymbol@((item.DiscountedPrice ?? item.Price).ToString("N2"))
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            @if (Model.CanOrder && item.InStock)
+                            {
+                                <button class="add-btn" onclick="addToCart(@item.Id, '@item.Name.Replace("'", "\\'")', @(item.DiscountedPrice ?? item.Price))">+</button>
+                            }
+                        </div>
+                    }
+                }
+            </section>
+        }
+        
+        <!-- Contact Info -->
+        @if (!string.IsNullOrEmpty(menu.RestaurantPhone) || !string.IsNullOrEmpty(menu.RestaurantAddress))
+        {
+            <div class="contact-info">
+                @if (!string.IsNullOrEmpty(menu.RestaurantPhone))
+                {
+                    <div class="contact-item">
+                        <div class="contact-icon">📞</div>
+                        <div class="contact-text">
+                            <a href="tel:@menu.RestaurantPhone">@menu.RestaurantPhone</a>
+                        </div>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(menu.RestaurantAddress))
+                {
+                    <div class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <div class="contact-text">@menu.RestaurantAddress</div>
+                    </div>
+                }
+            </div>
+        }
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Powered by <a href="https://geldimmi.com" target="_blank">Geldimmi.com</a></p>
+        <p style="margin-top: 0.5rem; font-size: 0.8rem;">Dijital Menü & QR Çözümleri</p>
+    </footer>
+    
+    @if (Model.CanOrder)
+    {
+        <!-- Cart Bar -->
+        <div class="cart-bar" id="cartBar">
+            <div class="cart-info">
+                <div class="cart-count"><span id="cartCount">0</span> ürün</div>
+                <div class="cart-total">@Model.CurrencySymbol<span id="cartTotal">0.00</span></div>
+            </div>
+            <button class="cart-btn" onclick="openOrderModal()">Sipariş Ver</button>
+        </div>
+        
+        <!-- Order Modal -->
+        <div class="modal-overlay" id="orderModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2 class="modal-title">Siparişiniz</h2>
+                    <button class="modal-close" onclick="closeOrderModal()">&times;</button>
+                </div>
+                
+                <div id="orderItems"></div>
+                
+                <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                    <div style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem;">
+                        <span>Toplam</span>
+                        <span style="color: var(--primary);">@Model.CurrencySymbol<span id="modalTotal">0.00</span></span>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <input type="text" id="customerName" placeholder="Adınız (opsiyonel)" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 0.5rem; font-size: 1rem;">
+                        <textarea id="orderNote" placeholder="Sipariş notu (opsiyonel)" rows="2" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 10px; font-size: 1rem; resize: none;"></textarea>
+                    </div>
+                    
+                    <button onclick="submitOrder()" style="width: 100%; padding: 1rem; background: var(--primary); border: none; border-radius: 12px; color: white; font-size: 1.1rem; font-weight: 600; cursor: pointer;">
+                        Siparişi Gönder
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+    
+    <script>
+        // Category navigation
+        function scrollToCategory(id) {
+            const element = document.getElementById('category-' + id);
+            if (element) {
+                const navHeight = document.querySelector('.category-nav').offsetHeight;
+                const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                window.scrollTo({
+                    top: elementPosition - navHeight - 10,
+                    behavior: 'smooth'
+                });
+            }
+            
+            // Update active button
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+        
+        // Highlight active category on scroll
+        window.addEventListener('scroll', function() {
+            const navHeight = document.querySelector('.category-nav').offsetHeight;
+            const sections = document.querySelectorAll('.category-section');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - navHeight - 50;
+                if (window.pageYOffset >= sectionTop) {
+                    current = section.getAttribute('id').replace('category-', '');
+                }
+            });
+            
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('onclick').includes(current)) {
+                    btn.classList.add('active');
+                }
+            });
+        });
+        
+        // Set first category as active
+        document.querySelector('.category-btn')?.classList.add('active');
+        
+        @if (Model.CanOrder)
+        {
+            <text>
+        // Cart functionality
+        let cart = [];
+        const currencySymbol = '@Model.CurrencySymbol';
+        const tableQr = '@(Model.Table?.QrCode ?? "")';
+        const menuSlug = '@menu.Slug';
+        
+        function addToCart(itemId, itemName, price) {
+            const existing = cart.find(i => i.itemId === itemId);
+            if (existing) {
+                existing.quantity++;
+            } else {
+                cart.push({ itemId, itemName, price, quantity: 1 });
+            }
+            updateCartUI();
+            
+            // Animation feedback
+            event.target.style.transform = 'scale(1.3)';
+            setTimeout(() => {
+                event.target.style.transform = '';
+            }, 150);
+        }
+        
+        function removeFromCart(itemId) {
+            const index = cart.findIndex(i => i.itemId === itemId);
+            if (index > -1) {
+                if (cart[index].quantity > 1) {
+                    cart[index].quantity--;
+                } else {
+                    cart.splice(index, 1);
+                }
+            }
+            updateCartUI();
+            renderOrderItems();
+        }
+        
+        function updateCartUI() {
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            document.getElementById('cartCount').textContent = count;
+            document.getElementById('cartTotal').textContent = total.toFixed(2);
+            document.getElementById('modalTotal').textContent = total.toFixed(2);
+            
+            const cartBar = document.getElementById('cartBar');
+            if (count > 0) {
+                cartBar.classList.add('visible');
+            } else {
+                cartBar.classList.remove('visible');
+            }
+        }
+        
+        function openOrderModal() {
+            renderOrderItems();
+            document.getElementById('orderModal').classList.add('active');
+        }
+        
+        function closeOrderModal() {
+            document.getElementById('orderModal').classList.remove('active');
+        }
+        
+        function renderOrderItems() {
+            const container = document.getElementById('orderItems');
+            if (cart.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--muted); padding: 2rem;">Sepetiniz boş</p>';
+                return;
+            }
+            
+            container.innerHTML = cart.map(item => `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--border);">
+                    <div>
+                        <div style="font-weight: 600;">${item.itemName}</div>
+                        <div style="color: var(--primary); font-weight: 600;">${currencySymbol}${item.price.toFixed(2)}</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <button onclick="removeFromCart(${item.itemId})" style="width: 32px; height: 32px; border: 1px solid var(--border); background: white; border-radius: 8px; cursor: pointer; font-size: 1.1rem;">-</button>
+                        <span style="font-weight: 600; min-width: 24px; text-align: center;">${item.quantity}</span>
+                        <button onclick="addToCart(${item.itemId}, '${item.itemName.replace(/'/g, "\\'")}', ${item.price})" style="width: 32px; height: 32px; border: none; background: var(--primary); color: white; border-radius: 8px; cursor: pointer; font-size: 1.1rem;">+</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        async function submitOrder() {
+            if (cart.length === 0) {
+                alert('Sepetiniz boş!');
+                return;
+            }
+            
+            const orderData = {
+                tableQrCode: tableQr || null,
+                customerName: document.getElementById('customerName').value || null,
+                note: document.getElementById('orderNote').value || null,
+                items: cart.map(item => ({
+                    itemId: item.itemId,
+                    quantity: item.quantity
+                }))
+            };
+            
+            try {
+                const response = await fetch(`/m/${menuSlug}/order`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`Siparişiniz alındı!\nSipariş No: ${result.orderNumber}\nToplam: ${currencySymbol}${result.total.toFixed(2)}`);
+                    cart = [];
+                    updateCartUI();
+                    closeOrderModal();
+                } else {
+                    alert('Hata: ' + result.message);
+                }
+            } catch (error) {
+                alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+                console.error(error);
+            }
+        }
+        
+        // Close modal on overlay click
+        document.getElementById('orderModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeOrderModal();
+            }
+        });
+            </text>
+        }
+    </script>
+</body>
+</html>
+

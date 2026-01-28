@@ -1,0 +1,238 @@
+@model AccessLimitReachedViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Erişim Limiti - @Model.MenuName</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #FAFAFA 0%, #F5F5F5 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            text-align: center;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        
+        .icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            animation: bounce 2s ease-in-out infinite;
+        }
+        
+        @@keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1E1E1E;
+            margin-bottom: 0.75rem;
+        }
+        
+        .menu-name {
+            font-size: 1.1rem;
+            color: #E53935;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        
+        p {
+            color: #757575;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .limit-info {
+            background: #FFF3E0;
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .limit-info strong {
+            color: #E65100;
+        }
+        
+        .cta-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #E0E0E0;
+        }
+        
+        .cta-section h3 {
+            font-size: 1rem;
+            color: #1E1E1E;
+            margin-bottom: 0.75rem;
+        }
+        
+        .cta-section p {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.85rem 1.75rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #E53935 0%, #FF6F00 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(229, 57, 53, 0.3);
+        }
+        
+        .features {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            text-align: left;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #1E1E1E;
+        }
+        
+        .feature-icon {
+            color: #4CAF50;
+        }
+        
+        .powered-by {
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: #BDBDBD;
+        }
+        
+        .powered-by a {
+            color: #E53935;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">⏰</div>
+        <h1>Günlük Erişim Limiti Doldu</h1>
+        <div class="menu-name">@Model.MenuName</div>
+        
+        <p>
+            Bu menünün günlük QR erişim limiti (@Model.DailyLimit erişim) dolmuştur.
+            Yarın tekrar deneyebilirsiniz.
+        </p>
+        
+        <div class="limit-info">
+            <strong>⚠️ Günlük Limit:</strong> @Model.DailyLimit erişim
+        </div>
+        
+        @if (!Model.IsOwnerRegistered)
+        {
+            <div class="cta-section">
+                <h3>Menü Sahibi misiniz?</h3>
+                <p>Kayıt olarak günlük erişim limitinizi <strong>50'ye</strong> yükseltin!</p>
+                
+                <div class="features">
+                    <div class="feature">
+                        <span class="feature-icon">✅</span>
+                        <span>Günlük 50 QR erişim hakkı</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">✅</span>
+                        <span>10 masa için ayrı QR kod</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">✅</span>
+                        <span>Sipariş takibi ve raporlama</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">✅</span>
+                        <span>100 ürüne kadar menü</span>
+                    </div>
+                </div>
+                
+                <a href="/Account/Register" class="btn btn-primary">
+                    <span>🚀</span> Ücretsiz Kayıt Ol
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="cta-section">
+                <h3>Daha Fazla Erişim İster misiniz?</h3>
+                <p>Premium'a geçerek günlük <strong>5000</strong> erişim hakkı kazanın!</p>
+                
+                <div class="features">
+                    <div class="feature">
+                        <span class="feature-icon">✅</span>
+                        <span>Günlük 5000 QR erişim hakkı</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">✅</span>
+                        <span>100 masa için ayrı QR kod</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">✅</span>
+                        <span>Ürünlere resim ekleme</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">✅</span>
+                        <span>1000 ürüne kadar menü</span>
+                    </div>
+                </div>
+                
+                <a href="/pricing" class="btn btn-primary">
+                    <span>⭐</span> Premium'a Geç
+                </a>
+            </div>
+        }
+        
+        <div class="powered-by">
+            Powered by <a href="https://geldimmi.com">Geldimmi.com</a>
+        </div>
+    </div>
+</body>
+</html>
+

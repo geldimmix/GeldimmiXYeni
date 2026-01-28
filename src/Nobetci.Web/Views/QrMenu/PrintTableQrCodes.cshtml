@@ -1,0 +1,197 @@
+@model PrintTableQrCodesViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>QR Kodları - @Model.Menu.RestaurantName</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #FAFAFA;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            color: #1E1E1E;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #757575;
+        }
+        
+        .print-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #E53935;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        .print-btn:hover {
+            background: #C62828;
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: white;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            text-decoration: none;
+            color: #1E1E1E;
+            margin-left: 10px;
+        }
+        
+        .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .qr-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            page-break-inside: avoid;
+        }
+        
+        .qr-card img {
+            width: 180px;
+            height: 180px;
+            margin-bottom: 16px;
+        }
+        
+        .restaurant-name {
+            font-size: 0.9rem;
+            color: #E53935;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .table-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1E1E1E;
+            margin-bottom: 4px;
+        }
+        
+        .table-desc {
+            font-size: 0.85rem;
+            color: #757575;
+            margin-bottom: 8px;
+        }
+        
+        .scan-text {
+            font-size: 0.8rem;
+            color: #9E9E9E;
+            padding: 8px;
+            background: #F5F5F5;
+            border-radius: 8px;
+        }
+        
+        .powered-by {
+            font-size: 0.7rem;
+            color: #BDBDBD;
+            margin-top: 12px;
+        }
+        
+        .powered-by a {
+            color: #E53935;
+            text-decoration: none;
+        }
+        
+        @@media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .header {
+                display: none;
+            }
+            
+            .qr-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15mm;
+            }
+            
+            .qr-card {
+                box-shadow: none;
+                border: 1px solid #E0E0E0;
+                padding: 15mm;
+            }
+            
+            .qr-card img {
+                width: 35mm;
+                height: 35mm;
+            }
+        }
+        
+        @@page {
+            size: A4;
+            margin: 10mm;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🖨️ Masa QR Kodları</h1>
+        <p>@Model.Menu.RestaurantName - Toplam @Model.Menu.Tables.Count masa</p>
+        <button class="print-btn" onclick="window.print()">🖨️ Yazdır</button>
+        <a href="/qrmenu" class="back-btn">← Geri Dön</a>
+    </div>
+    
+    <div class="qr-grid">
+        @foreach (var table in Model.Menu.Tables)
+        {
+            <div class="qr-card">
+                <img src="/qrmenu/qr/@Model.Menu.Slug/@table.QrCode" alt="QR Kod - Masa @table.TableNumber">
+                <div class="restaurant-name">@Model.Menu.RestaurantName</div>
+                <div class="table-number">Masa @table.TableNumber</div>
+                @if (!string.IsNullOrEmpty(table.Description))
+                {
+                    <div class="table-desc">@table.Description</div>
+                }
+                <div class="scan-text">📱 QR kodu okutarak menüyü görüntüleyin</div>
+                <div class="powered-by">Powered by <a href="https://geldimmi.com">Geldimmi.com</a></div>
+            </div>
+        }
+    </div>
+</body>
+</html>
+
