@@ -14,6 +14,7 @@
                 <select id="moduleSelect" class="module-select" onchange="switchModule(this.value)">
                     <option value="shift">🏥 @(isTurkish ? "Nöbet Sistemi" : "Shift System")</option>
                     <option value="cleaning" selected>🧹 @(isTurkish ? "Temizlik Çizelgesi" : "Cleaning Schedule")</option>
+                    <option value="qrmenu">🍽️ @(isTurkish ? "QR Menü" : "QR Menu")</option>
                 </select>
             </div>
             <p class="header-subtitle">
@@ -1111,7 +1112,8 @@
     function switchModule(module) {
         const routes = {
             'shift': '@Url.Action("Index", "App")',
-            'cleaning': '@Url.Action("Index", "Cleaning")'
+            'cleaning': '@Url.Action("Index", "Cleaning")',
+            'qrmenu': '@Url.Action("Index", "QrMenu")'
         };
         if (routes[module] && module !== 'cleaning') {
             window.location.href = routes[module];
