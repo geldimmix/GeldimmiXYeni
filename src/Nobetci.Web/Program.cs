@@ -829,6 +829,10 @@ using (var scope = app.Services.CreateScope())
         try { await EnsureSystemSettingsColumnsAsync(context); }
         catch (Exception ex) { Console.WriteLine($"EnsureSystemSettingsColumns warning: {ex.Message}"); }
         
+        // Ensure QrMenu tables exist
+        try { await EnsureQrMenuTablesAsync(context); }
+        catch (Exception ex) { Console.WriteLine($"EnsureQrMenuTables warning: {ex.Message}"); }
+        
         // Seed system settings (run regardless of migration status)
         try { await SeedSystemSettings(context); }
         catch (Exception ex) { Console.WriteLine($"SeedSystemSettings warning: {ex.Message}"); }
@@ -1815,7 +1819,7 @@ static async Task SeedBlogPosts(ApplicationDbContext context)
             MetaDescriptionTr = p.ExcerptTr, // Use excerpt as meta description
             MetaDescriptionEn = p.ExcerptEn,
             IsPublished = true,
-            PublishedAt = p.PublishedAt,
+            PublishedAt = DateTime.SpecifyKind(p.PublishedAt, DateTimeKind.Utc),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         })
@@ -1870,6 +1874,212 @@ static async Task EnsureSystemSettingsColumnsAsync(ApplicationDbContext context)
         await command.ExecuteNonQueryAsync();
         
         Console.WriteLine("SystemSettings columns ensured.");
+    }
+    finally
+    {
+        await connection.CloseAsync();
+    }
+}
+
+// Ensure QrMenu tables exist
+static async Task EnsureQrMenuTablesAsync(ApplicationDbContext context)
+{
+    var connection = context.Database.GetDbConnection();
+    await connection.OpenAsync();
+    
+    try
+    {
+        using var command = connection.CreateCommand();
+        
+        // Create QrMenus table if not exists
+        command.CommandText = @"
+            CREATE TABLE IF NOT EXISTS ""QrMenus"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""Name"" VARCHAR(200) NOT NULL,
+                ""Description"" VARCHAR(1000),
+                ""Currency"" VARCHAR(10) NOT NULL DEFAULT 'TRY',
+                ""Language"" VARCHAR(10) NOT NULL DEFAULT 'tr',
+                ""RestaurantName"" VARCHAR(200),
+                ""RestaurantAddress"" VARCHAR(500),
+                ""RestaurantPhone"" VARCHAR(50),
+                ""LogoUrl"" VARCHAR(500),
+                ""PrimaryColor"" VARCHAR(20) DEFAULT '#E53935',
+                ""SecondaryColor"" VARCHAR(20) DEFAULT '#1E1E1E',
+                ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""AcceptOrders"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""Slug"" VARCHAR(100) NOT NULL,
+                ""SessionId"" VARCHAR(100),
+                ""UserId"" VARCHAR(450),
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                ""UpdatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                CONSTRAINT ""FK_QrMenus_AspNetUsers"" FOREIGN KEY (""UserId"") REFERENCES ""AspNetUsers""(""Id"") ON DELETE SET NULL
+            );
+            CREATE UNIQUE INDEX IF NOT EXISTS ""IX_QrMenus_Slug"" ON ""QrMenus""(""Slug"");
+            CREATE INDEX IF NOT EXISTS ""IX_QrMenus_UserId"" ON ""QrMenus""(""UserId"");
+            CREATE INDEX IF NOT EXISTS ""IX_QrMenus_SessionId"" ON ""QrMenus""(""SessionId"");
+            CREATE INDEX IF NOT EXISTS ""IX_QrMenus_IsActive"" ON ""QrMenus""(""IsActive"");
+        ";
+        await command.ExecuteNonQueryAsync();
+        
+        // Create QrMenuCategories table if not exists
+        command.CommandText = @"
+            CREATE TABLE IF NOT EXISTS ""QrMenuCategories"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""MenuId"" INTEGER NOT NULL,
+                ""ParentCategoryId"" INTEGER,
+                ""Name"" VARCHAR(200) NOT NULL,
+                ""Description"" VARCHAR(500),
+                ""Icon"" VARCHAR(100),
+                ""ImageUrl"" VARCHAR(500),
+                ""DisplayOrder"" INTEGER NOT NULL DEFAULT 0,
+                ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                ""UpdatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                CONSTRAINT ""FK_QrMenuCategories_QrMenus"" FOREIGN KEY (""MenuId"") REFERENCES ""QrMenus""(""Id"") ON DELETE CASCADE,
+                CONSTRAINT ""FK_QrMenuCategories_Parent"" FOREIGN KEY (""ParentCategoryId"") REFERENCES ""QrMenuCategories""(""Id"") ON DELETE RESTRICT
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_QrMenuCategories_MenuId"" ON ""QrMenuCategories""(""MenuId"", ""DisplayOrder"");
+            CREATE INDEX IF NOT EXISTS ""IX_QrMenuCategories_ParentId"" ON ""QrMenuCategories""(""ParentCategoryId"");
+        ";
+        await command.ExecuteNonQueryAsync();
+        
+        // Add ImageUrl column to QrMenuCategories if missing
+        command.CommandText = @"
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='QrMenuCategories' AND column_name='ImageUrl') THEN
+                    ALTER TABLE ""QrMenuCategories"" ADD COLUMN ""ImageUrl"" VARCHAR(500);
+                END IF;
+            END $$;";
+        await command.ExecuteNonQueryAsync();
+        
+        // Create QrMenuItems table if not exists
+        command.CommandText = @"
+            CREATE TABLE IF NOT EXISTS ""QrMenuItems"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""CategoryId"" INTEGER NOT NULL,
+                ""Name"" VARCHAR(200) NOT NULL,
+                ""Description"" VARCHAR(1000),
+                ""Price"" DECIMAL(18,2) NOT NULL,
+                ""DiscountedPrice"" DECIMAL(18,2),
+                ""ImageUrl"" VARCHAR(500),
+                ""Calories"" INTEGER,
+                ""PrepTimeMinutes"" INTEGER,
+                ""Allergens"" VARCHAR(500),
+                ""Tags"" VARCHAR(500),
+                ""PortionSize"" VARCHAR(100),
+                ""DisplayOrder"" INTEGER NOT NULL DEFAULT 0,
+                ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""InStock"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""IsFeatured"" BOOLEAN NOT NULL DEFAULT FALSE,
+                ""IsNew"" BOOLEAN NOT NULL DEFAULT FALSE,
+                ""IsPopular"" BOOLEAN NOT NULL DEFAULT FALSE,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                ""UpdatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                CONSTRAINT ""FK_QrMenuItems_QrMenuCategories"" FOREIGN KEY (""CategoryId"") REFERENCES ""QrMenuCategories""(""Id"") ON DELETE CASCADE
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_QrMenuItems_CategoryId"" ON ""QrMenuItems""(""CategoryId"", ""DisplayOrder"");
+            CREATE INDEX IF NOT EXISTS ""IX_QrMenuItems_IsActive"" ON ""QrMenuItems""(""IsActive"");
+        ";
+        await command.ExecuteNonQueryAsync();
+        
+        // Add IsNew and IsPopular columns to QrMenuItems if missing
+        command.CommandText = @"
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='QrMenuItems' AND column_name='IsNew') THEN
+                    ALTER TABLE ""QrMenuItems"" ADD COLUMN ""IsNew"" BOOLEAN NOT NULL DEFAULT FALSE;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='QrMenuItems' AND column_name='IsPopular') THEN
+                    ALTER TABLE ""QrMenuItems"" ADD COLUMN ""IsPopular"" BOOLEAN NOT NULL DEFAULT FALSE;
+                END IF;
+            END $$;";
+        await command.ExecuteNonQueryAsync();
+        
+        // Create QrMenuTables table if not exists
+        command.CommandText = @"
+            CREATE TABLE IF NOT EXISTS ""QrMenuTables"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""MenuId"" INTEGER NOT NULL,
+                ""TableNumber"" VARCHAR(50) NOT NULL,
+                ""Description"" VARCHAR(200),
+                ""Capacity"" INTEGER DEFAULT 4,
+                ""QrCode"" VARCHAR(100),
+                ""DisplayOrder"" INTEGER NOT NULL DEFAULT 0,
+                ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                ""UpdatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                CONSTRAINT ""FK_QrMenuTables_QrMenus"" FOREIGN KEY (""MenuId"") REFERENCES ""QrMenus""(""Id"") ON DELETE CASCADE
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_QrMenuTables_MenuId"" ON ""QrMenuTables""(""MenuId"", ""DisplayOrder"");
+        ";
+        await command.ExecuteNonQueryAsync();
+        
+        // Create QrMenuOrders table if not exists
+        command.CommandText = @"
+            CREATE TABLE IF NOT EXISTS ""QrMenuOrders"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""MenuId"" INTEGER NOT NULL,
+                ""TableId"" INTEGER,
+                ""OrderNumber"" VARCHAR(50) NOT NULL,
+                ""CustomerName"" VARCHAR(100),
+                ""CustomerPhone"" VARCHAR(50),
+                ""Note"" VARCHAR(500),
+                ""TotalAmount"" DECIMAL(18,2) NOT NULL,
+                ""Currency"" VARCHAR(10) NOT NULL DEFAULT 'TRY',
+                ""Status"" INTEGER NOT NULL DEFAULT 0,
+                ""OrderedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                ""ConfirmedAt"" TIMESTAMP WITH TIME ZONE,
+                ""CompletedAt"" TIMESTAMP WITH TIME ZONE,
+                ""CancelledAt"" TIMESTAMP WITH TIME ZONE,
+                CONSTRAINT ""FK_QrMenuOrders_QrMenus"" FOREIGN KEY (""MenuId"") REFERENCES ""QrMenus""(""Id"") ON DELETE CASCADE,
+                CONSTRAINT ""FK_QrMenuOrders_QrMenuTables"" FOREIGN KEY (""TableId"") REFERENCES ""QrMenuTables""(""Id"") ON DELETE SET NULL
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_QrMenuOrders_MenuId"" ON ""QrMenuOrders""(""MenuId"");
+            CREATE INDEX IF NOT EXISTS ""IX_QrMenuOrders_TableId"" ON ""QrMenuOrders""(""TableId"");
+            CREATE INDEX IF NOT EXISTS ""IX_QrMenuOrders_Status"" ON ""QrMenuOrders""(""Status"");
+            CREATE INDEX IF NOT EXISTS ""IX_QrMenuOrders_OrderedAt"" ON ""QrMenuOrders""(""OrderedAt"");
+        ";
+        await command.ExecuteNonQueryAsync();
+        
+        // Create QrMenuOrderItems table if not exists
+        command.CommandText = @"
+            CREATE TABLE IF NOT EXISTS ""QrMenuOrderItems"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""OrderId"" INTEGER NOT NULL,
+                ""MenuItemId"" INTEGER,
+                ""ItemName"" VARCHAR(200) NOT NULL,
+                ""Quantity"" INTEGER NOT NULL DEFAULT 1,
+                ""UnitPrice"" DECIMAL(18,2) NOT NULL,
+                ""TotalPrice"" DECIMAL(18,2) NOT NULL,
+                ""Note"" VARCHAR(500),
+                CONSTRAINT ""FK_QrMenuOrderItems_QrMenuOrders"" FOREIGN KEY (""OrderId"") REFERENCES ""QrMenuOrders""(""Id"") ON DELETE CASCADE,
+                CONSTRAINT ""FK_QrMenuOrderItems_QrMenuItems"" FOREIGN KEY (""MenuItemId"") REFERENCES ""QrMenuItems""(""Id"") ON DELETE SET NULL
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_QrMenuOrderItems_OrderId"" ON ""QrMenuOrderItems""(""OrderId"");
+        ";
+        await command.ExecuteNonQueryAsync();
+        
+        // Create QrMenuAccesses table if not exists
+        command.CommandText = @"
+            CREATE TABLE IF NOT EXISTS ""QrMenuAccesses"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""MenuId"" INTEGER NOT NULL,
+                ""TableId"" INTEGER,
+                ""IpAddress"" VARCHAR(50),
+                ""UserAgent"" VARCHAR(500),
+                ""SessionId"" VARCHAR(100),
+                ""AccessedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                ""AccessDate"" DATE NOT NULL DEFAULT CURRENT_DATE,
+                CONSTRAINT ""FK_QrMenuAccesses_QrMenus"" FOREIGN KEY (""MenuId"") REFERENCES ""QrMenus""(""Id"") ON DELETE CASCADE,
+                CONSTRAINT ""FK_QrMenuAccesses_QrMenuTables"" FOREIGN KEY (""TableId"") REFERENCES ""QrMenuTables""(""Id"") ON DELETE SET NULL
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_QrMenuAccesses_MenuId"" ON ""QrMenuAccesses""(""MenuId"");
+            CREATE INDEX IF NOT EXISTS ""IX_QrMenuAccesses_AccessDate"" ON ""QrMenuAccesses""(""AccessDate"");
+        ";
+        await command.ExecuteNonQueryAsync();
+        
+        Console.WriteLine("QrMenu tables ensured.");
     }
     finally
     {

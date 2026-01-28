@@ -69,7 +69,7 @@ namespace Nobetci.Web.Controllers
                     "Steps to follow for successful hospital roster system implementation: First, analyze existing processes, then enter personnel and shift definitions into the system, establish distribution rules, and conduct a pilot implementation. With Geldimmi, you can create your organization within minutes after registration, add staff, and generate your first shift schedule. The free plan lets you try all basic features and test suitability for your needs.",
                     "In conclusion, a hospital shift system is an indispensable part of modern healthcare services. Choosing the right shift management software increases operational efficiency, raises staff satisfaction, and strengthens patient safety. Geldimmi is an easy-to-use and reliable duty scheduling software that provides all the tools you need for healthcare staff scheduling. Register free today and digitize your hospital roster system."
                 ),
-                PublishedAt = new DateTime(2026, 1, 21)
+                PublishedAt = new DateTime(2026, 1, 21, 0, 0, 0, DateTimeKind.Utc)
             },
             new StaticBlogPost
             {
@@ -624,7 +624,7 @@ namespace Nobetci.Web.Controllers
                     "The real-time nurse schedule manager alerts leads when published and actual diverge. A nurse shift swap platform logs approved changes without violating fairness rules.",
                     "SEO phrases: fair nurse roster generator, automatic nurse shift planner, nurse workforce optimizer, real-time nurse schedule manager, nurse shift swap platform. Use them to rank for fairness and automation topics."
                 ),
-                PublishedAt = new DateTime(2026, 1, 21)
+                PublishedAt = new DateTime(2026, 1, 21, 0, 0, 0, DateTimeKind.Utc)
             },
             new StaticBlogPost
             {
@@ -762,7 +762,7 @@ namespace Nobetci.Web.Controllers
                     "A cloud-based nurse rostering backbone delivers security and scale. Fair nurse roster rules reduce burnout and increase patient safety.",
                     "SEO phrases: best nurse scheduling app 2026, AI nurse shift scheduler, mobile nurse shift scheduler, real-time nurse schedule manager, nurse overtime tracking tool. Use them to target 2026-focused searches."
                 ),
-                PublishedAt = new DateTime(2026, 1, 27)
+                PublishedAt = new DateTime(2026, 1, 27, 0, 0, 0, DateTimeKind.Utc)
             },
             new StaticBlogPost
             {
@@ -785,7 +785,7 @@ namespace Nobetci.Web.Controllers
                     "Once published, the mobile nurse shift scheduler notifies staff. A nurse overtime tracking tool forecasts overtime, and the real-time nurse schedule manager captures last-minute changes.",
                     "SEO keywords: online nurse duty roster app, automated nurse roster planner, nurse shift planner app, mobile nurse shift scheduler, real-time nurse schedule manager. These target fast-setup search intent."
                 ),
-                PublishedAt = new DateTime(2026, 1, 28)
+                PublishedAt = new DateTime(2026, 1, 28, 0, 0, 0, DateTimeKind.Utc)
             },
             new StaticBlogPost
             {
@@ -2494,7 +2494,7 @@ namespace Nobetci.Web.Controllers
                     "Digital cleaning management solution is ideal for any business requiring regular cleaning: hotels, hospitals, schools, shopping malls, factories, offices, and communal living spaces.",
                     "<div class='cta-box'><strong>🧹 Digitize your cleaning processes!</strong><br/>Create your cleaning schedule with Geldimmi.com and see the difference.<br/><a href='/cleaning' class='btn btn-primary mt-2'>Try Now</a></div>"
                 ),
-                PublishedAt = new DateTime(2026, 1, 27)
+                PublishedAt = new DateTime(2026, 1, 27, 0, 0, 0, DateTimeKind.Utc)
             },
             new StaticBlogPost
             {
@@ -2553,7 +2553,7 @@ namespace Nobetci.Web.Controllers
                     "<ul><li>🔲 QR code cleaning tracking</li><li>🔲 Customizable schedules</li><li>🔲 Staff assignment</li><li>🔲 Instant notifications</li><li>🔲 Detailed reporting</li></ul>",
                     "<div class='cta-box'><strong>📋 Create your professional cleaning plan!</strong><br/>Optimize your cleaning processes with Geldimmi.<br/><a href='/cleaning' class='btn btn-primary mt-2'>Start Free</a></div>"
                 ),
-                PublishedAt = new DateTime(2026, 1, 27)
+                PublishedAt = new DateTime(2026, 1, 27, 0, 0, 0, DateTimeKind.Utc)
             },
             new StaticBlogPost
             {
@@ -2610,7 +2610,7 @@ namespace Nobetci.Web.Controllers
                     "<ul><li>✅ Room-based QR code system</li><li>✅ Room attendant performance tracking</li><li>✅ Instant cleaning status</li><li>✅ Complaint management integration</li><li>✅ Daily/weekly/monthly reports</li><li>✅ Multi-hotel support</li></ul>",
                     "<div class='cta-box'><strong>🏨 Elevate your hotel's cleaning standards!</strong><br/>Increase guest satisfaction with QR code housekeeping system.<br/><a href='/cleaning' class='btn btn-primary mt-2'>Get Started</a></div>"
                 ),
-                PublishedAt = new DateTime(2026, 1, 27)
+                PublishedAt = new DateTime(2026, 1, 27, 0, 0, 0, DateTimeKind.Utc)
             },
             new StaticBlogPost
             {
@@ -2665,7 +2665,7 @@ namespace Nobetci.Web.Controllers
                     "Digital hygiene tracking system automatically generates documentation required for JCI (Joint Commission International) and similar accreditation standards.",
                     "<div class='cta-box'><strong>🏥 Elevate your hospital hygiene standards!</strong><br/>Strengthen infection control with digital cleaning tracking system.<br/><a href='/cleaning' class='btn btn-primary mt-2'>Get Detailed Info</a></div>"
                 ),
-                PublishedAt = new DateTime(2026, 1, 27)
+                PublishedAt = new DateTime(2026, 1, 27, 0, 0, 0, DateTimeKind.Utc)
             },
             new StaticBlogPost
             {
@@ -2724,7 +2724,7 @@ namespace Nobetci.Web.Controllers
                     "<ul><li>🆓 Start with free plan</li><li>📱 QR code mobile tracking</li><li>📊 Automatic reports</li><li>🔔 Instant notifications</li><li>☁️ Cloud-based access</li></ul>",
                     "<div class='cta-box'><strong>📈 Move from Excel to professional solution!</strong><br/>Create free cleaning schedule with Geldimmi.<br/><a href='/cleaning' class='btn btn-primary mt-2'>Try Free</a></div>"
                 ),
-                PublishedAt = new DateTime(2026, 1, 28)
+                PublishedAt = new DateTime(2026, 1, 28, 0, 0, 0, DateTimeKind.Utc)
             },
             new StaticBlogPost
             {
@@ -2783,7 +2783,7 @@ namespace Nobetci.Web.Controllers
                     "<ul><li>🏬 Multi-area and floor management</li><li>👷 Contractor integration</li><li>📊 Comprehensive reporting</li><li>🔔 Instant notifications</li><li>📱 Mobile inspection app</li></ul>",
                     "<div class='cta-box'><strong>🏢 Digitize your corporate cleaning management!</strong><br/>Simplify mall and office building cleaning tracking with Geldimmi.<br/><a href='/cleaning' class='btn btn-primary mt-2'>Request Demo</a></div>"
                 ),
-                PublishedAt = new DateTime(2026, 1, 28)
+                PublishedAt = new DateTime(2026, 1, 28, 0, 0, 0, DateTimeKind.Utc)
             }
         };
 
