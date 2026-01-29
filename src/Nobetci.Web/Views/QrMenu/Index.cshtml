@@ -400,14 +400,16 @@
         left: 0;
         right: 0;
         bottom: 0;
+        width: 100vw;
+        height: 100vh;
         background: rgba(0,0,0,0.5);
-        z-index: 1000;
+        z-index: 9999;
         align-items: center;
         justify-content: center;
     }
     
     .modal-overlay.active {
-        display: flex;
+        display: flex !important;
     }
     
     .modal {
@@ -1325,6 +1327,13 @@
     
     // Category Modal
     function openAddCategoryModal() {
+        console.log('openAddCategoryModal called');
+        const modal = document.getElementById('categoryModal');
+        console.log('Modal element:', modal);
+        if (!modal) {
+            alert('Modal element not found!');
+            return;
+        }
         document.getElementById('categoryModalTitle').textContent = 'Kategori Ekle';
         document.getElementById('categoryId').value = '';
         document.getElementById('categoryName').value = '';
@@ -1333,7 +1342,8 @@
         if (document.getElementById('categoryParent')) {
             document.getElementById('categoryParent').value = '';
         }
-        document.getElementById('categoryModal').classList.add('active');
+        modal.classList.add('active');
+        console.log('Modal classes after adding active:', modal.classList.toString());
     }
     
     function editCategory(id, name, description, icon) {
