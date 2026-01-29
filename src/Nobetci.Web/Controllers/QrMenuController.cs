@@ -772,11 +772,11 @@ public class QrMenuController : Controller
     public async Task<IActionResult> ViewMenu(string slug, string? tableQr = null)
     {
         var menu = await _context.QrMenus
-            .Include(m => m.Categories.Where(c => c.IsActive && c.ParentCategoryId == null).OrderBy(c => c.DisplayOrder))
-                .ThenInclude(c => c.Items.Where(i => i.IsActive).OrderBy(i => i.DisplayOrder))
-            .Include(m => m.Categories.Where(c => c.IsActive && c.ParentCategoryId == null))
-                .ThenInclude(c => c.SubCategories.Where(sc => sc.IsActive).OrderBy(sc => sc.DisplayOrder))
-                    .ThenInclude(sc => sc.Items.Where(i => i.IsActive).OrderBy(i => i.DisplayOrder))
+            .Include(m => m.Categories.Where(c => c.IsActive))
+                .ThenInclude(c => c.Items.Where(i => i.IsActive))
+            .Include(m => m.Categories.Where(c => c.IsActive))
+                .ThenInclude(c => c.SubCategories.Where(sc => sc.IsActive))
+                    .ThenInclude(sc => sc.Items.Where(i => i.IsActive))
             .FirstOrDefaultAsync(m => m.Slug == slug && m.IsActive);
 
         if (menu == null)

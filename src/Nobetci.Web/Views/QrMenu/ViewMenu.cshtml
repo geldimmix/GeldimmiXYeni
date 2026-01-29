@@ -553,7 +553,7 @@
     <!-- Category Navigation -->
     <nav class="category-nav">
         <div class="category-nav-inner">
-            @foreach (var category in menu.Categories.Where(c => c.ParentCategoryId == null))
+            @foreach (var category in menu.Categories.Where(c => c.ParentCategoryId == null).OrderBy(c => c.DisplayOrder))
             {
                 <button class="category-btn" onclick="scrollToCategory('@category.Id')">
                     @(category.Icon ?? "📂") @category.Name
@@ -564,7 +564,7 @@
     
     <!-- Content -->
     <main class="content">
-        @foreach (var category in menu.Categories.Where(c => c.ParentCategoryId == null))
+        @foreach (var category in menu.Categories.Where(c => c.ParentCategoryId == null).OrderBy(c => c.DisplayOrder))
         {
             <section class="category-section" id="category-@category.Id">
                 <div class="category-header">
@@ -577,7 +577,7 @@
                     <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">@category.Description</p>
                 }
                 
-                @foreach (var item in category.Items)
+                @foreach (var item in category.Items.OrderBy(i => i.DisplayOrder))
                 {
                     <div class="menu-item @(item.InStock ? "" : "out-of-stock")" data-item-id="@item.Id" data-item-name="@item.Name" data-item-price="@(item.DiscountedPrice ?? item.Price)">
                         @if (!string.IsNullOrEmpty(item.ImageUrl))
@@ -654,11 +654,11 @@
                     </div>
                 }
                 
-                @foreach (var subCategory in category.SubCategories)
+                @foreach (var subCategory in category.SubCategories.OrderBy(sc => sc.DisplayOrder))
                 {
                     <h3 class="subcategory-title">@(subCategory.Icon ?? "📁") @subCategory.Name</h3>
                     
-                    @foreach (var item in subCategory.Items)
+                    @foreach (var item in subCategory.Items.OrderBy(i => i.DisplayOrder))
                     {
                         <div class="menu-item @(item.InStock ? "" : "out-of-stock")" data-item-id="@item.Id" data-item-name="@item.Name" data-item-price="@(item.DiscountedPrice ?? item.Price)">
                             <div class="menu-item-info">
