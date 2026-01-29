@@ -648,8 +648,7 @@
                         
                         @if (Model.CanOrder && item.InStock)
                         {
-                            <button class="add-btn" onclick="addToCart(@item.Id, '@item.Name.Replace("'", "\\'")
-', @(item.DiscountedPrice ?? item.Price))">+</button>
+                            <button class="add-btn" onclick="addToCart(@item.Id, '@item.Name.Replace("'", "\\'")', @(item.DiscountedPrice ?? item.Price))">+</button>
                         }
                     </div>
                 }
