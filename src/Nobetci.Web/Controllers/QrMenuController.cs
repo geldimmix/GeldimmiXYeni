@@ -1036,13 +1036,15 @@ public class QrMenuController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var reportDate = date ?? DateTime.UtcNow.Date;
+        var reportDate = date?.Date ?? DateTime.UtcNow.Date;
+        var reportDateStart = DateTime.SpecifyKind(reportDate, DateTimeKind.Utc);
+        var reportDateEnd = reportDateStart.AddDays(1);
 
         var orders = await _context.QrMenuOrders
             .Include(o => o.Table)
             .Include(o => o.Items)
                 .ThenInclude(i => i.MenuItem)
-            .Where(o => o.MenuId == menu.Id && o.OrderedAt.Date == reportDate.Date)
+            .Where(o => o.MenuId == menu.Id && o.OrderedAt >= reportDateStart && o.OrderedAt < reportDateEnd)
             .ToListAsync();
 
         var completedOrders = orders.Where(o => o.Status == OrderStatus.Completed || o.Status == OrderStatus.Delivered).ToList();
