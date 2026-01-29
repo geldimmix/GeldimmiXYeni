@@ -941,12 +941,14 @@ public class QrMenuController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var filterDate = date ?? DateTime.UtcNow.Date;
+        var filterDate = date?.Date ?? DateTime.UtcNow.Date;
+        var filterDateStart = DateTime.SpecifyKind(filterDate, DateTimeKind.Utc);
+        var filterDateEnd = filterDateStart.AddDays(1);
 
         var query = _context.QrMenuOrders
             .Include(o => o.Table)
             .Include(o => o.Items)
-            .Where(o => o.MenuId == menu.Id && o.OrderedAt.Date == filterDate.Date);
+            .Where(o => o.MenuId == menu.Id && o.OrderedAt >= filterDateStart && o.OrderedAt < filterDateEnd);
 
         if (status.HasValue)
         {
