@@ -393,7 +393,7 @@
         cursor: pointer;
     }
     
-    .modal-overlay {
+    .qr-modal-overlay {
         display: none;
         position: fixed;
         top: 0;
@@ -402,17 +402,17 @@
         bottom: 0;
         width: 100vw;
         height: 100vh;
-        background: rgba(0,0,0,0.5);
-        z-index: 9999;
+        background: rgba(0,0,0,0.6);
+        z-index: 99999;
         align-items: center;
         justify-content: center;
     }
     
-    .modal-overlay.active {
+    .qr-modal-overlay.active {
         display: flex !important;
     }
     
-    .modal {
+    .qr-modal {
         background: white;
         border-radius: 16px;
         padding: 1.5rem;
@@ -420,21 +420,23 @@
         width: 90%;
         max-height: 90vh;
         overflow-y: auto;
+        position: relative;
+        z-index: 100000;
     }
     
-    .modal-header {
+    .qr-modal-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 1.5rem;
     }
     
-    .modal-header h3 {
+    .qr-modal-header h3 {
         margin: 0;
         font-size: 1.3rem;
     }
     
-    .modal-close {
+    .qr-modal-close {
         background: none;
         border: none;
         font-size: 1.5rem;
@@ -1114,11 +1116,11 @@
 </div>
 
 <!-- Add Category Modal -->
-<div id="categoryModal" class="modal-overlay">
-    <div class="modal">
-        <div class="modal-header">
+<div id="categoryModal" class="qr-modal-overlay">
+    <div class="qr-modal">
+        <div class="qr-modal-header">
             <h3 id="categoryModalTitle">Kategori Ekle</h3>
-            <button class="modal-close" onclick="closeCategoryModal()">&times;</button>
+            <button class="qr-modal-close" onclick="closeCategoryModal()">&times;</button>
         </div>
         <form id="categoryForm">
             @Html.AntiForgeryToken()
@@ -1161,11 +1163,11 @@
 </div>
 
 <!-- Add Item Modal -->
-<div id="itemModal" class="modal-overlay">
-    <div class="modal">
-        <div class="modal-header">
+<div id="itemModal" class="qr-modal-overlay">
+    <div class="qr-modal">
+        <div class="qr-modal-header">
             <h3 id="itemModalTitle">Ürün Ekle</h3>
-            <button class="modal-close" onclick="closeItemModal()">&times;</button>
+            <button class="qr-modal-close" onclick="closeItemModal()">&times;</button>
         </div>
         <form id="itemForm">
             @Html.AntiForgeryToken()
@@ -1237,11 +1239,11 @@
 </div>
 
 <!-- Add Table Modal -->
-<div id="tableModal" class="modal-overlay">
-    <div class="modal">
-        <div class="modal-header">
+<div id="tableModal" class="qr-modal-overlay">
+    <div class="qr-modal">
+        <div class="qr-modal-header">
             <h3>Masa Ekle</h3>
-            <button class="modal-close" onclick="closeTableModal()">&times;</button>
+            <button class="qr-modal-close" onclick="closeTableModal()">&times;</button>
         </div>
         <form id="tableForm">
             @Html.AntiForgeryToken()
@@ -1271,11 +1273,11 @@
 <!-- Image Upload Modal (Premium) -->
 @if (Model.IsPremium)
 {
-    <div id="imageModal" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
+    <div id="imageModal" class="qr-modal-overlay">
+        <div class="qr-modal">
+            <div class="qr-modal-header">
                 <h3>Ürün Resmi Yükle</h3>
-                <button class="modal-close" onclick="closeImageModal()">&times;</button>
+                <button class="qr-modal-close" onclick="closeImageModal()">&times;</button>
             </div>
             <form id="imageForm" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
@@ -1327,13 +1329,6 @@
     
     // Category Modal
     function openAddCategoryModal() {
-        console.log('openAddCategoryModal called');
-        const modal = document.getElementById('categoryModal');
-        console.log('Modal element:', modal);
-        if (!modal) {
-            alert('Modal element not found!');
-            return;
-        }
         document.getElementById('categoryModalTitle').textContent = 'Kategori Ekle';
         document.getElementById('categoryId').value = '';
         document.getElementById('categoryName').value = '';
@@ -1342,8 +1337,7 @@
         if (document.getElementById('categoryParent')) {
             document.getElementById('categoryParent').value = '';
         }
-        modal.classList.add('active');
-        console.log('Modal classes after adding active:', modal.classList.toString());
+        document.getElementById('categoryModal').classList.add('active');
     }
     
     function editCategory(id, name, description, icon) {
@@ -1563,7 +1557,7 @@
     });
     
     // Close modals on overlay click
-    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    document.querySelectorAll('.qr-modal-overlay').forEach(overlay => {
         overlay.addEventListener('click', function(e) {
             if (e.target === this) {
                 this.classList.remove('active');
