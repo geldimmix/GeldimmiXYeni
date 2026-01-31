@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Nobetci.Web.Data;
 using Nobetci.Web.Data.Entities;
+using Nobetci.Web.Helpers;
 using Nobetci.Web.Middleware;
 using Nobetci.Web.Services;
 using Resend;
@@ -108,6 +109,10 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<ISystemSettingsService, SystemSettingsService>();
 builder.Services.AddScoped<IEmailSender, EmailService>();
 builder.Services.AddScoped<IActivityLogService, ActivityLogService>();
+builder.Services.AddScoped<IBordroCalculator, BordroCalculator>();
+builder.Services.AddScoped<IBordroHesaplamaService, BordroHesaplamaService>();
+builder.Services.AddScoped<IPuantajHesaplamaService, PuantajHesaplamaService>();
+builder.Services.AddScoped<PersonelCalismaSaatleriHelper>();
 
 // Session for guest users
 builder.Services.AddDistributedMemoryCache();
@@ -226,11 +231,32 @@ using (var scope = app.Services.CreateScope())
                 IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Employees' AND column_name='Phone') THEN
                     ALTER TABLE ""Employees"" ADD COLUMN ""Phone"" VARCHAR(20) NULL;
                 END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Employees' AND column_name='HasDoubleTicketRight') THEN
+                    ALTER TABLE ""Employees"" ADD COLUMN ""HasDoubleTicketRight"" BOOLEAN DEFAULT FALSE NOT NULL;
+                END IF;
                 IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Shifts' AND column_name='IsDayOff') THEN
                     ALTER TABLE ""Shifts"" ADD COLUMN ""IsDayOff"" BOOLEAN DEFAULT FALSE NOT NULL;
                 END IF;
                 IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Shifts' AND column_name='OvernightHoursMode') THEN
                     ALTER TABLE ""Shifts"" ADD COLUMN ""OvernightHoursMode"" INTEGER DEFAULT 0 NOT NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Shifts' AND column_name='WorkGroupTypeId') THEN
+                    ALTER TABLE ""Shifts"" ADD COLUMN ""WorkGroupTypeId"" INTEGER NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Shifts' AND column_name='IsRiskGroup') THEN
+                    ALTER TABLE ""Shifts"" ADD COLUMN ""IsRiskGroup"" BOOLEAN DEFAULT FALSE NOT NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='ShiftTemplates' AND column_name='WorkGroupTypeId') THEN
+                    ALTER TABLE ""ShiftTemplates"" ADD COLUMN ""WorkGroupTypeId"" INTEGER NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='ShiftTemplates' AND column_name='IsRiskGroup') THEN
+                    ALTER TABLE ""ShiftTemplates"" ADD COLUMN ""IsRiskGroup"" BOOLEAN DEFAULT FALSE NOT NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='TimeAttendances' AND column_name='WorkGroupTypeId') THEN
+                    ALTER TABLE ""TimeAttendances"" ADD COLUMN ""WorkGroupTypeId"" INTEGER NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='TimeAttendances' AND column_name='IsRiskGroup') THEN
+                    ALTER TABLE ""TimeAttendances"" ADD COLUMN ""IsRiskGroup"" BOOLEAN DEFAULT FALSE NOT NULL;
                 END IF;
                 IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Organizations' AND column_name='DefaultTemplatesInitialized') THEN
                     ALTER TABLE ""Organizations"" ADD COLUMN ""DefaultTemplatesInitialized"" BOOLEAN DEFAULT FALSE NOT NULL;
@@ -271,6 +297,195 @@ using (var scope = app.Services.CreateScope())
             );
             CREATE INDEX IF NOT EXISTS ""IX_AdminUsers_Username"" ON ""AdminUsers"" (""Username"");
         ", "AdminUsers");
+
+        // Create BordroSabitleri tables
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""BordroSabitleri"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""OrganizationId"" INTEGER NOT NULL,
+                ""Key"" VARCHAR(100) NOT NULL,
+                ""Value"" NUMERIC(10,6) NOT NULL,
+                ""ValueType"" VARCHAR(50) NOT NULL DEFAULT 'ORAN',
+                ""Description"" VARCHAR(255) NULL,
+                ""CadreType"" VARCHAR(10) NULL,
+                ""ValidFrom"" TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                ""ValidTo"" TIMESTAMP WITHOUT TIME ZONE NULL,
+                ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""WorkingUnitIds"" VARCHAR(255) NULL,
+                ""TemplateId"" INTEGER NULL,
+                ""IsCustom"" BOOLEAN NOT NULL DEFAULT FALSE,
+                ""CreatedBy"" VARCHAR(100) NULL,
+                ""CreatedAt"" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+                ""UpdatedBy"" VARCHAR(100) NULL,
+                ""UpdatedAt"" TIMESTAMP WITHOUT TIME ZONE NULL,
+                CONSTRAINT ""FK_BordroSabitleri_Organizations"" FOREIGN KEY (""OrganizationId"") REFERENCES ""Organizations"" (""Id"") ON DELETE CASCADE
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_BordroSabitleri_Organization_Key"" ON ""BordroSabitleri"" (""OrganizationId"", ""Key"");
+            CREATE INDEX IF NOT EXISTS ""IX_BordroSabitleri_Organization_CadreType"" ON ""BordroSabitleri"" (""OrganizationId"", ""CadreType"");
+
+            CREATE TABLE IF NOT EXISTS ""BordroSabitleriTemplates"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""Key"" VARCHAR(100) NOT NULL,
+                ""Value"" NUMERIC(10,6) NOT NULL,
+                ""ValueType"" VARCHAR(50) NOT NULL DEFAULT 'ORAN',
+                ""Description"" VARCHAR(255) NULL,
+                ""CadreType"" VARCHAR(10) NULL,
+                ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""WorkingUnitIds"" VARCHAR(255) NULL,
+                ""CreatedBy"" VARCHAR(100) NULL,
+                ""CreatedAt"" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+                ""UpdatedBy"" VARCHAR(100) NULL,
+                ""UpdatedAt"" TIMESTAMP WITHOUT TIME ZONE NULL
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_BordroSabitleriTemplates_Key"" ON ""BordroSabitleriTemplates"" (""Key"");
+            CREATE INDEX IF NOT EXISTS ""IX_BordroSabitleriTemplates_CadreType"" ON ""BordroSabitleriTemplates"" (""CadreType"");
+
+            CREATE TABLE IF NOT EXISTS ""BordroSabitleriGecmis"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""OrganizationId"" INTEGER NOT NULL,
+                ""SabitId"" INTEGER NOT NULL,
+                ""Key"" VARCHAR(100) NOT NULL,
+                ""OldValue"" NUMERIC(10,6) NOT NULL,
+                ""NewValue"" NUMERIC(10,6) NOT NULL,
+                ""ValueType"" VARCHAR(50) NOT NULL DEFAULT 'ORAN',
+                ""Description"" VARCHAR(255) NULL,
+                ""CadreType"" VARCHAR(10) NULL,
+                ""OldValidFrom"" TIMESTAMP WITHOUT TIME ZONE NULL,
+                ""OldValidTo"" TIMESTAMP WITHOUT TIME ZONE NULL,
+                ""NewValidFrom"" TIMESTAMP WITHOUT TIME ZONE NULL,
+                ""NewValidTo"" TIMESTAMP WITHOUT TIME ZONE NULL,
+                ""OldWorkingUnitIds"" VARCHAR(255) NULL,
+                ""NewWorkingUnitIds"" VARCHAR(255) NULL,
+                ""ActionType"" VARCHAR(20) NOT NULL DEFAULT 'UPDATE',
+                ""ActionBy"" VARCHAR(100) NULL,
+                ""ActionAt"" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+                CONSTRAINT ""FK_BordroSabitleriGecmis_Organizations"" FOREIGN KEY (""OrganizationId"") REFERENCES ""Organizations"" (""Id"") ON DELETE CASCADE
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_BordroSabitleriGecmis_Organization_SabitId"" ON ""BordroSabitleriGecmis"" (""OrganizationId"", ""SabitId"");
+        ", "BordroSabitleri");
+
+        await SafeExecuteSql(@"
+            DO $$
+            BEGIN
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='BordroSabitleri' AND column_name='TemplateId') THEN
+                    ALTER TABLE ""BordroSabitleri"" ADD COLUMN ""TemplateId"" INTEGER NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='BordroSabitleri' AND column_name='IsCustom') THEN
+                    ALTER TABLE ""BordroSabitleri"" ADD COLUMN ""IsCustom"" BOOLEAN NOT NULL DEFAULT FALSE;
+                END IF;
+            END $$;
+        ", "BordroSabitleriColumns");
+
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""BordroResult4A"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""OrganizationId"" INTEGER NOT NULL,
+                ""EmployeeId"" INTEGER NOT NULL,
+                ""Year"" INTEGER NOT NULL,
+                ""Month"" INTEGER NOT NULL,
+                ""NobetPuani"" INTEGER NOT NULL,
+                ""SaatUcreti"" NUMERIC(10,2) NOT NULL,
+                ""YogunBakimVar"" BOOLEAN NOT NULL DEFAULT FALSE,
+                ""NormalServisNobetSaati"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""YogunBakimNobetSaati"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""NormalServisBayramSaati"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""YogunBakimBayramSaati"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""BayramFarkiNobetSaati"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""NormalServisNobetToplamTutar"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""YogunBakimNobetToplamTutar"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""NormalServisBayramToplamTutar"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""YogunBakimBayramToplamTutar"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""BayramFarkiToplamTutar"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""GenelToplamTutar"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""DamgaVergisi"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""EleGecenToplam"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""CreatedAt"" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+                ""UpdatedAt"" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+                CONSTRAINT ""FK_BordroResult4A_Organizations"" FOREIGN KEY (""OrganizationId"") REFERENCES ""Organizations"" (""Id"") ON DELETE CASCADE,
+                CONSTRAINT ""FK_BordroResult4A_Employees"" FOREIGN KEY (""EmployeeId"") REFERENCES ""Employees"" (""Id"") ON DELETE CASCADE
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_BordroResult4A_OrgEmpPeriod"" ON ""BordroResult4A"" (""OrganizationId"", ""EmployeeId"", ""Year"", ""Month"", ""YogunBakimVar"");
+
+            CREATE TABLE IF NOT EXISTS ""BordroResult4B"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""OrganizationId"" INTEGER NOT NULL,
+                ""EmployeeId"" INTEGER NOT NULL,
+                ""Year"" INTEGER NOT NULL,
+                ""Month"" INTEGER NOT NULL,
+                ""NobetPuani"" INTEGER NOT NULL,
+                ""SaatUcreti"" NUMERIC(10,2) NOT NULL,
+                ""YogunBakimVar"" BOOLEAN NOT NULL DEFAULT FALSE,
+                ""NormalServisNobetSaati"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""YogunBakimNobetSaati"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""NormalServisBayramSaati"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""YogunBakimBayramSaati"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""BayramFarkiNobetSaati"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""NormalServisNobetToplamTutar"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""YogunBakimNobetToplamTutar"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""NormalServisBayramToplamTutar"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""YogunBakimBayramToplamTutar"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""BayramFarkiToplamTutar"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""GenelToplamTutarPek"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""MaluliyetYaslilikEmeklilikDev"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""GssDev"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""KisaVadSigKolPrim"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""GelirToplami"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""DamgaVergisi"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""MaluliyetYaslilikEmeklilikDevKesinti"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""GssDevKesinti"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""KisaVadSigKolPrimKesinti"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""MaluliyetYaslilikEmeklilikKisi"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""GssKisi"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""KesintiToplami"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""EleGecenToplam"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""CreatedAt"" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+                ""UpdatedAt"" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+                CONSTRAINT ""FK_BordroResult4B_Organizations"" FOREIGN KEY (""OrganizationId"") REFERENCES ""Organizations"" (""Id"") ON DELETE CASCADE,
+                CONSTRAINT ""FK_BordroResult4B_Employees"" FOREIGN KEY (""EmployeeId"") REFERENCES ""Employees"" (""Id"") ON DELETE CASCADE
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_BordroResult4B_OrgEmpPeriod"" ON ""BordroResult4B"" (""OrganizationId"", ""EmployeeId"", ""Year"", ""Month"", ""YogunBakimVar"");
+        ", "BordroResults");
+
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""BordroYetkileri"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""OrganizationId"" INTEGER NOT NULL,
+                ""UnitId"" INTEGER NOT NULL,
+                ""TcKimlik"" VARCHAR(20) NOT NULL,
+                ""KadroTipiYetkisi"" VARCHAR(10) NULL,
+                ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""CreatedBy"" VARCHAR(100) NULL,
+                ""CreatedAt"" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+                ""UpdatedBy"" VARCHAR(100) NULL,
+                ""UpdatedAt"" TIMESTAMP WITHOUT TIME ZONE NULL,
+                CONSTRAINT ""FK_BordroYetkileri_Organizations"" FOREIGN KEY (""OrganizationId"") REFERENCES ""Organizations"" (""Id"") ON DELETE CASCADE,
+                CONSTRAINT ""FK_BordroYetkileri_Units"" FOREIGN KEY (""UnitId"") REFERENCES ""Units"" (""Id"") ON DELETE CASCADE
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_BordroYetkileri_OrgUnitTc"" ON ""BordroYetkileri"" (""OrganizationId"", ""UnitId"", ""TcKimlik"");
+
+            CREATE TABLE IF NOT EXISTS ""PersonelNobetPuan"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""OrganizationId"" INTEGER NOT NULL,
+                ""TcKimlik"" VARCHAR(11) NOT NULL,
+                ""AdiSoyadi"" VARCHAR(200) NULL,
+                ""Unvan"" VARCHAR(200) NULL,
+                ""Mezuniyet"" VARCHAR(100) NULL,
+                ""YPuan"" INTEGER NOT NULL DEFAULT 100,
+                ""NormalSaatUcreti"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""YogunBakimSaatUcreti"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""IcapSaatUcreti"" NUMERIC(10,2) NOT NULL DEFAULT 0,
+                ""Iban"" VARCHAR(50) NULL,
+                ""OncekiSoyadi"" VARCHAR(100) NULL,
+                ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""CreatedBy"" VARCHAR(100) NULL,
+                ""CreatedAt"" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+                ""UpdatedBy"" VARCHAR(100) NULL,
+                ""UpdatedAt"" TIMESTAMP WITHOUT TIME ZONE NULL,
+                ""Description"" VARCHAR(255) NULL,
+                CONSTRAINT ""FK_PersonelNobetPuan_Organizations"" FOREIGN KEY (""OrganizationId"") REFERENCES ""Organizations"" (""Id"") ON DELETE CASCADE
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_PersonelNobetPuan_OrgTc"" ON ""PersonelNobetPuan"" (""OrganizationId"", ""TcKimlik"");
+        ", "BordroYetkileriPersonelPuan");
         
         // Create VisitorLogs table
         await SafeExecuteSql(@"
@@ -288,6 +503,18 @@ using (var scope = app.Services.CreateScope())
                 ""Duration"" INTEGER NULL,
                 ""IsBot"" BOOLEAN NOT NULL DEFAULT FALSE
             );
+            DO $$
+            BEGIN
+                IF NOT EXISTS (
+                    SELECT 1
+                    FROM information_schema.columns
+                    WHERE table_name = 'VisitorLogs'
+                      AND column_name = 'VisitedAt'
+                ) THEN
+                    ALTER TABLE ""VisitorLogs""
+                        ADD COLUMN ""VisitedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW();
+                END IF;
+            END $$;
             CREATE INDEX IF NOT EXISTS ""IX_VisitorLogs_VisitedAt"" ON ""VisitorLogs"" (""VisitedAt"");
             CREATE INDEX IF NOT EXISTS ""IX_VisitorLogs_SessionId"" ON ""VisitorLogs"" (""SessionId"");
         ", "VisitorLogs");
@@ -487,10 +714,29 @@ using (var scope = app.Services.CreateScope())
                 ""SortOrder"" INTEGER NOT NULL DEFAULT 0,
                 ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
                 ""IsSystem"" BOOLEAN NOT NULL DEFAULT FALSE,
+                ""TemplateId"" INTEGER NULL,
+                ""IsCustom"" BOOLEAN NOT NULL DEFAULT FALSE,
                 ""CreatedAt"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
             );
             CREATE INDEX IF NOT EXISTS ""IX_UnitTypes_OrganizationId"" ON ""UnitTypes"" (""OrganizationId"");
         ", "UnitTypes");
+
+        // Create UnitTypeTemplates table (base templates)
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""UnitTypeTemplates"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""Name"" VARCHAR(100) NOT NULL,
+                ""NameEn"" VARCHAR(100) NULL,
+                ""DefaultCoefficient"" DECIMAL(5,2) NOT NULL DEFAULT 1.0,
+                ""Color"" VARCHAR(20) NULL DEFAULT '#3B82F6',
+                ""Icon"" VARCHAR(50) NULL,
+                ""SortOrder"" INTEGER NOT NULL DEFAULT 0,
+                ""IsActive"" BOOLEAN NOT NULL DEFAULT TRUE,
+                ""CreatedAt"" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+                ""UpdatedAt"" TIMESTAMP WITHOUT TIME ZONE NULL
+            );
+            CREATE UNIQUE INDEX IF NOT EXISTS ""IX_UnitTypeTemplates_Name"" ON ""UnitTypeTemplates"" (""Name"");
+        ", "UnitTypeTemplates");
         
         // Add IsActive column to UnitTypes if not exists
         await SafeExecuteSql(@"
@@ -508,6 +754,12 @@ using (var scope = app.Services.CreateScope())
             BEGIN
                 IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'UnitTypes' AND column_name = 'NameEn') THEN
                     ALTER TABLE ""UnitTypes"" ADD COLUMN ""NameEn"" VARCHAR(100) NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'UnitTypes' AND column_name = 'TemplateId') THEN
+                    ALTER TABLE ""UnitTypes"" ADD COLUMN ""TemplateId"" INTEGER NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'UnitTypes' AND column_name = 'IsCustom') THEN
+                    ALTER TABLE ""UnitTypes"" ADD COLUMN ""IsCustom"" BOOLEAN NOT NULL DEFAULT FALSE;
                 END IF;
             END $$;
         ", "UnitTypesNameEn");
@@ -814,7 +1066,7 @@ using (var scope = app.Services.CreateScope())
             CREATE INDEX IF NOT EXISTS ""IX_BlogPosts_IsFeatured"" ON ""BlogPosts"" (""IsFeatured"");
         ", "BlogPosts");
         
-        // Run migrations - but don't let failures prevent seeding
+        // Run migrations - never let migration failure prevent app start (idempotent migrations handle "already exists")
         try
         {
             await context.Database.MigrateAsync();
@@ -822,7 +1074,7 @@ using (var scope = app.Services.CreateScope())
         catch (Exception migrationEx)
         {
             var logger = services.GetRequiredService<ILogger<Program>>();
-            logger.LogWarning(migrationEx, "Migration warning (tables may already exist).");
+            logger.LogWarning(migrationEx, "Migration failed but app will continue. Check DB schema; you may need to run migrations manually.");
         }
         
         // Ensure SystemSettings table has required columns

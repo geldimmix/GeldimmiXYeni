@@ -71,4 +71,7 @@ nlog-*.txt
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
 
+# Reference-only (not used in build)
+rol-model/
+
 

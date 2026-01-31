@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,112 +12,64 @@ namespace Nobetci.Web.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "NameEn",
-                table: "UnitTypes",
-                type: "character varying(100)",
-                maxLength: 100,
-                nullable: true);
+            // Idempotent: add NameEn to UnitTypes only if it doesn't exist (may already exist from Program.cs SafeExecuteSql)
+            migrationBuilder.Sql(@"
+                DO $$
+                BEGIN
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'UnitTypes' AND column_name = 'NameEn') THEN
+                        ALTER TABLE ""UnitTypes"" ADD COLUMN ""NameEn"" character varying(100) NULL;
+                    END IF;
+                END $$;
+            ");
 
-            migrationBuilder.AddColumn<int>(
-                name: "EmployeeLimit",
-                table: "Units",
-                type: "integer",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.AddColumn<string>(
-                name: "Category",
-                table: "SystemSettings",
-                type: "character varying(50)",
-                maxLength: 50,
-                nullable: false,
-                defaultValue: "");
-
-            migrationBuilder.AddColumn<string>(
-                name: "DataType",
-                table: "SystemSettings",
-                type: "character varying(20)",
-                maxLength: 20,
-                nullable: false,
-                defaultValue: "");
-
-            migrationBuilder.AddColumn<int>(
-                name: "SortOrder",
-                table: "SystemSettings",
-                type: "integer",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.AddColumn<string>(
-                name: "Email",
-                table: "Employees",
-                type: "character varying(100)",
-                maxLength: 100,
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "Phone",
-                table: "Employees",
-                type: "character varying(20)",
-                maxLength: 20,
-                nullable: true);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "CanAccessCleaning",
-                table: "AspNetUsers",
-                type: "boolean",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "CanGroupCleaningSchedules",
-                table: "AspNetUsers",
-                type: "boolean",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "CanSelectCleaningFrequency",
-                table: "AspNetUsers",
-                type: "boolean",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AddColumn<int>(
-                name: "CleaningItemLimit",
-                table: "AspNetUsers",
-                type: "integer",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.AddColumn<int>(
-                name: "CleaningQrAccessLimit",
-                table: "AspNetUsers",
-                type: "integer",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.AddColumn<int>(
-                name: "CleaningScheduleLimit",
-                table: "AspNetUsers",
-                type: "integer",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.AddColumn<int>(
-                name: "UnitEmployeeLimit",
-                table: "AspNetUsers",
-                type: "integer",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.AddColumn<int>(
-                name: "UnitLimit",
-                table: "AspNetUsers",
-                type: "integer",
-                nullable: false,
-                defaultValue: 0);
+            // Idempotent: add columns that Program.cs or other code may have already added
+            migrationBuilder.Sql(@"
+                DO $$
+                BEGIN
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'Units' AND column_name = 'EmployeeLimit') THEN
+                        ALTER TABLE ""Units"" ADD COLUMN ""EmployeeLimit"" integer NOT NULL DEFAULT 0;
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'SystemSettings' AND column_name = 'Category') THEN
+                        ALTER TABLE ""SystemSettings"" ADD COLUMN ""Category"" character varying(50) NOT NULL DEFAULT '';
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'SystemSettings' AND column_name = 'DataType') THEN
+                        ALTER TABLE ""SystemSettings"" ADD COLUMN ""DataType"" character varying(20) NOT NULL DEFAULT '';
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'SystemSettings' AND column_name = 'SortOrder') THEN
+                        ALTER TABLE ""SystemSettings"" ADD COLUMN ""SortOrder"" integer NOT NULL DEFAULT 0;
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'Employees' AND column_name = 'Email') THEN
+                        ALTER TABLE ""Employees"" ADD COLUMN ""Email"" character varying(100) NULL;
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'Employees' AND column_name = 'Phone') THEN
+                        ALTER TABLE ""Employees"" ADD COLUMN ""Phone"" character varying(20) NULL;
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'AspNetUsers' AND column_name = 'CanAccessCleaning') THEN
+                        ALTER TABLE ""AspNetUsers"" ADD COLUMN ""CanAccessCleaning"" boolean NOT NULL DEFAULT false;
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'AspNetUsers' AND column_name = 'CanGroupCleaningSchedules') THEN
+                        ALTER TABLE ""AspNetUsers"" ADD COLUMN ""CanGroupCleaningSchedules"" boolean NOT NULL DEFAULT false;
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'AspNetUsers' AND column_name = 'CanSelectCleaningFrequency') THEN
+                        ALTER TABLE ""AspNetUsers"" ADD COLUMN ""CanSelectCleaningFrequency"" boolean NOT NULL DEFAULT false;
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'AspNetUsers' AND column_name = 'CleaningItemLimit') THEN
+                        ALTER TABLE ""AspNetUsers"" ADD COLUMN ""CleaningItemLimit"" integer NOT NULL DEFAULT 0;
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'AspNetUsers' AND column_name = 'CleaningQrAccessLimit') THEN
+                        ALTER TABLE ""AspNetUsers"" ADD COLUMN ""CleaningQrAccessLimit"" integer NOT NULL DEFAULT 0;
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'AspNetUsers' AND column_name = 'CleaningScheduleLimit') THEN
+                        ALTER TABLE ""AspNetUsers"" ADD COLUMN ""CleaningScheduleLimit"" integer NOT NULL DEFAULT 0;
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'AspNetUsers' AND column_name = 'UnitEmployeeLimit') THEN
+                        ALTER TABLE ""AspNetUsers"" ADD COLUMN ""UnitEmployeeLimit"" integer NOT NULL DEFAULT 0;
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'AspNetUsers' AND column_name = 'UnitLimit') THEN
+                        ALTER TABLE ""AspNetUsers"" ADD COLUMN ""UnitLimit"" integer NOT NULL DEFAULT 0;
+                    END IF;
+                END $$;
+            ");
 
             migrationBuilder.CreateTable(
                 name: "ActivityLogs",
@@ -952,65 +904,57 @@ namespace Nobetci.Web.Data.Migrations
             migrationBuilder.DropTable(
                 name: "QrMenus");
 
-            migrationBuilder.DropColumn(
-                name: "NameEn",
-                table: "UnitTypes");
-
-            migrationBuilder.DropColumn(
-                name: "EmployeeLimit",
-                table: "Units");
-
-            migrationBuilder.DropColumn(
-                name: "Category",
-                table: "SystemSettings");
-
-            migrationBuilder.DropColumn(
-                name: "DataType",
-                table: "SystemSettings");
-
-            migrationBuilder.DropColumn(
-                name: "SortOrder",
-                table: "SystemSettings");
-
-            migrationBuilder.DropColumn(
-                name: "Email",
-                table: "Employees");
-
-            migrationBuilder.DropColumn(
-                name: "Phone",
-                table: "Employees");
-
-            migrationBuilder.DropColumn(
-                name: "CanAccessCleaning",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "CanGroupCleaningSchedules",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "CanSelectCleaningFrequency",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "CleaningItemLimit",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "CleaningQrAccessLimit",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "CleaningScheduleLimit",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "UnitEmployeeLimit",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "UnitLimit",
-                table: "AspNetUsers");
+            // Idempotent: drop columns only if they exist (may have been added by Program.cs)
+            migrationBuilder.Sql(@"
+                DO $$
+                BEGIN
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'UnitTypes' AND column_name = 'NameEn') THEN
+                        ALTER TABLE ""UnitTypes"" DROP COLUMN ""NameEn"";
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'Units' AND column_name = 'EmployeeLimit') THEN
+                        ALTER TABLE ""Units"" DROP COLUMN ""EmployeeLimit"";
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'SystemSettings' AND column_name = 'Category') THEN
+                        ALTER TABLE ""SystemSettings"" DROP COLUMN ""Category"";
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'SystemSettings' AND column_name = 'DataType') THEN
+                        ALTER TABLE ""SystemSettings"" DROP COLUMN ""DataType"";
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'SystemSettings' AND column_name = 'SortOrder') THEN
+                        ALTER TABLE ""SystemSettings"" DROP COLUMN ""SortOrder"";
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'Employees' AND column_name = 'Email') THEN
+                        ALTER TABLE ""Employees"" DROP COLUMN ""Email"";
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'Employees' AND column_name = 'Phone') THEN
+                        ALTER TABLE ""Employees"" DROP COLUMN ""Phone"";
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'AspNetUsers' AND column_name = 'CanAccessCleaning') THEN
+                        ALTER TABLE ""AspNetUsers"" DROP COLUMN ""CanAccessCleaning"";
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'AspNetUsers' AND column_name = 'CanGroupCleaningSchedules') THEN
+                        ALTER TABLE ""AspNetUsers"" DROP COLUMN ""CanGroupCleaningSchedules"";
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'AspNetUsers' AND column_name = 'CanSelectCleaningFrequency') THEN
+                        ALTER TABLE ""AspNetUsers"" DROP COLUMN ""CanSelectCleaningFrequency"";
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'AspNetUsers' AND column_name = 'CleaningItemLimit') THEN
+                        ALTER TABLE ""AspNetUsers"" DROP COLUMN ""CleaningItemLimit"";
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'AspNetUsers' AND column_name = 'CleaningQrAccessLimit') THEN
+                        ALTER TABLE ""AspNetUsers"" DROP COLUMN ""CleaningQrAccessLimit"";
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'AspNetUsers' AND column_name = 'CleaningScheduleLimit') THEN
+                        ALTER TABLE ""AspNetUsers"" DROP COLUMN ""CleaningScheduleLimit"";
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'AspNetUsers' AND column_name = 'UnitEmployeeLimit') THEN
+                        ALTER TABLE ""AspNetUsers"" DROP COLUMN ""UnitEmployeeLimit"";
+                    END IF;
+                    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'AspNetUsers' AND column_name = 'UnitLimit') THEN
+                        ALTER TABLE ""AspNetUsers"" DROP COLUMN ""UnitLimit"";
+                    END IF;
+                END $$;
+            ");
         }
     }
 }

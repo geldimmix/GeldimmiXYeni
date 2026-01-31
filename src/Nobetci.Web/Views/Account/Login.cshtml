@@ -487,6 +487,7 @@
             </div>
             
             <form asp-action="Login" method="post" class="login-form">
+                @Html.AntiForgeryToken()
                 <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
                 
                 @if (!ViewData.ModelState.IsValid)

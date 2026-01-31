@@ -10,17 +10,7 @@
 }
 
 <style>
-    /* Override body overflow for this page */
-    body {
-        overflow-y: auto !important;
-    }
-    
-    .payroll-page {
-        min-height: calc(100vh - 60px);
-        background: #f5f7fa;
-        padding: 20px;
-        padding-bottom: 100px;
-    }
+    body { overflow-y: auto !important; }
 
     .payroll-header {
         display: flex;
@@ -648,14 +638,37 @@
     }
 
     @@media (max-width: 768px) {
-        .payroll-page { padding: 12px; }
         .payroll-header { flex-direction: column; align-items: flex-start; }
         .settings-row { flex-direction: column; gap: 12px; }
         .summary-row { flex-direction: column; }
     }
+
 </style>
 
-<div class="payroll-page">
+@{
+    var sidebarModel = new AppSidebarViewModel
+    {
+        SelectedYear = Model.SelectedYear,
+        SelectedMonth = Model.SelectedMonth,
+        SelectedUnitId = Model.SelectedUnitId,
+        EmployeeCount = Model.EmployeeCount,
+        HolidayCount = Model.Holidays.Count,
+        UnitCount = Model.Units.Count,
+        CanAccessPayroll = Model.CanAccessPayroll,
+        CanAccessAttendance = Model.CanAccessAttendance,
+        CanManageUnits = Model.CanManageUnits,
+        IsRegistered = Model.IsRegistered,
+        IsPremium = Model.IsPremium,
+        EmployeeLimit = Model.EmployeeLimit,
+        UnitLimit = Model.UnitLimit,
+        TotalEmployeeCount = Model.TotalEmployeeCount,
+        CurrentPage = "Payroll"
+    };
+}
+
+<div class="app-wrapper">
+    @await Html.PartialAsync("_AppSidebar", sidebarModel)
+    <main class="app-main">
     <!-- Header -->
     <div class="payroll-header">
         <h1 class="payroll-title">📊 @(isTurkish ? "Puantaj" : "Payroll")</h1>
@@ -687,12 +700,15 @@
             <a href="@Url.Action("Index", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="btn btn-outline">
                 ← @(isTurkish ? "Takvim" : "Calendar")
             </a>
+            <a href="/Bordro/Sabitler" class="btn btn-outline">
+                @(isTurkish ? "Bordro Sabitleri" : "Payroll Constants")
+            </a>
         </div>
     </div>
 
     <!-- Settings -->
     <div class="settings-card">
-        <form method="get" class="settings-row" id="settingsForm">
+        <form method="get" class="row g-3 align-items-end" id="settingsForm">
             <input type="hidden" name="year" value="@Model.SelectedYear" />
             <input type="hidden" name="month" value="@Model.SelectedMonth" />
             @if (Model.SelectedUnitId.HasValue)
@@ -700,9 +716,9 @@
                 <input type="hidden" name="unitId" value="@Model.SelectedUnitId" />
             }
             
-            <div class="setting-group">
-                <label>@(isTurkish ? "Veri Kaynağı" : "Data Source")</label>
-                <select name="source" id="sourceSelect">
+            <div class="col-md-3 col-sm-6">
+                <label class="form-label small text-muted">@(isTurkish ? "Veri Kaynağı" : "Data Source")</label>
+                <select name="source" id="sourceSelect" class="form-select form-select-sm">
                     @if (Model.DataSource == "shift")
                     {
                         <option value="shift" selected>@(isTurkish ? "Nöbet Çizelgesi" : "Shift Schedule")</option>
@@ -715,10 +731,10 @@
                     }
                 </select>
             </div>
-            
-            <div class="setting-group">
-                <label>@(isTurkish ? "Gece Başlangıç" : "Night Start")</label>
-                <select name="nightStartHour">
+
+            <div class="col-md-3 col-sm-6">
+                <label class="form-label small text-muted">@(isTurkish ? "Gece Başlangıç" : "Night Start")</label>
+                <select name="nightStartHour" class="form-select form-select-sm">
                     @for (int h = 18; h <= 23; h++)
                     {
                         if (Model.NightStartTime.Hour == h)
@@ -732,10 +748,10 @@
                     }
                 </select>
             </div>
-            
-            <div class="setting-group">
-                <label>@(isTurkish ? "Gece Bitiş" : "Night End")</label>
-                <select name="nightEndHour">
+
+            <div class="col-md-3 col-sm-6">
+                <label class="form-label small text-muted">@(isTurkish ? "Gece Bitiş" : "Night End")</label>
+                <select name="nightEndHour" class="form-select form-select-sm">
                     @for (int h = 4; h <= 9; h++)
                     {
                         if (Model.NightEndTime.Hour == h)
@@ -750,9 +766,11 @@
                 </select>
             </div>
 
-            <button type="submit" name="calculate" value="true" class="btn btn-primary">
-                📊 @(isTurkish ? "Hesapla" : "Calculate")
-            </button>
+            <div class="col-md-3 col-sm-6 d-flex gap-2">
+                <button type="submit" name="calculate" value="true" class="btn btn-primary w-100">
+                    📊 @(isTurkish ? "Hesapla" : "Calculate")
+                </button>
+            </div>
         </form>
     </div>
 
@@ -896,6 +914,9 @@
                                 {
                                     <div class="emp-title">@payroll.Employee.Title</div>
                                 }
+                                <a class="text-muted" style="font-size:0.75rem;" href="@Url.Action("PuantajDetail", new { employeeId = empId, year = Model.SelectedYear, month = Model.SelectedMonth, source = Model.DataSource, nightStartHour = Model.NightStartTime.Hour, nightEndHour = Model.NightEndTime.Hour })">
+                                    @(isTurkish ? "Detay" : "Details")
+                                </a>
                             </td>
                             <td class="num">
                                 <input type="number" class="edit-input" data-emp="@empId" data-field="days" value="@payroll.WorkedDays" min="0" max="31" onchange="markEdited()">
@@ -916,7 +937,7 @@
                                 <input type="number" class="edit-input" data-emp="@empId" data-field="weekend" value="@payroll.WeekendHours.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" step="0.5" min="0" onchange="markEdited(); updateSummary()">
                             </td>
                             <td class="num">
-                                <input type="number" class="edit-input" data-emp="@empId" data-field="holiday" value="@payroll.HolidayHours.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" step="0.5" min="0" onchange="markEdited(); updateSummary()">
+                                <input type="number" class="edit-input" data-emp="@empId" data-field="holiday" value="@payroll.HolidayHours.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" step="0.5" min="0" onchange="markEdited(); updateSummary(); updateOvertime(this)">
                             </td>
                             <td class="num">
                                 <input type="number" class="edit-input" data-emp="@empId" data-field="off" value="@payroll.DayOffCount" min="0" max="31" onchange="markEdited()">
@@ -974,6 +995,147 @@
                     }
                 </tbody>
             </table>
+
+            @if (Model.BordroSummaries.Any())
+            {
+                <div class="settings-card" style="margin-top:16px;">
+                    <div class="settings-row" style="justify-content: space-between;">
+                        <div>
+                            <div class="payroll-title" style="font-size:1.05rem;">
+                                💸 @(isTurkish ? "Bordro Özeti" : "Payroll Summary")
+                            </div>
+                            <div style="font-size:0.8rem;color:#6b7280;">
+                                @(isTurkish ? "Katsayı ve saat bazlı özet (varsayılan oranlar)" : "Coefficient and hour-based summary (default rates)")
+                            </div>
+                        </div>
+                        <div style="font-size:0.8rem;color:#6b7280;">
+                            @(isTurkish ? "Birim Katsayısı ve fazla mesai çarpanları uygulanır." : "Unit coefficient and overtime multipliers are applied.")
+                        </div>
+                    </div>
+
+                    <div class="table-responsive" style="margin-top:12px;">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>@(isTurkish ? "Personel" : "Employee")</th>
+                                    <th class="text-end">@(isTurkish ? "Saat" : "Hours")</th>
+                                    <th class="text-end">@(isTurkish ? "F.Mesai" : "OT")</th>
+                                    <th class="text-end">@(isTurkish ? "Tatil" : "Holiday")</th>
+                                    <th class="text-end">@(isTurkish ? "H.Sonu" : "Weekend")</th>
+                                    <th class="text-end">@(isTurkish ? "Gece" : "Night")</th>
+                                    <th class="text-end">@(isTurkish ? "Birim K." : "Unit C.")</th>
+                                    <th class="text-end">@(isTurkish ? "Brüt" : "Gross")</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.BordroSummaries)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="fw-semibold">@item.EmployeeName</div>
+                                            @if (!string.IsNullOrEmpty(item.EmployeeTitle))
+                                            {
+                                                <div class="text-muted" style="font-size:0.75rem;">@item.EmployeeTitle</div>
+                                            }
+                                            @if (!string.IsNullOrEmpty(item.UnitName))
+                                            {
+                                                <div class="text-muted" style="font-size:0.72rem;">@item.UnitName</div>
+                                            }
+                                        </td>
+                                        <td class="text-end">@item.TotalHours.ToString("0.#")</td>
+                                        <td class="text-end">@item.OvertimeHours.ToString("0.#")</td>
+                                        <td class="text-end">@item.HolidayHours.ToString("0.#")</td>
+                                        <td class="text-end">@item.WeekendHours.ToString("0.#")</td>
+                                        <td class="text-end">@item.NightHours.ToString("0.#")</td>
+                                        <td class="text-end">@item.UnitCoefficient.ToString("0.##")</td>
+                                        <td class="text-end fw-semibold">@item.GrossPay.ToString("0.##")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+
+            @if (Model.Bordro4AResults.Any())
+            {
+                <div class="settings-card" style="margin-top:16px;">
+                    <div class="settings-row" style="justify-content: space-between;">
+                        <div class="payroll-title" style="font-size:1.05rem;">
+                            🧾 4A @(isTurkish ? "Bordro" : "Payroll")
+                        </div>
+                    </div>
+                    <div class="table-responsive" style="margin-top:12px;">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>@(isTurkish ? "Personel" : "Employee")</th>
+                                    <th>@(isTurkish ? "Tip" : "Type")</th>
+                                    <th class="text-end">@(isTurkish ? "Saat Ücreti" : "Hourly")</th>
+                                    <th class="text-end">@(isTurkish ? "Normal" : "Normal")</th>
+                                    <th class="text-end">@(isTurkish ? "Yoğun" : "ICU")</th>
+                                    <th class="text-end">@(isTurkish ? "Bayram" : "Holiday")</th>
+                                    <th class="text-end">@(isTurkish ? "Fark" : "Diff")</th>
+                                    <th class="text-end">@(isTurkish ? "Net" : "Net")</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Bordro4AResults)
+                                {
+                                    <tr>
+                                        <td>@item.EmployeeName</td>
+                                        <td>@(item.YogunBakimVar ? (isTurkish ? "Yoğun" : "ICU") : (isTurkish ? "Normal" : "Normal"))</td>
+                                        <td class="text-end">@item.SaatUcreti.ToString("0.##")</td>
+                                        <td class="text-end">@item.NormalServisNobetToplamTutar.ToString("0.##")</td>
+                                        <td class="text-end">@item.YogunBakimNobetToplamTutar.ToString("0.##")</td>
+                                        <td class="text-end">@((item.NormalServisBayramToplamTutar + item.YogunBakimBayramToplamTutar).ToString("0.##"))</td>
+                                        <td class="text-end">@item.BayramFarkiToplamTutar.ToString("0.##")</td>
+                                        <td class="text-end fw-semibold">@item.EleGecenToplam.ToString("0.##")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+
+            @if (Model.Bordro4BResults.Any())
+            {
+                <div class="settings-card" style="margin-top:16px;">
+                    <div class="settings-row" style="justify-content: space-between;">
+                        <div class="payroll-title" style="font-size:1.05rem;">
+                            🧾 4B @(isTurkish ? "Bordro" : "Payroll")
+                        </div>
+                    </div>
+                    <div class="table-responsive" style="margin-top:12px;">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>@(isTurkish ? "Personel" : "Employee")</th>
+                                    <th>@(isTurkish ? "Tip" : "Type")</th>
+                                    <th class="text-end">@(isTurkish ? "Saat Ücreti" : "Hourly")</th>
+                                    <th class="text-end">@(isTurkish ? "Gelir" : "Income")</th>
+                                    <th class="text-end">@(isTurkish ? "Kesinti" : "Deductions")</th>
+                                    <th class="text-end">@(isTurkish ? "Net" : "Net")</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Bordro4BResults)
+                                {
+                                    <tr>
+                                        <td>@item.EmployeeName</td>
+                                        <td>@(item.YogunBakimVar ? (isTurkish ? "Yoğun" : "ICU") : (isTurkish ? "Normal" : "Normal"))</td>
+                                        <td class="text-end">@item.SaatUcreti.ToString("0.##")</td>
+                                        <td class="text-end">@item.GelirToplami.ToString("0.##")</td>
+                                        <td class="text-end">@item.KesintiToplami.ToString("0.##")</td>
+                                        <td class="text-end fw-semibold">@item.EleGecenToplam.ToString("0.##")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
         </div>
     }
     else if (Model.IsCalculated)
@@ -1018,6 +1180,9 @@
             <button class="btn btn-primary" onclick="savePayroll()">@(isTurkish ? "Kaydet" : "Save")</button>
         </div>
     </div>
+</div>
+
+    </main>
 </div>
 
 <script>
@@ -1102,7 +1267,13 @@
             const empInfo = employeeData[empId] || {};
             const hours = parseFloat(row.querySelector('input[data-field="hours"]')?.value) || 0;
             const required = parseFloat(row.querySelector('input[data-field="required"]')?.value) || 0;
-            const overtime = Math.max(0, hours - required);
+            const holiday = parseFloat(row.querySelector('input[data-field="holiday"]')?.value) || 0;
+            const overtimeLimit = @Model.PayrollOptions.OvertimeLimitHours.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            let overtime = Math.max(0, hours - required);
+            overtime = Math.max(0, overtime - holiday);
+            if (overtimeLimit > 0) {
+                overtime = Math.min(overtime, overtimeLimit);
+            }
             
             payrollData.push({
                 employeeId: parseInt(empId),
@@ -1128,7 +1299,13 @@
         const empId = row.getAttribute('data-emp');
         const hours = parseFloat(row.querySelector('input[data-field="hours"]')?.value) || 0;
         const required = parseFloat(row.querySelector('input[data-field="required"]')?.value) || 0;
-        const overtime = Math.max(0, hours - required);
+        const holiday = parseFloat(row.querySelector('input[data-field="holiday"]')?.value) || 0;
+        const overtimeLimit = @Model.PayrollOptions.OvertimeLimitHours.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        let overtime = Math.max(0, hours - required);
+        overtime = Math.max(0, overtime - holiday);
+        if (overtimeLimit > 0) {
+            overtime = Math.min(overtime, overtimeLimit);
+        }
         
         const otSpan = row.querySelector('.overtime-value');
         if (otSpan) {

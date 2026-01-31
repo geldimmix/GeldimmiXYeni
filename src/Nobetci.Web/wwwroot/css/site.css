@@ -29,3 +29,129 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+/* ===== App Sidebar (shared: Index, Payroll, Attendance) ===== */
+.app-wrapper {
+  display: flex;
+  min-height: calc(100vh - 60px);
+  background: #f1f5f9;
+}
+
+.app-sidebar {
+  width: 160px;
+  min-width: 160px;
+  max-height: calc(100vh - 60px);
+  background: #fafafa;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.app-sidebar::-webkit-scrollbar { width: 3px; }
+.app-sidebar::-webkit-scrollbar-track { background: transparent; }
+.app-sidebar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 2px; }
+
+.module-dropdown { margin-bottom: 8px; }
+
+.module-select {
+  width: 100%;
+  padding: 6px 24px 6px 8px;
+  background: #1e293b;
+  color: #f1f5f9 !important;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+}
+
+.module-select:hover { background: #334155; border-color: #475569; }
+.module-select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+.module-select option { background: #1e293b !important; color: #f1f5f9 !important; }
+
+.sidebar-items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.1s;
+  text-decoration: none;
+  color: #374151;
+  font-size: 0.78rem;
+  width: 100%;
+  text-align: left;
+}
+
+.sidebar-item:hover { background: #f3f4f6; }
+.sidebar-item.active { background: #eef2ff; color: #3730a3; }
+.sidebar-item.locked { opacity: 0.5; cursor: not-allowed; }
+.sidebar-item.premium { background: #fefce8; }
+.sidebar-item.premium:hover { background: #fef3c7; }
+
+.si-icon { font-size: 0.9rem; width: 18px; text-align: center; flex-shrink: 0; }
+.si-text { flex: 1; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.si-badge { font-size: 0.6rem; padding: 1px 5px; background: #e5e7eb; color: #6b7280; border-radius: 8px; font-weight: 600; }
+.si-badge.pro { background: #fcd34d; color: #92400e; }
+.si-lock { font-size: 0.65rem; opacity: 0.6; }
+
+.sidebar-sep { height: 1px; background: #e5e7eb; margin: 6px 0; }
+
+.sidebar-tools { margin-top: auto; padding-top: 8px; border-top: 1px solid #e5e7eb; }
+
+.sidebar-limits {
+  margin-top: 8px;
+  padding: 8px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 6px;
+  border: 1px solid #bae6fd;
+}
+
+.limits-title { font-size: 0.65rem; font-weight: 600; color: #0369a1; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.limit-row { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: #0c4a6e; padding: 2px 0; }
+.limit-icon { font-size: 0.7rem; }
+.limit-text { font-weight: 500; font-variant-numeric: tabular-nums; }
+
+.selected-indicator { display: flex; align-items: center; gap: 6px; font-size: 0.7rem; color: #6b7280; }
+.indicator-color { width: 8px; height: 8px; border-radius: 50%; }
+.indicator-time { font-weight: 500; }
+
+/* App main content - same padding as Index for consistency */
+.app-main,
+.app-content {
+  flex: 1;
+  min-width: 0;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .app-wrapper { flex-direction: column; }
+  .app-sidebar { width: 100%; min-width: 100%; max-height: none; flex-direction: row; flex-wrap: wrap; padding: 6px; gap: 4px; }
+  .sidebar-items { flex-direction: row; flex-wrap: wrap; gap: 4px; }
+  .sidebar-item { padding: 6px 8px; font-size: 0.72rem; }
+  .sidebar-sep { display: none; }
+  .sidebar-tools { display: none; }
+  .sidebar-limits { display: none; }
+}

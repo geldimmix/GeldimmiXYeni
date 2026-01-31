@@ -1,0 +1,157 @@
+@model Nobetci.Web.Models.AdminBordroTemplatesViewModel
+@{
+    ViewData["Title"] = "Bordro Şablonları";
+    ViewData["Icon"] = "🧩";
+}
+
+<div class="admin-header">
+    <h2>Şablon Yönetimi</h2>
+    <div class="header-actions">
+        <span class="badge badge-info">Base</span>
+    </div>
+</div>
+
+<div class="grid-2">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Bordro Sabit Şablonları</div>
+            <span class="badge badge-purple">@Model.SabitTemplates.Count</span>
+        </div>
+        <div class="card-body">
+            <div class="table">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Key</th>
+                            <th>Value</th>
+                            <th>Type</th>
+                            <th>Cadre</th>
+                            <th>Active</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.SabitTemplates)
+                        {
+                            var formId = $"sabit-form-{item.Id}";
+                            <tr>
+                                <td class="truncate">@item.Key</td>
+                                <td>
+                                    <input type="number"
+                                           name="value"
+                                           form="@formId"
+                                           class="form-control"
+                                           step="0.000001"
+                                           value="@item.Value.ToString("0.######", System.Globalization.CultureInfo.InvariantCulture)"
+                                           style="width:90px;">
+                                </td>
+                                <td>
+                                    <select name="valueType" form="@formId" class="form-control" style="width:90px;">
+                                        <option value="ORAN" selected="@(item.ValueType == "ORAN")">ORAN</option>
+                                        <option value="TUTAR" selected="@(item.ValueType == "TUTAR")">TUTAR</option>
+                                        <option value="YUZDE" selected="@(item.ValueType == "YUZDE")">YUZDE</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select name="cadreType" form="@formId" class="form-control" style="width:70px;">
+                                        <option value="" selected="@(string.IsNullOrEmpty(item.CadreType))">GENEL</option>
+                                        <option value="4A" selected="@(item.CadreType == "4A")">4A</option>
+                                        <option value="4B" selected="@(item.CadreType == "4B")">4B</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <label class="form-check">
+                                        <input type="checkbox" name="isActive" value="true" form="@formId" @(item.IsActive ? "checked" : "") />
+                                        <span>Aktif</span>
+                                    </label>
+                                </td>
+                                <td class="text-end">
+                                    <form id="@formId" method="post" action="/admin/bordro-templates/sabit" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input type="hidden" name="description" value="@item.Description" />
+                                        <input type="hidden" name="workingUnitIds" value="@item.WorkingUnitIds" />
+                                        <button class="btn btn-primary btn-sm" type="submit">Güncelle</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.SabitTemplates.Any())
+                        {
+                            <tr>
+                                <td colspan="6" class="empty-state">
+                                    <div class="title">Şablon bulunamadı</div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Birim Tipi Şablonları</div>
+            <span class="badge badge-purple">@Model.UnitTypeTemplates.Count</span>
+        </div>
+        <div class="card-body">
+            <div class="table">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Ad</th>
+                            <th>Coef</th>
+                            <th>Active</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.UnitTypeTemplates)
+                        {
+                            var formId = $"unit-form-{item.Id}";
+                            <tr>
+                                <td class="truncate">@item.Name</td>
+                                <td>
+                                    <input type="number"
+                                           name="defaultCoefficient"
+                                           form="@formId"
+                                           class="form-control"
+                                           step="0.01"
+                                           value="@item.DefaultCoefficient.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)"
+                                           style="width:90px;">
+                                </td>
+                                <td>
+                                    <label class="form-check">
+                                        <input type="checkbox" name="isActive" value="true" form="@formId" @(item.IsActive ? "checked" : "") />
+                                        <span>Aktif</span>
+                                    </label>
+                                </td>
+                                <td class="text-end">
+                                    <form id="@formId" method="post" action="/admin/bordro-templates/unittype" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input type="hidden" name="name" value="@item.Name" />
+                                        <input type="hidden" name="nameEn" value="@item.NameEn" />
+                                        <input type="hidden" name="color" value="@item.Color" />
+                                        <input type="hidden" name="icon" value="@item.Icon" />
+                                        <input type="hidden" name="sortOrder" value="@item.SortOrder" />
+                                        <button class="btn btn-primary btn-sm" type="submit">Güncelle</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.UnitTypeTemplates.Any())
+                        {
+                            <tr>
+                                <td colspan="4" class="empty-state">
+                                    <div class="title">Şablon bulunamadı</div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -13,11 +13,7 @@
 }
 
 <style>
-    .att-page {
-        min-height: calc(100vh - 60px);
-        background: #f4f6f8;
-        padding: 20px;
-    }
+    .att-page { min-height: calc(100vh - 60px); }
 
     /* Header */
     .att-header {
@@ -600,13 +596,37 @@
     }
 
     @@media (max-width: 768px) {
-        .att-page { padding: 12px; }
         .att-header { flex-direction: column; align-items: stretch; }
         .modal-box { max-width: 100%; }
     }
+
 </style>
 
-<div class="att-page">
+@{
+    var sidebarModel = new AppSidebarViewModel
+    {
+        SelectedYear = Model.SelectedYear,
+        SelectedMonth = Model.SelectedMonth,
+        SelectedUnitId = Model.SelectedUnitId,
+        EmployeeCount = Model.Employees.Count,
+        HolidayCount = Model.Holidays.Count,
+        UnitCount = Model.Units.Count,
+        CanAccessPayroll = Model.CanAccessPayroll,
+        CanAccessAttendance = Model.CanAccessAttendance,
+        CanManageUnits = Model.CanManageUnits,
+        IsRegistered = Model.IsRegistered,
+        IsPremium = Model.IsPremium,
+        EmployeeLimit = Model.EmployeeLimit,
+        UnitLimit = Model.UnitLimit,
+        TotalEmployeeCount = Model.TotalEmployeeCount,
+        CurrentPage = "Attendance"
+    };
+}
+
+<div class="app-wrapper">
+    @await Html.PartialAsync("_AppSidebar", sidebarModel)
+    <main class="app-main">
+        <div class="att-page">
     <div class="att-header">
         <h1 class="att-title">🕐 @(isTurkish ? "Mesai Takip" : "Attendance")</h1>
         
@@ -705,7 +725,11 @@
                                             notes: '@(attendance?.Notes?.Replace("'", "\\'").Replace("\n", "\\n") ?? "")',
                                             shiftStart: '@shiftStart',
                                             shiftEnd: '@shiftEnd',
-                                            shiftSpans: @shiftSpans.ToString().ToLower()
+                                            shiftSpans: @shiftSpans.ToString().ToLower(),
+                                            workGroupTypeId: @(attendance?.WorkGroupTypeId ?? shift?.WorkGroupTypeId ?? 1),
+                                            isRiskGroup: @(attendance?.IsRiskGroup.ToString().ToLower() ?? shift?.IsRiskGroup.ToString().ToLower() ?? "false"),
+                                            shiftGroupTypeId: @(shift?.WorkGroupTypeId ?? 1),
+                                            shiftRiskGroup: @(shift?.IsRiskGroup.ToString().ToLower() ?? "false")
                                         })">
                                         <div class="cell-inner">
                                             @{
@@ -833,7 +857,7 @@
                     @foreach (var tpl in shiftTemplates.Where(t => t.IsActive))
                     {
                         <button type="button" class="template-btn" 
-                                onclick="applyTemplate('@tpl.StartTime.ToString("HH:mm")', '@tpl.EndTime.ToString("HH:mm")', @tpl.SpansNextDay.ToString().ToLower())">
+                                onclick="applyTemplate('@tpl.StartTime.ToString("HH:mm")', '@tpl.EndTime.ToString("HH:mm")', @tpl.SpansNextDay.ToString().ToLower(), @(tpl.WorkGroupTypeId ?? 1), @tpl.IsRiskGroup.ToString().ToLower())">
                             <span class="dot" style="background:@tpl.Color"></span>
                             @tpl.Name
                         </button>
@@ -862,6 +886,23 @@
                     <input type="checkbox" id="nextDay">
                     <span>@(isTurkish ? "Çıkış ertesi güne sarkar" : "Check out next day")</span>
                 </label>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label">@(isTurkish ? "Grup Tipi" : "Group Type")</label>
+                    <select class="form-input" id="attWorkGroupType">
+                        <option value="1">@(isTurkish ? "Normal" : "Normal")</option>
+                        <option value="2">@(isTurkish ? "Özel" : "Special")</option>
+                        <option value="3">@(isTurkish ? "Yoğun Bakım" : "Intensive Care")</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="checkbox-row" style="margin-top: 28px;">
+                        <input type="checkbox" id="attRiskGroup">
+                        <span>@(isTurkish ? "Riskli Grup (Radyasyon)" : "Risk Group (Radiation)")</span>
+                    </label>
+                </div>
             </div>
             
             <div class="form-group">
@@ -907,11 +948,15 @@
         </div>
     </div>
 </div>
+    </main>
+</div>
 
 <script>
     let currentShiftStart = '';
     let currentShiftEnd = '';
     let currentShiftSpans = false;
+    let currentShiftGroupTypeId = 1;
+    let currentShiftRiskGroup = false;
     let originalCheckIn = '';
     let originalCheckOut = '';
     
@@ -1116,15 +1161,17 @@
         document.getElementById('modal').classList.remove('active');
     }
     
-    function applyTemplate(start, end, spans) {
+    function applyTemplate(start, end, spans, groupTypeId = 1, isRiskGroup = false) {
         document.getElementById('timeIn').value = start;
         document.getElementById('timeOut').value = end;
         document.getElementById('nextDay').checked = spans;
+        document.getElementById('attWorkGroupType').value = String(groupTypeId || 1);
+        document.getElementById('attRiskGroup').checked = !!isRiskGroup;
     }
     
     function applyShiftTemplate() {
         if (currentShiftStart && currentShiftEnd) {
-            applyTemplate(currentShiftStart, currentShiftEnd, currentShiftSpans);
+            applyTemplate(currentShiftStart, currentShiftEnd, currentShiftSpans, currentShiftGroupTypeId, currentShiftRiskGroup);
         }
     }
 
@@ -1136,6 +1183,8 @@
         document.getElementById('timeOut').value = data.checkOut || '';
         document.getElementById('nextDay').checked = data.nextDay;
         document.getElementById('notes').value = data.notes || '';
+        document.getElementById('attWorkGroupType').value = String(data.workGroupTypeId || 1);
+        document.getElementById('attRiskGroup').checked = !!data.isRiskGroup;
         
         // Store original values to detect clearing
         originalCheckIn = data.checkIn || '';
@@ -1145,6 +1194,8 @@
         currentShiftStart = data.shiftStart || '';
         currentShiftEnd = data.shiftEnd || '';
         currentShiftSpans = data.shiftSpans || false;
+        currentShiftGroupTypeId = data.shiftGroupTypeId || 1;
+        currentShiftRiskGroup = !!data.shiftRiskGroup;
         
         const shiftBtn = document.getElementById('shiftTemplateBtn');
         if (currentShiftStart && currentShiftEnd) {
@@ -1182,7 +1233,9 @@
             clearCheckIn: !!(originalCheckIn && !checkIn), // Convert to boolean
             clearCheckOut: !!(originalCheckOut && !checkOut), // Convert to boolean
             notes: document.getElementById('notes').value || null,
-            type: 0
+            type: 0,
+            workGroupTypeId: parseInt(document.getElementById('attWorkGroupType').value) || 1,
+            isRiskGroup: document.getElementById('attRiskGroup').checked
         };
 
         console.log('Sending data:', data);

@@ -1,0 +1,168 @@
+@model Nobetci.Web.Models.AppSidebarViewModel
+@{
+    var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+    var indexRouteValues = new Dictionary<string, object> { { "year", Model.SelectedYear }, { "month", Model.SelectedMonth } };
+    if (Model.SelectedUnitId.HasValue) { indexRouteValues["unitId"] = Model.SelectedUnitId.Value; }
+    var indexBase = Url.Action("Index", "App", indexRouteValues);
+    var indexUrl = (indexBase ?? "/App") + (indexBase?.Contains("?") == true ? "&" : "?");
+}
+<aside class="app-sidebar">
+    <div class="module-dropdown">
+        <select id="moduleSelect" class="module-select" onchange="switchModule(this.value)">
+            <option value="shift" selected>🏥 @(isTurkish ? "Nöbet Sistemi" : "Shift System")</option>
+            <option value="cleaning">🧹 @(isTurkish ? "Temizlik Çizelgesi" : "Cleaning Schedule")</option>
+            <option value="qrmenu">🍽️ @(isTurkish ? "Restoran QR Menü" : "Restaurant QR Menu")</option>
+        </select>
+    </div>
+    
+    <div class="sidebar-items">
+        @if (Model.HasModals)
+        {
+            <button class="sidebar-item" data-bs-toggle="modal" data-bs-target="#employeesModal">
+                <span class="si-icon">👥</span>
+                <span class="si-text">@(isTurkish ? "Personeller" : "Employees")</span>
+                <span class="si-badge">@Model.EmployeeCount</span>
+            </button>
+            <button class="sidebar-item" data-bs-toggle="modal" data-bs-target="#templatesModal">
+                <span class="si-icon">⏰</span>
+                <span class="si-text">@(isTurkish ? "Vardiyalar" : "Shifts")</span>
+            </button>
+            <button class="sidebar-item" data-bs-toggle="modal" data-bs-target="#leavesModal">
+                <span class="si-icon">📋</span>
+                <span class="si-text">@(isTurkish ? "İzinler" : "Leaves")</span>
+            </button>
+            <button class="sidebar-item" data-bs-toggle="modal" data-bs-target="#addHolidayModal">
+                <span class="si-icon">🎉</span>
+                <span class="si-text">@(isTurkish ? "Tatiller" : "Holidays")</span>
+                <span class="si-badge">@Model.HolidayCount</span>
+            </button>
+        }
+        else
+        {
+            <a href="@(indexUrl)open=employees" class="sidebar-item">
+                <span class="si-icon">👥</span>
+                <span class="si-text">@(isTurkish ? "Personeller" : "Employees")</span>
+                <span class="si-badge">@Model.EmployeeCount</span>
+            </a>
+            <a href="@(indexUrl)open=templates" class="sidebar-item">
+                <span class="si-icon">⏰</span>
+                <span class="si-text">@(isTurkish ? "Vardiyalar" : "Shifts")</span>
+            </a>
+            <a href="@(indexUrl)open=leaves" class="sidebar-item">
+                <span class="si-icon">📋</span>
+                <span class="si-text">@(isTurkish ? "İzinler" : "Leaves")</span>
+            </a>
+            <a href="@(indexUrl)open=holidays" class="sidebar-item">
+                <span class="si-icon">🎉</span>
+                <span class="si-text">@(isTurkish ? "Tatiller" : "Holidays")</span>
+                <span class="si-badge">@Model.HolidayCount</span>
+            </a>
+        }
+        
+        <div class="sidebar-sep"></div>
+        
+        @if (Model.CanAccessPayroll)
+        {
+            <a href="@Url.Action("Payroll", "App", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="sidebar-item @(Model.CurrentPage == "Payroll" ? "active" : "")">
+                <span class="si-icon">📊</span>
+                <span class="si-text">@(isTurkish ? "Puantaj" : "Payroll")</span>
+            </a>
+        }
+        else
+        {
+            <button class="sidebar-item locked" disabled>
+                <span class="si-icon">📊</span>
+                <span class="si-text">@(isTurkish ? "Puantaj" : "Payroll")</span>
+                <span class="si-lock">🔒</span>
+            </button>
+        }
+        
+        @if (Model.CanAccessAttendance)
+        {
+            <a href="@Url.Action("Attendance", "App", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="sidebar-item @(Model.CurrentPage == "Attendance" ? "active" : "")">
+                <span class="si-icon">🕐</span>
+                <span class="si-text">@(isTurkish ? "Mesai" : "Attendance")</span>
+            </a>
+        }
+        else
+        {
+            <button class="sidebar-item locked" disabled>
+                <span class="si-icon">🕐</span>
+                <span class="si-text">@(isTurkish ? "Mesai" : "Attendance")</span>
+                <span class="si-lock">🔒</span>
+            </button>
+        }
+        
+        <div class="sidebar-sep"></div>
+        <a href="/Bordro/Sabitler" class="sidebar-item">
+            <span class="si-icon">⚙️</span>
+            <span class="si-text">@(isTurkish ? "Bordro Sabitleri" : "Payroll Constants")</span>
+        </a>
+        
+        @if (Model.IsRegistered)
+        {
+            <div class="sidebar-sep"></div>
+            
+            @if (Model.CanManageUnits)
+            {
+                if (Model.HasModals)
+                {
+                    <button class="sidebar-item premium" data-bs-toggle="modal" data-bs-target="#unitsModal">
+                        <span class="si-icon">🏛️</span>
+                        <span class="si-text">@(isTurkish ? "Birimler" : "Units")</span>
+                        <span class="si-badge pro">@Model.UnitCount</span>
+                    </button>
+                }
+                else
+                {
+                    <a href="@(indexUrl)open=units" class="sidebar-item premium">
+                        <span class="si-icon">🏛️</span>
+                        <span class="si-text">@(isTurkish ? "Birimler" : "Units")</span>
+                        <span class="si-badge pro">@Model.UnitCount</span>
+                    </a>
+                }
+            }
+            else
+            {
+                <button class="sidebar-item locked" disabled>
+                    <span class="si-icon">🏛️</span>
+                    <span class="si-text">@(isTurkish ? "Birimler" : "Units")</span>
+                    <span class="si-lock">🔒</span>
+                </button>
+            }
+        }
+    </div>
+    
+    <div class="sidebar-tools">
+        @if (Model.HasModals)
+        {
+            <div class="selected-indicator" id="selectedIndicator" style="display:none;">
+                <div class="indicator-color"></div>
+                <span class="indicator-time" id="selectedTime"></span>
+            </div>
+        }
+    </div>
+    
+    @if (Model.IsRegistered)
+    {
+        <div class="sidebar-limits">
+            <div class="limits-title">@(isTurkish ? "Limitler" : "Your Limits")</div>
+            <div class="limit-row">
+                <span class="limit-icon">👥</span>
+                <span class="limit-text">@Model.TotalEmployeeCount / @(Model.EmployeeLimit == int.MaxValue ? "∞" : Model.EmployeeLimit.ToString())</span>
+            </div>
+            @if (Model.IsPremium)
+            {
+                <div class="limit-row">
+                    <span class="limit-icon">🏛️</span>
+                    <span class="limit-text">@Model.UnitCount / @(Model.UnitLimit == 0 ? "∞" : Model.UnitLimit.ToString())</span>
+                </div>
+            }
+        </div>
+    }
+    
+    @if (Model.HasModals)
+    {
+        <input type="checkbox" id="multiSelectMode" style="display:none;">
+    }
+</aside>

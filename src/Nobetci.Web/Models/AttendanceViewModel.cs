@@ -14,6 +14,13 @@ public class AttendanceViewModel
     public List<Unit> Units { get; set; } = new();
     public int? SelectedUnitId { get; set; }
     public bool IsPremium { get; set; }
+    public bool IsRegistered { get; set; }
+    public bool CanAccessPayroll { get; set; }
+    public bool CanAccessAttendance { get; set; }
+    public bool CanManageUnits { get; set; }
+    public int EmployeeLimit { get; set; }
+    public int UnitLimit { get; set; }
+    public int TotalEmployeeCount { get; set; }
     
     public int SelectedYear { get; set; }
     public int SelectedMonth { get; set; }

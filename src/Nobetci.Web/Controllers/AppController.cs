@@ -7,6 +7,7 @@ using Nobetci.Web.Data.Entities;
 using Nobetci.Web.Models;
 using Nobetci.Web.Resources;
 using Nobetci.Web.Services;
+using System.Globalization;
 
 namespace Nobetci.Web.Controllers;
 
@@ -22,6 +23,8 @@ public class AppController : Controller
     private readonly ILogger<AppController> _logger;
     private readonly ISystemSettingsService _settingsService;
     private readonly IActivityLogService _activityLog;
+    private readonly IBordroCalculator _bordroCalculator;
+    private readonly IBordroHesaplamaService _bordroHesaplamaService;
 
     public AppController(
         ApplicationDbContext context,
@@ -30,7 +33,9 @@ public class AppController : Controller
         IConfiguration configuration,
         ILogger<AppController> logger,
         ISystemSettingsService settingsService,
-        IActivityLogService activityLog)
+        IActivityLogService activityLog,
+        IBordroCalculator bordroCalculator,
+        IBordroHesaplamaService bordroHesaplamaService)
     {
         _context = context;
         _userManager = userManager;
@@ -39,6 +44,8 @@ public class AppController : Controller
         _logger = logger;
         _settingsService = settingsService;
         _activityLog = activityLog;
+        _bordroCalculator = bordroCalculator;
+        _bordroHesaplamaService = bordroHesaplamaService;
     }
 
     /// <summary>
@@ -50,6 +57,16 @@ public class AppController : Controller
         var selectedMonth = month ?? DateTime.Now.Month;
         
         var organization = await GetOrCreateOrganizationAsync();
+        
+        // Lazy init: ensure bordro sabitleri and unit sabitleri for existing users who registered before this feature
+        try
+        {
+            await _bordroHesaplamaService.EnsureBordroSabitleriAsync(organization.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to ensure bordro sabitleri for organization {OrgId}", organization.Id);
+        }
         
         // Check if premium and initialize units
         var isPremium = await IsPremiumUserAsync();
@@ -251,6 +268,113 @@ public class AppController : Controller
         return View(viewModel);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> PuantajDetail(int employeeId, int year, int month, string source = "shift", int nightStartHour = 22, int nightEndHour = 6)
+    {
+        var organization = await GetOrCreateOrganizationAsync();
+        if (organization == null)
+            return NotFound();
+
+        var employees = await _context.Employees
+            .Where(e => e.OrganizationId == organization.Id && e.IsActive)
+            .Include(e => e.Unit)
+            .ToListAsync();
+
+        var employee = employees.FirstOrDefault(e => e.Id == employeeId);
+        if (employee == null)
+            return NotFound();
+
+        var units = await _context.Units
+            .Include(u => u.UnitType)
+            .Where(u => u.OrganizationId == organization.Id && u.IsActive)
+            .ToListAsync();
+
+        var holidays = await _context.Holidays
+            .Where(h => h.OrganizationId == organization.Id)
+            .Where(h => h.Date.Year == year && h.Date.Month == month)
+            .ToListAsync();
+
+        var leaves = await _context.Leaves
+            .Include(l => l.LeaveType)
+            .Where(l => l.Employee.OrganizationId == organization.Id)
+            .Where(l => l.Date.Year == year && l.Date.Month == month)
+            .ToListAsync();
+
+        var firstDayOfMonth = new DateOnly(year, month, 1);
+        var prevMonth = firstDayOfMonth.AddDays(-1);
+
+        var shifts = await _context.Shifts
+            .Include(s => s.Employee)
+            .Where(s => s.Employee.OrganizationId == organization.Id)
+            .Where(s => s.Date.Year == year && s.Date.Month == month)
+            .ToListAsync();
+
+        var prevMonthShifts = await _context.Shifts
+            .Include(s => s.Employee)
+            .Where(s => s.Employee.OrganizationId == organization.Id)
+            .Where(s => s.Date == prevMonth && s.SpansNextDay)
+            .ToListAsync();
+
+        var attendances = source == "attendance"
+            ? await _context.TimeAttendances
+                .Include(a => a.Employee)
+                .Where(a => a.Employee.OrganizationId == organization.Id)
+                .Where(a => a.Date.Year == year && a.Date.Month == month)
+                .ToListAsync()
+            : new List<TimeAttendance>();
+
+        var nightStart = new TimeOnly(nightStartHour, 0);
+        var nightEnd = new TimeOnly(nightEndHour, 0);
+        var payrollOptions = GetPayrollOptions();
+
+        var payrolls = source == "attendance"
+            ? CalculatePayrollFromAttendance(
+                employees,
+                attendances,
+                holidays,
+                leaves,
+                organization,
+                year,
+                month,
+                nightStart,
+                nightEnd,
+                payrollOptions,
+                units)
+            : CalculateEmployeePayrolls(
+                employees,
+                shifts,
+                prevMonthShifts,
+                holidays,
+                leaves,
+                organization,
+                year,
+                month,
+                nightStart,
+                nightEnd,
+                payrollOptions,
+                units);
+
+        var payroll = payrolls.FirstOrDefault(p => p.Employee.Id == employeeId);
+        if (payroll == null)
+            return NotFound();
+
+        var culture = CultureInfo.CurrentUICulture;
+        var monthName = new DateTime(year, month, 1).ToString("MMMM yyyy", culture);
+
+        var viewModel = new PuantajDetailViewModel
+        {
+            Employee = employee,
+            Payroll = payroll,
+            Organization = organization,
+            Year = year,
+            Month = month,
+            MonthName = monthName,
+            DataSource = source
+        };
+
+        return View("~/Views/Puantaj/Detail.cshtml", viewModel);
+    }
+
     #region Employee API
 
     [HttpGet]
@@ -270,7 +394,8 @@ public class AppController : Controller
                 e.DailyWorkHours,
                 e.WeekendWorkMode,
                 e.SaturdayWorkHours,
-                e.UnitId
+                e.UnitId,
+                e.HasDoubleTicketRight
             })
             .ToListAsync();
             
@@ -308,7 +433,8 @@ public class AppController : Controller
             PositionType = dto.PositionType,
             AcademicTitle = dto.PositionType == "Academic" ? dto.AcademicTitle : null,
             ShiftScore = dto.ShiftScore > 0 ? dto.ShiftScore : 100,
-            IsNonHealthServices = dto.IsNonHealthServices
+            IsNonHealthServices = dto.IsNonHealthServices,
+            HasDoubleTicketRight = dto.HasDoubleTicketRight
         };
         
         _context.Employees.Add(employee);
@@ -359,7 +485,8 @@ public class AppController : Controller
             employee.AcademicTitle,
             employee.ShiftScore,
             employee.IsNonHealthServices,
-            employee.UnitId
+            employee.UnitId,
+            employee.HasDoubleTicketRight
         });
     }
     
@@ -390,6 +517,7 @@ public class AppController : Controller
         employee.AcademicTitle = dto.AcademicTitle;
         employee.ShiftScore = dto.ShiftScore;
         employee.IsNonHealthServices = dto.IsNonHealthServices;
+        employee.HasDoubleTicketRight = dto.HasDoubleTicketRight;
         
         employee.UpdatedAt = DateTime.UtcNow;
         
@@ -415,7 +543,8 @@ public class AppController : Controller
             employee.AcademicTitle,
             employee.ShiftScore,
             employee.IsNonHealthServices,
-            employee.UnitId
+            employee.UnitId,
+            employee.HasDoubleTicketRight
         });
     }
 
@@ -526,6 +655,24 @@ public class AppController : Controller
         var startTime = TimeOnly.Parse(dto.StartTime);
         var endTime = TimeOnly.Parse(dto.EndTime);
         
+        ShiftTemplate? template = null;
+        if (dto.ShiftTemplateId.HasValue)
+        {
+            template = await _context.ShiftTemplates
+                .FirstOrDefaultAsync(t => t.Id == dto.ShiftTemplateId.Value);
+        }
+        
+        Unit? employeeUnit = null;
+        if (employee.UnitId.HasValue)
+        {
+            employeeUnit = await _context.Units
+                .Include(u => u.UnitType)
+                .FirstOrDefaultAsync(u => u.Id == employee.UnitId.Value);
+        }
+        
+        var resolvedWorkGroupTypeId = ResolveWorkGroupTypeId(dto.WorkGroupTypeId, template, employeeUnit);
+        var resolvedIsRiskGroup = ResolveRiskGroup(dto.IsRiskGroup, template, employeeUnit);
+        
         // Check for overnight shift overlap - if this shift spans to next day, check if next day has a shift
         if (dto.SpansNextDay && !dto.IsDayOff)
         {
@@ -571,13 +718,15 @@ public class AppController : Controller
             existingShift.BreakMinutes = dto.BreakMinutes ?? organization.BreakMinutes;
             existingShift.IsDayOff = dto.IsDayOff;
             existingShift.OvernightHoursMode = dto.OvernightHoursMode; // FIX: Save overnight hours mode on update
+            existingShift.WorkGroupTypeId = resolvedWorkGroupTypeId;
+            existingShift.IsRiskGroup = resolvedIsRiskGroup;
             existingShift.UpdatedAt = DateTime.UtcNow;
             
             if (dto.IsDayOff) {
                 existingShift.TotalHours = 0;
                 existingShift.NightHours = 0;
             } else {
-                CalculateShiftHours(existingShift, organization);
+                CalculateShiftHours(existingShift, organization, employee);
             }
             
             await _context.SaveChangesAsync();
@@ -603,7 +752,9 @@ public class AppController : Controller
             ShiftTemplateId = dto.ShiftTemplateId,
             BreakMinutes = dto.BreakMinutes ?? organization.BreakMinutes,
             IsDayOff = dto.IsDayOff,
-            OvernightHoursMode = dto.OvernightHoursMode
+            OvernightHoursMode = dto.OvernightHoursMode,
+            WorkGroupTypeId = resolvedWorkGroupTypeId,
+            IsRiskGroup = resolvedIsRiskGroup
         };
         
         // Day off doesn't have hours
@@ -611,7 +762,7 @@ public class AppController : Controller
             shift.TotalHours = 0;
             shift.NightHours = 0;
         } else {
-            CalculateShiftHours(shift, organization);
+            CalculateShiftHours(shift, organization, employee);
         }
         
         _context.Shifts.Add(shift);
@@ -832,6 +983,8 @@ public class AppController : Controller
                 t.BreakMinutes,
                 t.Color,
                 t.IsGlobal,
+                t.WorkGroupTypeId,
+                t.IsRiskGroup,
                 canEdit = true // User can always edit their own templates
             })
             .ToListAsync();
@@ -861,7 +1014,9 @@ public class AppController : Controller
             Color = dto.Color ?? "#3B82F6",
             IsGlobal = false,
             DisplayOrder = dto.DisplayOrder,
-            IsActive = true
+            IsActive = true,
+            WorkGroupTypeId = dto.WorkGroupTypeId ?? (int)WorkGroupType.Normal,
+            IsRiskGroup = dto.IsRiskGroup
         };
         
         _context.ShiftTemplates.Add(template);
@@ -881,6 +1036,8 @@ public class AppController : Controller
             breakMinutes = template.BreakMinutes,
             color = template.Color,
             isGlobal = false,
+            workGroupTypeId = template.WorkGroupTypeId,
+            isRiskGroup = template.IsRiskGroup,
             canEdit = true
         });
     }
@@ -910,6 +1067,8 @@ public class AppController : Controller
         template.BreakMinutes = dto.BreakMinutes;
         template.Color = dto.Color ?? template.Color;
         template.DisplayOrder = dto.DisplayOrder;
+        template.WorkGroupTypeId = dto.WorkGroupTypeId ?? template.WorkGroupTypeId;
+        template.IsRiskGroup = dto.IsRiskGroup;
         
         await _context.SaveChangesAsync();
         
@@ -927,6 +1086,8 @@ public class AppController : Controller
             breakMinutes = template.BreakMinutes,
             color = template.Color,
             isGlobal = false,
+            workGroupTypeId = template.WorkGroupTypeId,
+            isRiskGroup = template.IsRiskGroup,
             canEdit = true
         });
     }
@@ -1182,6 +1343,8 @@ public class AppController : Controller
         var organization = await GetOrCreateOrganizationAsync();
         
         var employee = await _context.Employees
+            .Include(e => e.Unit)
+            .ThenInclude(u => u.UnitType)
             .FirstOrDefaultAsync(e => e.Id == employeeId && e.OrganizationId == organization.Id);
             
         if (employee == null)
@@ -1219,7 +1382,8 @@ public class AppController : Controller
             .FirstOrDefaultAsync();
         
         // Calculate required hours
-        var requiredHours = CalculateRequiredHours(employee, year, month, holidays, weekendDays, leaves);
+        var isRiskGroup = GetDefaultRiskGroup(employee.Unit);
+        var requiredHours = CalculateRequiredHours(employee, year, month, holidays, weekendDays, isRiskGroup, leaves);
         
         // Calculate worked hours
         decimal workedHours = 0;
@@ -1228,7 +1392,7 @@ public class AppController : Controller
         // Add spillover from previous month overnight shift
         if (prevMonthLastShift != null && !prevMonthLastShift.IsDayOff && prevMonthLastShift.SpansNextDay && prevMonthLastShift.OvernightHoursMode == 0)
         {
-            var spilledHours = CalculateHoursAfterMidnight(prevMonthLastShift);
+            var spilledHours = CalculateHoursAfterMidnight(prevMonthLastShift, employee);
             workedHours += spilledHours;
         }
         
@@ -1409,7 +1573,9 @@ public class AppController : Controller
                 s.IsHoliday,
                 s.IsDayOff,
                 s.OvernightHoursMode,
-                s.ShiftTemplateId
+                s.ShiftTemplateId,
+                s.WorkGroupTypeId,
+                s.IsRiskGroup
             })
             .ToListAsync();
         
@@ -1477,7 +1643,9 @@ public class AppController : Controller
                     s.IsHoliday,
                     s.IsDayOff,
                     s.OvernightHoursMode,
-                    s.ShiftTemplateId
+                    s.ShiftTemplateId,
+                    s.WorkGroupTypeId,
+                    s.IsRiskGroup
                 })
                 .ToListAsync();
             
@@ -1565,7 +1733,9 @@ public class AppController : Controller
                     IsHoliday = savedShift.IsHoliday,
                     IsDayOff = savedShift.IsDayOff,
                     OvernightHoursMode = savedShift.OvernightHoursMode,
-                    ShiftTemplateId = savedShift.ShiftTemplateId
+                    ShiftTemplateId = savedShift.ShiftTemplateId,
+                    WorkGroupTypeId = savedShift.WorkGroupTypeId,
+                    IsRiskGroup = savedShift.IsRiskGroup
                 };
                 newShifts.Add(shift);
             }
@@ -1625,8 +1795,8 @@ public class AppController : Controller
             return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("Payroll") });
         }
         
-        // Check if user has payroll access
-        var (_, canAccessPayroll) = await GetFeatureAccessAsync();
+        // Check if user has payroll access (keep both for view model later)
+        var (canAccessAttendance, canAccessPayroll) = await GetFeatureAccessAsync();
         if (!canAccessPayroll)
         {
             TempData["Error"] = "Puantaj özelliğine erişim yetkiniz bulunmamaktadır.";
@@ -1640,6 +1810,16 @@ public class AppController : Controller
         var organization = await GetOrCreateOrganizationAsync();
         var isPremium = await IsPremiumUserAsync();
         
+        // Lazy init: ensure bordro sabitleri for existing users who never visited Bordro Sabitleri page
+        try
+        {
+            await _bordroHesaplamaService.EnsureBordroSabitleriAsync(organization.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to ensure bordro sabitleri for Payroll, OrgId={OrgId}", organization.Id);
+        }
+        
         // Use custom night hours or organization defaults
         var nightStart = nightStartHour.HasValue 
             ? new TimeOnly(nightStartHour.Value, 0) 
@@ -1648,29 +1828,38 @@ public class AppController : Controller
             ? new TimeOnly(nightEndHour.Value, 0) 
             : organization.NightEndTime;
         
-        // Load units for premium users
+        // Load units
         var units = new List<Unit>();
-        if (isPremium)
+        try
         {
-            try
+            if (isPremium)
             {
                 // Initialize defaults if needed (same as Index)
                 await InitializeDefaultUnitTypesAsync(organization.Id);
                 await InitializeDefaultUnitAsync(organization.Id);
-                
-                units = await _context.Units
-                    .Where(u => u.OrganizationId == organization.Id && u.IsActive)
-                    .OrderBy(u => u.SortOrder)
-                    .ToListAsync();
             }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Failed to load units for Payroll page");
-            }
+
+            units = await _context.Units
+                .Include(u => u.UnitType)
+                .Where(u => u.OrganizationId == organization.Id && u.IsActive)
+                .OrderBy(u => u.SortOrder)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to load units for Payroll page");
+        }
+
+        if (units.Any())
+        {
+            var unitCoefficientMap = await GetUnitCoefficientMapAsync(organization.Id);
+            ApplyUnitCoefficients(units, unitCoefficientMap);
         }
         
         // Build employee query with optional unit filter
         var employeeQuery = _context.Employees
+            .Include(e => e.Unit)
+            .ThenInclude(u => u.UnitType)
             .Where(e => e.OrganizationId == organization.Id && e.IsActive);
             
         if (isPremium && unitId.HasValue)
@@ -1681,6 +1870,18 @@ public class AppController : Controller
         var employees = await employeeQuery
             .OrderBy(e => e.FullName)
             .ToListAsync();
+
+        if (units.Any())
+        {
+            var payrollUnitLookup = units.ToDictionary(u => u.Id, u => u);
+            foreach (var employee in employees)
+            {
+                if (employee.UnitId.HasValue && payrollUnitLookup.TryGetValue(employee.UnitId.Value, out var unit))
+                {
+                    employee.Unit = unit;
+                }
+            }
+        }
         
         var employeeIds = employees.Select(e => e.Id).ToList();
             
@@ -1710,6 +1911,24 @@ public class AppController : Controller
             .Where(l => employeeIds.Contains(l.EmployeeId))
             .Where(l => l.Date.Year == selectedYear && l.Date.Month == selectedMonth)
             .ToListAsync();
+
+        var employeeLimit = await GetEmployeeLimitAsync();
+        var isRegistered = User.Identity?.IsAuthenticated == true;
+
+        var defaultUnitLimit = await _settingsService.GetDefaultUnitLimitAsync();
+        var unitLimit = defaultUnitLimit;
+        if (isRegistered)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser != null)
+            {
+                unitLimit = currentUser.UnitLimit > 0 ? currentUser.UnitLimit : defaultUnitLimit;
+            }
+        }
+
+        var totalEmployeeCount = await _context.Employees
+            .Where(e => e.OrganizationId == organization.Id && e.IsActive)
+            .CountAsync();
         
         // Get overnight shifts from previous month (filtered by employees)
         var previousMonthLastDay = new DateOnly(selectedYear, selectedMonth, 1).AddDays(-1);
@@ -1725,6 +1944,9 @@ public class AppController : Controller
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();
 
+        var payrollOptions = GetPayrollOptions();
+        var bordroOptions = await GetBordroOptionsAsync(organization.Id);
+
         var viewModel = new PayrollViewModel
         {
             Organization = organization,
@@ -1738,13 +1960,25 @@ public class AppController : Controller
             Units = units,
             SelectedUnitId = unitId,
             IsPremium = isPremium,
+            IsRegistered = isRegistered,
+            CanAccessAttendance = canAccessAttendance,
+            CanAccessPayroll = canAccessPayroll,
+            CanManageUnits = isPremium,
+            CanAccessCleaning = true,
+            EmployeeLimit = employeeLimit,
+            UnitLimit = unitLimit,
+            TotalEmployeeCount = totalEmployeeCount,
             SelectedYear = selectedYear,
             SelectedMonth = selectedMonth,
             NightStartTime = nightStart,
             NightEndTime = nightEnd,
             DataSource = dataSource,
-            IsCalculated = calculate || loadId.HasValue
+            IsCalculated = calculate || loadId.HasValue,
+            PayrollOptions = payrollOptions,
+            BordroOptions = bordroOptions
         };
+
+        var unitLookup = units.ToDictionary(u => u.Id, u => u);
 
         // Load saved payroll if loadId is provided
         if (loadId.HasValue)
@@ -1771,6 +2005,8 @@ public class AppController : Controller
                     WorkedDays = e.WorkedDays,
                     TotalWorkedHours = e.TotalWorkedHours,
                     RequiredHours = e.RequiredHours,
+                    OvertimeHours = e.OvertimeHours,
+                    RawOvertimeHours = e.OvertimeHours,
                     NightHours = e.NightHours,
                     WeekendHours = e.WeekendHours,
                     HolidayHours = e.HolidayHours,
@@ -1788,6 +2024,12 @@ public class AppController : Controller
                         Note = d.Note
                     }).ToList() ?? new List<ShiftDetail>()
                 }).ToList();
+
+                foreach (var payroll in viewModel.EmployeePayrolls)
+                {
+                    var unit = GetEmployeeUnit(payroll.Employee, unitLookup);
+                    payroll.IsIntensiveCare = IsIntensiveCareUnit(unit);
+                }
             }
         }
         // Only calculate if requested and not loading saved
@@ -1796,13 +2038,27 @@ public class AppController : Controller
             if (dataSource == "attendance")
             {
                 viewModel.EmployeePayrolls = CalculatePayrollFromAttendance(
-                    employees, attendances, holidays, leaves, organization, selectedYear, selectedMonth, nightStart, nightEnd);
+                    employees, attendances, holidays, leaves, organization, selectedYear, selectedMonth, nightStart, nightEnd, payrollOptions, units);
             }
             else
             {
                 viewModel.EmployeePayrolls = CalculateEmployeePayrolls(
                     employees, shifts, previousMonthShifts, holidays, leaves,
-                    organization, selectedYear, selectedMonth, nightStart, nightEnd);
+                    organization, selectedYear, selectedMonth, nightStart, nightEnd, payrollOptions, units);
+            }
+        }
+
+        if (viewModel.EmployeePayrolls.Any())
+        {
+            viewModel.BordroSummaries = CalculateBordroSummaries(
+                viewModel.EmployeePayrolls, employees, units, payrollOptions);
+            var puanMap = await GetPersonelPuanMapAsync(organization.Id);
+            viewModel.Bordro4AResults = _bordroCalculator.Calculate4A(viewModel.EmployeePayrolls, bordroOptions, selectedYear, selectedMonth, puanMap);
+            viewModel.Bordro4BResults = _bordroCalculator.Calculate4B(viewModel.EmployeePayrolls, bordroOptions, selectedYear, selectedMonth, puanMap);
+
+            if (calculate)
+            {
+                await SaveBordroResultsAsync(organization.Id, selectedYear, selectedMonth, viewModel.Bordro4AResults, viewModel.Bordro4BResults);
             }
         }
 
@@ -1819,30 +2075,40 @@ public class AppController : Controller
         List<Leave> leaves,
         Organization organization,
         int year, int month,
-        TimeOnly nightStart, TimeOnly nightEnd)
+        TimeOnly nightStart, TimeOnly nightEnd,
+        PayrollOptions payrollOptions,
+        List<Unit> units)
     {
         var payrolls = new List<EmployeePayroll>();
         var weekendDays = organization.WeekendDays.Split(',').Select(int.Parse).ToList();
+        var unitLookup = units.ToDictionary(u => u.Id, u => u);
 
         foreach (var employee in employees)
         {
             var employeeAttendances = attendances.Where(a => a.EmployeeId == employee.Id).ToList();
             var employeeLeaves = leaves.Where(l => l.EmployeeId == employee.Id).ToList();
+            var unit = GetEmployeeUnit(employee, unitLookup);
+            var isRiskGroup = GetDefaultRiskGroup(unit);
+            var leaveCounts = CountLeaveDays(employeeLeaves);
             
             var payroll = new EmployeePayroll
             {
                 Employee = employee,
-                ShiftDetails = new List<ShiftDetail>()
+                ShiftDetails = new List<ShiftDetail>(),
+                LeaveDays = leaveCounts.total,
+                AnnualLeaveDays = leaveCounts.annual,
+                SickLeaveDays = leaveCounts.sick
             };
 
             // Calculate required hours for employee (leaves reduce required hours)
-            payroll.RequiredHours = CalculateRequiredHours(employee, year, month, holidays, weekendDays, employeeLeaves);
+            payroll.RequiredHours = CalculateRequiredHours(employee, year, month, holidays, weekendDays, isRiskGroup, employeeLeaves);
 
             foreach (var att in employeeAttendances.OrderBy(a => a.Date))
             {
                 var holiday = holidays.FirstOrDefault(h => h.Date == att.Date);
                 var isWeekend = weekendDays.Contains((int)att.Date.DayOfWeek);
 
+                var detailIsIntensive = IsIntensiveCareByGroup(att.WorkGroupTypeId, att.IsRiskGroup, unit);
                 var detail = new ShiftDetail
                 {
                     Date = att.Date,
@@ -1853,7 +2119,8 @@ public class AppController : Controller
                     IsWeekend = isWeekend,
                     IsHoliday = holiday != null,
                     HolidayName = holiday?.Name,
-                    Note = att.Notes
+                    Note = att.Notes,
+                    IsIntensiveCare = detailIsIntensive
                 };
 
                 if (att.Type == AttendanceType.DayOff)
@@ -1873,13 +2140,36 @@ public class AppController : Controller
                             att.CheckOutToNextDay, nightStart, nightEnd, 0);
                         detail.NightHours = nightHours;
                         payroll.NightHours += nightHours;
+
+                        var ticketCount = CalculateTicketCount(att.CheckInTime.Value, att.CheckOutTime.Value, employee.HasDoubleTicketRight);
+                        payroll.TicketCount += ticketCount;
+                        if (ticketCount > 0)
+                            payroll.TransportationDays++;
                     }
 
-                    if (isWeekend)
-                        payroll.WeekendHours += att.WorkedHours.Value;
+                    var holidayHours = CalculateHolidayHoursForAttendance(att, holidays, year, month);
+                    detail.HolidayHours = holidayHours;
+                    payroll.HolidayHours += holidayHours;
 
-                    if (holiday != null)
-                        payroll.HolidayHours += att.WorkedHours.Value;
+                    var weekendHours = CalculateWeekendHoursForAttendance(att, weekendDays, holidays, year, month);
+                    detail.WeekendHours = weekendHours;
+                    payroll.WeekendHours += weekendHours;
+
+                    // Calculation segments for daily overtime
+                    var segments = GetAttendanceSegments(att)
+                        .Where(s => s.Date.Year == year && s.Date.Month == month)
+                        .ToList();
+                    var grossTotal = segments.Sum(s => s.GrossHours);
+                    var ratio = grossTotal > 0 ? att.WorkedHours.Value / grossTotal : 0;
+                    foreach (var segment in segments)
+                    {
+                        payroll.CalculationSegments.Add(new WorkSegment
+                        {
+                            Date = segment.Date,
+                            Hours = segment.GrossHours * ratio,
+                            IsIntensiveCare = detailIsIntensive
+                        });
+                    }
                 }
 
                 payroll.ShiftDetails.Add(detail);
@@ -1911,6 +2201,18 @@ public class AppController : Controller
             // Sort ShiftDetails by date
             payroll.ShiftDetails = payroll.ShiftDetails.OrderBy(d => d.Date).ToList();
 
+            var workedDayCount = payroll.CalculationSegments
+                .Where(s => s.Hours > 0)
+                .Select(s => s.Date)
+                .Distinct()
+                .Count();
+            if (workedDayCount > 0)
+                payroll.WorkedDays = workedDayCount;
+
+            payroll.IsIntensiveCare = payroll.ShiftDetails.Any(d => d.IsIntensiveCare);
+
+            FinalizePayrollTotals(payroll, employee, organization, holidays, weekendDays, isRiskGroup, employeeLeaves, payrollOptions);
+
             payrolls.Add(payroll);
         }
 
@@ -1928,31 +2230,40 @@ public class AppController : Controller
         List<Leave> leaves,
         Organization organization,
         int year, int month,
-        TimeOnly nightStart, TimeOnly nightEnd)
+        TimeOnly nightStart, TimeOnly nightEnd,
+        PayrollOptions payrollOptions,
+        List<Unit> units)
     {
         var payrolls = new List<EmployeePayroll>();
         var daysInMonth = DateTime.DaysInMonth(year, month);
         var weekendDays = organization.WeekendDays.Split(',').Select(int.Parse).ToList();
+        var unitLookup = units.ToDictionary(u => u.Id, u => u);
 
         foreach (var employee in employees)
         {
             var employeeShifts = shifts.Where(s => s.EmployeeId == employee.Id).ToList();
             var employeeLeaves = leaves.Where(l => l.EmployeeId == employee.Id).ToList();
             var prevMonthShift = previousMonthShifts.FirstOrDefault(s => s.EmployeeId == employee.Id);
+            var unit = GetEmployeeUnit(employee, unitLookup);
+            var isRiskGroup = GetDefaultRiskGroup(unit);
+            var leaveCounts = CountLeaveDays(employeeLeaves);
             
             var payroll = new EmployeePayroll
             {
                 Employee = employee,
-                ShiftDetails = new List<ShiftDetail>()
+                ShiftDetails = new List<ShiftDetail>(),
+                LeaveDays = leaveCounts.total,
+                AnnualLeaveDays = leaveCounts.annual,
+                SickLeaveDays = leaveCounts.sick
             };
 
             // Calculate required hours for employee (leaves reduce required hours)
-            payroll.RequiredHours = CalculateRequiredHours(employee, year, month, holidays, weekendDays, employeeLeaves);
+            payroll.RequiredHours = CalculateRequiredHours(employee, year, month, holidays, weekendDays, isRiskGroup, employeeLeaves);
 
             // Add hours from overnight shift from previous month (if split mode)
             if (prevMonthShift != null && !prevMonthShift.IsDayOff && prevMonthShift.OvernightHoursMode == 0)
             {
-                var spilledHours = CalculateHoursAfterMidnight(prevMonthShift);
+                var spilledHours = CalculateHoursAfterMidnight(prevMonthShift, employee);
                 var spilledNightHours = CalculateNightHoursAfterMidnight(prevMonthShift, nightStart, nightEnd);
                 payroll.TotalWorkedHours += spilledHours;
                 payroll.NightHours += spilledNightHours;
@@ -1964,6 +2275,7 @@ public class AppController : Controller
                 var holiday = holidays.FirstOrDefault(h => h.Date == shift.Date);
                 var isWeekend = weekendDays.Contains((int)shift.Date.DayOfWeek);
 
+                var detailIsIntensive = IsIntensiveCareByGroup(shift.WorkGroupTypeId, shift.IsRiskGroup, unit);
                 var detail = new ShiftDetail
                 {
                     Date = shift.Date,
@@ -1973,7 +2285,8 @@ public class AppController : Controller
                     IsDayOff = shift.IsDayOff,
                     IsWeekend = isWeekend,
                     IsHoliday = holiday != null,
-                    HolidayName = holiday?.Name
+                    HolidayName = holiday?.Name,
+                    IsIntensiveCare = detailIsIntensive
                 };
 
                 if (shift.IsDayOff)
@@ -1985,25 +2298,37 @@ public class AppController : Controller
                     payroll.WorkedDays++;
                     
                     // Calculate hours for this month (considering overnight mode)
-                    var hoursThisMonth = CalculateShiftHoursForMonth(shift, year, month);
+                    var hoursThisMonth = CalculateShiftHoursForMonth(shift, employee, year, month);
                     detail.TotalHours = hoursThisMonth;
                     payroll.TotalWorkedHours += hoursThisMonth;
 
                     // Calculate night hours with custom night time range
-                    var nightHours = CalculateNightHours(shift, nightStart, nightEnd, year, month);
+                    var nightHours = CalculateNightHours(shift, employee, nightStart, nightEnd, year, month);
                     detail.NightHours = nightHours;
                     payroll.NightHours += nightHours;
 
-                    // Weekend hours
-                    if (isWeekend)
-                    {
-                        payroll.WeekendHours += hoursThisMonth;
-                    }
+                    var ticketCount = CalculateTicketCount(shift.StartTime, shift.EndTime, employee.HasDoubleTicketRight);
+                    payroll.TicketCount += ticketCount;
+                    if (ticketCount > 0)
+                        payroll.TransportationDays++;
 
-                    // Holiday hours
-                    if (holiday != null)
+                    // Holiday hours (full/half-day logic)
+                    var holidayHours = CalculateHolidayHoursForShift(shift, employee, holidays, year, month);
+                    detail.HolidayHours = holidayHours;
+                    payroll.HolidayHours += holidayHours;
+
+                    var weekendHours = CalculateWeekendHoursForShift(shift, employee, weekendDays, holidays, year, month);
+                    detail.WeekendHours = weekendHours;
+                    payroll.WeekendHours += weekendHours;
+
+                    foreach (var segment in GetShiftNetSegmentsForMonth(shift, employee, year, month))
                     {
-                        payroll.HolidayHours += hoursThisMonth;
+                        payroll.CalculationSegments.Add(new WorkSegment
+                        {
+                            Date = segment.Date,
+                            Hours = segment.Hours,
+                            IsIntensiveCare = detailIsIntensive
+                        });
                     }
                 }
 
@@ -2035,6 +2360,18 @@ public class AppController : Controller
             
             // Sort ShiftDetails by date
             payroll.ShiftDetails = payroll.ShiftDetails.OrderBy(d => d.Date).ToList();
+
+            var workedDayCount = payroll.CalculationSegments
+                .Where(s => s.Hours > 0)
+                .Select(s => s.Date)
+                .Distinct()
+                .Count();
+            if (workedDayCount > 0)
+                payroll.WorkedDays = workedDayCount;
+
+            payroll.IsIntensiveCare = payroll.ShiftDetails.Any(d => d.IsIntensiveCare);
+
+            FinalizePayrollTotals(payroll, employee, organization, holidays, weekendDays, isRiskGroup, employeeLeaves, payrollOptions);
 
             payrolls.Add(payroll);
         }
@@ -2091,7 +2428,7 @@ public class AppController : Controller
     /// Calculate required work hours for an employee
     /// Leave on weekends only reduces hours if the employee actually works weekends
     /// </summary>
-    private decimal CalculateRequiredHours(Employee employee, int year, int month, List<Holiday> holidays, List<int> weekendDays, List<Leave>? leaves = null)
+    private decimal CalculateRequiredHours(Employee employee, int year, int month, List<Holiday> holidays, List<int> weekendDays, bool isRiskGroup, List<Leave>? leaves = null)
     {
         var daysInMonth = DateTime.DaysInMonth(year, month);
         decimal requiredHours = 0;
@@ -2143,13 +2480,19 @@ public class AppController : Controller
                             requiredHours += employee.SaturdayWorkHours.Value;
                         // Sunday leave doesn't affect (doesn't work Sundays)
                         break;
+                    default:
+                        if (isSaturday && employee.PositionType?.Equals("4D", StringComparison.OrdinalIgnoreCase) == true)
+                            requiredHours += 5;
+                        break;
                 }
             }
             else
             {
                 // Weekday - leave reduces required hours
                 if (!hasLeaveOnThisDay)
-                    requiredHours += employee.DailyWorkHours;
+                {
+                    requiredHours += isRiskGroup ? 7 : employee.DailyWorkHours;
+                }
             }
         }
 
@@ -2165,6 +2508,8 @@ public class AppController : Controller
     {
         var organization = await GetOrCreateOrganizationAsync();
         var employee = await _context.Employees
+            .Include(e => e.Unit)
+            .ThenInclude(u => u.UnitType)
             .FirstOrDefaultAsync(e => e.Id == employeeId && e.OrganizationId == organization.Id);
             
         if (employee == null)
@@ -2214,12 +2559,13 @@ public class AppController : Controller
         
         if (prevMonthShift != null)
         {
-            var spilledHours = CalculateHoursAfterMidnight(prevMonthShift);
+            var spilledHours = CalculateHoursAfterMidnight(prevMonthShift, employee);
             workedHours += spilledHours;
         }
         
         // Calculate required hours (considers leaves, holidays, weekend mode, day offs)
-        var requiredHours = CalculateRequiredHours(employee, year, month, holidays, weekendDays, leaves);
+        var isRiskGroup = GetDefaultRiskGroup(employee.Unit);
+        var requiredHours = CalculateRequiredHours(employee, year, month, holidays, weekendDays, isRiskGroup, leaves);
         
         // Subtract day off days from required hours
         requiredHours -= dayOffCount * employee.DailyWorkHours;
@@ -2235,25 +2581,852 @@ public class AppController : Controller
         };
     }
 
+    private decimal CalculateRequiredHoursForDate(Employee employee, DateOnly date, List<Holiday> holidays, List<int> weekendDays, bool isRiskGroup, List<Leave>? leaves = null)
+    {
+        // Skip if employee has leave on this date
+        if (leaves != null && leaves.Any(l => l.Date == date))
+            return 0;
+
+        var dayOfWeek = date.DayOfWeek;
+        var isSaturday = dayOfWeek == DayOfWeek.Saturday;
+        var isWeekend = weekendDays.Contains((int)dayOfWeek);
+        var holiday = holidays.FirstOrDefault(h => h.Date == date);
+
+        // Full holiday
+        if (holiday != null && !holiday.IsHalfDay)
+            return 0;
+
+        // Half-day holiday
+        if (holiday != null && holiday.IsHalfDay)
+        {
+            if (!isWeekend || employee.WeekendWorkMode > 0)
+            {
+                return holiday.HalfDayWorkHours ?? 4;
+            }
+            return 0;
+        }
+
+        if (isWeekend)
+        {
+            switch (employee.WeekendWorkMode)
+            {
+                case 1: // Works both days
+                    return employee.DailyWorkHours;
+                case 2: // Only Saturday
+                    return isSaturday ? employee.DailyWorkHours : 0;
+                case 3: // Saturday specific hours
+                    return isSaturday && employee.SaturdayWorkHours.HasValue
+                        ? employee.SaturdayWorkHours.Value
+                        : 0;
+                default:
+                    if (isSaturday && employee.PositionType?.Equals("4D", StringComparison.OrdinalIgnoreCase) == true)
+                        return 5;
+                    return 0;
+            }
+        }
+
+        if (isRiskGroup)
+            return 7;
+
+        return employee.DailyWorkHours;
+    }
+
+    private (decimal total, decimal normal, decimal intensive) CalculateDailyOvertimeHours(
+        Employee employee,
+        List<ShiftDetail> shiftDetails,
+        List<WorkSegment> calculationSegments,
+        List<Holiday> holidays,
+        List<int> weekendDays,
+        bool isRiskGroup,
+        List<Leave>? leaves)
+    {
+        decimal totalOvertime = 0;
+        decimal normalOvertime = 0;
+        decimal intensiveOvertime = 0;
+
+        var grouped = (calculationSegments.Any()
+                ? calculationSegments.Where(s => s.Hours > 0)
+                    .Select(s => new { s.Date, s.Hours, s.IsIntensiveCare })
+                : shiftDetails.Where(d => d.TotalHours > 0)
+                    .Select(d => new { d.Date, Hours = d.TotalHours, d.IsIntensiveCare }))
+            .GroupBy(d => d.Date);
+
+        foreach (var group in grouped)
+        {
+            var totalHours = group.Sum(d => d.Hours);
+            var required = CalculateRequiredHoursForDate(employee, group.Key, holidays, weekendDays, isRiskGroup, leaves);
+            var overtimeForDay = Math.Max(0, totalHours - required);
+
+            foreach (var detail in group)
+            {
+                var share = totalHours > 0 ? detail.Hours / totalHours : 0;
+                var detailOvertime = overtimeForDay * share;
+
+                totalOvertime += detailOvertime;
+                if (detail.IsIntensiveCare)
+                {
+                    intensiveOvertime += detailOvertime;
+                }
+                else
+                {
+                    normalOvertime += detailOvertime;
+                }
+            }
+        }
+
+        return (totalOvertime, normalOvertime, intensiveOvertime);
+    }
+
+    private void FinalizePayrollTotals(
+        EmployeePayroll payroll,
+        Employee employee,
+        Organization organization,
+        List<Holiday> holidays,
+        List<int> weekendDays,
+        bool isRiskGroup,
+        List<Leave> employeeLeaves,
+        PayrollOptions payrollOptions)
+    {
+        decimal rawOvertime;
+        decimal normalOvertime;
+        decimal intensiveOvertime;
+
+        if (organization.OvertimeCalcMode == OvertimeCalcMode.Daily)
+        {
+            var overtime = CalculateDailyOvertimeHours(employee, payroll.ShiftDetails, payroll.CalculationSegments, holidays, weekendDays, isRiskGroup, employeeLeaves);
+            rawOvertime = overtime.total;
+            normalOvertime = overtime.normal;
+            intensiveOvertime = overtime.intensive;
+        }
+        else
+        {
+            rawOvertime = Math.Max(0, payroll.TotalWorkedHours - payroll.RequiredHours);
+            if (payroll.IsIntensiveCare)
+            {
+                normalOvertime = 0;
+                intensiveOvertime = rawOvertime;
+            }
+            else
+            {
+                normalOvertime = rawOvertime;
+                intensiveOvertime = 0;
+            }
+        }
+
+        payroll.RawOvertimeHours = rawOvertime;
+        payroll.NormalOvertimeHours = normalOvertime;
+        payroll.IntensiveOvertimeHours = intensiveOvertime;
+
+        payroll.NormalHolidayHours = payroll.ShiftDetails.Where(d => !d.IsIntensiveCare).Sum(d => d.HolidayHours);
+        payroll.IntensiveHolidayHours = payroll.ShiftDetails.Where(d => d.IsIntensiveCare).Sum(d => d.HolidayHours);
+
+        // Holiday vs overtime adjustment (bayram farki logic)
+        var holidayWork = payroll.HolidayHours;
+        payroll.HolidayOvertimeHours = Math.Min(rawOvertime, holidayWork);
+        payroll.HolidayDifferenceHours = Math.Max(0, holidayWork - rawOvertime);
+
+        if (holidayWork > 0)
+        {
+            var newTotalOvertime = Math.Max(0, rawOvertime - holidayWork);
+            if (rawOvertime > 0)
+            {
+                var normalRatio = normalOvertime / rawOvertime;
+                var intensiveRatio = intensiveOvertime / rawOvertime;
+                normalOvertime = newTotalOvertime * normalRatio;
+                intensiveOvertime = newTotalOvertime * intensiveRatio;
+            }
+            else
+            {
+                normalOvertime = 0;
+                intensiveOvertime = 0;
+            }
+        }
+
+        if (payrollOptions.OvertimeLimitHours > 0)
+        {
+            (normalOvertime, intensiveOvertime) = LimitOvertimeHours(normalOvertime, intensiveOvertime, payrollOptions.OvertimeLimitHours);
+        }
+
+        payroll.NormalOvertimeHours = normalOvertime;
+        payroll.IntensiveOvertimeHours = intensiveOvertime;
+        payroll.OvertimeHours = normalOvertime + intensiveOvertime;
+    }
+
+    private List<BordroSummary> CalculateBordroSummaries(
+        List<EmployeePayroll> payrolls,
+        List<Employee> employees,
+        List<Unit> units,
+        PayrollOptions payrollOptions)
+    {
+        var unitLookup = units.ToDictionary(u => u.Id, u => u);
+
+        return payrolls.Select(payroll =>
+        {
+            var employee = payroll.Employee;
+            var unit = employee.UnitId.HasValue && unitLookup.TryGetValue(employee.UnitId.Value, out var u) ? u : null;
+            var coefficient = ResolveUnitCoefficient(unit);
+
+            var basePay = payroll.TotalWorkedHours * payrollOptions.BaseHourlyRate * coefficient;
+            var overtimePremium = payroll.OvertimeHours * payrollOptions.BaseHourlyRate * Math.Max(0, payrollOptions.OvertimeCoefficient - 1) * coefficient;
+            var holidayPremium = payroll.HolidayHours * payrollOptions.BaseHourlyRate * Math.Max(0, payrollOptions.HolidayCoefficient - 1) * coefficient;
+            var weekendPremium = payroll.WeekendHours * payrollOptions.BaseHourlyRate * Math.Max(0, payrollOptions.WeekendCoefficient - 1) * coefficient;
+            var nightPremium = payroll.NightHours * payrollOptions.BaseHourlyRate * Math.Max(0, payrollOptions.NightCoefficient - 1) * coefficient;
+
+            return new BordroSummary
+            {
+                EmployeeId = employee.Id,
+                EmployeeName = employee.FullName,
+                EmployeeTitle = employee.Title,
+                PositionType = employee.PositionType,
+                UnitName = unit?.Name,
+                UnitCoefficient = coefficient,
+                BaseHourlyRate = payrollOptions.BaseHourlyRate,
+                TotalHours = payroll.TotalWorkedHours,
+                OvertimeHours = payroll.OvertimeHours,
+                HolidayHours = payroll.HolidayHours,
+                WeekendHours = payroll.WeekendHours,
+                NightHours = payroll.NightHours,
+                BasePay = basePay,
+                OvertimePremium = overtimePremium,
+                HolidayPremium = holidayPremium,
+                WeekendPremium = weekendPremium,
+                NightPremium = nightPremium,
+                GrossPay = basePay + overtimePremium + holidayPremium + weekendPremium + nightPremium
+            };
+        }).OrderBy(s => s.EmployeeName).ToList();
+    }
+
+    private static decimal ResolveUnitCoefficient(Unit? unit)
+    {
+        if (unit == null)
+            return 1.0m;
+
+        if (unit.Coefficient > 0 && unit.Coefficient != 1.0m)
+            return unit.Coefficient;
+
+        if (unit.UnitType?.DefaultCoefficient > 0)
+            return unit.UnitType.DefaultCoefficient;
+
+        return unit.Coefficient > 0 ? unit.Coefficient : 1.0m;
+    }
+
+    private async Task<Dictionary<int, decimal>> GetUnitCoefficientMapAsync(int organizationId)
+    {
+        var today = DateTime.SpecifyKind(DateTime.UtcNow.Date, DateTimeKind.Unspecified);
+        var sabitler = await _context.BordroSabitleri
+            .Where(s => s.OrganizationId == organizationId && s.IsActive)
+            .Where(s => s.ValidFrom <= today && (s.ValidTo == null || s.ValidTo >= today))
+            .ToListAsync();
+
+        sabitler = sabitler
+            .Where(s => IsUnitCoefficientKey(s.Key))
+            .ToList();
+
+        var map = new Dictionary<int, decimal>();
+        foreach (var sabit in sabitler)
+        {
+            var unitIds = ParseUnitIds(sabit.WorkingUnitIds);
+            if (unitIds.Count == 0)
+            {
+                map[0] = sabit.Value;
+                continue;
+            }
+
+            foreach (var unitId in unitIds)
+            {
+                map[unitId] = sabit.Value;
+            }
+        }
+
+        return map;
+    }
+
+    private static void ApplyUnitCoefficients(List<Unit> units, Dictionary<int, decimal> map)
+    {
+        foreach (var unit in units)
+        {
+            if (map.TryGetValue(unit.Id, out var coefficient))
+            {
+                unit.Coefficient = coefficient;
+            }
+            else if (map.TryGetValue(0, out var defaultCoefficient))
+            {
+                unit.Coefficient = defaultCoefficient;
+            }
+            else if (unit.UnitType?.DefaultCoefficient > 0)
+            {
+                unit.Coefficient = unit.UnitType.DefaultCoefficient;
+            }
+        }
+    }
+
+    private static List<int> ParseUnitIds(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return new List<int>();
+
+        return value
+            .Replace(';', ',')
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(id => int.TryParse(id, out var parsed) ? parsed : 0)
+            .Where(id => id > 0)
+            .Distinct()
+            .ToList();
+    }
+
+    private static bool IsUnitCoefficientKey(string key)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+            return false;
+
+        return key.Replace(" ", string.Empty)
+            .Contains("BIRIM_KATSAYI", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private PayrollOptions GetPayrollOptions()
+    {
+        return _configuration.GetSection("Payroll").Get<PayrollOptions>() ?? new PayrollOptions();
+    }
+
+    private async Task<BordroOptions> GetBordroOptionsAsync(int organizationId, string? cadreType = null)
+    {
+        var options = _configuration.GetSection("Bordro").Get<BordroOptions>() ?? new BordroOptions();
+        var today = DateTime.SpecifyKind(DateTime.UtcNow.Date, DateTimeKind.Unspecified);
+
+        var sabitler = await _context.BordroSabitleri
+            .Where(s => s.OrganizationId == organizationId
+                        && s.IsActive
+                        && s.ValidFrom <= today
+                        && (s.ValidTo == null || s.ValidTo >= today)
+                        && (string.IsNullOrEmpty(s.CadreType) || s.CadreType == "GENEL" || s.CadreType == cadreType))
+            .OrderByDescending(s => s.ValidFrom)
+            .ToListAsync();
+
+        var map = sabitler
+            .GroupBy(s => s.Key)
+            .ToDictionary(g => g.Key, g => g.First().Value);
+
+        if (map.TryGetValue("MEMUR_MAAS_KATSAYISI", out var memur)) options.MemurMaasKatsayisi = memur;
+        if (map.TryGetValue("YOGUN_BAKIM_CARPANI", out var yb)) options.YogunBakimCarpani = yb;
+        if (map.TryGetValue("BAYRAM_NOBETI_CARPANI", out var nb)) options.NormalBayramCarpan = nb;
+        if (map.TryGetValue("BAYRAM_NOBETI_YOGUN_BAKIM_CARPANI", out var ybBay)) options.YogunBayramCarpan = ybBay;
+        if (map.TryGetValue("BAYRAM_FARKI_CARPANI", out var fark)) options.BayramFarkiCarpan = fark;
+        if (map.TryGetValue("DAMGA_VERGISI_ORANI", out var damga)) options.DamgaVergisiOrani = damga;
+        if (map.TryGetValue("MALULIYET_YASLILIK_EMEKLILIK_DEV_ORANI", out var myeDev)) options.SgkMaluliyetDevOrani = myeDev;
+        if (map.TryGetValue("GSS_DEV_ORANI", out var gssDev)) options.SgkGssDevOrani = gssDev;
+        if (map.TryGetValue("KISA_VAD_SIG_KOL_PRIM_ORANI", out var kisaVad)) options.SgkIsKazasiOrani = kisaVad;
+        if (map.TryGetValue("MALULIYET_YASLILIK_EMEKLILIK_KISI_ORANI", out var myeKisi)) options.SgkMaluliyetKisiOrani = myeKisi;
+        if (map.TryGetValue("GSS_KISI_ORANI", out var gssKisi)) options.SgkGssKisiOrani = gssKisi;
+
+        return options;
+    }
+
+    private async Task SaveBordroResultsAsync(
+        int organizationId,
+        int year,
+        int month,
+        List<Bordro4AResult> results4A,
+        List<Bordro4BResult> results4B)
+    {
+        await _context.BordroResults4A
+            .Where(r => r.OrganizationId == organizationId && r.Year == year && r.Month == month)
+            .ExecuteDeleteAsync();
+
+        await _context.BordroResults4B
+            .Where(r => r.OrganizationId == organizationId && r.Year == year && r.Month == month)
+            .ExecuteDeleteAsync();
+
+        foreach (var item in results4A)
+        {
+            _context.BordroResults4A.Add(new BordroResult4A
+            {
+                OrganizationId = organizationId,
+                EmployeeId = item.EmployeeId,
+                Year = item.Year,
+                Month = item.Month,
+                NobetPuani = item.NobetPuani,
+                SaatUcreti = item.SaatUcreti,
+                YogunBakimVar = item.YogunBakimVar,
+                NormalServisNobetSaati = item.NormalServisNobetSaati,
+                YogunBakimNobetSaati = item.YogunBakimNobetSaati,
+                NormalServisBayramSaati = item.NormalServisBayramSaati,
+                YogunBakimBayramSaati = item.YogunBakimBayramSaati,
+                BayramFarkiNobetSaati = item.BayramFarkiNobetSaati,
+                NormalServisNobetToplamTutar = item.NormalServisNobetToplamTutar,
+                YogunBakimNobetToplamTutar = item.YogunBakimNobetToplamTutar,
+                NormalServisBayramToplamTutar = item.NormalServisBayramToplamTutar,
+                YogunBakimBayramToplamTutar = item.YogunBakimBayramToplamTutar,
+                BayramFarkiToplamTutar = item.BayramFarkiToplamTutar,
+                GenelToplamTutar = item.GenelToplamTutar,
+                DamgaVergisi = item.DamgaVergisi,
+                EleGecenToplam = item.EleGecenToplam
+            });
+        }
+
+        foreach (var item in results4B)
+        {
+            _context.BordroResults4B.Add(new BordroResult4B
+            {
+                OrganizationId = organizationId,
+                EmployeeId = item.EmployeeId,
+                Year = item.Year,
+                Month = item.Month,
+                NobetPuani = item.NobetPuani,
+                SaatUcreti = item.SaatUcreti,
+                YogunBakimVar = item.YogunBakimVar,
+                NormalServisNobetSaati = item.NormalServisNobetSaati,
+                YogunBakimNobetSaati = item.YogunBakimNobetSaati,
+                NormalServisBayramSaati = item.NormalServisBayramSaati,
+                YogunBakimBayramSaati = item.YogunBakimBayramSaati,
+                BayramFarkiNobetSaati = item.BayramFarkiNobetSaati,
+                NormalServisNobetToplamTutar = item.NormalServisNobetToplamTutar,
+                YogunBakimNobetToplamTutar = item.YogunBakimNobetToplamTutar,
+                NormalServisBayramToplamTutar = item.NormalServisBayramToplamTutar,
+                YogunBakimBayramToplamTutar = item.YogunBakimBayramToplamTutar,
+                BayramFarkiToplamTutar = item.BayramFarkiToplamTutar,
+                GenelToplamTutarPek = item.GenelToplamTutarPek,
+                MaluliyetYaslilikEmeklilikDev = item.MaluliyetYaslilikEmeklilikDev,
+                GssDev = item.GssDev,
+                KisaVadSigKolPrim = item.KisaVadSigKolPrim,
+                GelirToplami = item.GelirToplami,
+                DamgaVergisi = item.DamgaVergisi,
+                MaluliyetYaslilikEmeklilikDevKesinti = item.MaluliyetYaslilikEmeklilikDevKesinti,
+                GssDevKesinti = item.GssDevKesinti,
+                KisaVadSigKolPrimKesinti = item.KisaVadSigKolPrimKesinti,
+                MaluliyetYaslilikEmeklilikKisi = item.MaluliyetYaslilikEmeklilikKisi,
+                GssKisi = item.GssKisi,
+                KesintiToplami = item.KesintiToplami,
+                EleGecenToplam = item.EleGecenToplam
+            });
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
+    private async Task<Dictionary<string, int>> GetPersonelPuanMapAsync(int organizationId)
+    {
+        return await _context.PersonelNobetPuan
+            .Where(p => p.OrganizationId == organizationId && p.IsActive)
+            .Where(p => !string.IsNullOrEmpty(p.TcKimlik))
+            .ToDictionaryAsync(p => p.TcKimlik, p => p.YPuan);
+    }
+
+    private static Unit? GetEmployeeUnit(Employee employee, Dictionary<int, Unit> unitLookup)
+    {
+        if (!employee.UnitId.HasValue)
+            return null;
+
+        return unitLookup.TryGetValue(employee.UnitId.Value, out var unit) ? unit : null;
+    }
+
+    private static bool IsIntensiveCareUnit(Unit? unit)
+    {
+        if (unit == null)
+            return false;
+
+        var unitTypeName = unit.UnitType?.Name ?? string.Empty;
+        if (unitTypeName.Contains("yoğun", StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (unitTypeName.Contains("radyasyon", StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return unit.Coefficient >= 1.5m;
+    }
+
+    private static int GetDefaultWorkGroupTypeId(Unit? unit)
+    {
+        if (unit?.UnitType?.Name?.Contains("yoğun", StringComparison.OrdinalIgnoreCase) == true)
+            return (int)WorkGroupType.IntensiveCare;
+
+        return (int)WorkGroupType.Normal;
+    }
+
+    private static bool GetDefaultRiskGroup(Unit? unit)
+    {
+        return unit?.UnitType?.Name?.Contains("radyasyon", StringComparison.OrdinalIgnoreCase) == true;
+    }
+
+    private static int ResolveWorkGroupTypeId(int? requestedTypeId, ShiftTemplate? template, Unit? unit)
+    {
+        if (requestedTypeId.HasValue)
+            return requestedTypeId.Value;
+
+        if (template?.WorkGroupTypeId.HasValue == true)
+            return template.WorkGroupTypeId.Value;
+
+        return GetDefaultWorkGroupTypeId(unit);
+    }
+
+    private static bool ResolveRiskGroup(bool? requestedRisk, ShiftTemplate? template, Unit? unit)
+    {
+        if (requestedRisk.HasValue)
+            return requestedRisk.Value;
+
+        if (template != null)
+            return template.IsRiskGroup;
+
+        return GetDefaultRiskGroup(unit);
+    }
+
+    private static bool IsIntensiveCareByGroup(int? workGroupTypeId, bool isRiskGroup, Unit? unit)
+    {
+        if (workGroupTypeId.HasValue)
+            return workGroupTypeId.Value == (int)WorkGroupType.IntensiveCare || isRiskGroup;
+
+        return isRiskGroup || IsIntensiveCareUnit(unit);
+    }
+
+    private static decimal RoundToHalfHour(decimal hours)
+    {
+        return Math.Round(hours * 2, MidpointRounding.AwayFromZero) / 2m;
+    }
+
+    private static (int total, int annual, int sick) CountLeaveDays(List<Leave> leaves)
+    {
+        var total = leaves.Count;
+        var annual = leaves.Count(l =>
+            string.Equals(l.LeaveType?.Category, "annual", StringComparison.OrdinalIgnoreCase) ||
+            (l.LeaveType?.Code?.StartsWith("Y", StringComparison.OrdinalIgnoreCase) == true));
+        var sick = leaves.Count(l =>
+            string.Equals(l.LeaveType?.Category, "health", StringComparison.OrdinalIgnoreCase) ||
+            (l.LeaveType?.Code?.StartsWith("H", StringComparison.OrdinalIgnoreCase) == true));
+
+        return (total, annual, sick);
+    }
+
+    private static int CalculateTicketCount(TimeOnly start, TimeOnly end, bool hasDoubleTicketRight)
+    {
+        int ticketCount = 0;
+
+        if (start != new TimeOnly(8, 0))
+        {
+            ticketCount++;
+        }
+
+        var endTime = end.ToTimeSpan();
+        if (endTime < TimeSpan.FromHours(16.5) || endTime > TimeSpan.FromHours(17))
+        {
+            ticketCount++;
+        }
+
+        if (hasDoubleTicketRight)
+        {
+            ticketCount += ticketCount;
+            if (start == new TimeOnly(8, 0) && endTime >= TimeSpan.FromHours(16.5) && endTime <= TimeSpan.FromHours(17))
+            {
+                ticketCount = Math.Max(2, ticketCount);
+            }
+        }
+
+        return ticketCount;
+    }
+
+    private decimal CalculateHolidayHoursForShift(Shift shift, Employee employee, List<Holiday> holidays, int year, int month)
+    {
+        if (shift.IsDayOff)
+            return 0;
+
+        var breakMinutes = 0;
+        var segments = GetShiftDaySegments(shift);
+        if (shift.SpansNextDay && shift.OvernightHoursMode == 0)
+        {
+            segments = segments.Where(s => s.Date.Year == year && s.Date.Month == month).ToList();
+        }
+        var totalGross = segments.Sum(s => s.GrossHours);
+        decimal holidayHours = 0;
+
+        foreach (var segment in segments)
+        {
+            var holiday = holidays.FirstOrDefault(h => h.Date == segment.Date);
+            if (holiday == null)
+                continue;
+
+            if (!holiday.IsHalfDay)
+            {
+                if (totalGross > 0 && breakMinutes > 0)
+                {
+                    var proportionalBreak = (breakMinutes / 60m) * (segment.GrossHours / totalGross);
+                    holidayHours += Math.Max(0, segment.GrossHours - proportionalBreak);
+                }
+                else
+                {
+                    holidayHours += segment.GrossHours;
+                }
+            }
+            else
+            {
+                holidayHours += CalculateHoursAfterThreshold(segment.StartMinutes, segment.EndMinutes, 13 * 60);
+            }
+        }
+
+        return Math.Max(0, holidayHours);
+    }
+
+    private decimal CalculateHolidayHoursForAttendance(TimeAttendance attendance, List<Holiday> holidays, int year, int month)
+    {
+        if (!attendance.WorkedHours.HasValue || attendance.WorkedHours.Value <= 0)
+            return 0;
+
+        if (!attendance.CheckInTime.HasValue || !attendance.CheckOutTime.HasValue)
+        {
+            var holidayFallback = holidays.FirstOrDefault(h => h.Date == attendance.Date);
+            if (holidayFallback == null)
+                return 0;
+
+            if (holidayFallback.IsHalfDay)
+                return 0;
+
+            return attendance.WorkedHours.Value;
+        }
+
+        var segments = GetAttendanceSegments(attendance)
+            .Where(s => s.Date.Year == year && s.Date.Month == month)
+            .ToList();
+        var grossTotal = segments.Sum(s => s.GrossHours);
+        var ratio = grossTotal > 0 ? attendance.WorkedHours.Value / grossTotal : 0;
+        decimal holidayHours = 0;
+
+        foreach (var segment in segments)
+        {
+            var holiday = holidays.FirstOrDefault(h => h.Date == segment.Date);
+            if (holiday == null)
+                continue;
+
+            if (!holiday.IsHalfDay)
+            {
+                holidayHours += segment.GrossHours * ratio;
+            }
+            else
+            {
+                holidayHours += CalculateHoursAfterThreshold(segment.StartMinutes, segment.EndMinutes, 13 * 60) * ratio;
+            }
+        }
+
+        return Math.Max(0, holidayHours);
+    }
+
+    private decimal CalculateWeekendHoursForShift(Shift shift, Employee employee, List<int> weekendDays, List<Holiday> holidays, int year, int month)
+    {
+        if (shift.IsDayOff)
+            return 0;
+
+        var isWeekend = weekendDays.Contains((int)shift.Date.DayOfWeek);
+        var isHoliday = holidays.Any(h => h.Date == shift.Date);
+
+        if (!isWeekend || isHoliday)
+            return 0;
+
+        return CalculateShiftHoursForMonth(shift, employee, year, month);
+    }
+
+    private decimal CalculateWeekendHoursForAttendance(TimeAttendance attendance, List<int> weekendDays, List<Holiday> holidays, int year, int month)
+    {
+        if (!attendance.WorkedHours.HasValue || attendance.WorkedHours.Value <= 0)
+            return 0;
+
+        var segments = GetAttendanceSegments(attendance)
+            .Where(s => s.Date.Year == year && s.Date.Month == month)
+            .ToList();
+        var grossTotal = segments.Sum(s => s.GrossHours);
+        var ratio = grossTotal > 0 ? attendance.WorkedHours.Value / grossTotal : 0;
+        decimal weekendHours = 0;
+
+        foreach (var segment in segments)
+        {
+            if (!weekendDays.Contains((int)segment.Date.DayOfWeek))
+                continue;
+
+            if (holidays.Any(h => h.Date == segment.Date))
+                continue;
+
+            weekendHours += segment.GrossHours * ratio;
+        }
+
+        return Math.Max(0, weekendHours);
+    }
+
+    private decimal CalculateHoursAfterThreshold(int startMinutes, int endMinutes, int thresholdMinutes)
+    {
+        if (endMinutes <= thresholdMinutes)
+            return 0;
+
+        var effectiveStart = Math.Max(startMinutes, thresholdMinutes);
+        return Math.Max(0, (endMinutes - effectiveStart) / 60m);
+    }
+
+    private int GetEffectiveBreakMinutes(Shift shift, Employee employee)
+    {
+        var grossHours = GetShiftGrossMinutes(shift) / 60m;
+        var is24HourShift = grossHours >= 23.5m;
+        var is4D = employee.PositionType?.Equals("4D", StringComparison.OrdinalIgnoreCase) == true;
+
+        if (is24HourShift && !is4D)
+            return 0;
+
+        return shift.BreakMinutes;
+    }
+
+    private static decimal GetShiftGrossMinutes(Shift shift)
+    {
+        var startMinutes = shift.StartTime.Hour * 60 + shift.StartTime.Minute;
+        var endMinutes = shift.EndTime.Hour * 60 + shift.EndTime.Minute;
+
+        if (shift.SpansNextDay)
+            return (24 * 60 - startMinutes) + endMinutes;
+
+        return Math.Max(0, endMinutes - startMinutes);
+    }
+
+    private static decimal CalculateNetShiftHours(Shift shift, int breakMinutes)
+    {
+        var grossMinutes = GetShiftGrossMinutes(shift);
+        var netMinutes = Math.Max(0, grossMinutes - breakMinutes);
+        return netMinutes / 60m;
+    }
+
+    private List<ShiftDaySegment> GetShiftDaySegments(Shift shift)
+    {
+        var segments = new List<ShiftDaySegment>();
+        if (!shift.SpansNextDay)
+        {
+            var grossHours = GetShiftGrossMinutes(shift) / 60m;
+            var startMinutesLocal = shift.StartTime.Hour * 60 + shift.StartTime.Minute;
+            var endMinutesLocal = shift.EndTime.Hour * 60 + shift.EndTime.Minute;
+            segments.Add(new ShiftDaySegment(shift.Date, startMinutesLocal, endMinutesLocal, grossHours, true));
+            return segments;
+        }
+
+        var startMinutes = shift.StartTime.Hour * 60 + shift.StartTime.Minute;
+        var dayOneMinutes = 1440 - startMinutes;
+        var dayTwoMinutes = shift.EndTime.Hour * 60 + shift.EndTime.Minute;
+
+        segments.Add(new ShiftDaySegment(
+            shift.Date,
+            shift.StartTime.Hour * 60 + shift.StartTime.Minute,
+            1440,
+            Math.Max(0, dayOneMinutes / 60m),
+            true));
+
+        segments.Add(new ShiftDaySegment(
+            shift.Date.AddDays(1),
+            0,
+            shift.EndTime.Hour * 60 + shift.EndTime.Minute,
+            Math.Max(0, dayTwoMinutes / 60m),
+            false));
+
+        return segments;
+    }
+
+    private List<WorkSegment> GetShiftNetSegmentsForMonth(Shift shift, Employee employee, int year, int month)
+    {
+        var results = new List<WorkSegment>();
+        if (shift.IsDayOff)
+            return results;
+
+        var breakMinutes = GetEffectiveBreakMinutes(shift, employee);
+        var segments = GetShiftDaySegments(shift);
+
+        if (!(shift.SpansNextDay && shift.OvernightHoursMode == 1))
+        {
+            segments = segments.Where(s => s.Date.Year == year && s.Date.Month == month).ToList();
+        }
+
+        foreach (var segment in segments)
+        {
+            var netHours = segment.GrossHours;
+            if (segment.IsFirstDay && breakMinutes > 0)
+            {
+                netHours = Math.Max(0, netHours - breakMinutes / 60m);
+            }
+
+            results.Add(new WorkSegment
+            {
+                Date = segment.Date,
+                Hours = netHours
+            });
+        }
+
+        return results;
+    }
+
+    private List<ShiftDaySegment> GetAttendanceSegments(TimeAttendance attendance)
+    {
+        var segments = new List<ShiftDaySegment>();
+        if (!attendance.CheckInTime.HasValue || !attendance.CheckOutTime.HasValue)
+            return segments;
+
+        if (!attendance.CheckOutToNextDay)
+        {
+            var start = attendance.CheckInTime.Value;
+            var end = attendance.CheckOutTime.Value;
+            var startMinutes = start.Hour * 60 + start.Minute;
+            var endMinutes = end.Hour * 60 + end.Minute;
+            var gross = Math.Max(0, endMinutes - startMinutes) / 60m;
+            segments.Add(new ShiftDaySegment(attendance.Date, startMinutes, endMinutes, gross, true));
+            return segments;
+        }
+
+        var dayOneMinutes = 1440 - (attendance.CheckInTime.Value.Hour * 60 + attendance.CheckInTime.Value.Minute);
+        var dayTwoMinutes = attendance.CheckOutTime.Value.Hour * 60 + attendance.CheckOutTime.Value.Minute;
+
+        segments.Add(new ShiftDaySegment(
+            attendance.Date,
+            attendance.CheckInTime.Value.Hour * 60 + attendance.CheckInTime.Value.Minute,
+            1440,
+            Math.Max(0, dayOneMinutes / 60m),
+            true));
+
+        segments.Add(new ShiftDaySegment(
+            attendance.Date.AddDays(1),
+            0,
+            attendance.CheckOutTime.Value.Hour * 60 + attendance.CheckOutTime.Value.Minute,
+            Math.Max(0, dayTwoMinutes / 60m),
+            false));
+
+        return segments;
+    }
+
+    private static (decimal normal, decimal intensive) LimitOvertimeHours(decimal normal, decimal intensive, decimal maxHours)
+    {
+        var total = normal + intensive;
+        if (total <= maxHours)
+            return (normal, intensive);
+
+        if (intensive >= maxHours)
+            return (0, maxHours);
+
+        var remaining = Math.Max(0, maxHours - intensive);
+        return (remaining, intensive);
+    }
+
+    private sealed record ShiftDaySegment(DateOnly Date, int StartMinutes, int EndMinutes, decimal GrossHours, bool IsFirstDay);
+
     /// <summary>
     /// Calculate night hours with custom night time range
     /// </summary>
-    private decimal CalculateNightHours(Shift shift, TimeOnly nightStart, TimeOnly nightEnd, int year, int month)
+    private decimal CalculateNightHours(Shift shift, Employee employee, TimeOnly nightStart, TimeOnly nightEnd, int year, int month)
     {
-        if (shift.IsDayOff) return 0;
+        if (shift.IsDayOff)
+            return 0;
 
-        var daysInMonth = DateTime.DaysInMonth(year, month);
-        var lastDayOfMonth = new DateOnly(year, month, daysInMonth);
-        bool spansToNextMonth = shift.SpansNextDay && shift.Date == lastDayOfMonth;
-
-        // For shifts spanning to next month with split mode, only count hours before midnight
-        if (spansToNextMonth && shift.OvernightHoursMode == 0)
+        var segments = GetShiftDaySegments(shift);
+        var total = 0m;
+        foreach (var segment in segments)
         {
-            return CalculateNightHoursBeforeMidnight(shift, nightStart, nightEnd);
+            if (segment.Date.Year != year || segment.Date.Month != month)
+                continue;
+
+            total += CalculateFullNightHours(
+                TimeOnly.FromTimeSpan(TimeSpan.FromMinutes(segment.StartMinutes)),
+                TimeOnly.FromTimeSpan(TimeSpan.FromMinutes(segment.EndMinutes == 1440 ? 0 : segment.EndMinutes)),
+                segment.EndMinutes == 1440,
+                nightStart,
+                nightEnd,
+                0);
         }
 
-        // Calculate night hours for the full shift
-        return CalculateFullNightHours(shift.StartTime, shift.EndTime, shift.SpansNextDay, nightStart, nightEnd, shift.BreakMinutes);
+        return RoundToHalfHour(total);
     }
 
     /// <summary>
@@ -2377,27 +3550,35 @@ public class AppController : Controller
     /// <summary>
     /// Calculate hours after midnight for spilled shifts
     /// </summary>
-    private decimal CalculateHoursAfterMidnight(Shift shift)
+    private decimal CalculateHoursAfterMidnight(Shift shift, Employee employee)
     {
         var endMinutes = shift.EndTime.Hour * 60 + shift.EndTime.Minute;
-        var breakProportion = shift.TotalHours > 0 
-            ? endMinutes / (decimal)((24 * 60 - shift.StartTime.Hour * 60 - shift.StartTime.Minute) + endMinutes)
+        var totalShiftMinutes = (int)(shift.TotalHours * 60) + shift.BreakMinutes;
+        var minutesUntilMidnight = (24 * 60) - (shift.StartTime.Hour * 60 + shift.StartTime.Minute);
+        var minutesAfterMidnight = totalShiftMinutes - minutesUntilMidnight;
+
+        if (minutesAfterMidnight <= 0)
+            return 0;
+
+        var breakProportion = totalShiftMinutes > 0
+            ? (decimal)minutesAfterMidnight / totalShiftMinutes
             : 0;
-        var breakAfterMidnight = shift.BreakMinutes * breakProportion;
-        
-        return Math.Max(0, (endMinutes - breakAfterMidnight) / 60m);
+        var breakAfterMidnight = (int)(shift.BreakMinutes * breakProportion);
+        var hoursAfterMidnight = (endMinutes - breakAfterMidnight) / 60m;
+        return Math.Max(0, hoursAfterMidnight);
     }
 
     /// <summary>
     /// Calculate shift hours for a specific month
     /// </summary>
-    private decimal CalculateShiftHoursForMonth(Shift shift, int year, int month)
+    private decimal CalculateShiftHoursForMonth(Shift shift, Employee employee, int year, int month)
     {
         var daysInMonth = DateTime.DaysInMonth(year, month);
         var lastDayOfMonth = new DateOnly(year, month, daysInMonth);
+        var breakMinutes = GetEffectiveBreakMinutes(shift, employee);
         
         if (!shift.SpansNextDay || shift.Date != lastDayOfMonth)
-            return shift.TotalHours;
+            return CalculateNetShiftHours(shift, breakMinutes);
         
         // Shift spans to next month
         if (shift.OvernightHoursMode == 0)
@@ -2405,15 +3586,13 @@ public class AppController : Controller
             // Split at midnight
             var startMinutes = shift.StartTime.Hour * 60 + shift.StartTime.Minute;
             var minutesUntilMidnight = 1440 - startMinutes;
-            var totalMinutes = (int)(shift.TotalHours * 60) + shift.BreakMinutes;
-            var breakProportion = totalMinutes > 0 ? (decimal)minutesUntilMidnight / totalMinutes : 0;
-            var breakBeforeMidnight = shift.BreakMinutes * breakProportion;
+            var breakBeforeMidnight = Math.Min(breakMinutes, minutesUntilMidnight);
             
             return Math.Max(0, (minutesUntilMidnight - breakBeforeMidnight) / 60m);
         }
         
         // Mode 1: All hours in current month
-        return shift.TotalHours;
+        return CalculateNetShiftHours(shift, breakMinutes);
     }
 
     #endregion
@@ -2433,7 +3612,7 @@ public class AppController : Controller
         }
         
         // Check if user has attendance access
-        var (canAccessAttendance, _) = await GetFeatureAccessAsync();
+        var (canAccessAttendance, canAccessPayroll) = await GetFeatureAccessAsync();
         if (!canAccessAttendance)
         {
             TempData["Error"] = "Mesai takip özelliğine erişim yetkiniz bulunmamaktadır.";
@@ -2503,6 +3682,19 @@ public class AppController : Controller
             .OrderBy(t => t.DisplayOrder)
             .ToListAsync();
 
+        var employeeLimit = await GetEmployeeLimitAsync();
+        var defaultUnitLimit = await _settingsService.GetDefaultUnitLimitAsync();
+        var unitLimit = defaultUnitLimit;
+        var isRegistered = User.Identity?.IsAuthenticated == true;
+        if (isRegistered)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser != null && currentUser.UnitLimit > 0)
+                unitLimit = currentUser.UnitLimit;
+        }
+        var totalEmployeeCount = await _context.Employees.CountAsync(e => e.OrganizationId == organization.Id && e.IsActive);
+        var canManageUnits = isPremium;
+
         var viewModel = new AttendanceViewModel
         {
             Organization = organization,
@@ -2513,6 +3705,13 @@ public class AppController : Controller
             Units = units,
             SelectedUnitId = unitId,
             IsPremium = isPremium,
+            IsRegistered = isRegistered,
+            CanAccessPayroll = canAccessPayroll,
+            CanAccessAttendance = canAccessAttendance,
+            CanManageUnits = canManageUnits,
+            EmployeeLimit = employeeLimit,
+            UnitLimit = unitLimit,
+            TotalEmployeeCount = totalEmployeeCount,
             SelectedYear = selectedYear,
             SelectedMonth = selectedMonth
         };
@@ -2563,6 +3762,14 @@ public class AppController : Controller
                 return NotFound(new { success = false, error = "Personel bulunamadı" });
             }
 
+            Unit? employeeUnit = null;
+            if (employee.UnitId.HasValue)
+            {
+                employeeUnit = await _context.Units
+                    .Include(u => u.UnitType)
+                    .FirstOrDefaultAsync(u => u.Id == employee.UnitId.Value);
+            }
+
             var date = DateOnly.Parse(dto.Date);
             _logger.LogInformation("SaveAttendance: Parsed date={Date}", date);
             
@@ -2602,6 +3809,7 @@ public class AppController : Controller
             attendance.UpdatedAt = DateTime.UtcNow;
 
             // Calculate worked hours only if both times are present
+            Shift? shift = null;
             if (attendance.CheckInTime.HasValue && attendance.CheckOutTime.HasValue)
             {
                 var inMinutes = attendance.CheckInTime.Value.Hour * 60 + attendance.CheckInTime.Value.Minute;
@@ -2614,7 +3822,7 @@ public class AppController : Controller
                 var totalMinutes = outMinutes - inMinutes;
                 
                 // Check if there's a shift for this day and subtract break time
-                var shift = await _context.Shifts
+                shift = await _context.Shifts
                     .Include(s => s.ShiftTemplate)
                     .FirstOrDefaultAsync(s => s.EmployeeId == dto.EmployeeId && s.Date == date);
                 
@@ -2627,19 +3835,36 @@ public class AppController : Controller
                         breakMinutes = shift.BreakMinutes;
                     else if (shift.ShiftTemplate?.BreakMinutes.HasValue == true)
                         breakMinutes = shift.ShiftTemplate.BreakMinutes.Value;
-                    // else breakMinutes stays 0 (no break defined for this shift)
+
+                    // 24-hour shift rule: for non-4D, ignore break
+                    var grossHours = GetShiftGrossMinutes(shift) / 60m;
+                    var is24HourShift = grossHours >= 23.5m;
+                    var is4D = employee.PositionType?.Equals("4D", StringComparison.OrdinalIgnoreCase) == true;
+                    if (is24HourShift && !is4D)
+                        breakMinutes = 0;
+
                     _logger.LogInformation("SaveAttendance: Found shift with break={Break}min", breakMinutes);
                 }
                 
                 totalMinutes -= breakMinutes;
                 if (totalMinutes < 0) totalMinutes = 0;
                     
-                attendance.WorkedHours = Math.Round(totalMinutes / 60m, 2);
+                attendance.WorkedHours = RoundToHalfHour(totalMinutes / 60m);
             }
             else
             {
                 attendance.WorkedHours = null; // Clear if not both times present
             }
+
+            var resolvedWorkGroupTypeId = dto.WorkGroupTypeId
+                ?? shift?.WorkGroupTypeId
+                ?? ResolveWorkGroupTypeId(null, shift?.ShiftTemplate, employeeUnit);
+            var resolvedIsRiskGroup = dto.IsRiskGroup
+                ?? shift?.IsRiskGroup
+                ?? ResolveRiskGroup(null, shift?.ShiftTemplate, employeeUnit);
+
+            attendance.WorkGroupTypeId = resolvedWorkGroupTypeId;
+            attendance.IsRiskGroup = resolvedIsRiskGroup;
 
             await _context.SaveChangesAsync();
             _logger.LogInformation("SaveAttendance: Success, Id={Id}", attendance.Id);
@@ -2716,7 +3941,9 @@ public class AppController : Controller
                 workedHours = a.WorkedHours,
                 type = a.Type.ToString(),
                 source = a.Source.ToString(),
-                notes = a.Notes
+                notes = a.Notes,
+                workGroupTypeId = a.WorkGroupTypeId,
+                isRiskGroup = a.IsRiskGroup
             })
             .ToListAsync();
 
@@ -2879,8 +4106,18 @@ public class AppController : Controller
                     await _context.SaveChangesAsync();
                 }
                 
-                // Ensure organization has default templates (for existing users too)
-                await CopyDefaultTemplatesToOrganization(org.Id);
+                // Ensure organization has default templates (for existing users too) - never let this break the request
+                try
+                {
+                    await CopyDefaultTemplatesToOrganization(org.Id);
+                    await _bordroHesaplamaService.EnsureBordroSabitleriAsync(org.Id);
+                    await InitializeDefaultUnitTypesAsync(org.Id);
+                    await InitializeDefaultUnitAsync(org.Id);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Ensure defaults failed for new org Id={OrgId}, continuing anyway", org.Id);
+                }
                 
                 return org;
             }
@@ -2909,8 +4146,16 @@ public class AppController : Controller
             await _context.SaveChangesAsync();
         }
         
-        // Ensure organization has default templates
-        await CopyDefaultTemplatesToOrganization(guestOrg.Id);
+        // Ensure organization has default templates - never let this break the request
+        try
+        {
+            await CopyDefaultTemplatesToOrganization(guestOrg.Id);
+            await _bordroHesaplamaService.EnsureBordroSabitleriAsync(guestOrg.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Ensure defaults failed for guest org Id={OrgId}, continuing anyway", guestOrg.Id);
+        }
         
         return guestOrg;
     }
@@ -2939,7 +4184,9 @@ public class AppController : Controller
                 Color = "#22C55E",
                 IsGlobal = false,
                 DisplayOrder = 1,
-                IsActive = true
+                IsActive = true,
+                WorkGroupTypeId = (int)WorkGroupType.Normal,
+                IsRiskGroup = false
             },
             new ShiftTemplate
             {
@@ -2952,7 +4199,9 @@ public class AppController : Controller
                 Color = "#3B82F6",
                 IsGlobal = false,
                 DisplayOrder = 2,
-                IsActive = true
+                IsActive = true,
+                WorkGroupTypeId = (int)WorkGroupType.Normal,
+                IsRiskGroup = false
             },
             new ShiftTemplate
             {
@@ -2965,7 +4214,9 @@ public class AppController : Controller
                 Color = "#EF4444",
                 IsGlobal = false,
                 DisplayOrder = 3,
-                IsActive = true
+                IsActive = true,
+                WorkGroupTypeId = (int)WorkGroupType.Normal,
+                IsRiskGroup = false
             },
             new ShiftTemplate
             {
@@ -2978,7 +4229,9 @@ public class AppController : Controller
                 Color = "#8B5CF6",
                 IsGlobal = false,
                 DisplayOrder = 4,
-                IsActive = true
+                IsActive = true,
+                WorkGroupTypeId = (int)WorkGroupType.Normal,
+                IsRiskGroup = false
             }
         };
         
@@ -3020,7 +4273,7 @@ public class AppController : Controller
         return (true, true);
     }
 
-    private void CalculateShiftHours(Shift shift, Organization org)
+    private void CalculateShiftHours(Shift shift, Organization org, Employee employee)
     {
         // Calculate total hours
         var start = shift.StartTime;
@@ -3037,13 +4290,15 @@ public class AppController : Controller
             totalMinutes = (end.Hour * 60 + end.Minute) - (start.Hour * 60 + start.Minute);
         }
         
-        shift.TotalHours = (totalMinutes - shift.BreakMinutes) / 60m;
+        var effectiveBreakMinutes = GetEffectiveBreakMinutes(shift, employee);
+        totalMinutes = Math.Max(0, totalMinutes - effectiveBreakMinutes);
+        shift.TotalHours = RoundToHalfHour(totalMinutes / 60m);
         
         // Calculate night hours
         var nightStart = org.NightStartTime;
         var nightEnd = org.NightEndTime;
         
-        shift.NightHours = CalculateNightHours(start, end, shift.SpansNextDay, nightStart, nightEnd);
+        shift.NightHours = CalculateFullNightHours(start, end, shift.SpansNextDay, nightStart, nightEnd, effectiveBreakMinutes);
         
         // Check if weekend
         var dayOfWeek = shift.Date.DayOfWeek;
@@ -3135,21 +4390,144 @@ public class AppController : Controller
     /// </summary>
     private async Task InitializeDefaultUnitTypesAsync(int organizationId)
     {
+        await EnsureUnitTypeTemplatesAsync();
+
         var existingTypes = await _context.UnitTypes
             .AnyAsync(ut => ut.OrganizationId == organizationId);
             
         if (existingTypes)
             return;
-            
-        var defaultTypes = new[]
+
+        var templates = await _context.UnitTypeTemplates
+            .Where(t => t.IsActive)
+            .OrderBy(t => t.SortOrder)
+            .ToListAsync();
+
+        var defaultTypes = templates.Select(t => new UnitType
         {
-            new UnitType { OrganizationId = organizationId, Name = "Poliklinik/Servis", NameEn = "Polyclinic/Service", DefaultCoefficient = 1.0m, Color = "#3B82F6", Icon = "hospital", SortOrder = 1, IsSystem = true },
-            new UnitType { OrganizationId = organizationId, Name = "Yoğun Bakım", NameEn = "Intensive Care Unit", DefaultCoefficient = 1.5m, Color = "#EF4444", Icon = "heart-pulse", SortOrder = 2, IsSystem = true },
-            new UnitType { OrganizationId = organizationId, Name = "Radyasyon Birimi", NameEn = "Radiation Unit", DefaultCoefficient = 1.5m, Color = "#F59E0B", Icon = "radiation", SortOrder = 3, IsSystem = true }
-        };
-        
+            OrganizationId = organizationId,
+            Name = t.Name,
+            NameEn = t.NameEn,
+            DefaultCoefficient = t.DefaultCoefficient,
+            Color = t.Color,
+            Icon = t.Icon,
+            SortOrder = t.SortOrder,
+            IsActive = true,
+            IsSystem = true,
+            TemplateId = t.Id,
+            IsCustom = false
+        }).ToList();
+
         _context.UnitTypes.AddRange(defaultTypes);
         await _context.SaveChangesAsync();
+    }
+
+    private async Task EnsureUnitTypeTemplatesAsync()
+    {
+        var hasTemplates = await _context.UnitTypeTemplates.AnyAsync();
+        if (hasTemplates)
+            return;
+
+        var systemTypes = await _context.UnitTypes
+            .Where(ut => ut.IsSystem)
+            .OrderBy(ut => ut.SortOrder)
+            .ToListAsync();
+
+        List<UnitTypeTemplate> templates;
+        if (systemTypes.Any())
+        {
+            templates = systemTypes.Select(t => new UnitTypeTemplate
+            {
+                Name = t.Name,
+                NameEn = t.NameEn,
+                DefaultCoefficient = t.DefaultCoefficient,
+                Color = t.Color,
+                Icon = t.Icon,
+                SortOrder = t.SortOrder,
+                IsActive = true
+            }).ToList();
+        }
+        else
+        {
+            templates = new List<UnitTypeTemplate>
+            {
+                new UnitTypeTemplate { Name = "Poliklinik/Servis", NameEn = "Polyclinic/Service", DefaultCoefficient = 1.0m, Color = "#3B82F6", Icon = "hospital", SortOrder = 1, IsActive = true },
+                new UnitTypeTemplate { Name = "Yoğun Bakım", NameEn = "Intensive Care Unit", DefaultCoefficient = 1.5m, Color = "#EF4444", Icon = "heart-pulse", SortOrder = 2, IsActive = true },
+                new UnitTypeTemplate { Name = "Radyasyon Birimi", NameEn = "Radiation Unit", DefaultCoefficient = 1.5m, Color = "#F59E0B", Icon = "radiation", SortOrder = 3, IsActive = true }
+            };
+        }
+
+        _context.UnitTypeTemplates.AddRange(templates);
+        await _context.SaveChangesAsync();
+    }
+
+    private async Task SyncUnitTypesFromTemplatesAsync(int organizationId)
+    {
+        var templates = await _context.UnitTypeTemplates
+            .Where(t => t.IsActive)
+            .OrderBy(t => t.SortOrder)
+            .ToListAsync();
+
+        if (!templates.Any())
+            return;
+
+        var orgTypes = await _context.UnitTypes
+            .Where(ut => ut.OrganizationId == organizationId)
+            .ToListAsync();
+
+        var updated = false;
+        foreach (var template in templates)
+        {
+            var match = orgTypes.FirstOrDefault(ut => ut.TemplateId == template.Id);
+            if (match == null)
+            {
+                match = orgTypes.FirstOrDefault(ut =>
+                    ut.TemplateId == null &&
+                    string.Equals(ut.Name, template.Name, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (match == null)
+            {
+                _context.UnitTypes.Add(new UnitType
+                {
+                    OrganizationId = organizationId,
+                    Name = template.Name,
+                    NameEn = template.NameEn,
+                    DefaultCoefficient = template.DefaultCoefficient,
+                    Color = template.Color,
+                    Icon = template.Icon,
+                    SortOrder = template.SortOrder,
+                    IsActive = template.IsActive,
+                    IsSystem = true,
+                    TemplateId = template.Id,
+                    IsCustom = false
+                });
+                updated = true;
+                continue;
+            }
+
+            if (match.TemplateId == null)
+            {
+                match.TemplateId = template.Id;
+                updated = true;
+            }
+
+            if (!match.IsCustom)
+            {
+                match.Name = template.Name;
+                match.NameEn = template.NameEn;
+                match.DefaultCoefficient = template.DefaultCoefficient;
+                match.Color = template.Color;
+                match.Icon = template.Icon;
+                match.SortOrder = template.SortOrder;
+                match.IsActive = template.IsActive;
+                match.IsSystem = true;
+                updated = true;
+            }
+        }
+
+        if (updated)
+            await _context.SaveChangesAsync();
     }
     
     /// <summary>
@@ -3263,7 +4641,8 @@ public class AppController : Controller
             Color = dto.Color ?? GetRandomColor(),
             Icon = dto.Icon,
             SortOrder = maxOrder + 1,
-            IsSystem = false
+            IsSystem = false,
+            IsCustom = true
         };
         
         _context.UnitTypes.Add(unitType);
@@ -3315,6 +4694,7 @@ public class AppController : Controller
         if (!string.IsNullOrEmpty(dto.Color))
             unitType.Color = dto.Color;
         unitType.Icon = dto.Icon;
+        unitType.IsCustom = true;
         
         await _context.SaveChangesAsync();
         
@@ -3900,6 +5280,7 @@ public class EmployeeDto
     public int ShiftScore { get; set; } = 100; // Default 100
     public bool IsNonHealthServices { get; set; } = false; // SH Dışı
     public int? UnitId { get; set; } // Premium: Unit assignment
+    public bool HasDoubleTicketRight { get; set; } = false;
 }
 
 public class ShiftDto
@@ -3916,6 +5297,8 @@ public class ShiftDto
     /// 0 = Split at midnight (default), 1 = All hours count in current month
     /// </summary>
     public int OvernightHoursMode { get; set; } = 0;
+    public int? WorkGroupTypeId { get; set; }
+    public bool? IsRiskGroup { get; set; }
 }
 
 public class HolidayDto
@@ -3936,6 +5319,8 @@ public class ShiftTemplateDto
     public int? BreakMinutes { get; set; }
     public string? Color { get; set; }
     public int DisplayOrder { get; set; }
+    public int? WorkGroupTypeId { get; set; }
+    public bool IsRiskGroup { get; set; }
 }
 
 public class SaveScheduleDto
@@ -3962,6 +5347,8 @@ public class SavedShiftData
     public bool IsDayOff { get; set; }
     public int OvernightHoursMode { get; set; }
     public int? ShiftTemplateId { get; set; }
+    public int? WorkGroupTypeId { get; set; }
+    public bool IsRiskGroup { get; set; }
 }
 
 public class ManualAttendanceDto
@@ -3975,6 +5362,8 @@ public class ManualAttendanceDto
     public bool ClearCheckOut { get; set; }
     public string? Notes { get; set; }
     public AttendanceType Type { get; set; } = AttendanceType.Normal;
+    public int? WorkGroupTypeId { get; set; }
+    public bool? IsRiskGroup { get; set; }
 }
 
 public class CreateLeaveDto

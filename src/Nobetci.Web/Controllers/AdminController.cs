@@ -5,6 +5,7 @@ using Nobetci.Web.Data;
 using Nobetci.Web.Data.Entities;
 using Nobetci.Web.Models;
 using Nobetci.Web.Services;
+using System.Globalization;
 
 namespace Nobetci.Web.Controllers;
 
@@ -464,7 +465,7 @@ public class AdminController : Controller
             ModelState.AddModelError("", error.Description);
         }
         
-        return View(model);
+        return View("~/Views/Admin/BordroTemplates.cshtml", model);
     }
     
     // POST: /admin/users/quick-update
@@ -515,6 +516,114 @@ public class AdminController : Controller
         return Json(new { success = result.Succeeded });
     }
     
+    #endregion
+
+    #region Bordro Templates (Base)
+
+    [HttpGet]
+    [Route("admin/bordro-templates")]
+    public async Task<IActionResult> BordroTemplates()
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction("Login");
+
+        if (!IsSuperAdmin())
+        {
+            TempData["Error"] = "Bu sayfaya erişim yetkiniz yok";
+            return RedirectToAction("Index");
+        }
+
+        ViewData["Title"] = "Bordro Şablonları";
+        ViewData["Icon"] = "🧩";
+        ViewBag.IsSuperAdmin = true;
+
+        var sabitTemplates = await _context.BordroSabitleriTemplates
+            .OrderBy(t => t.Key)
+            .ToListAsync();
+
+        var unitTypeTemplates = await _context.UnitTypeTemplates
+            .OrderBy(t => t.SortOrder)
+            .ToListAsync();
+
+        var model = new AdminBordroTemplatesViewModel
+        {
+            SabitTemplates = sabitTemplates,
+            UnitTypeTemplates = unitTypeTemplates
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("admin/bordro-templates/sabit")]
+    public async Task<IActionResult> UpdateBordroSabitTemplate(int id, string value, string valueType, string? description, string? cadreType, string? workingUnitIds, bool? isActive)
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction("Login");
+
+        if (!IsSuperAdmin())
+            return Forbid();
+
+        var template = await _context.BordroSabitleriTemplates.FindAsync(id);
+        if (template == null)
+            return NotFound();
+
+        template.Value = ParseDecimalInvariant(value, template.Value);
+        template.ValueType = valueType;
+        template.Description = description;
+        template.CadreType = string.IsNullOrWhiteSpace(cadreType) ? null : cadreType;
+        template.WorkingUnitIds = workingUnitIds;
+        template.IsActive = isActive == true;
+        template.UpdatedBy = "admin";
+        template.UpdatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+
+        await _context.SaveChangesAsync();
+        TempData["Success"] = "Sabit şablonu güncellendi.";
+        return RedirectToAction(nameof(BordroTemplates));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("admin/bordro-templates/unittype")]
+    public async Task<IActionResult> UpdateUnitTypeTemplate(int id, string defaultCoefficient, string? name, string? nameEn, string? color, string? icon, int sortOrder, bool? isActive)
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction("Login");
+
+        if (!IsSuperAdmin())
+            return Forbid();
+
+        var template = await _context.UnitTypeTemplates.FindAsync(id);
+        if (template == null)
+            return NotFound();
+
+        if (!string.IsNullOrWhiteSpace(name))
+            template.Name = name;
+        template.NameEn = nameEn;
+        template.DefaultCoefficient = ParseDecimalInvariant(defaultCoefficient, template.DefaultCoefficient);
+        template.Color = color;
+        template.Icon = icon;
+        template.SortOrder = sortOrder;
+        template.IsActive = isActive == true;
+        template.UpdatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+
+        await _context.SaveChangesAsync();
+        TempData["Success"] = "Birim tipi şablonu güncellendi.";
+        return RedirectToAction(nameof(BordroTemplates));
+    }
+
+    private static decimal ParseDecimalInvariant(string? input, decimal fallback)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return fallback;
+
+        var normalized = input.Trim().Replace(",", ".");
+        return decimal.TryParse(normalized, NumberStyles.Any, CultureInfo.InvariantCulture, out var parsed)
+            ? parsed
+            : fallback;
+    }
+
     #endregion
     
     #region Admin User Management

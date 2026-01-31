@@ -60,6 +60,10 @@ public class UnitType
     /// Whether this is a system-defined type (cannot be deleted)
     /// </summary>
     public bool IsSystem { get; set; } = false;
+
+    public int? TemplateId { get; set; }
+
+    public bool IsCustom { get; set; } = false;
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     

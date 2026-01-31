@@ -74,6 +74,16 @@ public class TimeAttendance
     /// Calculated total worked hours
     /// </summary>
     public decimal? WorkedHours { get; set; }
+
+    /// <summary>
+    /// Work group type for this attendance record (1=Normal, 2=Special, 3=IntensiveCare)
+    /// </summary>
+    public int? WorkGroupTypeId { get; set; }
+
+    /// <summary>
+    /// Whether this attendance is in a risk group (e.g., radiation)
+    /// </summary>
+    public bool IsRiskGroup { get; set; } = false;
     
     /// <summary>
     /// Is this record approved by manager

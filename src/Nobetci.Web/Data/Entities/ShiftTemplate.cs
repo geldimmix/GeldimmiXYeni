@@ -59,6 +59,16 @@ public class ShiftTemplate
     /// Display order for sorting
     /// </summary>
     public int DisplayOrder { get; set; }
+
+    /// <summary>
+    /// Default work group type for this template (1=Normal, 2=Special, 3=IntensiveCare)
+    /// </summary>
+    public int? WorkGroupTypeId { get; set; }
+
+    /// <summary>
+    /// Whether this template represents a risk group (e.g., radiation)
+    /// </summary>
+    public bool IsRiskGroup { get; set; } = false;
     
     public bool IsActive { get; set; } = true;
     

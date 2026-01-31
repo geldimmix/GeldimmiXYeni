@@ -92,6 +92,11 @@ public class Employee
     /// Non-Health Services class (SH Dışı)
     /// </summary>
     public bool IsNonHealthServices { get; set; } = false;
+
+    /// <summary>
+    /// Eligible for double transportation ticket (çift bilet hakkı)
+    /// </summary>
+    public bool HasDoubleTicketRight { get; set; } = false;
     
     public bool IsActive { get; set; } = true;
     

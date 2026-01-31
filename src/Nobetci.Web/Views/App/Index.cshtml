@@ -5,129 +5,29 @@
     Layout = "_AppLayout";
 }
 
+@{
+    var sidebarModel = new AppSidebarViewModel
+    {
+        SelectedYear = Model.SelectedYear,
+        SelectedMonth = Model.SelectedMonth,
+        SelectedUnitId = Model.SelectedUnitId,
+        EmployeeCount = Model.EmployeeCount,
+        HolidayCount = Model.Holidays.Count,
+        UnitCount = Model.Units.Count,
+        CanAccessPayroll = Model.CanAccessPayroll,
+        CanAccessAttendance = Model.CanAccessAttendance,
+        CanManageUnits = Model.CanManageUnits,
+        IsRegistered = Model.IsRegistered,
+        IsPremium = Model.IsPremium,
+        EmployeeLimit = Model.EmployeeLimit,
+        UnitLimit = Model.UnitLimit,
+        TotalEmployeeCount = Model.TotalEmployeeCount,
+        CurrentPage = "Index"
+    };
+}
+
 <div class="app-wrapper">
-    <!-- Left Sidebar - Compact Module Based -->
-    <aside class="app-sidebar">
-        <!-- Module Selector Dropdown -->
-        <div class="module-dropdown">
-            <select id="moduleSelect" class="module-select" onchange="switchModule(this.value)">
-                <option value="shift" selected>🏥 @(isTurkish ? "Nöbet Sistemi" : "Shift System")</option>
-                <option value="cleaning">🧹 @(isTurkish ? "Temizlik Çizelgesi" : "Cleaning Schedule")</option>
-                <option value="qrmenu">🍽️ @(isTurkish ? "Restoran QR Menü" : "Restaurant QR Menu")</option>
-            </select>
-        </div>
-        
-        <!-- All Items in Flat List -->
-        <div class="sidebar-items">
-            <button class="sidebar-item" data-bs-toggle="modal" data-bs-target="#employeesModal">
-                <span class="si-icon">👥</span>
-                <span class="si-text">@(isTurkish ? "Personeller" : "Employees")</span>
-                <span class="si-badge">@Model.EmployeeCount</span>
-            </button>
-            
-            <button class="sidebar-item" data-bs-toggle="modal" data-bs-target="#templatesModal">
-                <span class="si-icon">⏰</span>
-                <span class="si-text">@(isTurkish ? "Vardiyalar" : "Shifts")</span>
-            </button>
-            
-            <button class="sidebar-item" data-bs-toggle="modal" data-bs-target="#leavesModal">
-                <span class="si-icon">📋</span>
-                <span class="si-text">@(isTurkish ? "İzinler" : "Leaves")</span>
-            </button>
-            
-            <button class="sidebar-item" data-bs-toggle="modal" data-bs-target="#addHolidayModal">
-                <span class="si-icon">🎉</span>
-                <span class="si-text">@(isTurkish ? "Tatiller" : "Holidays")</span>
-                <span class="si-badge">@Model.Holidays.Count</span>
-            </button>
-            
-            <div class="sidebar-sep"></div>
-            
-            @if (Model.CanAccessPayroll)
-            {
-                <a href="@Url.Action("Payroll", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="sidebar-item">
-                    <span class="si-icon">📊</span>
-                    <span class="si-text">@(isTurkish ? "Puantaj" : "Payroll")</span>
-                </a>
-            }
-            else
-            {
-                <button class="sidebar-item locked" disabled>
-                    <span class="si-icon">📊</span>
-                    <span class="si-text">@(isTurkish ? "Puantaj" : "Payroll")</span>
-                    <span class="si-lock">🔒</span>
-                </button>
-            }
-            
-            @if (Model.CanAccessAttendance)
-            {
-                <a href="@Url.Action("Attendance", new { year = Model.SelectedYear, month = Model.SelectedMonth })" class="sidebar-item">
-                    <span class="si-icon">🕐</span>
-                    <span class="si-text">@(isTurkish ? "Mesai" : "Attendance")</span>
-                </a>
-            }
-            else
-            {
-                <button class="sidebar-item locked" disabled>
-                    <span class="si-icon">🕐</span>
-                    <span class="si-text">@(isTurkish ? "Mesai" : "Attendance")</span>
-                    <span class="si-lock">🔒</span>
-                </button>
-            }
-            
-            @if (Model.IsRegistered)
-            {
-                <div class="sidebar-sep"></div>
-                
-                @if (Model.CanManageUnits)
-                {
-                    <button class="sidebar-item premium" data-bs-toggle="modal" data-bs-target="#unitsModal">
-                        <span class="si-icon">🏛️</span>
-                        <span class="si-text">@(isTurkish ? "Birimler" : "Units")</span>
-                        <span class="si-badge pro">@Model.Units.Count</span>
-        </button>
-                }
-                else
-                {
-                    <button class="sidebar-item locked" disabled>
-                        <span class="si-icon">🏛️</span>
-                        <span class="si-text">@(isTurkish ? "Birimler" : "Units")</span>
-                        <span class="si-lock">🔒</span>
-                    </button>
-                }
-            }
-        </div>
-        
-        <!-- Selected Indicator -->
-        <div class="sidebar-tools">
-        <div class="selected-indicator" id="selectedIndicator" style="display:none;">
-            <div class="indicator-color"></div>
-                <span class="indicator-time" id="selectedTime"></span>
-            </div>
-        </div>
-        
-        <!-- Your Limits -->
-        @if (Model.IsRegistered)
-        {
-            <div class="sidebar-limits">
-                <div class="limits-title">@(isTurkish ? "Limitler" : "Your Limits")</div>
-                <div class="limit-row">
-                    <span class="limit-icon">👥</span>
-                    <span class="limit-text">@Model.TotalEmployeeCount / @(Model.EmployeeLimit == int.MaxValue ? "∞" : Model.EmployeeLimit.ToString())</span>
-                </div>
-                @if (Model.IsPremium)
-                {
-                    <div class="limit-row">
-                        <span class="limit-icon">🏛️</span>
-                        <span class="limit-text">@Model.Units.Count / @(Model.UnitLimit == 0 ? "∞" : Model.UnitLimit.ToString())</span>
-                    </div>
-                }
-            </div>
-        }
-        
-        <!-- Hidden multiselect for compatibility -->
-        <input type="checkbox" id="multiSelectMode" style="display:none;">
-    </aside>
+    @await Html.PartialAsync("_AppSidebar", sidebarModel)
     
     <!-- Main Content -->
     <main class="app-main">
@@ -1002,6 +902,15 @@
                                 </label>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="checkbox-wrapper">
+                                <label class="custom-checkbox">
+                                    <input type="checkbox" id="employeeHasDoubleTicketRight">
+                                    <span class="checkmark"></span>
+                                    <span class="checkbox-label">@(isTurkish ? "Çift Bilet Hakkı" : "Double Ticket Right")</span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -1181,6 +1090,15 @@
                                 </label>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="checkbox-wrapper">
+                                <label class="custom-checkbox">
+                                    <input type="checkbox" id="editEmployeeHasDoubleTicketRight">
+                                    <span class="checkmark"></span>
+                                    <span class="checkbox-label">@(isTurkish ? "Çift Bilet Hakkı" : "Double Ticket Right")</span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -1287,6 +1205,14 @@
                             <input type="number" id="newTemplateBreak" class="form-control" value="60" min="0" max="120">
                         </div>
                         <div class="form-group">
+                            <label>@(isTurkish ? "Grup Tipi" : "Group Type")</label>
+                            <select id="newTemplateGroupType" class="form-control">
+                                <option value="1">@(isTurkish ? "Normal" : "Normal")</option>
+                                <option value="2">@(isTurkish ? "Özel" : "Special")</option>
+                                <option value="3">@(isTurkish ? "Yoğun Bakım" : "Intensive Care")</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label>@(isTurkish ? "Renk" : "Color")</label>
                             <input type="color" id="newTemplateColor" class="form-control form-control-color" value="#3B82F6">
                         </div>
@@ -1296,9 +1222,18 @@
                                 <span>@(isTurkish ? "Ertesi güne sarkar (+1)" : "Spans next day (+1)")</span>
                             </label>
                         </div>
+                        <div class="form-group form-check-group">
+                            <label class="form-check">
+                                <input type="checkbox" id="newTemplateRiskGroup" class="form-check-input">
+                                <span>@(isTurkish ? "Riskli Grup (Radyasyon)" : "Risk Group (Radiation)")</span>
+                            </label>
+                        </div>
                     </div>
                     <button type="button" class="btn-add-template" id="addNewTemplateBtn">
                         <span>➕</span> @(isTurkish ? "Şablon Ekle" : "Add Template")
+                    </button>
+                    <button type="button" class="btn-modal-cancel" id="cancelEditTemplateBtn" style="display:none; margin-top:10px;">
+                        @(isTurkish ? "Düzenlemeyi İptal Et" : "Cancel Edit")
                     </button>
                 </div>
             </div>
@@ -2637,6 +2572,21 @@
                         <input type="number" class="break-custom" id="customBreak" value="0" min="0" max="480" placeholder="dk">
                         <span class="break-unit">@(isTurkish ? "dk" : "min")</span>
                     </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 12px;">
+                    <label class="form-label">@(isTurkish ? "Grup Tipi" : "Group Type")</label>
+                    <select id="customWorkGroupType" class="form-control">
+                        <option value="1">@(isTurkish ? "Normal" : "Normal")</option>
+                        <option value="2">@(isTurkish ? "Özel" : "Special")</option>
+                        <option value="3">@(isTurkish ? "Yoğun Bakım" : "Intensive Care")</option>
+                    </select>
+                </div>
+                <div class="form-group form-check-group" style="margin-top: 6px;">
+                    <label class="form-check">
+                        <input type="checkbox" id="customRiskGroup" class="form-check-input">
+                        <span>@(isTurkish ? "Riskli Grup (Radyasyon)" : "Risk Group (Radiation)")</span>
+                    </label>
                 </div>
                 
                 <label class="overnight-toggle">
@@ -6547,6 +6497,23 @@
 
 @section Scripts {
 <script>
+    // Open modal from ?open= query (e.g. from Payroll sidebar links)
+    (function() {
+        const params = new URLSearchParams(window.location.search);
+        const open = params.get('open');
+        const modalMap = { employees: 'employeesModal', templates: 'templatesModal', leaves: 'leavesModal', holidays: 'addHolidayModal', units: 'unitsModal' };
+        const modalId = open ? modalMap[open] : null;
+        if (modalId && document.getElementById(modalId)) {
+            document.addEventListener('DOMContentLoaded', function() {
+                const modal = new bootstrap.Modal(document.getElementById(modalId));
+                modal.show();
+                const u = new URL(window.location);
+                u.searchParams.delete('open');
+                history.replaceState({}, '', u.pathname + u.search);
+            });
+        }
+    })();
+
     const isTurkish = @(isTurkish ? "true" : "false");
     const isRegistered = @(Model.IsRegistered ? "true" : "false");
     
@@ -6659,6 +6626,7 @@
             document.getElementById('editEmployeeDailyHours').value = emp.dailyWorkHours || 8;
             document.getElementById('editEmployeeShiftScore').value = emp.shiftScore || 100;
             document.getElementById('editEmployeeIsNonHealthServices').checked = emp.isNonHealthServices || false;
+            document.getElementById('editEmployeeHasDoubleTicketRight').checked = emp.hasDoubleTicketRight || false;
             
             // Position type
             document.getElementById('editEmployeePositionType').value = emp.positionType || '';
@@ -6746,6 +6714,9 @@
                     if (customBtn) customBtn.classList.add('active');
                 }
                 
+                if (!template.workGroupTypeId) template.workGroupTypeId = 1;
+                if (template.isRiskGroup === undefined) template.isRiskGroup = false;
+                
                 // Update selected indicator
                 updateSelectedIndicator(template);
             } catch (e) {
@@ -6828,6 +6799,8 @@
             btn.dataset.spans = t.spansNextDay;
             btn.dataset.break = t.breakMinutes || 0;
             btn.dataset.color = t.color;
+            btn.dataset.groupType = t.workGroupTypeId || 1;
+            btn.dataset.riskGroup = t.isRiskGroup ? 'true' : 'false';
             
             const breakText = t.breakMinutes ? (isTurkish ? `${t.breakMinutes}dk mola` : `${t.breakMinutes}min break`) : (t.spansNextDay ? (isTurkish ? 'Gece nöbeti' : 'Night shift') : '');
             
@@ -6852,6 +6825,8 @@
                     spans: this.dataset.spans === 'true',
                     breakMinutes: parseInt(this.dataset.break) || 0,
                     color: this.dataset.color || '#3B82F6',
+                    workGroupTypeId: parseInt(this.dataset.groupType) || 1,
+                    isRiskGroup: this.dataset.riskGroup === 'true',
                     isCustom: false,
                     isDayOff: false
                 };
@@ -6896,7 +6871,10 @@
         if (!modal) return;
         
         // Load templates when modal opens
-        modal.addEventListener('show.bs.modal', loadTemplatesForManager);
+        modal.addEventListener('show.bs.modal', () => {
+            clearTemplateForm();
+            loadTemplatesForManager();
+        });
         
         // Add new template button
         const addBtn = document.getElementById('addNewTemplateBtn');
@@ -6934,11 +6912,20 @@
         }
         
         listEl.innerHTML = templates.map(t => `
-            <div class="template-manager-item" data-id="${t.id}">
+            <div class="template-manager-item"
+                data-id="${t.id}"
+                data-name="${t.name || ''}"
+                data-start="${t.startTime}"
+                data-end="${t.endTime}"
+                data-break="${t.breakMinutes || 0}"
+                data-color="${t.color || '#3B82F6'}"
+                data-spans="${t.spansNextDay ? 'true' : 'false'}"
+                data-group-type="${t.workGroupTypeId || 1}"
+                data-risk-group="${t.isRiskGroup ? 'true' : 'false'}">
                 <span class="tpl-item-color" style="background:${t.color}"></span>
                 <div class="tpl-item-info">
                     <div class="tpl-item-name">${t.name || (t.startTime + ' - ' + t.endTime)}</div>
-                    <div class="tpl-item-time">${t.startTime} - ${t.endTime} ${t.spansNextDay ? '(+1)' : ''} • ${t.breakMinutes || 0}${isTurkish ? 'dk mola' : 'min break'}</div>
+                    <div class="tpl-item-time">${t.startTime} - ${t.endTime} ${t.spansNextDay ? '(+1)' : ''} • ${t.breakMinutes || 0}${isTurkish ? 'dk mola' : 'min break'} • ${getGroupTypeLabel(t.workGroupTypeId)}${t.isRiskGroup ? ' • ' + (isTurkish ? 'Riskli' : 'Risk') : ''}</div>
                 </div>
                 <div class="tpl-item-actions">
                     <button class="btn-edit" onclick="editTemplate(${t.id})" title="${isTurkish ? 'Düzenle' : 'Edit'}">✏️</button>
@@ -6947,7 +6934,33 @@
             </div>
         `).join('');
     }
+
+    function getGroupTypeLabel(value) {
+        const typeId = parseInt(value) || 1;
+        if (typeId === 3) return isTurkish ? 'Yoğun Bakım' : 'Intensive Care';
+        if (typeId === 2) return isTurkish ? 'Özel' : 'Special';
+        return isTurkish ? 'Normal' : 'Normal';
+    }
     
+    let editingTemplateId = null;
+
+    function clearTemplateForm() {
+        editingTemplateId = null;
+        document.getElementById('newTemplateName').value = '';
+        document.getElementById('newTemplateStart').value = '08:00';
+        document.getElementById('newTemplateEnd').value = '17:00';
+        document.getElementById('newTemplateBreak').value = '60';
+        document.getElementById('newTemplateColor').value = '#3B82F6';
+        document.getElementById('newTemplateSpans').checked = false;
+        document.getElementById('newTemplateGroupType').value = '1';
+        document.getElementById('newTemplateRiskGroup').checked = false;
+
+        const btn = document.getElementById('addNewTemplateBtn');
+        if (btn) btn.innerHTML = '<span>➕</span> ' + (isTurkish ? 'Şablon Ekle' : 'Add Template');
+        const cancelBtn = document.getElementById('cancelEditTemplateBtn');
+        if (cancelBtn) cancelBtn.style.display = 'none';
+    }
+
     // Add new template
     async function addNewTemplate() {
         const name = document.getElementById('newTemplateName').value.trim();
@@ -6956,6 +6969,8 @@
         const breakMinutes = parseInt(document.getElementById('newTemplateBreak').value) || 0;
         const color = document.getElementById('newTemplateColor').value;
         const spansNextDay = document.getElementById('newTemplateSpans').checked;
+        const workGroupTypeId = parseInt(document.getElementById('newTemplateGroupType').value) || 1;
+        const isRiskGroup = document.getElementById('newTemplateRiskGroup').checked;
         
         if (!name) {
             showToast(isTurkish ? 'Şablon adı gerekli' : 'Template name is required', 'error');
@@ -6968,8 +6983,10 @@
         }
         
         try {
-            const response = await fetch('/api/shift-templates', {
-                method: 'POST',
+            const url = editingTemplateId ? `/api/shift-templates/${editingTemplateId}` : '/api/shift-templates';
+            const method = editingTemplateId ? 'PUT' : 'POST';
+            const response = await fetch(url, {
+                method: method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name,
@@ -6978,20 +6995,15 @@
                     breakMinutes,
                     color,
                     spansNextDay,
-                    displayOrder: 100
+                    displayOrder: 100,
+                    workGroupTypeId,
+                    isRiskGroup
                 })
             });
             
             if (response.ok) {
-                showToast(isTurkish ? 'Şablon eklendi' : 'Template added', 'success');
-                // Clear form
-                document.getElementById('newTemplateName').value = '';
-                document.getElementById('newTemplateStart').value = '08:00';
-                document.getElementById('newTemplateEnd').value = '17:00';
-                document.getElementById('newTemplateBreak').value = '60';
-                document.getElementById('newTemplateColor').value = '#3B82F6';
-                document.getElementById('newTemplateSpans').checked = false;
-                // Reload lists
+                showToast(editingTemplateId ? (isTurkish ? 'Şablon güncellendi' : 'Template updated') : (isTurkish ? 'Şablon eklendi' : 'Template added'), 'success');
+                clearTemplateForm();
                 loadTemplatesForManager();
                 loadUserTemplates();
             } else {
@@ -7027,53 +7039,27 @@
         }
     }
     
-    // Edit template (simple prompt-based for now)
+    // Edit template (inline form)
     async function editTemplate(id) {
         const item = document.querySelector(`.template-manager-item[data-id="${id}"]`);
         if (!item) return;
-        
-        const nameEl = item.querySelector('.tpl-item-name');
-        const currentName = nameEl ? nameEl.textContent : '';
-        
-        const newName = prompt(isTurkish ? 'Yeni şablon adı:' : 'New template name:', currentName);
-        if (!newName || newName === currentName) return;
-        
-        // Get current template data from the item
-        const timeText = item.querySelector('.tpl-item-time').textContent;
-        const match = timeText.match(/(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/);
-        if (!match) return;
-        
-        const colorEl = item.querySelector('.tpl-item-color');
-        const color = colorEl ? rgbToHex(getComputedStyle(colorEl).backgroundColor) : '#3B82F6';
-        const spansNextDay = timeText.includes('(+1)');
-        const breakMatch = timeText.match(/(\d+)(dk|min)/);
-        const breakMinutes = breakMatch ? parseInt(breakMatch[1]) : 0;
-        
-        try {
-            const response = await fetch(`/api/shift-templates/${id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: newName,
-                    startTime: match[1],
-                    endTime: match[2],
-                    breakMinutes,
-                    color,
-                    spansNextDay,
-                    displayOrder: 100
-                })
-            });
-            
-            if (response.ok) {
-                showToast(isTurkish ? 'Şablon güncellendi' : 'Template updated', 'success');
-                loadTemplatesForManager();
-                loadUserTemplates();
-            } else {
-                const error = await response.json();
-                showToast(error.error || (isTurkish ? 'Hata oluştu' : 'Error occurred'), 'error');
-            }
-        } catch (error) {
-            showToast(isTurkish ? 'Hata oluştu' : 'Error occurred', 'error');
+        editingTemplateId = id;
+
+        document.getElementById('newTemplateName').value = item.dataset.name || '';
+        document.getElementById('newTemplateStart').value = item.dataset.start || '08:00';
+        document.getElementById('newTemplateEnd').value = item.dataset.end || '17:00';
+        document.getElementById('newTemplateBreak').value = item.dataset.break || '0';
+        document.getElementById('newTemplateColor').value = item.dataset.color || '#3B82F6';
+        document.getElementById('newTemplateSpans').checked = item.dataset.spans === 'true';
+        document.getElementById('newTemplateGroupType').value = item.dataset.groupType || '1';
+        document.getElementById('newTemplateRiskGroup').checked = item.dataset.riskGroup === 'true';
+
+        const btn = document.getElementById('addNewTemplateBtn');
+        if (btn) btn.innerHTML = '<span>💾</span> ' + (isTurkish ? 'Şablonu Güncelle' : 'Update Template');
+        const cancelBtn = document.getElementById('cancelEditTemplateBtn');
+        if (cancelBtn) {
+            cancelBtn.style.display = 'inline-flex';
+            cancelBtn.onclick = clearTemplateForm;
         }
     }
     
@@ -7307,6 +7293,8 @@
                     spans: btn.dataset.spans === 'true',
                     breakMinutes: parseInt(btn.dataset.break) || 0,
                     color: btn.dataset.color || '#3B82F6',
+                    workGroupTypeId: parseInt(btn.dataset.groupType) || 1,
+                    isRiskGroup: btn.dataset.riskGroup === 'true',
                     isCustom: false,
                     isDayOff: btn.dataset.dayOff === 'true'
                 };
@@ -7336,6 +7324,8 @@
                     spans: btn.dataset.spans === 'true',
                     breakMinutes: parseInt(btn.dataset.break) || 0,
                     color: btn.dataset.color || '#94a3b8',
+                    workGroupTypeId: 1,
+                    isRiskGroup: false,
                     isCustom: false,
                     isDayOff: true
                 };
@@ -7364,6 +7354,10 @@
                         if (endInput) endInput.value = '17:00';
                         if (breakInput) breakInput.value = '0';
                         if (spansCheckbox) spansCheckbox.checked = false;
+                        const groupSelect = document.getElementById('customWorkGroupType');
+                        const riskCheckbox = document.getElementById('customRiskGroup');
+                        if (groupSelect) groupSelect.value = '1';
+                        if (riskCheckbox) riskCheckbox.checked = false;
                         
                         // Reset break buttons - set 0 dk as active
                         document.querySelectorAll('.break-btn[data-break]').forEach(b => b.classList.remove('active'));
@@ -7386,6 +7380,8 @@
                     spans: document.getElementById('customSpansNextDay').checked,
                     breakMinutes: parseInt(document.getElementById('customBreak').value) || 0,
                     color: '#64748B',
+                    workGroupTypeId: parseInt(document.getElementById('customWorkGroupType').value) || 1,
+                    isRiskGroup: document.getElementById('customRiskGroup').checked,
                     isCustom: true
                 };
                 
@@ -7730,7 +7726,9 @@
             spansNextDay: state.selectedTemplate.spans,
             breakMinutes: state.selectedTemplate.breakMinutes || 0,
             isDayOff: state.selectedTemplate.isDayOff || false,
-            overnightHoursMode: overnightHoursMode
+            overnightHoursMode: overnightHoursMode,
+            workGroupTypeId: state.selectedTemplate.workGroupTypeId || 1,
+            isRiskGroup: !!state.selectedTemplate.isRiskGroup
         };
         
         try {
@@ -8304,7 +8302,8 @@
                         positionType: positionType || null,
                         academicTitle: positionType === 'Academic' ? (document.getElementById('employeeAcademicTitle')?.value || null) : null,
                         shiftScore: parseInt(document.getElementById('employeeShiftScore')?.value) || 100,
-                        isNonHealthServices: document.getElementById('employeeIsNonHealthServices')?.checked || false
+                        isNonHealthServices: document.getElementById('employeeIsNonHealthServices')?.checked || false,
+                        hasDoubleTicketRight: document.getElementById('employeeHasDoubleTicketRight')?.checked || false
                     };
                     
                     const response = await fetch('/api/employees', {
@@ -8363,7 +8362,8 @@
                         positionType: positionType || null,
                         academicTitle: positionType === 'Academic' ? (document.getElementById('editEmployeeAcademicTitle')?.value || null) : null,
                         shiftScore: parseInt(document.getElementById('editEmployeeShiftScore')?.value) || 100,
-                        isNonHealthServices: document.getElementById('editEmployeeIsNonHealthServices')?.checked || false
+                        isNonHealthServices: document.getElementById('editEmployeeIsNonHealthServices')?.checked || false,
+                        hasDoubleTicketRight: document.getElementById('editEmployeeHasDoubleTicketRight')?.checked || false
                     };
                     
                     const response = await fetch(`/api/employees/${employeeId}`, {

@@ -13,6 +13,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<Organization> Organizations => Set<Organization>();
     public DbSet<UnitType> UnitTypes => Set<UnitType>();
+    public DbSet<UnitTypeTemplate> UnitTypeTemplates => Set<UnitTypeTemplate>();
     public DbSet<Unit> Units => Set<Unit>();
     public DbSet<Employee> Employees => Set<Employee>();
     public DbSet<ShiftTemplate> ShiftTemplates => Set<ShiftTemplate>();
@@ -29,6 +30,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<SavedPayroll> SavedPayrolls => Set<SavedPayroll>();
     public DbSet<SystemSettings> SystemSettings => Set<SystemSettings>();
     public DbSet<AdminUser> AdminUsers => Set<AdminUser>();
+    public DbSet<BordroSabitleri> BordroSabitleri => Set<BordroSabitleri>();
+    public DbSet<BordroSabitleriGecmis> BordroSabitleriGecmis => Set<BordroSabitleriGecmis>();
+    public DbSet<BordroSabitleriTemplate> BordroSabitleriTemplates => Set<BordroSabitleriTemplate>();
+    public DbSet<BordroResult4A> BordroResults4A => Set<BordroResult4A>();
+    public DbSet<BordroResult4B> BordroResults4B => Set<BordroResult4B>();
+    public DbSet<BordroYetkileri> BordroYetkileri => Set<BordroYetkileri>();
+    public DbSet<PersonelNobetPuan> PersonelNobetPuan => Set<PersonelNobetPuan>();
     
     // Module System
     public DbSet<Module> Modules => Set<Module>();
@@ -90,6 +98,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .WithMany(o => o.UnitTypes)
                 .HasForeignKey(e => e.OrganizationId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // UnitTypeTemplate configuration
+        builder.Entity<UnitTypeTemplate>(entity =>
+        {
+            entity.HasIndex(e => e.Name).IsUnique();
         });
 
         // Unit configuration
@@ -192,6 +206,79 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .WithMany()
                 .HasForeignKey(e => e.LeaveTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<BordroSabitleri>(entity =>
+        {
+            entity.HasIndex(e => new { e.OrganizationId, e.Key });
+            entity.HasIndex(e => new { e.OrganizationId, e.CadreType });
+            entity.HasOne(e => e.Organization)
+                .WithMany()
+                .HasForeignKey(e => e.OrganizationId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<BordroSabitleriGecmis>(entity =>
+        {
+            entity.HasIndex(e => new { e.OrganizationId, e.SabitId });
+            entity.HasOne(e => e.Organization)
+                .WithMany()
+                .HasForeignKey(e => e.OrganizationId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<BordroSabitleriTemplate>(entity =>
+        {
+            entity.HasIndex(e => e.Key);
+            entity.HasIndex(e => new { e.Key, e.CadreType });
+        });
+
+        builder.Entity<BordroResult4A>(entity =>
+        {
+            entity.HasIndex(e => new { e.OrganizationId, e.EmployeeId, e.Year, e.Month, e.YogunBakimVar });
+            entity.HasOne(e => e.Organization)
+                .WithMany()
+                .HasForeignKey(e => e.OrganizationId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Employee)
+                .WithMany()
+                .HasForeignKey(e => e.EmployeeId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<BordroResult4B>(entity =>
+        {
+            entity.HasIndex(e => new { e.OrganizationId, e.EmployeeId, e.Year, e.Month, e.YogunBakimVar });
+            entity.HasOne(e => e.Organization)
+                .WithMany()
+                .HasForeignKey(e => e.OrganizationId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Employee)
+                .WithMany()
+                .HasForeignKey(e => e.EmployeeId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<BordroYetkileri>(entity =>
+        {
+            entity.HasIndex(e => new { e.OrganizationId, e.UnitId, e.TcKimlik });
+            entity.HasOne(e => e.Organization)
+                .WithMany()
+                .HasForeignKey(e => e.OrganizationId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Unit)
+                .WithMany()
+                .HasForeignKey(e => e.UnitId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<PersonelNobetPuan>(entity =>
+        {
+            entity.HasIndex(e => new { e.OrganizationId, e.TcKimlik });
+            entity.HasOne(e => e.Organization)
+                .WithMany()
+                .HasForeignKey(e => e.OrganizationId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         // EmployeeAvailability configuration

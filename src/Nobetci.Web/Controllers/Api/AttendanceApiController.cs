@@ -90,6 +90,10 @@ public class AttendanceApiController : ControllerBase
             return NotFound(new ApiResponse { Success = false, Error = "Employee not found" });
         }
 
+        var employeeUnit = employee.UnitId.HasValue
+            ? await _context.Units.Include(u => u.UnitType).FirstOrDefaultAsync(u => u.Id == employee.UnitId.Value)
+            : null;
+
         var date = request.Date ?? DateOnly.FromDateTime(DateTime.Now);
         var time = request.Time ?? TimeOnly.FromDateTime(DateTime.Now);
 
@@ -116,6 +120,10 @@ public class AttendanceApiController : ControllerBase
             existingRecord.SourceIdentifier = GetSourceIdentifier();
             existingRecord.CheckInLocation = request.Location;
             existingRecord.UpdatedAt = DateTime.UtcNow;
+            existingRecord.WorkGroupTypeId = request.WorkGroupTypeId
+                ?? existingRecord.WorkGroupTypeId
+                ?? GetDefaultWorkGroupTypeId(employeeUnit);
+            existingRecord.IsRiskGroup = request.IsRiskGroup ?? existingRecord.IsRiskGroup;
             attendance = existingRecord;
         }
         else
@@ -129,7 +137,9 @@ public class AttendanceApiController : ControllerBase
                 Source = AttendanceSource.Api,
                 SourceIdentifier = GetSourceIdentifier(),
                 CheckInLocation = request.Location,
-                Notes = request.Notes
+                Notes = request.Notes,
+                WorkGroupTypeId = request.WorkGroupTypeId ?? GetDefaultWorkGroupTypeId(employeeUnit),
+                IsRiskGroup = request.IsRiskGroup ?? GetDefaultRiskGroup(employeeUnit)
             };
             _context.TimeAttendances.Add(attendance);
         }
@@ -180,6 +190,10 @@ public class AttendanceApiController : ControllerBase
             return NotFound(new ApiResponse { Success = false, Error = "Employee not found" });
         }
 
+        var employeeUnit = employee.UnitId.HasValue
+            ? await _context.Units.Include(u => u.UnitType).FirstOrDefaultAsync(u => u.Id == employee.UnitId.Value)
+            : null;
+
         var date = request.Date ?? DateOnly.FromDateTime(DateTime.Now);
         var time = request.Time ?? TimeOnly.FromDateTime(DateTime.Now);
 
@@ -199,7 +213,9 @@ public class AttendanceApiController : ControllerBase
                 Source = AttendanceSource.Api,
                 SourceIdentifier = GetSourceIdentifier(),
                 CheckOutLocation = request.Location,
-                Notes = request.Notes
+                Notes = request.Notes,
+                WorkGroupTypeId = request.WorkGroupTypeId ?? GetDefaultWorkGroupTypeId(employeeUnit),
+                IsRiskGroup = request.IsRiskGroup ?? GetDefaultRiskGroup(employeeUnit)
             };
             _context.TimeAttendances.Add(attendance);
         }
@@ -209,6 +225,10 @@ public class AttendanceApiController : ControllerBase
             attendance.CheckOutToNextDay = request.SpansNextDay;
             attendance.CheckOutLocation = request.Location;
             attendance.UpdatedAt = DateTime.UtcNow;
+            attendance.WorkGroupTypeId = request.WorkGroupTypeId
+                ?? attendance.WorkGroupTypeId
+                ?? GetDefaultWorkGroupTypeId(employeeUnit);
+            attendance.IsRiskGroup = request.IsRiskGroup ?? attendance.IsRiskGroup;
 
             // Calculate worked hours
             if (attendance.CheckInTime.HasValue)
@@ -297,6 +317,13 @@ public class AttendanceApiController : ControllerBase
         attendance.SourceIdentifier = GetSourceIdentifier();
         attendance.Notes = request.Notes;
         attendance.UpdatedAt = DateTime.UtcNow;
+
+        var employeeUnit = employee.UnitId.HasValue
+            ? await _context.Units.Include(u => u.UnitType).FirstOrDefaultAsync(u => u.Id == employee.UnitId.Value)
+            : null;
+
+        attendance.WorkGroupTypeId = request.WorkGroupTypeId ?? attendance.WorkGroupTypeId ?? GetDefaultWorkGroupTypeId(employeeUnit);
+        attendance.IsRiskGroup = request.IsRiskGroup ?? (existing == null ? GetDefaultRiskGroup(employeeUnit) : attendance.IsRiskGroup);
 
         // Calculate worked hours
         if (request.CheckInTime.HasValue && request.CheckOutTime.HasValue)
@@ -512,7 +539,25 @@ public class AttendanceApiController : ControllerBase
         }
 
         var totalMinutes = checkOutMinutes - checkInMinutes;
-        return Math.Round(totalMinutes / 60m, 2);
+        return RoundToHalfHour(totalMinutes / 60m);
+    }
+
+    private static int GetDefaultWorkGroupTypeId(Unit? unit)
+    {
+        if (unit?.UnitType?.Name?.Contains("yoğun", StringComparison.OrdinalIgnoreCase) == true)
+            return (int)WorkGroupType.IntensiveCare;
+
+        return (int)WorkGroupType.Normal;
+    }
+
+    private static bool GetDefaultRiskGroup(Unit? unit)
+    {
+        return unit?.UnitType?.Name?.Contains("radyasyon", StringComparison.OrdinalIgnoreCase) == true;
+    }
+
+    private static decimal RoundToHalfHour(decimal hours)
+    {
+        return Math.Round(hours * 2, MidpointRounding.AwayFromZero) / 2m;
     }
 
     #endregion
@@ -548,6 +593,8 @@ public class CheckInRequest
     public TimeOnly? Time { get; set; }
     public string? Location { get; set; }
     public string? Notes { get; set; }
+    public int? WorkGroupTypeId { get; set; }
+    public bool? IsRiskGroup { get; set; }
 }
 
 public class CheckOutRequest
@@ -559,6 +606,8 @@ public class CheckOutRequest
     public bool SpansNextDay { get; set; }
     public string? Location { get; set; }
     public string? Notes { get; set; }
+    public int? WorkGroupTypeId { get; set; }
+    public bool? IsRiskGroup { get; set; }
 }
 
 public class AttendanceRecordRequest
@@ -576,6 +625,8 @@ public class AttendanceRecordRequest
     public AttendanceType Type { get; set; } = AttendanceType.Normal;
     public string? Notes { get; set; }
     public bool Overwrite { get; set; }
+    public int? WorkGroupTypeId { get; set; }
+    public bool? IsRiskGroup { get; set; }
 }
 
 #endregion

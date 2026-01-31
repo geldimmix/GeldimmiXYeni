@@ -1,0 +1,358 @@
+@model Nobetci.Web.Models.BordroSabitlerViewModel
+@{
+    ViewData["Title"] = "Bordro Sabitleri";
+    var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+    var keys = new[]
+    {
+        "MEMUR_MAAS_KATSAYISI",
+        "YOGUN_BAKIM_CARPANI",
+        "BAYRAM_NOBETI_CARPANI",
+        "BAYRAM_NOBETI_YOGUN_BAKIM_CARPANI",
+        "BAYRAM_FARKI_CARPANI",
+        "DAMGA_VERGISI_ORANI",
+        "MALULIYET_YASLILIK_EMEKLILIK_DEV_ORANI",
+        "GSS_DEV_ORANI",
+        "KISA_VAD_SIG_KOL_PRIM_ORANI",
+        "MALULIYET_YASLILIK_EMEKLILIK_KISI_ORANI",
+        "GSS_KISI_ORANI"
+    };
+}
+
+<div class="container" style="max-width:1200px;">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <div>
+            <h2 class="mb-1">@(isTurkish ? "Bordro Sabitleri" : "Payroll Constants")</h2>
+            <div class="text-muted" style="font-size:0.9rem;">
+                @(isTurkish ? "Aktif sabitler bordro hesaplamasında kullanılır." : "Active constants are used in payroll calculations.")
+            </div>
+        </div>
+        <a class="btn btn-outline-secondary" href="/App/Payroll">
+            @(isTurkish ? "Bordroya Dön" : "Back to Payroll")
+        </a>
+    </div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small">@(isTurkish ? "Sabit Sayısı" : "Total Constants")</div>
+                        <div class="fs-4 fw-semibold">@Model.Sabitler.Count</div>
+                    </div>
+                    <span class="badge rounded-pill text-bg-light border">@(isTurkish ? "Kurum Bazlı" : "Organization Scoped")</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small">@(isTurkish ? "Birim Tipi Sayısı" : "Unit Types")</div>
+                        <div class="fs-4 fw-semibold">@Model.UnitTypes.Count</div>
+                    </div>
+                    <span class="badge rounded-pill text-bg-light border">@(isTurkish ? "Kurum Bazlı" : "Organization Scoped")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.HasSabitTemplateUpdates || Model.HasUnitTypeTemplateUpdates)
+    {
+        <div class="alert alert-warning d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <div>
+                <div class="fw-semibold">
+                    @(isTurkish ? "Yeni şablon güncellemeleri var" : "Template updates are available")
+                </div>
+                <div class="text-muted small">
+                    @(isTurkish
+                        ? $"Sabitler: {Model.SabitTemplateUpdateCount}, Birim Tipleri: {Model.UnitTypeTemplateUpdateCount}. İstersen şimdi senkronla veya kendi değerlerini koru."
+                        : $"Constants: {Model.SabitTemplateUpdateCount}, Unit Types: {Model.UnitTypeTemplateUpdateCount}. You can sync now or keep your custom values.")
+                </div>
+                @if (Model.SabitTemplateUpdateDetails.Any() || Model.UnitTypeTemplateUpdateDetails.Any())
+                {
+                    <div class="mt-2 d-flex flex-wrap gap-2">
+                        @foreach (var item in Model.SabitTemplateUpdateDetails.Take(6))
+                        {
+                            <span class="badge rounded-pill text-bg-light border">@item</span>
+                        }
+                        @foreach (var item in Model.UnitTypeTemplateUpdateDetails.Take(6))
+                        {
+                            <span class="badge rounded-pill text-bg-light border">@item</span>
+                        }
+                        @if (Model.SabitTemplateUpdateDetails.Count + Model.UnitTypeTemplateUpdateDetails.Count > 12)
+                        {
+                            <span class="badge rounded-pill text-bg-light border">
+                                +@(Model.SabitTemplateUpdateDetails.Count + Model.UnitTypeTemplateUpdateDetails.Count - 12)
+                            </span>
+                        }
+                    </div>
+                }
+            </div>
+            <div class="d-flex gap-2">
+                @if (Model.HasSabitTemplateUpdates)
+                {
+                    <form method="post" asp-action="SabitTemplateSync" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button class="btn btn-sm btn-warning" type="submit">
+                            @(isTurkish ? "Sabitleri Senkronla" : "Sync Constants")
+                        </button>
+                    </form>
+                }
+                @if (Model.HasUnitTypeTemplateUpdates)
+                {
+                    <form method="post" asp-action="UnitTypeTemplateSync" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button class="btn btn-sm btn-warning" type="submit">
+                            @(isTurkish ? "Birim Tiplerini Senkronla" : "Sync Unit Types")
+                        </button>
+                    </form>
+                }
+            </div>
+        </div>
+    }
+
+    <ul class="nav nav-tabs" id="bordroTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="sabitler-tab" data-bs-toggle="tab" data-bs-target="#sabitler-pane" type="button" role="tab">
+                @(isTurkish ? "Bordro Sabitleri" : "Payroll Constants")
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="unittypes-tab" data-bs-toggle="tab" data-bs-target="#unittypes-pane" type="button" role="tab">
+                @(isTurkish ? "Birim Tipi Katsayıları" : "Unit Type Coefficients")
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content border border-top-0 rounded-bottom p-3 bg-body-tertiary shadow-sm mb-4">
+        <div class="tab-pane fade show active" id="sabitler-pane" role="tabpanel">
+            <div class="card border-0">
+                <div class="card-body p-0">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2">
+                        <div class="text-muted small">
+                            @(isTurkish ? "Bordro hesaplarında kullanılan sabit değerler." : "Constants used in payroll calculations.")
+                        </div>
+                        <div class="badge text-bg-light border">
+                            @(isTurkish ? "Kurum Bazlı" : "Organization Scoped")
+                        </div>
+                    </div>
+
+                    <div class="card mb-4 border shadow-sm">
+                        <div class="card-header fw-semibold bg-light">@(isTurkish ? "Sabit Ekle / Güncelle" : "Add / Update Constant")</div>
+                        <div class="card-body">
+                            <form method="post" asp-action="SabitKaydet">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="Id" value="@(Model.NewSabit.Id?.ToString() ?? "")" />
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label">@(isTurkish ? "Sabit Adı" : "Key")</label>
+                                        <input class="form-control" name="Key" list="bordroKeyList" value="@Model.NewSabit.Key" required />
+                                        <datalist id="bordroKeyList">
+                                            @foreach (var key in keys)
+                                            {
+                                                <option value="@key"></option>
+                                            }
+                                        </datalist>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">@(isTurkish ? "Değer" : "Value")</label>
+                                        <input class="form-control" name="Value" type="number" step="0.000001" value="@Model.NewSabit.Value.ToString("0.######", System.Globalization.CultureInfo.InvariantCulture)" required />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">@(isTurkish ? "Tip" : "Type")</label>
+                                        <select class="form-select" name="ValueType">
+                                            <option value="ORAN" selected="@(Model.NewSabit.ValueType == "ORAN")">ORAN</option>
+                                            <option value="TUTAR" selected="@(Model.NewSabit.ValueType == "TUTAR")">TUTAR</option>
+                                            <option value="YUZDE" selected="@(Model.NewSabit.ValueType == "YUZDE")">YUZDE</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">@(isTurkish ? "Kadro" : "Cadre")</label>
+                                        <select class="form-select" name="CadreType">
+                                            <option value="" selected="@(string.IsNullOrEmpty(Model.NewSabit.CadreType))">GENEL</option>
+                                            <option value="4A" selected="@(Model.NewSabit.CadreType == "4A")">4A</option>
+                                            <option value="4B" selected="@(Model.NewSabit.CadreType == "4B")">4B</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">@(isTurkish ? "Durum" : "Status")</label>
+                                        <div class="form-check mt-2">
+                                            <input class="form-check-input" type="checkbox" name="IsActive" @(Model.NewSabit.IsActive ? "checked" : "") />
+                                            <label class="form-check-label">@(isTurkish ? "Aktif" : "Active")</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">@(isTurkish ? "Geçerlilik Başlangıç" : "Valid From")</label>
+                                        <input class="form-control" name="ValidFrom" type="date" value="@Model.NewSabit.ValidFrom.ToString("yyyy-MM-dd")" required />
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">@(isTurkish ? "Geçerlilik Bitiş" : "Valid To")</label>
+                                        <input class="form-control" name="ValidTo" type="date" value="@(Model.NewSabit.ValidTo?.ToString("yyyy-MM-dd") ?? "")" />
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">@(isTurkish ? "Birimler (ID)" : "Units (ID)")</label>
+                                        <input class="form-control" name="WorkingUnitIds" placeholder="1,2,3" value="@Model.NewSabit.WorkingUnitIds" />
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">@(isTurkish ? "Açıklama" : "Description")</label>
+                                        <input class="form-control" name="Description" value="@Model.NewSabit.Description" />
+                                    </div>
+                                    <div class="col-md-12 text-end">
+                                        <button class="btn btn-primary" type="submit">
+                                            @((Model.NewSabit.Id.HasValue ? (isTurkish ? "Güncelle" : "Update") : (isTurkish ? "Kaydet" : "Save")))
+                                        </button>
+                                        @if (Model.NewSabit.Id.HasValue)
+                                        {
+                                            <a class="btn btn-outline-secondary ms-2" href="/Bordro/Sabitler">
+                                                @(isTurkish ? "Yeni Kayıt" : "New Entry")
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card border shadow-sm">
+                        <div class="card-header fw-semibold bg-light">@(isTurkish ? "Mevcut Sabitler" : "Current Constants")</div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>@(isTurkish ? "Anahtar" : "Key")</th>
+                                        <th class="text-end">@(isTurkish ? "Değer" : "Value")</th>
+                                        <th>@(isTurkish ? "Tip" : "Type")</th>
+                                        <th>@(isTurkish ? "Kadro" : "Cadre")</th>
+                                        <th>@(isTurkish ? "Başlangıç" : "From")</th>
+                                        <th>@(isTurkish ? "Bitiş" : "To")</th>
+                                        <th>@(isTurkish ? "Aktif" : "Active")</th>
+                                        <th class="text-end">@(" ")</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var sabit in Model.Sabitler)
+                                    {
+                                        <tr>
+                                            <td class="fw-semibold">@sabit.Key</td>
+                                            <td class="text-end">@sabit.Value.ToString("0.######")</td>
+                                            <td><span class="badge text-bg-light border">@sabit.ValueType</span></td>
+                                            <td>@(string.IsNullOrEmpty(sabit.CadreType) ? "GENEL" : sabit.CadreType)</td>
+                                            <td>@sabit.ValidFrom.ToString("dd.MM.yyyy")</td>
+                                            <td>@(sabit.ValidTo?.ToString("dd.MM.yyyy") ?? "-")</td>
+                                            <td>@(sabit.IsActive ? (isTurkish ? "Evet" : "Yes") : (isTurkish ? "Hayır" : "No"))</td>
+                                            <td class="text-end">
+                                                <a class="btn btn-sm btn-outline-primary me-1" href="/Bordro/Sabitler?editId=@sabit.Id">
+                                                    @(isTurkish ? "Düzenle" : "Edit")
+                                                </a>
+                                                @if (sabit.IsActive)
+                                                {
+                                                    <form method="post" asp-action="SabitPasiflestir" class="d-inline">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="id" value="@sabit.Id" />
+                                                        <button class="btn btn-sm btn-outline-danger" type="submit">
+                                                            @(isTurkish ? "Pasifleştir" : "Deactivate")
+                                                        </button>
+                                                    </form>
+                                                }
+                                                else
+                                                {
+                                                    <form method="post" asp-action="SabitAktiflestir" class="d-inline">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="id" value="@sabit.Id" />
+                                                        <button class="btn btn-sm btn-outline-success" type="submit">
+                                                            @(isTurkish ? "Aktifleştir" : "Activate")
+                                                        </button>
+                                                    </form>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                    @if (!Model.Sabitler.Any())
+                                    {
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted py-4">
+                                                @(isTurkish ? "Henüz sabit eklenmedi." : "No constants yet.")
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="unittypes-pane" role="tabpanel">
+            <div class="card border-0">
+                <div class="card-body p-0">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2">
+                        <div class="text-muted small">
+                            @(isTurkish ? "Birim tipi katsayıları, bordro hesaplamalarında varsayılan çarpan olarak kullanılır." : "Unit type coefficients are used as default multipliers in payroll calculations.")
+                        </div>
+                        <div class="badge text-bg-light border">
+                            @(isTurkish ? "Kurum Bazlı" : "Organization Scoped")
+                        </div>
+                    </div>
+
+                    <div class="card border shadow-sm">
+                        <div class="card-header fw-semibold bg-light">@(isTurkish ? "Birim Tipi Katsayıları" : "Unit Type Coefficients")</div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>@(isTurkish ? "Birim Tipi" : "Unit Type")</th>
+                                        <th class="text-end">@(isTurkish ? "Katsayı" : "Coefficient")</th>
+                                        <th>@(isTurkish ? "Aktif" : "Active")</th>
+                                        <th class="text-end">@(" ")</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var unitType in Model.UnitTypes)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    @if (!string.IsNullOrWhiteSpace(unitType.Color))
+                                                    {
+                                                        <span class="rounded-circle d-inline-block" style="width:10px;height:10px;background:@unitType.Color;"></span>
+                                                    }
+                                                    <span class="fw-semibold">@unitType.Name</span>
+                                                </div>
+                                                @if (!string.IsNullOrWhiteSpace(unitType.NameEn))
+                                                {
+                                                    <div class="text-muted" style="font-size:0.85rem;">@unitType.NameEn</div>
+                                                }
+                                            </td>
+                                            <td class="text-end" style="width:180px;">
+                                                <form method="post" asp-action="UnitTypeKatsayiGuncelle" class="d-flex justify-content-end gap-2">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="id" value="@unitType.Id" />
+                                                    <input class="form-control form-control-sm text-end" name="defaultCoefficient" type="number" step="0.01" min="0.01" value="@unitType.DefaultCoefficient.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" style="max-width:120px;" />
+                                                    <button class="btn btn-sm btn-outline-primary" type="submit">
+                                                        @(isTurkish ? "Güncelle" : "Update")
+                                                    </button>
+                                                </form>
+                                            </td>
+                                            <td>@(unitType.IsActive ? (isTurkish ? "Evet" : "Yes") : (isTurkish ? "Hayır" : "No"))</td>
+                                            <td class="text-end"></td>
+                                        </tr>
+                                    }
+                                    @if (!Model.UnitTypes.Any())
+                                    {
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted py-4">
+                                                @(isTurkish ? "Birim tipi bulunamadı." : "No unit types found.")
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

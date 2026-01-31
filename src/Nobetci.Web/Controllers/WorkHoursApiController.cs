@@ -151,6 +151,13 @@ public class WorkHoursApiController : ControllerBase
                 attendance.CheckOutTime = time;
             }
 
+            var employeeUnit = employee.UnitId.HasValue
+                ? await _context.Units.Include(u => u.UnitType).FirstOrDefaultAsync(u => u.Id == employee.UnitId.Value)
+                : null;
+
+            attendance.WorkGroupTypeId = request.WorkGroupTypeId ?? attendance.WorkGroupTypeId ?? GetDefaultWorkGroupTypeId(employeeUnit);
+            attendance.IsRiskGroup = request.IsRiskGroup ?? (attendance.Id == 0 ? GetDefaultRiskGroup(employeeUnit) : attendance.IsRiskGroup);
+
             // 7. Calculate worked hours if both times exist
             if (attendance.CheckInTime.HasValue && attendance.CheckOutTime.HasValue)
             {
@@ -169,7 +176,7 @@ public class WorkHoursApiController : ControllerBase
                     duration = checkOut.ToTimeSpan() - checkIn.ToTimeSpan();
                 }
                 
-                attendance.WorkedHours = (decimal)duration.TotalHours;
+                attendance.WorkedHours = RoundToHalfHour((decimal)duration.TotalHours);
             }
 
             // 8. Update request counter
@@ -324,6 +331,24 @@ public class WorkHoursApiController : ControllerBase
             credential.UpdatedAt = DateTime.UtcNow;
         }
     }
+
+    private static int GetDefaultWorkGroupTypeId(Unit? unit)
+    {
+        if (unit?.UnitType?.Name?.Contains("yoğun", StringComparison.OrdinalIgnoreCase) == true)
+            return (int)WorkGroupType.IntensiveCare;
+
+        return (int)WorkGroupType.Normal;
+    }
+
+    private static bool GetDefaultRiskGroup(Unit? unit)
+    {
+        return unit?.UnitType?.Name?.Contains("radyasyon", StringComparison.OrdinalIgnoreCase) == true;
+    }
+
+    private static decimal RoundToHalfHour(decimal hours)
+    {
+        return Math.Round(hours * 2, MidpointRounding.AwayFromZero) / 2m;
+    }
 }
 
 /// <summary>
@@ -350,6 +375,16 @@ public class AttendanceRecordRequest
     /// Time of the action (format: HH:mm)
     /// </summary>
     public TimeSpan? Time { get; set; }
+
+    /// <summary>
+    /// Work group type (1=Normal, 2=Special, 3=IntensiveCare)
+    /// </summary>
+    public int? WorkGroupTypeId { get; set; }
+
+    /// <summary>
+    /// Risk group flag (e.g., radiation)
+    /// </summary>
+    public bool? IsRiskGroup { get; set; }
 }
 
 public class ApiSuccessResponse

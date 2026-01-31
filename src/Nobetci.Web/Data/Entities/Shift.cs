@@ -74,6 +74,16 @@ public class Shift
     /// </summary>
     [MaxLength(500)]
     public string? Notes { get; set; }
+
+    /// <summary>
+    /// Work group type for this shift (1=Normal, 2=Special, 3=IntensiveCare)
+    /// </summary>
+    public int? WorkGroupTypeId { get; set; }
+
+    /// <summary>
+    /// Whether this shift is in a risk group (e.g., radiation)
+    /// </summary>
+    public bool IsRiskGroup { get; set; } = false;
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
