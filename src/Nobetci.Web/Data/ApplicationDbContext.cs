@@ -46,6 +46,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<CleaningQrAccess> CleaningQrAccesses => Set<CleaningQrAccess>();
     public DbSet<ActivityLog> ActivityLogs => Set<ActivityLog>();
     
+    // Contact form submissions
+    public DbSet<ContactSubmission> ContactSubmissions => Set<ContactSubmission>();
+
     // Blog System
     public DbSet<BlogPost> BlogPosts => Set<BlogPost>();
     
@@ -280,6 +283,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<AdminUser>(entity =>
         {
             entity.HasIndex(e => e.Username).IsUnique();
+        });
+
+        // ContactSubmission configuration
+        builder.Entity<ContactSubmission>(entity =>
+        {
+            entity.HasIndex(e => e.CreatedAtUtc);
         });
 
         // Module configuration

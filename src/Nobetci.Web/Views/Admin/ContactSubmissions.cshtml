@@ -1,0 +1,140 @@
+@model List<Nobetci.Web.Data.Entities.ContactSubmission>
+@{
+    ViewData["Title"] = "İletişim Formu";
+    Layout = "_AdminLayout";
+    var unreadCount = ViewBag.UnreadCount as int? ?? 0;
+}
+
+<div class="admin-header">
+    <h2>
+        <span>✉️</span>
+        İletişim Formu
+    </h2>
+    <div class="header-actions">
+        @if (unreadCount > 0)
+        {
+            <span class="badge badge-warning" style="font-size: 0.8rem; padding: 6px 12px;">@unreadCount okunmamış</span>
+        }
+        <span class="badge badge-info" style="font-size: 0.8rem; padding: 8px 14px;">Toplam: @ViewBag.TotalItems kayıt</span>
+        <a href="@Url.Action("ContactSubmissions", "Admin", new { unreadOnly = ViewBag.UnreadOnly == true ? (bool?)null : true })" class="btn btn-secondary" style="margin-left: 8px;">
+            @(ViewBag.UnreadOnly == true ? "Tümünü Göster" : "Sadece Okunmamış")
+        </a>
+    </div>
+</div>
+
+<div class="card" style="padding: 0; overflow: hidden;">
+    <div style="overflow-x: auto;">
+        <table class="table" style="margin: 0;">
+            <thead>
+                <tr>
+                    <th style="padding-left: 20px;">Tarih</th>
+                    <th>Ad Soyad</th>
+                    <th>E-posta</th>
+                    <th>Mesaj</th>
+                    <th style="text-align: center;">Okundu</th>
+                    <th style="text-align: center; padding-right: 20px;">İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="6">
+                            <div class="empty-state" style="padding: 60px 20px;">
+                                <div class="icon">✉️</div>
+                                <div class="title">İletişim mesajı yok</div>
+                                <p style="color: var(--text-muted); margin-top: 8px;">Formdan gelen mesajlar burada listelenir</p>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @foreach (var item in Model)
+                {
+                    <tr class="@(item.IsRead ? "" : "contact-unread")" style="@(item.IsRead ? "" : "background: #fefce8;")">
+                        <td style="white-space: nowrap; padding-left: 20px;">
+                            <div style="font-weight: 600; font-size: 0.85rem;">@item.CreatedAtUtc.ToLocalTime().ToString("dd MMM yyyy")</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">@item.CreatedAtUtc.ToLocalTime().ToString("HH:mm")</div>
+                        </td>
+                        <td style="font-weight: 500;">@item.Name</td>
+                        <td>
+                            <a href="mailto:@item.Email" style="color: var(--primary); text-decoration: none;">@item.Email</a>
+                        </td>
+                        <td style="max-width: 320px;">
+                            <div class="truncate" style="font-size: 0.9rem; line-height: 1.4;" title="@item.Message">@(item.Message.Length > 120 ? item.Message.Substring(0, 120) + "…" : item.Message)</div>
+                        </td>
+                        <td style="text-align: center;">
+                            @if (item.IsRead)
+                            {
+                                <span class="badge badge-success">Okundu</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-warning">Yeni</span>
+                            }
+                        </td>
+                        <td style="text-align: center; padding-right: 20px;">
+                            <button type="button" class="btn btn-sm btn-secondary btn-show-message" data-name="@item.Name" data-email="@item.Email">Detay</button>
+                            <div class="contact-full-message" style="display: none;">@item.Message</div>
+                            @if (!item.IsRead)
+                            {
+                                <form method="post" asp-controller="Admin" asp-action="MarkContactRead" asp-route-id="@item.Id" style="display: inline-block; margin-left: 4px;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-primary">Okundu</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (ViewBag.TotalPages > 1)
+{
+    <div class="pagination-bar" style="margin-top: 16px; display: flex; justify-content: center; gap: 8px;">
+        @for (var p = 1; p <= ViewBag.TotalPages; p++)
+        {
+            var current = (int)ViewBag.CurrentPage;
+            <a href="@Url.Action("ContactSubmissions", "Admin", new { page = p, unreadOnly = ViewBag.UnreadOnly })" class="btn @(p == current ? "btn-primary" : "btn-secondary")" style="min-width: 36px;">@p</a>
+        }
+    </div>
+}
+
+<div id="messageModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: white; border-radius: 12px; max-width: 500px; width: 100%; max-height: 90vh; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.2);">
+        <div style="padding: 20px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; font-size: 1.1rem;">Mesaj detayı</h3>
+            <button type="button" onclick="closeMessage()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+        </div>
+        <div style="padding: 20px; overflow-y: auto; max-height: 60vh;">
+            <p style="margin: 0 0 8px;"><strong>Ad:</strong> <span id="modalName"></span></p>
+            <p style="margin: 0 0 8px;"><strong>E-posta:</strong> <a id="modalEmail" href="#"></a></p>
+            <p style="margin: 0;"><strong>Mesaj:</strong></p>
+            <pre id="modalMessage" style="margin-top: 8px; white-space: pre-wrap; font-family: inherit; font-size: 0.9rem; background: var(--bg-main); padding: 12px; border-radius: 8px;"></pre>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('.btn-show-message').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        var name = this.getAttribute('data-name') || '';
+        var email = this.getAttribute('data-email') || '';
+        var msgEl = this.nextElementSibling;
+        var message = (msgEl && msgEl.classList.contains('contact-full-message')) ? msgEl.textContent : '';
+        document.getElementById('modalName').textContent = name;
+        var emailEl = document.getElementById('modalEmail');
+        emailEl.textContent = email;
+        emailEl.href = 'mailto:' + email;
+        document.getElementById('modalMessage').textContent = message;
+        document.getElementById('messageModal').style.display = 'flex';
+    });
+});
+function closeMessage() {
+    document.getElementById('messageModal').style.display = 'none';
+}
+document.getElementById('messageModal').addEventListener('click', function(e) {
+    if (e.target === this) closeMessage();
+});
+</script>
