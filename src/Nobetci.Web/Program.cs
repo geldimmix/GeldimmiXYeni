@@ -584,6 +584,19 @@ using (var scope = app.Services.CreateScope())
             CREATE INDEX IF NOT EXISTS ""IX_SavedPayrolls_OrgYearMonth"" ON ""SavedPayrolls"" (""OrganizationId"", ""Year"", ""Month"");
         ", "SavedPayrolls");
         
+        // Create ContactSubmissions table (contact form from site)
+        await SafeExecuteSql(@"
+            CREATE TABLE IF NOT EXISTS ""ContactSubmissions"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""Name"" VARCHAR(100) NOT NULL,
+                ""Email"" VARCHAR(256) NOT NULL,
+                ""Message"" VARCHAR(2000) NOT NULL,
+                ""CreatedAtUtc"" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                ""IsRead"" BOOLEAN NOT NULL DEFAULT FALSE
+            );
+            CREATE INDEX IF NOT EXISTS ""IX_ContactSubmissions_CreatedAtUtc"" ON ""ContactSubmissions"" (""CreatedAtUtc"");
+        ", "ContactSubmissions");
+        
         // Create LeaveTypes table
         await SafeExecuteSql(@"
             CREATE TABLE IF NOT EXISTS ""LeaveTypes"" (

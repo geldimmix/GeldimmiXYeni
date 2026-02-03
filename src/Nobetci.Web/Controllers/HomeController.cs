@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Nobetci.Web.Data;
+using Nobetci.Web.Data.Entities;
 using Nobetci.Web.Models;
 using Nobetci.Web.Resources;
+using Nobetci.Web.Services;
 
 namespace Nobetci.Web.Controllers;
 
@@ -15,25 +17,26 @@ public class HomeController : Controller
     private readonly ILogger<HomeController> _logger;
     private readonly IStringLocalizer<SharedResource> _localizer;
     private readonly ApplicationDbContext _context;
+    private readonly IEmailSender _emailSender;
+    private readonly IConfiguration _configuration;
 
     public HomeController(
         ILogger<HomeController> logger,
         IStringLocalizer<SharedResource> localizer,
-        ApplicationDbContext context)
+        ApplicationDbContext context,
+        IEmailSender emailSender,
+        IConfiguration configuration)
     {
         _logger = logger;
         _localizer = localizer;
         _context = context;
+        _emailSender = emailSender;
+        _configuration = configuration;
     }
 
     public IActionResult Index()
     {
-        // If user is already logged in, redirect to dashboard
-        if (User.Identity?.IsAuthenticated == true)
-        {
-            return Redirect("/app");
-        }
-        
+        // Always show landing page so users can go from App (logo) to root and use contact form
         return View();
     }
 
@@ -105,6 +108,57 @@ public class HomeController : Controller
     public IActionResult Privacy()
     {
         return View();
+    }
+
+    /// <summary>
+    /// Contact form - saves to DB and sends email via Resend; admin can view in /admin/contacts
+    /// </summary>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Contact(ContactViewModel model)
+    {
+        var isTurkish = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "tr";
+        if (!ModelState.IsValid)
+        {
+            TempData["ContactError"] = isTurkish ? "Lütfen tüm alanları doğru doldurun." : "Please fill all fields correctly.";
+            return RedirectToAction(nameof(Index), new { showContact = 1 });
+        }
+
+        var submission = new ContactSubmission
+        {
+            Name = model.Name.Trim(),
+            Email = model.Email.Trim(),
+            Message = model.Message.Trim(),
+            CreatedAtUtc = DateTime.UtcNow
+        };
+        _context.ContactSubmissions.Add(submission);
+        await _context.SaveChangesAsync();
+
+        var toEmail = _configuration["Contact:ToEmail"] ?? _configuration["Email:ContactTo"] ?? "geldimmix@gmail.com";
+        var subject = isTurkish
+            ? $"İletişim Formu: {model.Name}"
+            : $"Contact Form: {model.Name}";
+        var body = $@"
+<h3>{(isTurkish ? "Yeni iletişim formu mesajı" : "New contact form message")}</h3>
+<p><strong>{(isTurkish ? "Ad Soyad" : "Name")}:</strong> {System.Net.WebUtility.HtmlEncode(model.Name)}</p>
+<p><strong>E-mail:</strong> {System.Net.WebUtility.HtmlEncode(model.Email)}</p>
+<p><strong>{(isTurkish ? "Mesaj" : "Message")}:</strong></p>
+<pre style=""white-space:pre-wrap;font-family:inherit;"">{System.Net.WebUtility.HtmlEncode(model.Message)}</pre>
+";
+
+        try
+        {
+            await _emailSender.SendEmailAsync(toEmail, subject, body);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Contact form email failed to {To}", toEmail);
+        }
+
+        TempData["ContactSuccess"] = isTurkish
+            ? "Mesajınız alındı, en kısa sürede dönüş yapacağız."
+            : "Your message has been received. We will get back to you soon.";
+        return RedirectToAction(nameof(Index), new { showContact = 1 });
     }
 
     /// <summary>

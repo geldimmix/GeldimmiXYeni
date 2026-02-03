@@ -252,6 +252,50 @@ public class AdminController : Controller
         return View(logs);
     }
 
+    // GET: /admin/contacts
+    public async Task<IActionResult> ContactSubmissions(int page = 1, bool? unreadOnly = null)
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction(nameof(Login));
+
+        const int pageSize = 20;
+        var query = _context.ContactSubmissions.AsQueryable();
+        if (unreadOnly == true)
+            query = query.Where(c => !c.IsRead);
+
+        var totalItems = await query.CountAsync();
+        var totalPages = Math.Max(1, (int)Math.Ceiling(totalItems / (double)pageSize));
+        var list = await query
+            .OrderByDescending(c => c.CreatedAtUtc)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = totalPages;
+        ViewBag.TotalItems = totalItems;
+        ViewBag.UnreadOnly = unreadOnly;
+        ViewBag.UnreadCount = await _context.ContactSubmissions.CountAsync(c => !c.IsRead);
+        return View(list);
+    }
+
+    // POST: /admin/contacts/markread/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> MarkContactRead(int id)
+    {
+        if (!IsAdminLoggedIn())
+            return RedirectToAction(nameof(Login));
+
+        var c = await _context.ContactSubmissions.FindAsync(id);
+        if (c != null)
+        {
+            c.IsRead = true;
+            await _context.SaveChangesAsync();
+        }
+        return RedirectToAction(nameof(ContactSubmissions));
+    }
+
     // GET: /admin/stats
     public async Task<IActionResult> Stats()
     {

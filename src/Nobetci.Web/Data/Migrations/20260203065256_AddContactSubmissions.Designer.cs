@@ -2,18 +2,21 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Nobetci.Web.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Nobetci.Web.Migrations
+namespace Nobetci.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260203065256_AddContactSubmissions")]
+    partial class AddContactSubmissions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -739,455 +742,6 @@ namespace Nobetci.Web.Migrations
                     b.ToTable("CleaningScheduleGroups");
                 });
 
-            modelBuilder.Entity("Nobetci.Web.Data.Entities.BordroResult4A", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("BayramFarkiNobetSaati")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("BayramFarkiToplamTutar")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal>("DamgaVergisi")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("EleGecenToplam")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("GenelToplamTutar")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<int>("Month")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("NobetPuani")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("NormalServisBayramSaati")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("NormalServisBayramToplamTutar")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("NormalServisNobetSaati")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("NormalServisNobetToplamTutar")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("SaatUcreti")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("YogunBakimBayramSaati")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("YogunBakimBayramToplamTutar")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("YogunBakimNobetSaati")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("YogunBakimNobetToplamTutar")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<bool>("YogunBakimVar")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("OrganizationId", "EmployeeId", "Year", "Month", "YogunBakimVar");
-
-                    b.ToTable("BordroResult4A");
-                });
-
-            modelBuilder.Entity("Nobetci.Web.Data.Entities.BordroResult4B", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("BayramFarkiNobetSaati")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("BayramFarkiToplamTutar")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal>("DamgaVergisi")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("EleGecenToplam")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("GelirToplami")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("GenelToplamTutarPek")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("GssDev")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("GssDevKesinti")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("GssKisi")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("KesintiToplami")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("KisaVadSigKolPrim")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("KisaVadSigKolPrimKesinti")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("MaluliyetYaslilikEmeklilikDev")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("MaluliyetYaslilikEmeklilikDevKesinti")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("MaluliyetYaslilikEmeklilikKisi")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<int>("Month")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("NobetPuani")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("NormalServisBayramSaati")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("NormalServisBayramToplamTutar")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("NormalServisNobetSaati")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("NormalServisNobetToplamTutar")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("SaatUcreti")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("YogunBakimBayramSaati")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("YogunBakimBayramToplamTutar")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("YogunBakimNobetSaati")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("YogunBakimNobetToplamTutar")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<bool>("YogunBakimVar")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("OrganizationId", "EmployeeId", "Year", "Month", "YogunBakimVar");
-
-                    b.ToTable("BordroResult4B");
-                });
-
-            modelBuilder.Entity("Nobetci.Web.Data.Entities.BordroSabitleri", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CadreType")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime>("ValidFrom")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("ValidTo")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal>("Value")
-                        .HasColumnType("numeric(10,6)");
-
-                    b.Property<string>("ValueType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("WorkingUnitIds")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrganizationId", "CadreType");
-
-                    b.HasIndex("OrganizationId", "Key");
-
-                    b.ToTable("BordroSabitleri");
-                });
-
-            modelBuilder.Entity("Nobetci.Web.Data.Entities.BordroSabitleriGecmis", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("ActionAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ActionBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("ActionType")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("CadreType")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime?>("NewValidFrom")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("NewValidTo")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal>("NewValue")
-                        .HasColumnType("numeric(10,6)");
-
-                    b.Property<string>("NewWorkingUnitIds")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<DateTime?>("OldValidFrom")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("OldValidTo")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal>("OldValue")
-                        .HasColumnType("numeric(10,6)");
-
-                    b.Property<string>("OldWorkingUnitIds")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SabitId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ValueType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrganizationId", "SabitId");
-
-                    b.ToTable("BordroSabitleriGecmis");
-                });
-
-            modelBuilder.Entity("Nobetci.Web.Data.Entities.BordroSabitleriTemplate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CadreType")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<decimal>("Value")
-                        .HasColumnType("numeric(10,6)");
-
-                    b.Property<string>("ValueType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("WorkingUnitIds")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Key");
-
-                    b.HasIndex("Key", "CadreType");
-
-                    b.ToTable("BordroSabitleriTemplates");
-                });
-
-            modelBuilder.Entity("Nobetci.Web.Data.Entities.BordroYetkileri", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("KadroTipiYetkisi")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("TcKimlik")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<int>("UnitId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UnitId");
-
-                    b.HasIndex("OrganizationId", "UnitId", "TcKimlik");
-
-                    b.ToTable("BordroYetkileri");
-                });
-
             modelBuilder.Entity("Nobetci.Web.Data.Entities.ContactSubmission", b =>
                 {
                     b.Property<int>("Id")
@@ -1325,9 +879,6 @@ namespace Nobetci.Web.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
-
-                    b.Property<bool>("HasDoubleTicketRight")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("IdentityNo")
                         .HasMaxLength(50)
@@ -2101,82 +1652,6 @@ namespace Nobetci.Web.Migrations
                     b.ToTable("QrMenuTables");
                 });
 
-            modelBuilder.Entity("Nobetci.Web.Data.Entities.PersonelNobetPuan", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AdiSoyadi")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("Iban")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<decimal>("IcapSaatUcreti")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Mezuniyet")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<decimal>("NormalSaatUcreti")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<string>("OncekiSoyadi")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("TcKimlik")
-                        .IsRequired()
-                        .HasMaxLength(11)
-                        .HasColumnType("character varying(11)");
-
-                    b.Property<string>("Unvan")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<int>("YPuan")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("YogunBakimSaatUcreti")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrganizationId", "TcKimlik");
-
-                    b.ToTable("PersonelNobetPuan");
-                });
-
             modelBuilder.Entity("Nobetci.Web.Data.Entities.SavedPayroll", b =>
                 {
                     b.Property<int>("Id")
@@ -2303,9 +1778,6 @@ namespace Nobetci.Web.Migrations
                     b.Property<bool>("IsHoliday")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsRiskGroup")
-                        .HasColumnType("boolean");
-
                     b.Property<bool>("IsWeekend")
                         .HasColumnType("boolean");
 
@@ -2333,9 +1805,6 @@ namespace Nobetci.Web.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("WorkGroupTypeId")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -2379,9 +1848,6 @@ namespace Nobetci.Web.Migrations
                     b.Property<bool>("IsGlobal")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsRiskGroup")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -2399,9 +1865,6 @@ namespace Nobetci.Web.Migrations
 
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time without time zone");
-
-                    b.Property<int?>("WorkGroupTypeId")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -2421,7 +1884,6 @@ namespace Nobetci.Web.Migrations
                             EndTime = new TimeOnly(16, 0, 0),
                             IsActive = true,
                             IsGlobal = true,
-                            IsRiskGroup = false,
                             Name = "Morning Shift",
                             NameKey = "shift.morning",
                             SpansNextDay = false,
@@ -2436,7 +1898,6 @@ namespace Nobetci.Web.Migrations
                             EndTime = new TimeOnly(0, 0, 0),
                             IsActive = true,
                             IsGlobal = true,
-                            IsRiskGroup = false,
                             Name = "Evening Shift",
                             NameKey = "shift.evening",
                             SpansNextDay = false,
@@ -2451,7 +1912,6 @@ namespace Nobetci.Web.Migrations
                             EndTime = new TimeOnly(8, 0, 0),
                             IsActive = true,
                             IsGlobal = true,
-                            IsRiskGroup = false,
                             Name = "Night Shift",
                             NameKey = "shift.night",
                             SpansNextDay = false,
@@ -2467,7 +1927,6 @@ namespace Nobetci.Web.Migrations
                             EndTime = new TimeOnly(17, 0, 0),
                             IsActive = true,
                             IsGlobal = true,
-                            IsRiskGroup = false,
                             Name = "Full Day",
                             NameKey = "shift.fullday",
                             SpansNextDay = false,
@@ -2482,7 +1941,6 @@ namespace Nobetci.Web.Migrations
                             EndTime = new TimeOnly(8, 0, 0),
                             IsActive = true,
                             IsGlobal = true,
-                            IsRiskGroup = false,
                             Name = "Nurse Duty (16h)",
                             NameKey = "shift.nurseduty",
                             SpansNextDay = true,
@@ -2497,7 +1955,6 @@ namespace Nobetci.Web.Migrations
                             EndTime = new TimeOnly(8, 0, 0),
                             IsActive = true,
                             IsGlobal = true,
-                            IsRiskGroup = false,
                             Name = "24h Duty",
                             NameKey = "shift.24h",
                             SpansNextDay = true,
@@ -2649,9 +2106,6 @@ namespace Nobetci.Web.Migrations
                     b.Property<bool>("IsApproved")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsRiskGroup")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
@@ -2668,9 +2122,6 @@ namespace Nobetci.Web.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("WorkGroupTypeId")
-                        .HasColumnType("integer");
 
                     b.Property<decimal?>("WorkedHours")
                         .HasColumnType("numeric");
@@ -3146,85 +2597,6 @@ namespace Nobetci.Web.Migrations
                     b.Navigation("Organization");
                 });
 
-            modelBuilder.Entity("Nobetci.Web.Data.Entities.BordroResult4A", b =>
-                {
-                    b.HasOne("Nobetci.Web.Data.Entities.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Nobetci.Web.Data.Entities.Organization", "Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("Organization");
-                });
-
-            modelBuilder.Entity("Nobetci.Web.Data.Entities.BordroResult4B", b =>
-                {
-                    b.HasOne("Nobetci.Web.Data.Entities.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Nobetci.Web.Data.Entities.Organization", "Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("Organization");
-                });
-
-            modelBuilder.Entity("Nobetci.Web.Data.Entities.BordroSabitleri", b =>
-                {
-                    b.HasOne("Nobetci.Web.Data.Entities.Organization", "Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Organization");
-                });
-
-            modelBuilder.Entity("Nobetci.Web.Data.Entities.BordroSabitleriGecmis", b =>
-                {
-                    b.HasOne("Nobetci.Web.Data.Entities.Organization", "Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Organization");
-                });
-
-            modelBuilder.Entity("Nobetci.Web.Data.Entities.BordroYetkileri", b =>
-                {
-                    b.HasOne("Nobetci.Web.Data.Entities.Organization", "Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Nobetci.Web.Data.Entities.Unit", "Unit")
-                        .WithMany()
-                        .HasForeignKey("UnitId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Organization");
-
-                    b.Navigation("Unit");
-                });
-
             modelBuilder.Entity("Nobetci.Web.Data.Entities.Employee", b =>
                 {
                     b.HasOne("Nobetci.Web.Data.Entities.Organization", "Organization")
@@ -3406,17 +2778,6 @@ namespace Nobetci.Web.Migrations
                         .IsRequired();
 
                     b.Navigation("Menu");
-                });
-
-            modelBuilder.Entity("Nobetci.Web.Data.Entities.PersonelNobetPuan", b =>
-                {
-                    b.HasOne("Nobetci.Web.Data.Entities.Organization", "Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("Nobetci.Web.Data.Entities.SavedPayroll", b =>
